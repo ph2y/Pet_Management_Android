@@ -10,7 +10,6 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +21,7 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.bumptech.glide.Glide
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentCreateUpdatePetBinding
@@ -467,15 +467,15 @@ class CreateUpdatePetFragment : Fragment() {
     private fun restoreState() {
         // set selected photo(if any)
         if(myPetViewModel.petPhotoPathValue != "") {
-            binding.petPhotoInput.setImageBitmap(BitmapFactory.decodeFile(myPetViewModel.petPhotoPathValue))
+            Glide.with(requireContext()).load(BitmapFactory.decodeFile(myPetViewModel.petPhotoPathValue)).into(binding.petPhotoInput)
+            binding.petPhotoInput.rotation = Util.getImageRotation(myPetViewModel.petPhotoPathValue)
         }
-        // if photo not selected, and is in update mode
+        // if photo not selected, and is in update mode -> set photo
         else if(requireActivity().intent.getStringExtra("fragmentType") == "pet_profile_pet_manager") {
-            // if photo is not null -> fetch photo else set default
             if(myPetViewModel.petPhotoByteArray != null) {
                 val bitmap = BitmapFactory.decodeByteArray(myPetViewModel.petPhotoByteArray, 0,
                     myPetViewModel.petPhotoByteArray!!.size)
-                binding.petPhotoInput.setImageBitmap(bitmap)
+                Glide.with(requireContext()).load(bitmap).into(binding.petPhotoInput)
             }
             else {
                 binding.petPhotoInput.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_pets_60_with_padding))
@@ -607,7 +607,8 @@ class CreateUpdatePetFragment : Fragment() {
                 myPetViewModel.isDeletePhoto = false
 
                 // set photo to view
-                binding.petPhotoInput.setImageBitmap(BitmapFactory.decodeFile(myPetViewModel.petPhotoPathValue))
+                Glide.with(requireContext()).load(BitmapFactory.decodeFile(myPetViewModel.petPhotoPathValue)).into(binding.petPhotoInput)
+                binding.petPhotoInput.rotation = Util.getImageRotation(myPetViewModel.petPhotoPathValue)
             }
         }
     }
