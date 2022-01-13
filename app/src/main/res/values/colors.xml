@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="carrot">#E67E22</color>
+    <color name="pumpkin">#D35400</color>
+    <color name="light_pumpkin">#DE7F40</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="gray">#F2727272</color>
+    <color name="border_line">#DFE3E6</color>
+    <color name="emerald">#2ECC71</color>
+    <color name="sunflower">#F1C40F</color>
+    <color name="alizarin">#E74C3C</color>
+    <color name="concreate">#95A5A6</color>
+    <color name="beige">#FFE8D3</color>
+    <color name="peter_river">#3498DB</color>
+    <color name="dark_brown">#514438</color>
+    <color name="ghost_white">#F8F8FF</color>
+    <color name="ghost_white2">#F2F2F7</color>
+    <color name="cardview_background">@color/cardview_light_background</color>
+    <color name="pink">#DE0581</color>
+</resources>
