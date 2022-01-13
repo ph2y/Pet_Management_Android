@@ -3,6 +3,7 @@ package com.sju18001.petmanagement.controller
 import android.app.Activity
 import android.content.*
 import android.content.res.Resources
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.provider.ContactsContract
@@ -334,6 +335,18 @@ class Util {
         fun getGenderSymbol(gender: Boolean, context: Context): String {
             return if(gender) context.getString(R.string.pet_gender_female_symbol)
             else context.getString(R.string.pet_gender_male_symbol)
+        }
+
+        fun getImageRotation(path: String): Float {
+            val exifInterface = ExifInterface(path)
+            val exifRotation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)
+
+            return when (exifRotation) {
+                ExifInterface.ORIENTATION_ROTATE_90 -> 90f
+                ExifInterface.ORIENTATION_ROTATE_180 -> 180f
+                ExifInterface.ORIENTATION_ROTATE_270 -> 270f
+                else -> 0f
+            }
         }
     }
 }
