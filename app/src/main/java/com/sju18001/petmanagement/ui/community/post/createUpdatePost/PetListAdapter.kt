@@ -8,6 +8,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.sju18001.petmanagement.R
 import de.hdodenhof.circleimageview.CircleImageView
 
@@ -37,9 +38,10 @@ class PetListAdapter(private val createUpdatePostViewModel: CreateUpdatePostView
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // set item views
         if (dataSet[position].petPhotoUrl != null) {
-            holder.petPhoto.setImageBitmap(dataSet[position].petPhoto)
+            Glide.with(context).load(dataSet[position].petPhoto).into(holder.petPhoto)
         } else {
-            holder.petPhoto.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_pets_60_with_padding))
+            Glide.with(context)
+                .load(context.getDrawable(R.drawable.ic_baseline_pets_60_with_padding)).into(holder.petPhoto)
         }
 
         if (dataSet[position].isRepresentativePet) {
