@@ -7,7 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.sju18001.petmanagement.R
+import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentCreateUpdatePostBinding
 import java.io.File
 
@@ -34,8 +36,9 @@ class MediaListAdapter(private val createUpdatePostViewModel: CreateUpdatePostVi
     }
 
     override fun onBindViewHolder(holder: HistoryListViewHolder, position: Int) {
-        // set thumbnail
-        holder.thumbnail.setImageBitmap(resultList[position])
+        // set thumbnail + fix rotation if necessary
+        Glide.with(context).load(resultList[position]).into(holder.thumbnail)
+        holder.thumbnail.rotation = Util.getImageRotation(createUpdatePostViewModel.photoPathList[position])
 
         // TODO: add logic for video thumbnails (the below code was used for creating video thumbnails)
 //        else {
