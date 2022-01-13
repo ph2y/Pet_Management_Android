@@ -118,6 +118,9 @@ class CreateUpdatePetFragment : Fragment() {
                 dialog.dismiss()
 
                 binding.petPhotoInput.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_pets_60_with_padding))
+                myPetViewModel.petPhotoRotation = 0f
+                binding.petPhotoInput.rotation = myPetViewModel.petPhotoRotation!!
+
                 myPetViewModel.petPhotoByteArray = null
                 if (myPetViewModel.petPhotoPathValue != "") {
                     File(myPetViewModel.petPhotoPathValue).delete()
@@ -331,7 +334,7 @@ class CreateUpdatePetFragment : Fragment() {
         }
 
         // delete photo
-        if(myPetViewModel.isDeletePhoto!!) {
+        if(myPetViewModel.isDeletePhoto) {
             val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
                 .deletePetPhotoReq(DeletePetPhotoReqDto(id))
             call.enqueue(object: Callback<DeletePetPhotoResDto> {
@@ -468,7 +471,6 @@ class CreateUpdatePetFragment : Fragment() {
         // set selected photo(if any)
         if(myPetViewModel.petPhotoPathValue != "") {
             Glide.with(requireContext()).load(BitmapFactory.decodeFile(myPetViewModel.petPhotoPathValue)).into(binding.petPhotoInput)
-            binding.petPhotoInput.rotation = Util.getImageRotation(myPetViewModel.petPhotoPathValue)
         }
         // if photo not selected, and is in update mode -> set photo
         else if(requireActivity().intent.getStringExtra("fragmentType") == "pet_profile_pet_manager") {
@@ -485,6 +487,7 @@ class CreateUpdatePetFragment : Fragment() {
         else {
             binding.petPhotoInput.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_pets_60_with_padding))
         }
+        binding.petPhotoInput.rotation = myPetViewModel.petPhotoRotation?: 0f
 
         binding.petNameInput.setText(myPetViewModel.petNameValue)
         binding.petMessageInput.setText(myPetViewModel.petMessageValue)
@@ -542,6 +545,7 @@ class CreateUpdatePetFragment : Fragment() {
         }catch(e: Exception){
             myPetViewModel.petPhotoByteArrayProfile = null
         }
+        myPetViewModel.petPhotoRotationProfile = myPetViewModel.petPhotoRotation
 
         myPetViewModel.petNameValueProfile = binding.petNameInput.text.toString()
         myPetViewModel.petBirthValueProfile = if (!binding.yearOnlyCheckbox.isChecked){
@@ -606,9 +610,12 @@ class CreateUpdatePetFragment : Fragment() {
                 myPetViewModel.petPhotoPathValue = petPhotoPathValue
                 myPetViewModel.isDeletePhoto = false
 
+                // save rotation
+                myPetViewModel.petPhotoRotation = Util.getImageRotation(myPetViewModel.petPhotoPathValue)
+
                 // set photo to view
                 Glide.with(requireContext()).load(BitmapFactory.decodeFile(myPetViewModel.petPhotoPathValue)).into(binding.petPhotoInput)
-                binding.petPhotoInput.rotation = Util.getImageRotation(myPetViewModel.petPhotoPathValue)
+                binding.petPhotoInput.rotation = myPetViewModel.petPhotoRotation!!
             }
         }
     }

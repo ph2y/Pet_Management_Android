@@ -74,6 +74,11 @@ class MyPetViewModel(private val handle: SavedStateHandle) : ViewModel() {
             handle.set("petPhotoByteArrayProfile", value)
             field = value
         }
+    var petPhotoRotationProfile = handle.get<Float>("petPhotoRotationProfile")
+        set(value){
+            handle.set("petPhotoRotationProfile", value)
+            field = value
+        }
     var petNameValueProfile = handle.get<String>("petNameValueProfile")?: ""
         set(value){
             handle.set("petNameValueProfile", value)
@@ -135,6 +140,11 @@ class MyPetViewModel(private val handle: SavedStateHandle) : ViewModel() {
     var petPhotoByteArray = handle.get<ByteArray>("petPhotoByteArray")
         set(value){
             handle.set("petPhotoByteArray", value)
+            field = value
+        }
+    var petPhotoRotation = handle.get<Float>("petPhotoRotation")
+        set(value){
+            handle.set("petPhotoRotation", value)
             field = value
         }
     var petPhotoPathValue = handle.get<String>("petPhotoPathValue")?: ""

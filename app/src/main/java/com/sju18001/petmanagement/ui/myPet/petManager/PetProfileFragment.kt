@@ -25,6 +25,7 @@ import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentPetProfileBinding
@@ -355,7 +356,7 @@ class PetProfileFragment : Fragment(){
         if(myPetViewModel.petPhotoByteArrayProfile != null) {
             val bitmap = BitmapFactory.decodeByteArray(myPetViewModel.petPhotoByteArrayProfile, 0,
                 myPetViewModel.petPhotoByteArrayProfile!!.size)
-            binding.petPhoto.setImageBitmap(bitmap)
+            Glide.with(requireContext()).load(bitmap).into(binding.petPhoto)
         }
         else {
             binding.petPhoto.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_pets_60_with_padding))
@@ -391,6 +392,7 @@ class PetProfileFragment : Fragment(){
     private fun savePetDataForPetUpdate() {
         myPetViewModel.petPhotoByteArray = myPetViewModel.petPhotoByteArrayProfile
         myPetViewModel.petPhotoPathValue = ""
+        myPetViewModel.petPhotoRotation = myPetViewModel.petPhotoRotationProfile
         myPetViewModel.isDeletePhoto = false
         myPetViewModel.petMessageValue = myPetViewModel.petMessageValueProfile
         myPetViewModel.petNameValue = myPetViewModel.petNameValueProfile
@@ -506,6 +508,7 @@ class PetProfileFragment : Fragment(){
                 clone(context, R.layout.pet_info_layout_origin)
             }.applyTo(binding.petInfoLayout)
 
+            binding.petPhoto.rotation = myPetViewModel.petPhotoRotationProfile?: 0f
 
             binding.topFixedLayout.visibility = View.VISIBLE
             if (myPetViewModel.fragmentType == "pet_profile_community") {
@@ -535,6 +538,8 @@ class PetProfileFragment : Fragment(){
             ConstraintSet().apply{
                 clone(context, R.layout.pet_info_layout_alter)
             }.applyTo(binding.petInfoLayout)
+
+            binding.petPhoto.rotation = myPetViewModel.petPhotoRotationProfile?: 0f
 
             binding.topFixedLayout.visibility = View.GONE
             binding.usernameAndPetsLayout.visibility = View.GONE
