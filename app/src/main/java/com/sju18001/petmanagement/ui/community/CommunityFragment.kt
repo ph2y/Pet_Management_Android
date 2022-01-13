@@ -27,7 +27,8 @@ class CommunityFragment : Fragment() {
         // For create post FAB
         binding.createPostFab.setOnClickListener {
             postFragment?.let{
-                it.startCreatePostFragment()
+                // check if the account has a pet -> then start create post fragment
+                it.checkIfAccountHasPet()
             }
         }
 
