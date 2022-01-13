@@ -17,6 +17,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import com.bumptech.glide.Glide
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.PatternRegex
 import com.sju18001.petmanagement.controller.Util
@@ -433,7 +434,8 @@ class UpdateAccountFragment : Fragment() {
             binding.accountPhotoInput.setImageBitmap(bitmap)
         }
         else if(settingViewModel.accountPhotoPathValue != "") {
-            binding.accountPhotoInput.setImageBitmap(BitmapFactory.decodeFile(settingViewModel.accountPhotoPathValue))
+            Glide.with(requireContext()).load(BitmapFactory.decodeFile(settingViewModel.accountPhotoPathValue)).into(binding.accountPhotoInput)
+            binding.accountPhotoInput.rotation = Util.getImageRotation(settingViewModel.accountPhotoPathValue)
         }
         else {
             // set to default image
@@ -478,7 +480,8 @@ class UpdateAccountFragment : Fragment() {
                 settingViewModel.accountPhotoPathValue = accountPhotoPathValue
 
                 // set photo to view
-                binding.accountPhotoInput.setImageBitmap(BitmapFactory.decodeFile(settingViewModel.accountPhotoPathValue))
+                Glide.with(requireContext()).load(BitmapFactory.decodeFile(settingViewModel.accountPhotoPathValue)).into(binding.accountPhotoInput)
+                binding.accountPhotoInput.rotation = Util.getImageRotation(settingViewModel.accountPhotoPathValue)
             }
         }
     }
