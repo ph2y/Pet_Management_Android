@@ -420,7 +420,7 @@ class CreateUpdatePostFragment : Fragment() {
 
     private fun fetchPetDataAndSetRecyclerView() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .fetchPetReq(FetchPetReqDto( null , null))
+            .fetchPetReq(FetchPetReqDto(null , null))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             // fetch pet info (unsorted)
             val unsortedPetList: MutableList<PetListItem> = mutableListOf()

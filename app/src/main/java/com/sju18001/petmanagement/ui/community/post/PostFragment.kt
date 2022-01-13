@@ -492,6 +492,24 @@ class PostFragment : Fragment() {
         }
     }
 
+    fun checkIfAccountHasPet() {
+        val call =
+            RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+                .fetchPetReq(FetchPetReqDto(null, null))
+        ServerUtil.enqueueApiCall(call, { isViewDestroyed }, requireContext(), { response ->
+            var petCount = 0
+            response.body()?.petList?.map {
+                petCount++
+            }
+
+            if (petCount > 0) {
+                startCreatePostFragment()
+            } else {
+                Toast.makeText(context, getString(R.string.pet_list_empty_exception_message), Toast.LENGTH_LONG).show()
+            }
+        }, {}, {})
+    }
+
     fun startCreatePostFragment(){
         val createUpdatePostActivityIntent = Intent(context, CreateUpdatePostActivity::class.java)
         createUpdatePostActivityIntent.putExtra("fragmentType", "create_post")
