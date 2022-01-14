@@ -6,11 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.media.MediaMetadataRetriever
-import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +15,6 @@ import android.widget.VideoView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,8 +33,6 @@ import com.sju18001.petmanagement.ui.community.comment.CommentActivity
 import com.sju18001.petmanagement.ui.community.post.createUpdatePost.CreateUpdatePostActivity
 import com.sju18001.petmanagement.ui.community.post.generalFiles.GeneralFilesActivity
 import wseemann.media.FFmpegMediaMetadataRetriever
-import java.io.File
-import java.io.FileOutputStream
 import java.net.URLEncoder
 
 class PostFragment : Fragment() {
@@ -493,8 +486,7 @@ class PostFragment : Fragment() {
     }
 
     fun checkIfAccountHasPet() {
-        val call =
-            RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
                 .fetchPetReq(FetchPetReqDto(null, null))
         ServerUtil.enqueueApiCall(call, { isViewDestroyed }, requireContext(), { response ->
             var petCount = 0
@@ -505,7 +497,7 @@ class PostFragment : Fragment() {
             if (petCount > 0) {
                 startCreatePostFragment()
             } else {
-                Toast.makeText(context, getString(R.string.pet_list_empty_exception_message), Toast.LENGTH_LONG).show()
+                Toast.makeText(context, getString(R.string.pet_list_empty_for_post_exception_message), Toast.LENGTH_LONG).show()
             }
         }, {}, {})
     }

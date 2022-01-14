@@ -6,18 +6,17 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.CustomProgressBar
-import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentPetScheduleManagerBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
@@ -26,11 +25,6 @@ import com.sju18001.petmanagement.restapi.dao.PetSchedule
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.myPet.MyPetActivity
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
-import okhttp3.MediaType
-import okhttp3.RequestBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class PetScheduleManagerFragment : Fragment() {
     private var _binding: FragmentPetScheduleManagerBinding? = null
@@ -56,10 +50,8 @@ class PetScheduleManagerFragment : Fragment() {
 
         // 추가 버튼
         binding.addPetScheduleFab.setOnClickListener{
-            val myPetActivityIntent = Intent(context, MyPetActivity::class.java)
-            myPetActivityIntent.putExtra("fragmentType", "create_pet_schedule")
-            startActivity(myPetActivityIntent)
-            requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
+            // check if the account has a pet -> then start create update pet schedule fragment
+            checkIfAccountHasPet()
         }
 
         return binding.root
@@ -192,5 +184,25 @@ class PetScheduleManagerFragment : Fragment() {
         // set notification view
         val visibility = if(itemCount != 0) View.GONE else View.VISIBLE
         binding.emptyPetScheduleListNotification.visibility = visibility
+    }
+
+    fun checkIfAccountHasPet() {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+                .fetchPetReq(FetchPetReqDto(null, null))
+        ServerUtil.enqueueApiCall(call, { isViewDestroyed }, requireContext(), { response ->
+            var petCount = 0
+            response.body()?.petList?.map {
+                petCount++
+            }
+
+            if (petCount > 0) {
+                val myPetActivityIntent = Intent(context, MyPetActivity::class.java)
+                myPetActivityIntent.putExtra("fragmentType", "create_pet_schedule")
+                startActivity(myPetActivityIntent)
+                requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
+            } else {
+                Toast.makeText(context, getString(R.string.pet_list_empty_for_schedule_exception_message), Toast.LENGTH_LONG).show()
+            }
+        }, {}, {})
     }
 }
