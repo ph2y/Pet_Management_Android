@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.ContactsContract
 import android.provider.OpenableColumns
-import android.provider.Settings.Global.getString
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
@@ -20,7 +19,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.restapi.Place
+import com.sju18001.petmanagement.restapi.kakaoapi.Place
 import com.sju18001.petmanagement.restapi.global.FileMetaData
 import okhttp3.ResponseBody
 import org.json.JSONObject

@@ -8,16 +8,20 @@ import android.os.Bundle
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.messaging.FirebaseMessaging
 import com.sju18001.petmanagement.databinding.ActivityMainBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.SessionManager
+import com.sju18001.petmanagement.restapi.fcm.FcmUtil
 import com.sju18001.petmanagement.ui.community.CommunityFragment
 import com.sju18001.petmanagement.ui.community.followerFollowing.FollowerFollowingActivity
 import com.sju18001.petmanagement.ui.map.MapFragment
@@ -201,7 +205,7 @@ class MainActivity : AppCompatActivity() {
             false
         }
 
-        synchronizeNotificationWorkManager()
+        FcmUtil.getFirebaseMessagingToken {}
     }
 
     override fun onDestroy() {
@@ -280,25 +284,9 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun addFragmentWhenFragmentIsNull(fragment: Fragment, tag: String){
+    private fun addFragmentWhenFragmentIsNull(fragment: Fragment, tag: String) {
         if(fragmentManager.findFragmentByTag(tag) == null){
             fragmentManager.beginTransaction().add(R.id.nav_host_fragment_activity_main, fragment, tag).commitNow()
         }
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun synchronizeNotificationWorkManager(){
-        PetScheduleNotification.cancelAllWorkManager(applicationContext)
-
-        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
-            .fetchPetScheduleReq(ServerUtil.getEmptyBody())
-        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, this, { response ->
-            // ON인 것들에 대해 알림 설정
-            response.body()?.petScheduleList?.map{
-                if(it.enabled){
-                    PetScheduleNotification.enqueueNotificationWorkManager(applicationContext, it.time, it.memo)
-                }
-            }
-        }, {}, {})
     }
 }

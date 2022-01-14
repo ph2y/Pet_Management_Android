@@ -108,7 +108,8 @@ class PetScheduleManagerFragment : Fragment() {
                 builder.setMessage("일정을 삭제하시겠습니까?")
                     .setPositiveButton(
                         R.string.confirm, DialogInterface.OnClickListener { _, _ ->
-                            PetScheduleNotification.cancelNotificationWorkManager(requireContext(), item.time)
+                            // TODO: FCM 삭제
+                            // PetScheduleNotification.cancelNotificationWorkManager(requireContext(), item.time)
                             deletePetSchedule(item.id)
 
                             adapter.removeItem(position)

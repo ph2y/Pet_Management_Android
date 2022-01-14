@@ -10,6 +10,7 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
+import com.sju18001.petmanagement.restapi.dao.Notification
 import com.sju18001.petmanagement.restapi.dao.PetSchedule
 import java.time.LocalTime
 
@@ -74,10 +75,18 @@ class PetScheduleListAdapter(private var dataSet: ArrayList<PetSchedule>, privat
 
             if(isChecked){
                 // Notification ON
-                PetScheduleNotification.enqueueNotificationWorkManager(petScheduleListAdapterInterface.getContext(), dataSet[position].time, dataSet[position].memo)
+                // PetScheduleNotification.enqueueNotificationWorkManager(petScheduleListAdapterInterface.getContext(), dataSet[position].time, dataSet[position].memo)
+
+                PetScheduleNotification.sendFcmMessage(
+                    Notification(
+                        getPetNamesFromPetIdList(dataSet[position].petIdList),
+                        dataSet[position].memo
+                    )
+                )
             }else{
                 // Notification OFF
-                PetScheduleNotification.cancelNotificationWorkManager(petScheduleListAdapterInterface.getContext(), dataSet[position].time)
+                // TODO: FCM 삭제
+                // PetScheduleNotification.cancelNotificationWorkManager(petScheduleListAdapterInterface.getContext(), dataSet[position].time)
             }
         }
     }
