@@ -12,6 +12,7 @@ import com.sju18001.petmanagement.R
 interface PetNameListAdapterInterface{
     fun setViewModelForCheckBox(position: Int)
     fun setCheckBoxForViewModel(checkBox: CheckBox, position: Int)
+    fun verifyAndEnableConfirmButton()
 }
 
 class PetNameListAdapter(private val dataSet: ArrayList<PetNameListItem>) : RecyclerView.Adapter<PetNameListAdapter.ViewHolder>(){
@@ -47,6 +48,7 @@ class PetNameListAdapter(private val dataSet: ArrayList<PetNameListItem>) : Recy
         holder.petNameCheckBox.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             petNameListAdapterInterface.setViewModelForCheckBox(position)
+            petNameListAdapterInterface.verifyAndEnableConfirmButton()
         }
     }
 
