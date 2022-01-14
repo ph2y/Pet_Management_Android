@@ -119,6 +119,7 @@
     <string name="age">나이</string>
     <string name="birth">생일</string>
     <string name="gender">성별</string>
+    <string name="pet_list_empty_for_schedule_exception_message">펫 추가 후 일정을 추가할 수 있어요!</string>
 
     <!-- WelcomePage Fragment -->
     <string name="skip_button">SKIP</string>
@@ -269,7 +270,7 @@
     <string name="empty_pet_list_for_account_message"> 님의 등록된 펫이 없어요!</string>
     <string name="general_files_dialog_title">일반 첨부파일</string>
     <string name="download_complete_message">다운로드를 완료했어요!</string>
-    <string name="pet_list_empty_exception_message">펫 추가 후 글을 작성할 수 있어요!</string>
+    <string name="pet_list_empty_for_post_exception_message">펫 추가 후 글을 작성할 수 있어요!</string>
 
     <!-- Follower/Following Fragment -->
     <string name="follower_following_menu_title">팔로워/팔로잉</string>
