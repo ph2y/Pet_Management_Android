@@ -8,7 +8,6 @@ import android.net.Uri
 import android.os.Build
 import android.provider.ContactsContract
 import android.provider.OpenableColumns
-import android.provider.Settings.Global.getString
 import android.util.DisplayMetrics
 import android.util.Log
 import android.util.TypedValue
@@ -347,6 +346,22 @@ class Util {
                 ExifInterface.ORIENTATION_ROTATE_270 -> 270f
                 else -> 0f
             }
+        }
+
+        fun isExceedsFileSizeLimit(context: Context, intent: Intent, fileSizeLimit: Long): Boolean {
+            intent.data?.let { returnUri ->
+                context.contentResolver.query(returnUri, null, null, null, null)
+            }?.use { cursor ->
+                val sizeIndex = cursor.getColumnIndex(OpenableColumns.SIZE)
+                cursor.moveToFirst()
+
+                val fileSize = cursor.getLong(sizeIndex)
+                if (fileSize >= fileSizeLimit) {
+                    return true
+                }
+            }
+
+            return false
         }
     }
 }

@@ -262,6 +262,12 @@ class CreateUpdatePostFragment : Fragment() {
         when(requestCode) {
             PICK_PHOTO -> {
                 if(data != null) {
+                    // check file size limit
+                    if (Util.isExceedsFileSizeLimit(requireContext(), data, FileType.FILE_SIZE_LIMIT_PHOTO)) {
+                        Toast.makeText(context, context?.getText(R.string.file_size_limit_exception_message_20MB), Toast.LENGTH_SHORT).show()
+                        return
+                    }
+
                     // get file name
                     val fileName = Util.getSelectedFileName(requireContext(), data.data!!)
 
@@ -342,6 +348,12 @@ class CreateUpdatePostFragment : Fragment() {
 //            }
             PICK_GENERAL_FILE -> {
                 if(data != null) {
+                    // check file size limit
+                    if (Util.isExceedsFileSizeLimit(requireContext(), data, FileType.FILE_SIZE_LIMIT_GENERAL)) {
+                        Toast.makeText(context, context?.getText(R.string.file_size_limit_exception_message_100MB), Toast.LENGTH_SHORT).show()
+                        return
+                    }
+
                     // get file name
                     val fileName = Util.getSelectedFileName(requireContext(), data.data!!)
 
