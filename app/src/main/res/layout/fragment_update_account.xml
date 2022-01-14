@@ -53,7 +53,7 @@
                 android:enabled="true"
                 android:focusable="true"
                 android:padding="4dp"
-                android:text="@string/confirm_create_pet"
+                android:text="@string/save"
                 android:textColor="@color/white"
                 android:textSize="20sp"
                 android:textStyle="bold" />
