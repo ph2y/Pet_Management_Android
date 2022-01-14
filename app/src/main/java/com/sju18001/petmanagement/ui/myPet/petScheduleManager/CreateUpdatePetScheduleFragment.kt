@@ -18,9 +18,6 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.SessionManager
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.time.LocalTime
 
 class CreateUpdatePetScheduleFragment : Fragment() {
@@ -99,6 +96,10 @@ class CreateUpdatePetScheduleFragment : Fragment() {
                     }
                 }
             }
+
+            override fun verifyAndEnableConfirmButton() {
+                this@CreateUpdatePetScheduleFragment.verifyAndEnableConfirmButton()
+            }
         }
 
         binding.petNameListRecyclerView.adapter = adapter
@@ -169,6 +170,8 @@ class CreateUpdatePetScheduleFragment : Fragment() {
                 // intent - extra
                 setViewModelForUpdate()
             }
+
+            verifyAndEnableConfirmButton()
         }, {}, {})
     }
 
@@ -246,6 +249,10 @@ class CreateUpdatePetScheduleFragment : Fragment() {
         }
 
         return checkedPetIdList
+    }
+
+    private fun verifyAndEnableConfirmButton() {
+        binding.confirmButton.isEnabled = (myPetViewModel.isPetChecked?.contains(true))?: false
     }
 
     private fun lockViews() {

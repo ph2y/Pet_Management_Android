@@ -163,6 +163,7 @@
             android:insetBottom="0dp"
             android:text="@string/confirm"
             android:textSize="18sp"
+            android:enabled="false"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@id/cancel_button"
             app:layout_constraintEnd_toEndOf="parent"
