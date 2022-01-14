@@ -593,7 +593,7 @@ class CreateUpdatePetFragment : Fragment() {
                     Toast.makeText(context, context?.getText(R.string.file_size_limit_exception_message_20MB), Toast.LENGTH_SHORT).show()
                     return
                 }
-                
+
                 // get file name
                 val fileName = Util.getSelectedFileName(requireContext(), data.data!!)
 
