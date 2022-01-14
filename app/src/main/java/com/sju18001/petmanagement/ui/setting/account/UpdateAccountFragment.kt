@@ -27,6 +27,7 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.*
+import com.sju18001.petmanagement.restapi.global.FileType
 import com.sju18001.petmanagement.ui.login.LoginActivity
 import com.sju18001.petmanagement.ui.setting.SettingViewModel
 import okhttp3.MediaType
@@ -454,6 +455,12 @@ class UpdateAccountFragment : Fragment() {
         // get + save account photo value
         if(resultCode == AppCompatActivity.RESULT_OK && requestCode == PICK_PHOTO) {
             if (data != null) {
+                // check file size limit
+                if (Util.isExceedsFileSizeLimit(requireContext(), data, FileType.FILE_SIZE_LIMIT_PHOTO)) {
+                    Toast.makeText(context, context?.getText(R.string.file_size_limit_exception_message_20MB), Toast.LENGTH_SHORT).show()
+                    return
+                }
+
                 // get file name
                 val fileName = Util.getSelectedFileName(requireContext(), data.data!!)
 
