@@ -177,6 +177,8 @@ class CreateUpdatePostFragment : Fragment() {
         binding.postEditText.addTextChangedListener(object: TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 createUpdatePostViewModel.postEditText = s.toString()
+
+                verifyAndEnableConfirmButton()
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
@@ -220,27 +222,19 @@ class CreateUpdatePostFragment : Fragment() {
             createUpdatePostViewModel.postEditText = createUpdatePostViewModel.postEditText.trim()
             binding.postEditText.setText(createUpdatePostViewModel.postEditText)
 
-            if(isPostEmpty()) {
-                Toast.makeText(context, context?.getText(R.string.post_invalid_message), Toast.LENGTH_LONG).show()
-            }
-            else if(createUpdatePostViewModel.selectedPetId == null) {
-                Toast.makeText(context, context?.getText(R.string.pet_not_selected_message), Toast.LENGTH_LONG).show()
-            }
-            else {
-                val builder = AlertDialog.Builder(requireContext())
-                builder.setMessage(requireContext().getString(R.string.post_dialog_message))
-                    .setPositiveButton(R.string.confirm) { _, _ ->
-                        if(requireActivity().intent.getStringExtra("fragmentType") == "create_post") {
-                            createPost()
-                        }
-                        else {
-                            updatePost()
-                        }
+            val builder = AlertDialog.Builder(requireContext())
+            builder.setMessage(requireContext().getString(R.string.post_dialog_message))
+                .setPositiveButton(R.string.confirm) { _, _ ->
+                    if(requireActivity().intent.getStringExtra("fragmentType") == "create_post") {
+                        createPost()
                     }
-                    .setNegativeButton(R.string.cancel) { dialog, _ ->
-                        dialog.cancel()
-                    }.create().show()
-            }
+                    else {
+                        updatePost()
+                    }
+                }
+                .setNegativeButton(R.string.cancel) { dialog, _ ->
+                    dialog.cancel()
+                }.create().show()
         }
 
         // for back button
@@ -300,6 +294,8 @@ class CreateUpdatePostFragment : Fragment() {
                     // save thumbnail
                     val thumbnail = BitmapFactory.decodeByteArray(photoByteArray, 0, photoByteArray.size)
                     createUpdatePostViewModel.mediaThumbnailList.add(thumbnail)
+
+                    verifyAndEnableConfirmButton()
 
                     // update RecyclerView
                     mediaAdapter.notifyItemInserted(createUpdatePostViewModel.mediaThumbnailList.size)
@@ -375,6 +371,8 @@ class CreateUpdatePostFragment : Fragment() {
                         .substring(createUpdatePostViewModel.generalFilePathList.last().lastIndexOf("/") + 1)
                     createUpdatePostViewModel.generalFileNameList.add(generalFileName)
 
+                    verifyAndEnableConfirmButton()
+
                     // update RecyclerView
                     generalFilesAdapter.notifyItemInserted(createUpdatePostViewModel.generalFileNameList.size)
                     binding.generalRecyclerView.smoothScrollToPosition(createUpdatePostViewModel.generalFileNameList.size - 1)
@@ -389,22 +387,29 @@ class CreateUpdatePostFragment : Fragment() {
     }
 
     private fun initializeRecyclerViews() {
+        // interface for confirm button verification inside RecyclerView adapter
+        val confirmButtonVerificationInterface = object: ConfirmButtonVerificationInterface {
+            override fun verifyAndEnableConfirmButton() {
+                this@CreateUpdatePostFragment.verifyAndEnableConfirmButton()
+            }
+        }
+
         // initialize RecyclerView (for pet)
-        petAdapter = PetListAdapter(createUpdatePostViewModel, requireContext())
+        petAdapter = PetListAdapter(createUpdatePostViewModel, requireContext(), confirmButtonVerificationInterface)
         binding.petRecyclerView.adapter = petAdapter
         binding.petRecyclerView.layoutManager = LinearLayoutManager(activity)
         (binding.petRecyclerView.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.HORIZONTAL
         petAdapter.updateDataSet(createUpdatePostViewModel.petList)
 
         // initialize RecyclerView (for media)
-        mediaAdapter = MediaListAdapter(createUpdatePostViewModel, requireContext(), binding)
+        mediaAdapter = MediaListAdapter(createUpdatePostViewModel, requireContext(), binding, confirmButtonVerificationInterface)
         binding.mediaRecyclerView.adapter = mediaAdapter
         binding.mediaRecyclerView.layoutManager = LinearLayoutManager(activity)
         (binding.mediaRecyclerView.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.HORIZONTAL
         mediaAdapter.setResult(createUpdatePostViewModel.mediaThumbnailList)
 
         // initialize RecyclerView (for general files)
-        generalFilesAdapter = GeneralFileListAdapter(createUpdatePostViewModel, requireContext(), binding)
+        generalFilesAdapter = GeneralFileListAdapter(createUpdatePostViewModel, requireContext(), binding, confirmButtonVerificationInterface)
         binding.generalRecyclerView.adapter = generalFilesAdapter
         binding.generalRecyclerView.layoutManager = LinearLayoutManager(activity)
         (binding.generalRecyclerView.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.VERTICAL
@@ -659,15 +664,16 @@ class CreateUpdatePostFragment : Fragment() {
         binding.backButton.isEnabled = true
     }
 
-    private fun isPostEmpty(): Boolean {
-        return createUpdatePostViewModel.mediaThumbnailList.size == 0 &&
-                createUpdatePostViewModel.generalFileNameList.size == 0 &&
-                createUpdatePostViewModel.postEditText.trim().isEmpty()
-    }
-
     private fun isApiLoadComplete(): Boolean {
         return createUpdatePostViewModel.updatedPostPhotoData && createUpdatePostViewModel.updatedPostGeneralFileData &&
                 createUpdatePostViewModel.deletedPostPhotoData && createUpdatePostViewModel.deletedPostGeneralFileData
+    }
+
+    fun verifyAndEnableConfirmButton() {
+        binding.postButton.isEnabled = !(createUpdatePostViewModel.mediaThumbnailList.size == 0
+                && createUpdatePostViewModel.generalFileNameList.size == 0
+                && createUpdatePostViewModel.postEditText.trim().isEmpty())
+                && createUpdatePostViewModel.selectedPetId != null
     }
 
     private fun createPost() {
@@ -1010,6 +1016,8 @@ class CreateUpdatePostFragment : Fragment() {
                     createUpdatePostViewModel.mediaThumbnailList.add(null)
                 }
 
+                verifyAndEnableConfirmButton()
+
                 fetchPostMediaData(postMedia)
             }
             else {
@@ -1025,6 +1033,8 @@ class CreateUpdatePostFragment : Fragment() {
                     createUpdatePostViewModel.generalFilePathList.add("")
                     createUpdatePostViewModel.generalFileNameList.add("")
                 }
+
+                verifyAndEnableConfirmButton()
 
                 fetchPostGeneralData(post.id, postGeneral)
             }
@@ -1110,6 +1120,9 @@ class CreateUpdatePostFragment : Fragment() {
 
         // restore post EditText
         binding.postEditText.setText(createUpdatePostViewModel.postEditText)
+
+        // restore confirm button
+        verifyAndEnableConfirmButton()
     }
 
     override fun onDestroyView() {
@@ -1123,4 +1136,8 @@ class CreateUpdatePostFragment : Fragment() {
             Util.deleteCopiedFiles(requireContext(), CREATE_UPDATE_POST_DIRECTORY)
         }
     }
+}
+
+interface ConfirmButtonVerificationInterface {
+    fun verifyAndEnableConfirmButton()
 }

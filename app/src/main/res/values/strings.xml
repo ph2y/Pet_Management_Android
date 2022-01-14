@@ -239,8 +239,6 @@
     <string name="hashtag_usage_full_message">해시태그는 최대 5개까지만 입력 가능해요!</string>
     <string name="hashtag_regex_exception_message">한글, 영문, 숫자, 언더스코어(_)만 사용 가능해요!</string>
     <string name="hashtag_input_button">태그 입력</string>
-    <string name="post_invalid_message">글 내용을 입력하세요!</string>
-    <string name="pet_not_selected_message">펫을 선택해주세요!</string>
     <string name="delete_post_dialog">정말 글을 삭제하시겠어요?</string>
     <string name="create_post_successful">글 쓰기에 성공했어요!</string>
     <string name="update_post_successful">글 수정에 성공했어요!</string>

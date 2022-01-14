@@ -377,7 +377,8 @@
                 android:insetBottom="0dp"
                 android:text="@string/post_button"
                 android:textSize="18sp"
-                app:cornerRadius="0dp"/>
+                app:cornerRadius="0dp"
+                android:enabled="false"/>
 
             <ProgressBar
                 android:id="@+id/create_update_post_progress_bar"

@@ -14,8 +14,8 @@ import com.sju18001.petmanagement.databinding.FragmentCreateUpdatePostBinding
 import java.io.File
 
 class MediaListAdapter(private val createUpdatePostViewModel: CreateUpdatePostViewModel,
-                       private val context: Context,
-                       private val binding: FragmentCreateUpdatePostBinding) :
+                       private val context: Context, private val binding: FragmentCreateUpdatePostBinding,
+                       private val confirmButtonVerificationInterface: ConfirmButtonVerificationInterface) :
         RecyclerView.Adapter<MediaListAdapter.HistoryListViewHolder>() {
 
     private var resultList = mutableListOf<Bitmap?>()
@@ -83,6 +83,8 @@ class MediaListAdapter(private val createUpdatePostViewModel: CreateUpdatePostVi
         // for item remove animation
         notifyItemRemoved(position)
         notifyItemRangeChanged(position, this.resultList.size)
+
+        confirmButtonVerificationInterface.verifyAndEnableConfirmButton()
     }
 
     public fun setResult(result: MutableList<Bitmap?>){

@@ -12,7 +12,8 @@ import com.bumptech.glide.Glide
 import com.sju18001.petmanagement.R
 import de.hdodenhof.circleimageview.CircleImageView
 
-class PetListAdapter(private val createUpdatePostViewModel: CreateUpdatePostViewModel, private val context: Context):
+class PetListAdapter(private val createUpdatePostViewModel: CreateUpdatePostViewModel, private val context: Context,
+                     private val confirmButtonVerificationInterface: ConfirmButtonVerificationInterface):
     RecyclerView.Adapter<PetListAdapter.ViewHolder>() {
 
     private var dataSet = mutableListOf<PetListItem>()
@@ -85,6 +86,8 @@ class PetListAdapter(private val createUpdatePostViewModel: CreateUpdatePostView
                 notifyItemChanged(previousSelectedIndex, dataSet[previousSelectedIndex])
             }
             notifyItemChanged(position)
+
+            confirmButtonVerificationInterface.verifyAndEnableConfirmButton()
         }
     }
 
