@@ -3,7 +3,6 @@ package com.sju18001.petmanagement.ui.community.post.createUpdatePost
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -15,7 +14,6 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -76,6 +74,8 @@ class CreateUpdatePostFragment : Fragment() {
     ): View? {
         _binding = FragmentCreateUpdatePostBinding.inflate(inflater, container, false)
         isViewDestroyed = false
+
+        binding.locationButton.isEnabled = false // TODO: delete this
 
         return binding.root
     }
@@ -634,7 +634,7 @@ class CreateUpdatePostFragment : Fragment() {
                 it.findViewHolderForLayoutPosition(i)?.itemView?.isClickable = true
             }
         }
-        binding.locationButton.isEnabled = true
+        //binding.locationButton.isEnabled = true // TODO: uncomment this
         binding.photoAttachmentButton.isEnabled = true
         binding.generalAttachmentButton.isEnabled = true
         binding.disclosureButton.isEnabled = true
