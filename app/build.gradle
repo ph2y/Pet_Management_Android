@@ -75,6 +75,7 @@ dependencies {
     implementation "com.google.android:flexbox:2.0.1"
     implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation platform('com.google.firebase:firebase-bom:29.0.3')
+    implementation 'com.google.firebase:firebase-messaging-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
     implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever-core:1.0.16'
     implementation 'com.github.wseemann:FFmpegMediaMetadataRetriever-native:1.0.16'

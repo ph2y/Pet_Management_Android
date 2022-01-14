@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.restapi
+package com.sju18001.petmanagement.restapi.kakaoapi
 
 data class Documents(
     var documents: List<Place>
@@ -23,7 +23,7 @@ data class Meta(
     var total_count:Int,
     var pageable_count:Int,
     var is_end:Boolean,
-    var same_name:RegionInfo
+    var same_name: RegionInfo
 )
 
 data class RegionInfo(

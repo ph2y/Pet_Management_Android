@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.restapi
+package com.sju18001.petmanagement.restapi.kakaoapi
 
 import retrofit2.Call
 import retrofit2.http.GET

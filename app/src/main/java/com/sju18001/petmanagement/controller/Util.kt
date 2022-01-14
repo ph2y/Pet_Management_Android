@@ -20,7 +20,7 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.restapi.Place
+import com.sju18001.petmanagement.restapi.kakaoapi.Place
 import com.sju18001.petmanagement.restapi.global.FileMetaData
 import okhttp3.ResponseBody
 import org.json.JSONObject
