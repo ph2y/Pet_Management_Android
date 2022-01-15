@@ -186,7 +186,7 @@ class PetScheduleManagerFragment : Fragment() {
         binding.emptyPetScheduleListNotification.visibility = visibility
     }
 
-    fun checkIfAccountHasPet() {
+    private fun checkIfAccountHasPet() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
                 .fetchPetReq(FetchPetReqDto(null, null))
         ServerUtil.enqueueApiCall(call, { isViewDestroyed }, requireContext(), { response ->
