@@ -502,7 +502,7 @@ class PostFragment : Fragment() {
         }, {}, {})
     }
 
-    fun startCreatePostFragment(){
+    private fun startCreatePostFragment(){
         val createUpdatePostActivityIntent = Intent(context, CreateUpdatePostActivity::class.java)
         createUpdatePostActivityIntent.putExtra("fragmentType", "create_post")
 
