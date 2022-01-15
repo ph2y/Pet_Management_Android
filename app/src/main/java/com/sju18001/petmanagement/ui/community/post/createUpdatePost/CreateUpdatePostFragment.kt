@@ -681,7 +681,7 @@ class CreateUpdatePostFragment : Fragment() {
                 createUpdatePostViewModel.deletedPostPhotoData && createUpdatePostViewModel.deletedPostGeneralFileData
     }
 
-    fun verifyAndEnableConfirmButton() {
+    private fun verifyAndEnableConfirmButton() {
         binding.postButton.isEnabled = !(createUpdatePostViewModel.mediaThumbnailList.size == 0
                 && createUpdatePostViewModel.generalFileNameList.size == 0
                 && createUpdatePostViewModel.postEditText.trim().isEmpty())
