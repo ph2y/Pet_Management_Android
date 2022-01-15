@@ -54,11 +54,6 @@ class CreateUpdatePetScheduleFragment : Fragment() {
             activity?.finish()
         }
 
-        // 취소 버튼
-        binding.cancelButton.setOnClickListener {
-            activity?.finish()
-        }
-
         // 확인 버튼
         binding.confirmButton.setOnClickListener {
             val intent = requireActivity().intent
@@ -256,7 +251,6 @@ class CreateUpdatePetScheduleFragment : Fragment() {
     }
 
     private fun lockViews() {
-        binding.cancelButton.isEnabled = false
         binding.confirmButton.isEnabled = false
         binding.timePicker.isEnabled = false
         binding.petNameListRecyclerView.isEnabled = false
@@ -271,7 +265,6 @@ class CreateUpdatePetScheduleFragment : Fragment() {
     }
 
     private fun unlockViews() {
-        binding.cancelButton.isEnabled = true
         binding.confirmButton.isEnabled = true
         binding.timePicker.isEnabled = true
         binding.petNameListRecyclerView.isEnabled = true

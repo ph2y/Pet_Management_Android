@@ -375,7 +375,7 @@
                 android:layout_height="match_parent"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:text="@string/post_button"
+                android:text="@string/complete"
                 android:textSize="18sp"
                 app:cornerRadius="0dp"
                 android:enabled="false"/>

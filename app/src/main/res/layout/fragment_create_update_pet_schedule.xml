@@ -142,30 +142,16 @@
         app:layout_constraintStart_toStartOf="parent"
         >
         <Button
-            android:id="@+id/cancel_button"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:text="@string/cancel"
-            android:textSize="18sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/confirm_button"
-            app:cornerRadius="0dp"
-            />
-
-        <Button
             android:id="@+id/confirm_button"
             android:layout_width="0dp"
             android:layout_height="match_parent"
             android:insetTop="0dp"
             android:insetBottom="0dp"
-            android:text="@string/confirm"
+            android:text="@string/complete"
             android:textSize="18sp"
             android:enabled="false"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toEndOf="@id/cancel_button"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:cornerRadius="0dp"
             />
