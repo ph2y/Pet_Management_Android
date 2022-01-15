@@ -603,7 +603,7 @@ class CreateUpdatePostFragment : Fragment() {
         binding.attachmentButtonsLayout.visibility = View.VISIBLE
         binding.createUpdatePostMainScrollView.visibility = View.VISIBLE
         binding.postDataLoadingLayout.visibility = View.GONE
-        binding.postButton.isEnabled = true
+        verifyAndEnableConfirmButton()
     }
 
     private fun lockViews() {
@@ -686,6 +686,7 @@ class CreateUpdatePostFragment : Fragment() {
                 && createUpdatePostViewModel.generalFileNameList.size == 0
                 && createUpdatePostViewModel.postEditText.trim().isEmpty())
                 && createUpdatePostViewModel.selectedPetId != null
+                && binding.postDataLoadingLayout.visibility == View.GONE
     }
 
     private fun createPost() {
