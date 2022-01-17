@@ -1,12 +1,17 @@
 package com.sju18001.petmanagement.ui.myPet.petScheduleManager
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.work.*
 import com.google.firebase.messaging.NotificationParams
 import com.google.firebase.messaging.RemoteMessage
+import com.sju18001.petmanagement.controller.AlarmBroadcastReceiver
 import com.sju18001.petmanagement.restapi.dao.FcmMessage
 import com.sju18001.petmanagement.restapi.dao.Notification
 import com.sju18001.petmanagement.restapi.fcm.FcmRetrofitBuilder
@@ -17,46 +22,66 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.time.Duration
 import java.time.LocalTime
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 class PetScheduleNotification {
     companion object{
-        @RequiresApi(Build.VERSION_CODES.O)
-        fun enqueueNotificationWorkManager(context: Context, time: String, memo: String?) {
-            // Get time difference in Minutes
-            // 가령, 현재 시간이 12시이고, time이 13시이면 minDiff는 60입니다.
-            // 즉, minDiff분 뒤에 Notification을 시작합니다.
-            val now = LocalTime.now()
-            val parsedTime = LocalTime.parse(time)
+        fun setAlarmManagerRepeating(context: Context, id: Long, time: String, petIdList: String?, memo: String?) {
+            // time format: 'hh:mm:ss'
+            val hour = Integer.parseInt(time.substring(0, 2))
+            val minute = Integer.parseInt(time.substring(3, 5))
 
-            var minDiff = Duration.between(now, parsedTime).toMinutes()
-            if(minDiff < 0){
-                minDiff += 60 * 24
+            val calendar = Calendar.getInstance().apply {
+                timeInMillis = System.currentTimeMillis()
+                set(Calendar.HOUR_OF_DAY, hour)
+                set(Calendar.MINUTE, minute)
+
+                // 이미 지났을 경우
+                if(before(Calendar.getInstance())){
+                    add(Calendar.DATE, 1)
+                }
             }
 
-            // Build WorkRequest
-            val notificationWorkRequest: PeriodicWorkRequest =
-                PeriodicWorkRequestBuilder<PetScheduleWorker>(24, TimeUnit.HOURS)
-                    .setInitialDelay(minDiff, TimeUnit.MINUTES)
-                    .setInputData(workDataOf("MEMO" to memo))
-                    .build()
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val intent = Intent(context, AlarmBroadcastReceiver::class.java).apply {
+                action = Intent.ACTION_SEND
+                // title, text를 전달
+                putExtra("title", petIdList)
+                putExtra("text", memo)
+            }
+            val alarmIntent = PendingIntent.getBroadcast(
+                context,
+                id.toInt(), // id로 알람을 구분한다.
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT
+            )
 
-            // Enqueue the work
-            WorkManager.getInstance(context).enqueueUniquePeriodicWork(
-                time,
-                ExistingPeriodicWorkPolicy.KEEP,
-                notificationWorkRequest
+            // 예약
+            alarmManager.setRepeating(
+                AlarmManager.RTC_WAKEUP,
+                calendar.timeInMillis,
+                AlarmManager.INTERVAL_DAY,
+                alarmIntent
             )
         }
 
-        fun cancelNotificationWorkManager(context:Context, time: String?) {
-            time?.let{
-                WorkManager.getInstance(context).cancelAllWorkByTag(it)
+        fun cancelAlarmManagerRepeating(context: Context, id: Long) {
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+            val intent = Intent(context, AlarmBroadcastReceiver::class.java).apply {
+                action = Intent.ACTION_DELETE
             }
-        }
+            val alarmIntent = PendingIntent.getBroadcast(
+                context,
+                id.toInt(), // id로 알람을 구분한다.
+                intent,
+                PendingIntent.FLAG_CANCEL_CURRENT
+            )
 
-        fun cancelAllWorkManager(context:Context) {
-            WorkManager.getInstance(context).cancelAllWork()
+            // 취소
+            if (alarmIntent != null && alarmManager != null) {
+                alarmManager.cancel(alarmIntent)
+            }
         }
     }
 }

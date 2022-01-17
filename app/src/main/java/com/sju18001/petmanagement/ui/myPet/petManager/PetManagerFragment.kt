@@ -26,6 +26,7 @@ import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.FetchPetReqDto
 import com.sju18001.petmanagement.ui.myPet.MyPetActivity
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
+import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification
 import java.lang.reflect.Type
 import kotlin.properties.Delegates
 
@@ -118,6 +119,10 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
                 myPetViewModel.addPetNameForId(it.id, it.name)
             }
 
+            // sync에 필요한 petNameForId에 값이 들어갔으므로
+            synchronizeAlarmManager()
+
+
             // if RecyclerView items not yet added
             if(adapter.itemCount == 1) {
                 updatePetListOrder(petListApi)
@@ -137,6 +142,27 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
             CustomProgressBar.removeProgressBar(binding.fragmentPetPetManagerParentLayout)
         }, { CustomProgressBar.removeProgressBar(binding.fragmentPetPetManagerParentLayout) },
             { CustomProgressBar.removeProgressBar(binding.fragmentPetPetManagerParentLayout) })
+    }
+
+    private fun synchronizeAlarmManager() {
+        // TODO: Cancel all
+
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .fetchPetScheduleReq(ServerUtil.getEmptyBody())
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            // ON인 것들에 대해 알림 설정
+            response.body()?.petScheduleList?.map{
+                if(it.enabled){
+                    PetScheduleNotification.setAlarmManagerRepeating(
+                        requireContext(),
+                        it.id,
+                        it.time,
+                        Util.getPetNamesFromPetIdList(myPetViewModel.petNameForId, it.petIdList),
+                        it.memo
+                    )
+                }
+            }
+        }, {}, {})
     }
 
     private fun updatePetListOrder(apiResponse: ArrayList<Pet>) {

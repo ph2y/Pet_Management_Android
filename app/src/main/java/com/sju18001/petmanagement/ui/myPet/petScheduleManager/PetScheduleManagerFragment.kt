@@ -96,7 +96,6 @@ class PetScheduleManagerFragment : Fragment() {
                     .putExtra("id", data.id)
                     .putExtra("petIdList", data.petIdList)
                     .putExtra("time", data.time)
-                    .putExtra("originalTime", data.time)
                     .putExtra("memo", data.memo)
                     .putExtra("enabled", data.enabled)
                 startActivity(myPetActivityIntent)
@@ -108,8 +107,10 @@ class PetScheduleManagerFragment : Fragment() {
                 builder.setMessage("일정을 삭제하시겠습니까?")
                     .setPositiveButton(
                         R.string.confirm, DialogInterface.OnClickListener { _, _ ->
-                            // TODO: FCM 삭제
-                            // PetScheduleNotification.cancelNotificationWorkManager(requireContext(), item.time)
+                            PetScheduleNotification.cancelAlarmManagerRepeating(
+                                requireContext(),
+                                item.id
+                            )
                             deletePetSchedule(item.id)
 
                             adapter.removeItem(position)

@@ -71,13 +71,19 @@ class CreateUpdatePetScheduleFragment : Fragment() {
             }else{
                 val enabled = intent.getBooleanExtra("enabled", false)
                 if(enabled){
-                    // TODO: 기존 FCM 삭제 및 생성
-                    /* TODO: Replace here
-                    PetScheduleNotification.cancelNotificationWorkManager(requireContext(), intent.getStringExtra("originalTime"))
-                    PetScheduleNotification.enqueueNotificationWorkManager(requireContext(),
+                    // 알람 업데이트: 삭제 -> 등록
+                    PetScheduleNotification.cancelAlarmManagerRepeating(
+                        requireContext(),
+                        intent.getLongExtra("id", -1)
+                    )
+
+                    PetScheduleNotification.setAlarmManagerRepeating(
+                        requireContext(),
+                        intent.getLongExtra("id", -1),
                         LocalTime.of(binding.timePicker.hour, binding.timePicker.minute).toString()+":00",
+                        getCheckedPetIdList(),
                         binding.memoEditText.text.toString()
-                    )*/
+                    )
                 }
                 updatePetSchedule(intent.getLongExtra("id", 0), enabled)
             }
