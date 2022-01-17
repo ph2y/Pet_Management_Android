@@ -58,20 +58,5 @@ class PetScheduleNotification {
         fun cancelAllWorkManager(context:Context) {
             WorkManager.getInstance(context).cancelAllWork()
         }
-
-        fun sendFcmMessage(notification: Notification) {
-            FcmUtil.getFirebaseMessagingToken { token ->
-                val body = FcmMessage(token, notification)
-                FcmRetrofitBuilder.api.sendNotification(body)
-                    ?.enqueue(object: Callback<ResponseBody?> {
-                        override fun onResponse(
-                            call: Call<ResponseBody?>,
-                            response: Response<ResponseBody?>
-                        ) {}
-
-                        override fun onFailure(call: Call<ResponseBody?>, t: Throwable) {}
-                    })
-            }
-        }
     }
 }

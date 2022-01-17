@@ -205,6 +205,7 @@ class MainActivity : AppCompatActivity() {
             false
         }
 
+        synchronizeNotificationWorkManager()
         FcmUtil.getFirebaseMessagingToken {}
     }
 
@@ -289,4 +290,20 @@ class MainActivity : AppCompatActivity() {
             fragmentManager.beginTransaction().add(R.id.nav_host_fragment_activity_main, fragment, tag).commitNow()
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun synchronizeNotificationWorkManager() {
+        PetScheduleNotification.cancelAllWorkManager(applicationContext)
+
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
+            .fetchPetScheduleReq(ServerUtil.getEmptyBody())
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, this, { response ->
+            // ON인 것들에 대해 알림 설정
+            response.body()?.petScheduleList?.map{
+                if(it.enabled){
+                    PetScheduleNotification.enqueueNotificationWorkManager(applicationContext, it.time, it.memo)
+                }
+            }
+        }, {}, {})
+    }
+
 }
