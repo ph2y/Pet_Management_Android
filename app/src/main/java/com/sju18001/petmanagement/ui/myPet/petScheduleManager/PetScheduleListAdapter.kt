@@ -75,18 +75,10 @@ class PetScheduleListAdapter(private var dataSet: ArrayList<PetSchedule>, privat
 
             if(isChecked){
                 // Notification ON
-                // PetScheduleNotification.enqueueNotificationWorkManager(petScheduleListAdapterInterface.getContext(), dataSet[position].time, dataSet[position].memo)
-
-                PetScheduleNotification.sendFcmMessage(
-                    Notification(
-                        getPetNamesFromPetIdList(dataSet[position].petIdList),
-                        dataSet[position].memo
-                    )
-                )
+                PetScheduleNotification.enqueueNotificationWorkManager(petScheduleListAdapterInterface.getContext(), dataSet[position].time, dataSet[position].memo)
             }else{
                 // Notification OFF
-                // TODO: FCM 삭제
-                // PetScheduleNotification.cancelNotificationWorkManager(petScheduleListAdapterInterface.getContext(), dataSet[position].time)
+                PetScheduleNotification.cancelNotificationWorkManager(petScheduleListAdapterInterface.getContext(), dataSet[position].time)
             }
         }
     }
