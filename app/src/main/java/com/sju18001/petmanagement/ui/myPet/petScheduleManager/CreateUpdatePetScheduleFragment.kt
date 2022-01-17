@@ -2,6 +2,7 @@ package com.sju18001.petmanagement.ui.myPet.petScheduleManager
 
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +29,7 @@ class CreateUpdatePetScheduleFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val myPetViewModel: MyPetViewModel by activityViewModels()
+    private var petNameForId = HashMap<Long, String>()
 
     // 리싸이클러뷰
     private lateinit var adapter: PetNameListAdapter
@@ -81,7 +83,7 @@ class CreateUpdatePetScheduleFragment : Fragment() {
                         requireContext(),
                         intent.getLongExtra("id", -1),
                         LocalTime.of(binding.timePicker.hour, binding.timePicker.minute).toString()+":00",
-                        getCheckedPetIdList(),
+                        Util.getPetNamesFromPetIdList(petNameForId, getCheckedPetIdList()),
                         binding.memoEditText.text.toString()
                     )
                 }
@@ -165,12 +167,12 @@ class CreateUpdatePetScheduleFragment : Fragment() {
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             response.body()?.petList?.map {
                 adapter.addItem(PetNameListItem(it.name, it.id))
+                petNameForId[it.id] = it.name
             }
             adapter.notifyDataSetChanged()
 
             // isPetChecked 초기화 로직
             if(!isSameLengthWithAdapter(myPetViewModel.isPetChecked)) {
-
                 // false 배열로 초기화
                 myPetViewModel.isPetChecked = Array(adapter.itemCount) { false }
 
@@ -244,7 +246,7 @@ class CreateUpdatePetScheduleFragment : Fragment() {
     private fun getCheckedPetIdList(): String{
         var checkedPetIdList = ""
 
-        myPetViewModel.isPetChecked?.let{
+        myPetViewModel.isPetChecked?.let {
             for(i in it.indices){
                 if(it[i]){
                     checkedPetIdList += "${adapter.getItem(i).id},"

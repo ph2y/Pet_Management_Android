@@ -77,10 +77,19 @@ class PetScheduleListAdapter(private var dataSet: ArrayList<PetSchedule>, privat
 
             if(isChecked){
                 // Notification ON
-                PetScheduleNotification.setAlarmManagerRepeating(petScheduleListAdapterInterface.getContext(), dataSet[position].id, dataSet[position].time, holder.petListTextView.text.toString(), dataSet[position].memo)
+                PetScheduleNotification.setAlarmManagerRepeating(
+                    petScheduleListAdapterInterface.getContext(),
+                    dataSet[position].id,
+                    dataSet[position].time,
+                    Util.getPetNamesFromPetIdList(petNameForId, dataSet[position].petIdList),
+                    dataSet[position].memo
+                )
             }else{
                 // Notification OFF
-                PetScheduleNotification.cancelAlarmManagerRepeating(petScheduleListAdapterInterface.getContext(), dataSet[position].id)
+                PetScheduleNotification.cancelAlarmManagerRepeating(
+                    petScheduleListAdapterInterface.getContext(),
+                    dataSet[position].id
+                )
             }
         }
     }

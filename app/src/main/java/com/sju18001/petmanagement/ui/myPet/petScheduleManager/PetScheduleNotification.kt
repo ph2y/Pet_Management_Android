@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit
 
 class PetScheduleNotification {
     companion object{
-        fun setAlarmManagerRepeating(context: Context, id: Long, time: String, petIdList: String?, memo: String?) {
+        fun setAlarmManagerRepeating(context: Context, id: Long, time: String, petNames: String?, memo: String?) {
             // time format: 'hh:mm:ss'
             val hour = Integer.parseInt(time.substring(0, 2))
             val minute = Integer.parseInt(time.substring(3, 5))
@@ -47,7 +47,7 @@ class PetScheduleNotification {
             val intent = Intent(context, AlarmBroadcastReceiver::class.java).apply {
                 action = Intent.ACTION_SEND
                 // title, text를 전달
-                putExtra("title", petIdList)
+                putExtra("title", petNames)
                 putExtra("text", memo)
             }
             val alarmIntent = PendingIntent.getBroadcast(
