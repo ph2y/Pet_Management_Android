@@ -4,27 +4,9 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.os.Build
-import android.os.Bundle
-import android.util.Log
-import androidx.annotation.RequiresApi
-import androidx.work.*
-import com.google.firebase.messaging.NotificationParams
-import com.google.firebase.messaging.RemoteMessage
 import com.sju18001.petmanagement.controller.AlarmBroadcastReceiver
 import com.sju18001.petmanagement.controller.SessionManager
-import com.sju18001.petmanagement.restapi.dao.FcmMessage
-import com.sju18001.petmanagement.restapi.dao.Notification
-import com.sju18001.petmanagement.restapi.fcm.FcmRetrofitBuilder
-import com.sju18001.petmanagement.restapi.fcm.FcmUtil
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.time.Duration
-import java.time.LocalTime
 import java.util.*
-import java.util.concurrent.TimeUnit
 
 class PetScheduleNotification {
     companion object{
