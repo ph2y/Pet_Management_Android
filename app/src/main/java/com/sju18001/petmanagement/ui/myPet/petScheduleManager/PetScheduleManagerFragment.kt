@@ -101,7 +101,7 @@ class PetScheduleManagerFragment : Fragment() {
                     .setPositiveButton(
                         R.string.confirm, DialogInterface.OnClickListener { _, _ ->
                             PetScheduleNotification.cancelAlarmManagerRepeating(
-                                requireContext().applicationContext,
+                                requireContext(),
                                 item.id
                             )
                             deletePetSchedule(item.id)
