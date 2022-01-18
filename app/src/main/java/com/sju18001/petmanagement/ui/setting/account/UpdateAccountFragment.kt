@@ -290,7 +290,8 @@ class UpdateAccountFragment : Fragment() {
             settingViewModel.accountNicknameValue,
             settingViewModel.accountMarketingValue,
             settingViewModel.accountUserMessageValue,
-            settingViewModel.representativePetId
+            settingViewModel.representativePetId,
+            settingViewModel.notification
         )
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
@@ -304,7 +305,7 @@ class UpdateAccountFragment : Fragment() {
                 val account = Account(
                     prevAccount.id, prevAccount.username, settingViewModel.accountEmailValue, settingViewModel.accountPhoneValue,
                     null, settingViewModel.accountMarketingValue, settingViewModel.accountNicknameValue, prevAccount.photoUrl,
-                    settingViewModel.accountUserMessageValue, settingViewModel.representativePetId
+                    settingViewModel.accountUserMessageValue, settingViewModel.representativePetId, settingViewModel.fcmRegistrationToken, settingViewModel.notification
                 )
                 SessionManager.saveLoggedInAccount(requireContext(), account)
             }
@@ -394,7 +395,8 @@ class UpdateAccountFragment : Fragment() {
     }
 
     private fun logout() {
-        // TODO: Account에 등록되어 있는 FCM Token 제거
+        // 현재 계정에 등록된 FCM Registration Token 제거 (null)
+        deleteFcmRegistrationToken()
 
         PetScheduleNotification.cancelAll(requireContext())
         
@@ -421,6 +423,13 @@ class UpdateAccountFragment : Fragment() {
         }, {}, {})
     }
 
+    private fun deleteFcmRegistrationToken() {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!).deleteFcmRegistrationTokenReq(
+            ServerUtil.getEmptyBody()
+        )
+        ServerUtil.enqueueApiCall(call, { isViewDestroyed }, requireContext(), {}, {}, {})
+    }
+
     private fun saveAccountDataForAccountProfile() {
         settingViewModel.loadedFromIntent = true
         settingViewModel.accountEmailValue = requireActivity().intent.getStringExtra("email").toString()
@@ -432,6 +441,9 @@ class UpdateAccountFragment : Fragment() {
             requireContext().getString(R.string.pref_name_byte_arrays),
             requireContext().getString(R.string.data_name_setting_selected_account_photo))
         settingViewModel.representativePetId = requireActivity().intent.getLongExtra("representativePetId", 0)
+        settingViewModel.fcmRegistrationToken = requireActivity().intent.getStringExtra("fcmRegistrationToken")
+        settingViewModel.notification = requireActivity().intent.getBooleanExtra("notification", true)
+
     }
 
     private fun restoreState() {

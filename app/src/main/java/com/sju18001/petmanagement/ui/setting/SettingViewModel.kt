@@ -67,6 +67,16 @@ class SettingViewModel(private val handle: SavedStateHandle) : ViewModel() {
             handle.set("representativePetId", value)
             field = value
         }
+    var fcmRegistrationToken = handle.get<String>("fcmRegistrationToken")?: null
+        set(value){
+            handle.set("fcmRegistrationToken", value)
+            field = value
+        }
+    var notification = handle.get<Boolean>("notification")?: true
+        set(value){
+            handle.set("notification", value)
+            field = value
+        }
     var accountPwValid = handle.get<Boolean>("createAccountPwValid")?: false
         set(value){
             handle.set("createAccountPwValid", value)

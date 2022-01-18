@@ -10,6 +10,7 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.AlarmBroadcastReceiver
+import com.sju18001.petmanagement.controller.SessionManager
 
 class MyFirebaseMessagingService: FirebaseMessagingService() {
     private val TAG = "MyFirebaseMessagingService"
@@ -21,6 +22,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
         // FCM registration token to your app server.
         // sendRegistrationToServer(p0)
         // TODO: 토큰을 서버에 업데이트
+        SessionManager.saveFcmRegistrationToken(applicationContext, p0)
     }
 
     override fun onMessageReceived(p0: RemoteMessage) {

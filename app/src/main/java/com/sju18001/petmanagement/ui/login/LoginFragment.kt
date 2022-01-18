@@ -184,11 +184,17 @@ class LoginFragment : Fragment() {
                 response.body()?.let{
                     // 조회 성공
                     if(response.isSuccessful){
+                        // SessionManager 에 저장된 FcmRegistrationToken 과 비교, 다르면 FcmRegistrationToken 업데이트
+                        var currentFcmRegistrationToken = SessionManager.fetchFcmRegistrationToken(requireContext())!!
+                        if(currentFcmRegistrationToken != it.fcmRegistrationToken) {
+                            updateFcmRegistrationToken(currentFcmRegistrationToken)
+                        }
+
                         // 첫 로그인일 시
                         if(it.nickname == "#"){
                             // nickname => username 변경
                             val call = RetrofitBuilder.getServerApiWithToken(token)
-                                .updateAccountReq(UpdateAccountReqDto(it.email, it.phone, it.username, it.marketing, it.userMessage, it.representativePetId))
+                                .updateAccountReq(UpdateAccountReqDto(it.email, it.phone, it.username, it.marketing, it.userMessage, it.representativePetId, it.notification))
                             ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {}, {}, {})
 
                             // 웰컴 페이지 호출
@@ -196,7 +202,7 @@ class LoginFragment : Fragment() {
                             SessionManager.saveUserToken(requireContext(), token)
                             response.body()?.run{
                                 // nickname에 username을 넣은 것에 유의할 것
-                                val account = Account(id, username, email, phone, null, marketing, username, photoUrl, userMessage, representativePetId)
+                                val account = Account(id, username, email, phone, null, marketing, username, photoUrl, userMessage, representativePetId, currentFcmRegistrationToken, notification)
                                 SessionManager.saveLoggedInAccount(requireContext(), account)
                             }
 
@@ -209,7 +215,7 @@ class LoginFragment : Fragment() {
                             val intent = Intent(context, MainActivity::class.java)
                             SessionManager.saveUserToken(requireContext(), token)
                             response.body()?.run{
-                                val account = Account(id, username, email, phone, null, marketing, nickname, photoUrl, userMessage, representativePetId)
+                                val account = Account(id, username, email, phone, null, marketing, nickname, photoUrl, userMessage, representativePetId, currentFcmRegistrationToken, notification)
                                 SessionManager.saveLoggedInAccount(requireContext(), account)
                             }
 
@@ -232,6 +238,13 @@ class LoginFragment : Fragment() {
                 Log.d("error", t.message.toString())
             }
         })
+    }
+
+    private fun updateFcmRegistrationToken(fcmRegistrationToken: String) {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!).updateFcmRegistrationTokenReq(
+            UpdateFcmRegistrationTokenReqDto(fcmRegistrationToken)
+        )
+        ServerUtil.enqueueApiCall(call, { isViewDestroyed }, requireContext(), {}, {}, {})
     }
 
     private fun lockViews() {
