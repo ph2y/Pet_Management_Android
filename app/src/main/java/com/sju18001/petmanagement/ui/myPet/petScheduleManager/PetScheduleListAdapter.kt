@@ -2,7 +2,6 @@ package com.sju18001.petmanagement.ui.myPet.petScheduleManager
 
 import android.content.Context
 import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +11,6 @@ import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.Util
-import com.sju18001.petmanagement.restapi.dao.Notification
 import com.sju18001.petmanagement.restapi.dao.PetSchedule
 import java.time.LocalTime
 
