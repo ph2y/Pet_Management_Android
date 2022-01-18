@@ -85,7 +85,7 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
                             response.body()?.petScheduleList?.map{
                                 if(it.enabled){
                                     PetScheduleNotification.setAlarmManagerRepeating(
-                                        context.applicationContext,
+                                        context,
                                         it.id,
                                         it.time,
                                         Util.getPetNamesFromPetIdList(petNameForId, it.petIdList),

@@ -66,12 +66,12 @@ class CreateUpdatePetScheduleFragment : Fragment() {
                 if(enabled){
                     // 알람 업데이트: 삭제 -> 등록
                     PetScheduleNotification.cancelAlarmManagerRepeating(
-                        requireContext().applicationContext,
+                        requireContext(),
                         intent.getLongExtra("id", -1)
                     )
 
                     PetScheduleNotification.setAlarmManagerRepeating(
-                        requireContext().applicationContext,
+                        requireContext(),
                         intent.getLongExtra("id", -1),
                         LocalTime.of(binding.timePicker.hour, binding.timePicker.minute).toString()+":00",
                         Util.getPetNamesFromPetIdList(petNameForId, getCheckedPetIdList()),

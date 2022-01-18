@@ -140,7 +140,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
     }
 
     private fun synchronizeAlarmManager() {
-        cancelAll(requireContext().applicationContext)
+        cancelAll(requireContext())
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchPetScheduleReq(ServerUtil.getEmptyBody())
@@ -149,7 +149,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
             response.body()?.petScheduleList?.map{
                 if(it.enabled){
                     PetScheduleNotification.setAlarmManagerRepeating(
-                        requireContext().applicationContext,
+                        requireContext(),
                         it.id,
                         it.time,
                         Util.getPetNamesFromPetIdList(myPetViewModel.petNameForId, it.petIdList),

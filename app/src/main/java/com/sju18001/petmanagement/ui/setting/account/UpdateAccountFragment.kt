@@ -396,7 +396,7 @@ class UpdateAccountFragment : Fragment() {
     private fun logout() {
         // TODO: Account에 등록되어 있는 FCM Token 제거
 
-        PetScheduleNotification.cancelAll(requireContext().applicationContext)
+        PetScheduleNotification.cancelAll(requireContext())
         
         // remove user token in SessionManager
         SessionManager.removeUserToken(requireContext())

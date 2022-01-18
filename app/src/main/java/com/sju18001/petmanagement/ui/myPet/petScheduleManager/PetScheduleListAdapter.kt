@@ -78,7 +78,7 @@ class PetScheduleListAdapter(private var dataSet: ArrayList<PetSchedule>, privat
             if(isChecked){
                 // Notification ON
                 PetScheduleNotification.setAlarmManagerRepeating(
-                    petScheduleListAdapterInterface.getContext().applicationContext,
+                    petScheduleListAdapterInterface.getContext(),
                     dataSet[position].id,
                     dataSet[position].time,
                     Util.getPetNamesFromPetIdList(petNameForId, dataSet[position].petIdList),
@@ -87,7 +87,7 @@ class PetScheduleListAdapter(private var dataSet: ArrayList<PetSchedule>, privat
             }else{
                 // Notification OFF
                 PetScheduleNotification.cancelAlarmManagerRepeating(
-                    petScheduleListAdapterInterface.getContext().applicationContext,
+                    petScheduleListAdapterInterface.getContext(),
                     dataSet[position].id
                 )
             }
