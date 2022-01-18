@@ -10,5 +10,7 @@ data class Account(
     val nickname: String?,
     var photoUrl: String?,
     val userMessage: String?,
-    val representativePetId: Long?
+    val representativePetId: Long?,
+    val fcmRegistrationToken: String? = null,
+    val notification: Boolean?
 )

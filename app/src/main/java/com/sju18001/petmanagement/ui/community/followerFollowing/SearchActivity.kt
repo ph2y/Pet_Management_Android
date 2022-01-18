@@ -122,7 +122,7 @@ class SearchActivity : AppCompatActivity() {
             CommunityUtil.fetchRepresentativePetAndStartPetProfile(this, Account(
                 fetchAccountResDto.id, fetchAccountResDto.username, fetchAccountResDto.email, fetchAccountResDto.phone,
                 "", fetchAccountResDto.marketing, fetchAccountResDto.nickname, fetchAccountResDto.photoUrl,
-                fetchAccountResDto.userMessage, fetchAccountResDto.representativePetId), isViewDestroyed
+                fetchAccountResDto.userMessage, fetchAccountResDto.representativePetId, fetchAccountResDto.fcmRegistrationToken, fetchAccountResDto.notification), isViewDestroyed
             )
         }
 

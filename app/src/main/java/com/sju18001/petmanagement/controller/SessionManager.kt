@@ -7,9 +7,29 @@ import com.sju18001.petmanagement.restapi.dao.Account
 
 class SessionManager {
     companion object {
+        private const val FCM = "FCM"
         private const val TOKEN = "TOKEN"
         private const val ACCOUNT = "ACCOUNT"
         private const val ALARM_MANAGER = "ALARM_MANAGER"
+
+        fun saveFcmRegistrationToken(context:Context, token: String) {
+            val prefs = context.getSharedPreferences(context.getString(R.string.user_session), Context.MODE_PRIVATE)
+            val editor = prefs.edit()
+            editor.putString(FCM, token)
+            editor.apply()
+        }
+
+        fun fetchFcmRegistrationToken(context:Context): String? {
+            val prefs = context.getSharedPreferences(context.getString(R.string.user_session), Context.MODE_PRIVATE)
+            return prefs.getString(FCM, null)
+        }
+
+        fun removeFcmRegistrationToken(context:Context) {
+            val prefs = context.getSharedPreferences(context.getString(R.string.user_session), Context.MODE_PRIVATE)
+            val editor = prefs.edit()
+            editor.remove(FCM)
+            editor.apply()
+        }
 
         fun saveUserToken(context:Context, token: String) {
             val prefs = context.getSharedPreferences(context.getString(R.string.user_session), Context.MODE_PRIVATE)

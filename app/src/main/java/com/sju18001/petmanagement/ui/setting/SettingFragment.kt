@@ -59,6 +59,8 @@ class SettingFragment : Fragment() {
             accountLookupIntent.putExtra("nickname", accountData.nickname)
             accountLookupIntent.putExtra("userMessage", accountData.userMessage)
             accountLookupIntent.putExtra("representativePetId", accountData.representativePetId)
+            accountLookupIntent.putExtra("fcmRegistrationToken", accountData.fcmRegistrationToken)
+            accountLookupIntent.putExtra("notification", accountData.notification)
 
             if(accountData.photoUrl != null) {
                 Util.saveByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),

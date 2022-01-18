@@ -29,6 +29,16 @@ interface ServerApi {
     @POST("api/account/delete")
     fun deleteAccountReq(@Body body: RequestBody): Call<DeleteAccountResDto>
 
+    // Account FCM Registration Token API
+    @POST("api/account/fcm/fetch")
+    fun fetchFcmRegistrationTokenReq(@Body body: RequestBody): Call<FetchFcmRegistrationTokenResDto>
+
+    @POST("api/account/fcm/update")
+    fun updateFcmRegistrationTokenReq(@Body updateFcmRegistrationTokenReqDto: UpdateFcmRegistrationTokenReqDto): Call<UpdateFcmRegistrationTokenResDto>
+
+    @POST("api/account/fcm/delete")
+    fun deleteFcmRegistrationTokenReq(@Body body: RequestBody): Call<DeleteFcmRegistrationTokenResDto>
+
     // Account Photo API
     @POST("api/account/photo/fetch")
     fun fetchAccountPhotoReq(@Body fetchAccountPhotoReqDto: FetchAccountPhotoReqDto): Call<ResponseBody>

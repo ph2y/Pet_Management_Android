@@ -415,7 +415,8 @@ class PetProfileFragment : Fragment(){
             accountData.nickname,
             accountData.marketing,
             accountData.userMessage,
-            myPetViewModel.petIdValue
+            myPetViewModel.petIdValue,
+            accountData.notification
         )
 
         // update account
@@ -426,7 +427,7 @@ class PetProfileFragment : Fragment(){
                 // update session(update representative pet id value)
                 val account = Account(
                     accountData.id, accountData.username, accountData.email, accountData.phone, accountData.password,
-                    accountData.marketing, accountData.nickname, accountData.photoUrl, accountData.userMessage, myPetViewModel.petIdValue
+                    accountData.marketing, accountData.nickname, accountData.photoUrl, accountData.userMessage, myPetViewModel.petIdValue, accountData.fcmRegistrationToken, accountData.notification
                 )
                 SessionManager.saveLoggedInAccount(requireContext(), account)
 

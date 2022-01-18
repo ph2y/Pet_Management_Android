@@ -19,7 +19,8 @@ data class CreateAccountReqDto (
     val phone: String,
     val nickname: String?,
     val marketing: Boolean,
-    val userMessage: String?
+    val userMessage: String?,
+    val notification: Boolean
 )
 
 data class CreateAccountResDto (
@@ -63,7 +64,14 @@ data class FetchAccountResDto(
     val nickname: String?,
     val photoUrl: String?,
     val userMessage: String?,
-    val representativePetId: Long?
+    val representativePetId: Long?,
+    val fcmRegistrationToken: String?,
+    val notification: Boolean
+)
+
+data class FetchFcmRegistrationTokenResDto(
+    val _metadata: DtoMetadata,
+    val fcmRegistrationToken: String?
 )
 
 data class UpdateAccountReqDto(
@@ -72,10 +80,19 @@ data class UpdateAccountReqDto(
     val nickname: String?,
     val marketing: Boolean?,
     val userMessage: String?,
-    val representativePetId: Long?
+    val representativePetId: Long?,
+    val notification: Boolean?
+)
+
+data class UpdateFcmRegistrationTokenReqDto(
+    val fcmRegistrationToken: String?
 )
 
 data class UpdateAccountResDto(
+    val _metadata: DtoMetadata
+)
+
+data class UpdateFcmRegistrationTokenResDto(
     val _metadata: DtoMetadata
 )
 
@@ -115,6 +132,10 @@ data class DeleteAccountResDto(
     val _metadata: DtoMetadata
 )
 
+data class DeleteFcmRegistrationTokenResDto(
+    val _metadata: DtoMetadata
+)
+
 data class DeleteAccountPhotoResDto (
     val _metadata: DtoMetadata
-        )
+)
