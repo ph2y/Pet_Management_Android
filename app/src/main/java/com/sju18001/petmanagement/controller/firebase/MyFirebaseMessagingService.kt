@@ -9,7 +9,7 @@ import androidx.core.app.NotificationManagerCompat
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleWorker
+import com.sju18001.petmanagement.controller.AlarmBroadcastReceiver
 
 class MyFirebaseMessagingService: FirebaseMessagingService() {
     private val TAG = "MyFirebaseMessagingService"
@@ -55,7 +55,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
 
     private fun sendNotification(notification: RemoteMessage.Notification?) {
         // 알림 채널
-        val channel = NotificationChannel(PetScheduleWorker.CHANNEL_ID, PetScheduleWorker.CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
+        val channel = NotificationChannel(AlarmBroadcastReceiver.CHANNEL_ID, AlarmBroadcastReceiver.CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH)
         channel.description = "반려동물의 일정 알림 기능입니다."
 
         // 채널 등록
@@ -63,7 +63,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
         notificationManager.createNotificationChannel(channel)
 
         // 알림 빌드
-        val builder = NotificationCompat.Builder(applicationContext, PetScheduleWorker.CHANNEL_ID)
+        val builder = NotificationCompat.Builder(applicationContext, AlarmBroadcastReceiver.CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_baseline_pets_24)
             .setContentTitle(notification?.title)
             .setContentText(notification?.body)
@@ -72,7 +72,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
 
         // 알림 띄우기
         with(NotificationManagerCompat.from(applicationContext)){
-            notify(PetScheduleWorker.NOTIFICATION_ID, builder.build())
+            notify(AlarmBroadcastReceiver.NOTIFICATION_ID, builder.build())
         }
     }
 }

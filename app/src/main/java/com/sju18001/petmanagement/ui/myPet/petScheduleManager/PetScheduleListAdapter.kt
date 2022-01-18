@@ -2,6 +2,7 @@ package com.sju18001.petmanagement.ui.myPet.petScheduleManager
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import android.widget.TextView
 import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
+import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.restapi.dao.Notification
 import com.sju18001.petmanagement.restapi.dao.PetSchedule
 import java.time.LocalTime
@@ -75,10 +77,10 @@ class PetScheduleListAdapter(private var dataSet: ArrayList<PetSchedule>, privat
 
             if(isChecked){
                 // Notification ON
-                PetScheduleNotification.enqueueNotificationWorkManager(petScheduleListAdapterInterface.getContext(), dataSet[position].time, dataSet[position].memo)
+                PetScheduleNotification.setAlarmManagerRepeating(petScheduleListAdapterInterface.getContext(), dataSet[position].id, dataSet[position].time, holder.petListTextView.text.toString(), dataSet[position].memo)
             }else{
                 // Notification OFF
-                PetScheduleNotification.cancelNotificationWorkManager(petScheduleListAdapterInterface.getContext(), dataSet[position].time)
+                PetScheduleNotification.cancelAlarmManagerRepeating(petScheduleListAdapterInterface.getContext(), dataSet[position].id)
             }
         }
     }
@@ -89,30 +91,8 @@ class PetScheduleListAdapter(private var dataSet: ArrayList<PetSchedule>, privat
         holder.noonTextView.text = if(localTime.hour <= 12) "오전" else "오후"
         holder.timeTextView.text = localTime.hour.toString().padStart(2, '0') + ":" + localTime.minute.toString().padStart(2, '0')
         holder.enabledSwitch.isChecked = data.enabled!!
-        holder.petListTextView.text = getPetNamesFromPetIdList(data.petIdList)
+        holder.petListTextView.text = Util.getPetNamesFromPetIdList(petNameForId, data.petIdList)
         holder.memoTextView.text = data.memo
-    }
-
-    private fun getPetNamesFromPetIdList(petIdList: String?): String{
-        if(petIdList.isNullOrEmpty()) return ""
-
-        var petNames = ""
-        val petIdListOfString: List<String> = petIdList.replace(" ", "").split(",")
-
-        // "이름, 이름, " 식으로 String 추가함
-        for(id in petIdListOfString) {
-            id.toLongOrNull()?.let{
-                petNames += petNameForId[it] ?: id
-                petNames += ", "
-            }
-        }
-        
-        // ", " 제거
-        if(petNames.length >= 2){
-            petNames = petNames.dropLast(2)
-        }
-
-        return petNames
     }
 
     fun removeItem(index: Int){

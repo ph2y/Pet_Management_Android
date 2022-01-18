@@ -20,6 +20,9 @@
         android:roundIcon="@mipmap/ic_app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PetManagement">
+        <receiver android:name=".controller.AlarmBroadcastReceiver"
+            android:exported="false"
+            android:enabled="true"/>
 
         <activity android:name=".ui.community.post.generalFiles.GeneralFilesActivity"
             android:theme="@style/Theme.AppCompat.DayNight.Dialog" />

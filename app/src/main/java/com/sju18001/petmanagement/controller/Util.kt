@@ -363,5 +363,27 @@ class Util {
 
             return false
         }
+
+        fun getPetNamesFromPetIdList(petNameForId: HashMap<Long, String>, petIdList: String?): String {
+            if(petIdList.isNullOrEmpty()) return ""
+
+            var petNames = ""
+            val petIdListOfString: List<String> = petIdList.replace(" ", "").split(",")
+
+            // "이름, 이름, " 식으로 String 추가함
+            for(id in petIdListOfString) {
+                id.toLongOrNull()?.let{
+                    petNames += petNameForId[it] ?: id
+                    petNames += ", "
+                }
+            }
+
+            // ", " 제거
+            if(petNames.length >= 2){
+                petNames = petNames.dropLast(2)
+            }
+
+            return petNames
+        }
     }
 }
