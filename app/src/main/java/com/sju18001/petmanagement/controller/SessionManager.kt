@@ -1,8 +1,6 @@
-package com.sju18001.petmanagement.restapi
+package com.sju18001.petmanagement.controller
 
 import android.content.Context
-import android.content.SharedPreferences
-import android.util.Log
 import com.google.gson.Gson
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.restapi.dao.Account
@@ -11,6 +9,7 @@ class SessionManager {
     companion object {
         private const val TOKEN = "TOKEN"
         private const val ACCOUNT = "ACCOUNT"
+        private const val ALARM_MANAGER = "ALARM_MANAGER"
 
         fun saveUserToken(context:Context, token: String) {
             val prefs = context.getSharedPreferences(context.getString(R.string.user_session), Context.MODE_PRIVATE)
@@ -47,6 +46,43 @@ class SessionManager {
             val prefs = context.getSharedPreferences(context.getString(R.string.user_session), Context.MODE_PRIVATE)
             val editor = prefs.edit()
             editor.remove(ACCOUNT)
+            editor.apply()
+        }
+
+
+        // For AlarmManager
+        fun getRequestCodesOfAlarmManager(context: Context): Set<Int> {
+            val res = mutableSetOf<Int>()
+
+            val prefs = context.getSharedPreferences(context.getString(R.string.alarm_manager_session), Context.MODE_PRIVATE)
+            for(requestCode in prefs.getStringSet(ALARM_MANAGER, mutableSetOf())!!){
+                res.add(Integer.parseInt(requestCode))
+            }
+
+            return res
+        }
+
+        fun addRequestCodeOfAlarmManager(context: Context, requestCode: Int) {
+            val prefs = context.getSharedPreferences(context.getString(R.string.alarm_manager_session), Context.MODE_PRIVATE)
+            val editor = prefs.edit()
+
+            val requestCodes = prefs.getStringSet(ALARM_MANAGER, mutableSetOf())?.apply {
+                add(requestCode.toString())
+            }
+
+            editor.putStringSet(ALARM_MANAGER, requestCodes)
+            editor.apply()
+        }
+
+        fun removeRequestCodeOfAlarmManager(context: Context, requestCode: Int) {
+            val prefs = context.getSharedPreferences(context.getString(R.string.alarm_manager_session), Context.MODE_PRIVATE)
+            val editor = prefs.edit()
+
+            val requestCodes = prefs.getStringSet(ALARM_MANAGER, mutableSetOf())?.apply {
+                remove(requestCode.toString())
+            }
+
+            editor.putStringSet(ALARM_MANAGER, requestCodes)
             editor.apply()
         }
     }

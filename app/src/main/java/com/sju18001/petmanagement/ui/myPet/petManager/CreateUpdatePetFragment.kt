@@ -10,7 +10,6 @@ import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +26,7 @@ import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentCreateUpdatePetBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
-import com.sju18001.petmanagement.restapi.SessionManager
+import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
 import okhttp3.MediaType

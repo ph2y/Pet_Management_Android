@@ -3,7 +3,6 @@ package com.sju18001.petmanagement.ui.community.post.createUpdatePost
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
-import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -15,7 +14,6 @@ import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.Window
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -31,7 +29,7 @@ import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentCreateUpdatePostBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
-import com.sju18001.petmanagement.restapi.SessionManager
+import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.restapi.global.FileMetaData
 import com.sju18001.petmanagement.restapi.global.FileType

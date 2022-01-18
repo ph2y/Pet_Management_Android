@@ -6,11 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.media.MediaMetadataRetriever
-import android.media.MediaPlayer
-import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +15,6 @@ import android.widget.VideoView
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -30,7 +25,7 @@ import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentPostBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
-import com.sju18001.petmanagement.restapi.SessionManager
+import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Post
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.community.CommunityViewModel
@@ -38,8 +33,6 @@ import com.sju18001.petmanagement.ui.community.comment.CommentActivity
 import com.sju18001.petmanagement.ui.community.post.createUpdatePost.CreateUpdatePostActivity
 import com.sju18001.petmanagement.ui.community.post.generalFiles.GeneralFilesActivity
 import wseemann.media.FFmpegMediaMetadataRetriever
-import java.io.File
-import java.io.FileOutputStream
 import java.net.URLEncoder
 
 class PostFragment : Fragment() {

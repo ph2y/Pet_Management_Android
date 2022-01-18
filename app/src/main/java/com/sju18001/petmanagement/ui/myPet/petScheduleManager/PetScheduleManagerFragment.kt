@@ -6,7 +6,6 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -17,20 +16,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.CustomProgressBar
-import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentPetScheduleManagerBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
-import com.sju18001.petmanagement.restapi.SessionManager
+import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.PetSchedule
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.myPet.MyPetActivity
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
-import okhttp3.MediaType
-import okhttp3.RequestBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class PetScheduleManagerFragment : Fragment() {
     private var _binding: FragmentPetScheduleManagerBinding? = null
@@ -108,7 +101,7 @@ class PetScheduleManagerFragment : Fragment() {
                     .setPositiveButton(
                         R.string.confirm, DialogInterface.OnClickListener { _, _ ->
                             PetScheduleNotification.cancelAlarmManagerRepeating(
-                                requireContext(),
+                                requireContext().applicationContext,
                                 item.id
                             )
                             deletePetSchedule(item.id)

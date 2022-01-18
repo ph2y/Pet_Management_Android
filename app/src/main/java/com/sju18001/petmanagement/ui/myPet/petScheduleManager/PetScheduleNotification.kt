@@ -12,6 +12,7 @@ import androidx.work.*
 import com.google.firebase.messaging.NotificationParams
 import com.google.firebase.messaging.RemoteMessage
 import com.sju18001.petmanagement.controller.AlarmBroadcastReceiver
+import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.FcmMessage
 import com.sju18001.petmanagement.restapi.dao.Notification
 import com.sju18001.petmanagement.restapi.fcm.FcmRetrofitBuilder
@@ -50,9 +51,10 @@ class PetScheduleNotification {
                 putExtra("title", petNames)
                 putExtra("text", memo)
             }
+            val requestCode = id.toInt() // id로 알람을 구분한다.
             val alarmIntent = PendingIntent.getBroadcast(
                 context,
-                id.toInt(), // id로 알람을 구분한다.
+                requestCode,
                 intent,
                 PendingIntent.FLAG_CANCEL_CURRENT
             )
@@ -64,16 +66,24 @@ class PetScheduleNotification {
                 AlarmManager.INTERVAL_DAY,
                 alarmIntent
             )
+
+
+            // requestCode를 따로 저장하여 관리한다.
+            SessionManager.addRequestCodeOfAlarmManager(context, requestCode)
         }
 
         fun cancelAlarmManagerRepeating(context: Context, id: Long) {
+            cancelAlarmManagerRepeating(context, id.toInt())
+        }
+
+        private fun cancelAlarmManagerRepeating(context: Context, requestCode: Int) {
             val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             val intent = Intent(context, AlarmBroadcastReceiver::class.java).apply {
-                action = Intent.ACTION_DELETE
+                action = Intent.ACTION_SEND
             }
             val alarmIntent = PendingIntent.getBroadcast(
                 context,
-                id.toInt(), // id로 알람을 구분한다.
+                requestCode,
                 intent,
                 PendingIntent.FLAG_CANCEL_CURRENT
             )
@@ -81,6 +91,20 @@ class PetScheduleNotification {
             // 취소
             if (alarmIntent != null && alarmManager != null) {
                 alarmManager.cancel(alarmIntent)
+            }
+
+
+            // 저장되어있던 requestCode를 삭제한다.
+            SessionManager.removeRequestCodeOfAlarmManager(context, requestCode)
+        }
+
+        /*
+         * SessionManager에 저장된 request code들을 참조하여, 등록되어 있는
+         * 알람들을 모두 cancel합니다.
+         */
+        fun cancelAll(context: Context) {
+            for(requestCode in SessionManager.getRequestCodesOfAlarmManager(context)) {
+                cancelAlarmManagerRepeating(context, requestCode)
             }
         }
     }
