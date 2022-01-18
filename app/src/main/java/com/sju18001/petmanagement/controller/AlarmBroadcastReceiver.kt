@@ -6,16 +6,13 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.SplashActivity
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
-import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.FetchPetReqDto
-import com.sju18001.petmanagement.ui.login.LoginActivity
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification
 import java.util.HashMap
 
@@ -68,21 +65,21 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
                      */
 
                     // Fetch pet
-                    val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(context)!!)
+                    val fetchPetCall = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(context)!!)
                         .fetchPetReq(FetchPetReqDto( null , null))
-                    ServerUtil.enqueueApiCall(call, {false}, context, { response ->
+                    ServerUtil.enqueueApiCall(fetchPetCall, {false}, context, { petResponse ->
                         // Set petNameForId
                         val petNameForId = HashMap<Long, String>()
-                        response.body()?.petList?.map {
+                        petResponse.body()?.petList?.map {
                             petNameForId[it.id] = it.name
                         }
 
                         // Fetch pet schedule and Add the schedules to alarm manager
-                        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(context)!!)
+                        val fetchPetScheduleCall = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(context)!!)
                             .fetchPetScheduleReq(ServerUtil.getEmptyBody())
-                        ServerUtil.enqueueApiCall(call, {false}, context, { response ->
+                        ServerUtil.enqueueApiCall(fetchPetScheduleCall, {false}, context, { petScheduleResponse ->
                             // ON인 것들에 대해 알림 설정
-                            response.body()?.petScheduleList?.map{
+                            petScheduleResponse.body()?.petScheduleList?.map{
                                 if(it.enabled){
                                     PetScheduleNotification.setAlarmManagerRepeating(
                                         context,
