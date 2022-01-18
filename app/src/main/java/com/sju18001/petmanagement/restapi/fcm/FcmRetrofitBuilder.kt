@@ -9,7 +9,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class FcmRetrofitBuilder {
     companion object {
         private const val BASE_URL = "https://fcm.googleapis.com"
-        private const val FCM_KEY = "AAAAJIaMoyg:APA91bE_ck5C5RQbNX12lS0c6p7aUhbmDHs99Xc8c4s5O-s7PepwhCxxsII1t2muMm-ixjDjwC1DLhHVbjJx_jbQCXptVRwbtbn_IJrbfDV7Mq1VRI9a9jAS_MUvpcWxjirLroz7CCqE"
+        private const val FCM_KEY = "AAAAkUo9Nwo:APA91bEQgeWJjwVsJPE2LJOkg9S4YFZG2GGBFfQUh221WKthLB3aetVjimJmhmXmXJp8E6Ug3E4yTbjMIpk75h-e23672WvG7hTpYfc_aqxvgzksFQ2_dc6oawtjQZCscVF0-hQlGVmK"
 
         private val retrofit by lazy {
             // 인터셉터 초기화
