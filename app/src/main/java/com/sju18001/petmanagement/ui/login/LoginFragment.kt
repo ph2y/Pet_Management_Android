@@ -187,7 +187,7 @@ class LoginFragment : Fragment() {
                         // SessionManager 에 저장된 FcmRegistrationToken 과 비교, 다르면 FcmRegistrationToken 업데이트
                         var currentFcmRegistrationToken = SessionManager.fetchFcmRegistrationToken(requireContext())!!
                         if(currentFcmRegistrationToken != it.fcmRegistrationToken) {
-                            updateFcmRegistrationToken(currentFcmRegistrationToken)
+                            updateFcmRegistrationToken(token, currentFcmRegistrationToken)
                         }
 
                         // 첫 로그인일 시
@@ -240,8 +240,8 @@ class LoginFragment : Fragment() {
         })
     }
 
-    private fun updateFcmRegistrationToken(fcmRegistrationToken: String) {
-        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!).updateFcmRegistrationTokenReq(
+    private fun updateFcmRegistrationToken(userToken: String, fcmRegistrationToken: String) {
+        val call = RetrofitBuilder.getServerApiWithToken(userToken).updateFcmRegistrationTokenReq(
             UpdateFcmRegistrationTokenReqDto(fcmRegistrationToken)
         )
         ServerUtil.enqueueApiCall(call, { isViewDestroyed }, requireContext(), {}, {}, {})
