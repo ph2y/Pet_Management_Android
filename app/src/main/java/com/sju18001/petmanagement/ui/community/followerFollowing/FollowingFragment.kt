@@ -14,7 +14,7 @@ import com.sju18001.petmanagement.controller.CustomProgressBar
 import com.sju18001.petmanagement.databinding.FragmentFollowingBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
-import com.sju18001.petmanagement.restapi.SessionManager
+import com.sju18001.petmanagement.controller.SessionManager
 
 class FollowingFragment : Fragment() {
 

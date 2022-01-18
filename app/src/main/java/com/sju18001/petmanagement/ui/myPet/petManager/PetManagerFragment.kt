@@ -1,15 +1,10 @@
 package com.sju18001.petmanagement.ui.myPet.petManager
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.*
-import android.view.DragEvent.ACTION_DRAG_ENDED
-import androidx.core.view.setPadding
-import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.*
@@ -21,14 +16,14 @@ import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentPetManagerBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
-import com.sju18001.petmanagement.restapi.SessionManager
+import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.FetchPetReqDto
 import com.sju18001.petmanagement.ui.myPet.MyPetActivity
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification
+import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification.Companion.cancelAll
 import java.lang.reflect.Type
-import kotlin.properties.Delegates
 
 class PetManagerFragment : Fragment(), OnStartDragListener {
     // variable for ViewModel
@@ -145,7 +140,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
     }
 
     private fun synchronizeAlarmManager() {
-        // TODO: Cancel all
+        cancelAll(requireContext().applicationContext)
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchPetScheduleReq(ServerUtil.getEmptyBody())
@@ -154,7 +149,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
             response.body()?.petScheduleList?.map{
                 if(it.enabled){
                     PetScheduleNotification.setAlarmManagerRepeating(
-                        requireContext(),
+                        requireContext().applicationContext,
                         it.id,
                         it.time,
                         Util.getPetNamesFromPetIdList(myPetViewModel.petNameForId, it.petIdList),

@@ -24,11 +24,12 @@ import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentUpdateAccountBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
-import com.sju18001.petmanagement.restapi.SessionManager
+import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.restapi.global.FileType
 import com.sju18001.petmanagement.ui.login.LoginActivity
+import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification
 import com.sju18001.petmanagement.ui.setting.SettingViewModel
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -393,6 +394,10 @@ class UpdateAccountFragment : Fragment() {
     }
 
     private fun logout() {
+        // TODO: Account에 등록되어 있는 FCM Token 제거
+
+        PetScheduleNotification.cancelAll(requireContext().applicationContext)
+        
         // remove user token in SessionManager
         SessionManager.removeUserToken(requireContext())
         SessionManager.removeLoggedInAccount(requireContext())

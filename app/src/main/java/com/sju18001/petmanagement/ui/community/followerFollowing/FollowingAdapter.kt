@@ -14,12 +14,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
-import com.sju18001.petmanagement.restapi.SessionManager
+import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.DeleteFollowReqDto
 import com.sju18001.petmanagement.restapi.dto.FetchAccountPhotoReqDto
 import com.sju18001.petmanagement.ui.community.CommunityUtil
-import com.sju18001.petmanagement.ui.community.post.PostListAdapter
 import de.hdodenhof.circleimageview.CircleImageView
 
 class FollowingAdapter(val context: Context, val followerFollowingViewModel: FollowerFollowingViewModel):

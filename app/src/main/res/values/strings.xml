@@ -10,6 +10,7 @@
 
     <!-- SharedPreferences -->
     <string name="user_session">UserSession</string>
+    <string name="alarm_manager_session">AlarmManagerSession</string>
     <string name="pref_name_pet_list_id_order">PetListIdOrder</string>
     <string name="data_name_pet_list_id_order">pet_list_id_order</string>
     <string name="pref_name_byte_arrays">ByteArrays</string>

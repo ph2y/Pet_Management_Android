@@ -2,7 +2,6 @@ package com.sju18001.petmanagement.ui.myPet.petScheduleManager
 
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,7 +15,7 @@ import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentCreateUpdatePetScheduleBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
-import com.sju18001.petmanagement.restapi.SessionManager
+import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
 import java.time.LocalTime
@@ -67,12 +66,12 @@ class CreateUpdatePetScheduleFragment : Fragment() {
                 if(enabled){
                     // 알람 업데이트: 삭제 -> 등록
                     PetScheduleNotification.cancelAlarmManagerRepeating(
-                        requireContext(),
+                        requireContext().applicationContext,
                         intent.getLongExtra("id", -1)
                     )
 
                     PetScheduleNotification.setAlarmManagerRepeating(
-                        requireContext(),
+                        requireContext().applicationContext,
                         intent.getLongExtra("id", -1),
                         LocalTime.of(binding.timePicker.hour, binding.timePicker.minute).toString()+":00",
                         Util.getPetNamesFromPetIdList(petNameForId, getCheckedPetIdList()),
