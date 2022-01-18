@@ -45,9 +45,9 @@ class CreateUpdatePostViewModel(private val handle: SavedStateHandle) : ViewMode
             handle.set("videoPathList", value)
             field = value
         }
-    var mediaThumbnailList = handle.get<MutableList<Bitmap?>>("mediaThumbnailList")?: mutableListOf()
+    var mediaList = handle.get<MutableList<MediaListItem>>("mediaList")?: mutableListOf()
         set(value) {
-            handle.set("mediaThumbnailList", value)
+            handle.set("mediaList", value)
             field = value
         }
 
@@ -116,6 +116,11 @@ class CreateUpdatePostViewModel(private val handle: SavedStateHandle) : ViewMode
             handle.set("updatedPostPhotoData", value)
             field = value
         }
+    var updatedPostVideoData = handle.get<Boolean>("updatedPostVideoData")?: false
+        set(value) {
+            handle.set("updatedPostVideoData", value)
+            field = value
+        }
     var updatedPostGeneralFileData = handle.get<Boolean>("updatedPostGeneralFileData")?: false
         set(value) {
             handle.set("updatedPostGeneralFileData", value)
@@ -124,6 +129,11 @@ class CreateUpdatePostViewModel(private val handle: SavedStateHandle) : ViewMode
     var deletedPostPhotoData = handle.get<Boolean>("deletedPostPhotoData")?: false
         set(value) {
             handle.set("deletedPostPhotoData", value)
+            field = value
+        }
+    var deletedPostVideoData = handle.get<Boolean>("deletedPostVideoData")?: false
+        set(value) {
+            handle.set("deletedPostVideoData", value)
             field = value
         }
     var deletedPostGeneralFileData = handle.get<Boolean>("deletedPostGeneralFileData")?: false
