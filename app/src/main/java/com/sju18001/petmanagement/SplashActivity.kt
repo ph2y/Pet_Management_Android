@@ -42,13 +42,7 @@ class SplashActivity: AppCompatActivity() {
             ServerUtil.enqueueApiCall(call, { isViewDestroyed }, baseContext, { response ->
                 val intent = Intent(this@SplashActivity, MainActivity::class.java)
                 response.body()?.run{
-                    // SessionManager 에 저장된 FcmRegistrationToken 과 비교, 다르면 FcmRegistrationToken 업데이트
-                    var currentFcmRegistrationToken = SessionManager.fetchFcmRegistrationToken(applicationContext)!!
-                    if(currentFcmRegistrationToken != fcmRegistrationToken) {
-                        updateFcmRegistrationToken(currentFcmRegistrationToken)
-                    }
-
-                    val account = Account(id, username, email, phone, null, marketing, nickname, photoUrl, userMessage, representativePetId, currentFcmRegistrationToken, notification)
+                    val account = Account(id, username, email, phone, null, marketing, nickname, photoUrl, userMessage, representativePetId, fcmRegistrationToken, notification)
                     SessionManager.saveLoggedInAccount(this@SplashActivity, account)
 
                     startActivity(intent)
@@ -66,12 +60,5 @@ class SplashActivity: AppCompatActivity() {
 
         startActivity(intent)
         finish()
-    }
-
-    private fun updateFcmRegistrationToken(fcmRegistrationToken: String) {
-        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(applicationContext)!!).updateFcmRegistrationTokenReq(
-            UpdateFcmRegistrationTokenReqDto(fcmRegistrationToken)
-        )
-        ServerUtil.enqueueApiCall(call, { isViewDestroyed }, baseContext, {}, {}, {})
     }
 }

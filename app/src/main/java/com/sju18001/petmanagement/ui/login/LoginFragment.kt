@@ -184,12 +184,6 @@ class LoginFragment : Fragment() {
                 response.body()?.let{
                     // 조회 성공
                     if(response.isSuccessful){
-                        // SessionManager 에 저장된 FcmRegistrationToken 과 비교, 다르면 FcmRegistrationToken 업데이트
-                        var currentFcmRegistrationToken = SessionManager.fetchFcmRegistrationToken(requireContext())!!
-                        if(currentFcmRegistrationToken != it.fcmRegistrationToken) {
-                            updateFcmRegistrationToken(token, currentFcmRegistrationToken)
-                        }
-
                         // 첫 로그인일 시
                         if(it.nickname == "#"){
                             // nickname => username 변경
@@ -202,7 +196,7 @@ class LoginFragment : Fragment() {
                             SessionManager.saveUserToken(requireContext(), token)
                             response.body()?.run{
                                 // nickname에 username을 넣은 것에 유의할 것
-                                val account = Account(id, username, email, phone, null, marketing, username, photoUrl, userMessage, representativePetId, currentFcmRegistrationToken, notification)
+                                val account = Account(id, username, email, phone, null, marketing, username, photoUrl, userMessage, representativePetId, fcmRegistrationToken, notification)
                                 SessionManager.saveLoggedInAccount(requireContext(), account)
                             }
 
@@ -215,7 +209,7 @@ class LoginFragment : Fragment() {
                             val intent = Intent(context, MainActivity::class.java)
                             SessionManager.saveUserToken(requireContext(), token)
                             response.body()?.run{
-                                val account = Account(id, username, email, phone, null, marketing, nickname, photoUrl, userMessage, representativePetId, currentFcmRegistrationToken, notification)
+                                val account = Account(id, username, email, phone, null, marketing, nickname, photoUrl, userMessage, representativePetId, fcmRegistrationToken, notification)
                                 SessionManager.saveLoggedInAccount(requireContext(), account)
                             }
 
@@ -238,13 +232,6 @@ class LoginFragment : Fragment() {
                 Log.d("error", t.message.toString())
             }
         })
-    }
-
-    private fun updateFcmRegistrationToken(userToken: String, fcmRegistrationToken: String) {
-        val call = RetrofitBuilder.getServerApiWithToken(userToken).updateFcmRegistrationTokenReq(
-            UpdateFcmRegistrationTokenReqDto(fcmRegistrationToken)
-        )
-        ServerUtil.enqueueApiCall(call, { isViewDestroyed }, requireContext(), {}, {}, {})
     }
 
     private fun lockViews() {

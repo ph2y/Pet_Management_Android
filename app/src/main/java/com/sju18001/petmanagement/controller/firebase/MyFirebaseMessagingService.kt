@@ -22,7 +22,6 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
         // FCM registration token to your app server.
         // sendRegistrationToServer(p0)
         // TODO: 토큰을 서버에 업데이트
-        SessionManager.saveFcmRegistrationToken(applicationContext, p0)
     }
 
     override fun onMessageReceived(p0: RemoteMessage) {
