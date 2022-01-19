@@ -28,6 +28,7 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Post
 import com.sju18001.petmanagement.restapi.dto.*
+import com.sju18001.petmanagement.restapi.global.FileType
 import com.sju18001.petmanagement.ui.community.CommunityViewModel
 import com.sju18001.petmanagement.ui.community.comment.CommentActivity
 import com.sju18001.petmanagement.ui.community.post.createUpdatePost.CreateUpdatePostActivity
@@ -268,7 +269,7 @@ class PostFragment : Fragment() {
                 // 이미지
                 else{
                     val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-                        .fetchPostImageReq(FetchPostImageReqDto(id, index))
+                        .fetchPostImageReq(FetchPostImageReqDto(id, index, FileType.GENERAL_IMAGE))
                     ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
                         // Convert photo to byte array + get bitmap
                         val photoByteArray = response.body()!!.byteStream().readBytes()
