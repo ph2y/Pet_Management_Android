@@ -5,12 +5,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 
 class CreateUpdatePostViewModel(private val handle: SavedStateHandle) : ViewModel() {
-    // for pet
-    var fetchedPetData = handle.get<Boolean>("fetchedPetData")?: false
+    var isFetched = handle.get<Boolean>("isFetched")?: false
         set(value) {
-            handle.set("fetchedPetData", value)
+            handle.set("isFetched", value)
             field = value
         }
+
+    // for pet
     var petList = handle.get<MutableList<PetListItem>>("petList")?: mutableListOf()
         set(value) {
             handle.set("petList", value)
@@ -96,26 +97,6 @@ class CreateUpdatePostViewModel(private val handle: SavedStateHandle) : ViewMode
         }
 
     // for update
-    var fetchedPostDataForUpdate = handle.get<Boolean>("fetchedPostDataForUpdate")?: false
-        set(value) {
-            handle.set("fetchedPostDataForUpdate", value)
-            field = value
-        }
-    var fetchedPostImageDataForUpdate = handle.get<Boolean>("fetchedPostImageDataForUpdate")?: false
-        set(value) {
-            handle.set("fetchedPostImageDataForUpdate", value)
-            field = value
-        }
-    var fetchedPostVideoDataForUpdate = handle.get<Boolean>("fetchedPostVideoDataForUpdate")?: false
-        set(value) {
-            handle.set("fetchedPostVideoDataForUpdate", value)
-            field = value
-        }
-    var fetchedPostGeneralFileDataForUpdate = handle.get<Boolean>("fetchedPostGeneralFileDataForUpdate")?: false
-        set(value) {
-            handle.set("fetchedPostGeneralFileDataForUpdate", value)
-            field = value
-        }
     var updatedPostPhotoData = handle.get<Boolean>("updatedPostPhotoData")?: false
         set(value) {
             handle.set("updatedPostPhotoData", value)

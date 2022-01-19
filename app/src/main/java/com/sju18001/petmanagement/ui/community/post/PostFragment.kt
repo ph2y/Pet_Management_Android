@@ -234,36 +234,40 @@ class PostFragment : Fragment() {
                 dummyImageView.visibility = View.GONE
 
                 if(Util.isUrlVideo(url)){
-                    // View
-                    val postMediaVideo = holder.postMediaVideo
-                    postMediaVideo.visibility = View.VISIBLE
+                    try{
+                        // View
+                        val postMediaVideo = holder.postMediaVideo
+                        postMediaVideo.visibility = View.VISIBLE
 
-                    // 영상의 비율을 유지한 채로, 영상의 사이즈를 가로로 꽉 채웁니다.
-                    val encodedUrl = RetrofitBuilder.BASE_URL + "/api/post/video/fetch?url=" + URLEncoder.encode(url, "UTF8")
+                        // 영상의 비율을 유지한 채로, 영상의 사이즈를 가로로 꽉 채웁니다.
+                        val encodedUrl = RetrofitBuilder.BASE_URL + "/api/post/video/fetch?url=" + URLEncoder.encode(url, "UTF8")
 
-                    val retriever = FFmpegMediaMetadataRetriever()
-                    retriever.setDataSource(encodedUrl)
+                        val retriever = FFmpegMediaMetadataRetriever()
+                        retriever.setDataSource(encodedUrl)
 
-                    val videoWidth = Integer.parseInt(retriever.extractMetadata(
-                        FFmpegMediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH))
-                    val videoHeight = Integer.parseInt(retriever.extractMetadata(
-                        FFmpegMediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT))
+                        val videoWidth = Integer.parseInt(retriever.extractMetadata(
+                            FFmpegMediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH))
+                        val videoHeight = Integer.parseInt(retriever.extractMetadata(
+                            FFmpegMediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT))
 
-                    val screenWidth = Util.getScreenWidthInPixel(requireActivity())
-                    val ratio: Float = screenWidth.toFloat() / videoWidth.toFloat()
+                        val screenWidth = Util.getScreenWidthInPixel(requireActivity())
+                        val ratio: Float = screenWidth.toFloat() / videoWidth.toFloat()
 
-                    postMediaVideo.layoutParams.height = (videoHeight.toFloat() * ratio).toInt()
+                        postMediaVideo.layoutParams.height = (videoHeight.toFloat() * ratio).toInt()
 
-                    // 반복 재생
-                    postMediaVideo.setOnCompletionListener {
-                        postMediaVideo.start()
-                    }
+                        // 반복 재생
+                        postMediaVideo.setOnCompletionListener {
+                            postMediaVideo.start()
+                        }
 
-                    // 재생
-                    postMediaVideo.setVideoPath(encodedUrl)
-                    postMediaVideo.requestFocus()
-                    postMediaVideo.setOnPreparedListener {
-                        postMediaVideo.start()
+                        // 재생
+                        postMediaVideo.setVideoPath(encodedUrl)
+                        postMediaVideo.requestFocus()
+                        postMediaVideo.setOnPreparedListener {
+                            postMediaVideo.start()
+                        }
+                    }catch(e: Exception){
+
                     }
                 }
                 // 이미지
