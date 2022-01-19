@@ -58,7 +58,8 @@ data class DeletePostResDto (
 
 data class FetchPostImageReqDto (
     val id: Long,
-    val index: Int
+    val index: Int,
+    val imageType: Int
 )
 
 data class FetchPostVideoReqDto (
