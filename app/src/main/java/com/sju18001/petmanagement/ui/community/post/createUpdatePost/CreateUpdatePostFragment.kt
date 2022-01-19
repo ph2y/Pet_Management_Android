@@ -5,13 +5,11 @@ import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.location.LocationManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,7 +36,6 @@ import com.sju18001.petmanagement.ui.myPet.petManager.PetManagerFragment
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.math.BigDecimal
 
@@ -92,11 +89,11 @@ class CreateUpdatePostFragment : Fragment() {
         // fetch post data for update (if not already fetched)
         if(requireActivity().intent.getStringExtra("fragmentType") == "update_post"
             && (!createUpdatePostViewModel.fetchedPostDataForUpdate || !createUpdatePostViewModel.fetchedPetData)) {
-                // save post id
-                createUpdatePostViewModel.postId = requireActivity().intent.getLongExtra("postId", -1)
+            // save post id
+            createUpdatePostViewModel.postId = requireActivity().intent.getLongExtra("postId", -1)
 
-                showLoadingScreen()
-                fetchPostData()
+            showLoadingScreen()
+            fetchPostData()
         }
 
         // fetch pet data + set pet recyclerview (if not already fetched)
@@ -825,8 +822,8 @@ class CreateUpdatePostFragment : Fragment() {
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
             // update photos
             if(createUpdatePostViewModel.photoPathList.size == 0) {
-                // 기존에 사진이 0개였다면 FileType.IMAGE_FILE에 대해 DeletePostFile를 호출하지 않는다 // TODO: TEST THIS
-                if(requireActivity().intent.getIntExtra("originalMediaCount", 0) > 0){
+                // 기존에 사진이 0개였다면 FileType.IMAGE_FILE에 대해 DeletePostFile를 호출하지 않는다
+                if(requireActivity().intent.getIntExtra("originalImageCount", 0) > 0){
                     createUpdatePostViewModel.updatedPostPhotoData = true
                     deletePostFile(createUpdatePostViewModel.postId!!, FileType.IMAGE_FILE)
                 }else{
@@ -845,8 +842,8 @@ class CreateUpdatePostFragment : Fragment() {
 
             // update videos
             if(createUpdatePostViewModel.videoPathList.size == 0) {
-                // 기존에 동영상이 0개였다면 FileType.VIDEO_FILE에 대해 DeletePostFile를 호출하지 않는다 // TODO: TEST THIS
-                if(requireActivity().intent.getIntExtra("originalMediaCount", 0) > 0){
+                // 기존에 동영상이 0개였다면 FileType.VIDEO_FILE에 대해 DeletePostFile를 호출하지 않는다
+                if(requireActivity().intent.getIntExtra("originalVideoCount", 0) > 0){
                     createUpdatePostViewModel.updatedPostVideoData = true
                     deletePostFile(createUpdatePostViewModel.postId!!, FileType.VIDEO_FILE)
                 }else{
@@ -1039,22 +1036,18 @@ class CreateUpdatePostFragment : Fragment() {
         }
     }
 
-    private fun fetchPostMediaData(postMedia: Array<FileMetaData>) { // TODO: add logic for branching photos and videos
-        for(index in postMedia.indices) {
+    private fun fetchPostImageData(postImage: Array<FileMetaData>) {
+        for(index in postImage.indices) {
             val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
                 .fetchPostImageReq(FetchPostImageReqDto(createUpdatePostViewModel.postId!!, index, FileType.ORIGINAL_IMAGE))
             ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
                 // get file extension
-                val extension = postMedia[index].url.split('.').last()
+                val extension = postImage[index].url.split('.').last()
 
                 // copy file and get real path
-                val mediaByteArray = response.body()!!.byteStream().readBytes()
+                val imageByteArray = response.body()!!.byteStream().readBytes()
                 createUpdatePostViewModel.photoPathList[index] =
-                    ServerUtil.createCopyAndReturnRealPathServer(requireContext(), mediaByteArray, extension, CREATE_UPDATE_POST_DIRECTORY)
-
-                // save photo thumbnail
-                val thumbnail = BitmapFactory.decodeByteArray(mediaByteArray, 0, mediaByteArray.size)
-                createUpdatePostViewModel.mediaList[index] = MediaListItem(false, index)
+                    ServerUtil.createCopyAndReturnRealPathServer(requireContext(), imageByteArray, extension, CREATE_UPDATE_POST_DIRECTORY)
 
                 // if all is done fetching -> set RecyclerView + set usage + show main ScrollView
                 if("" !in createUpdatePostViewModel.photoPathList) {
@@ -1063,8 +1056,45 @@ class CreateUpdatePostFragment : Fragment() {
                     updatePhotoUsage()
 
                     // set fetched to true
-                    createUpdatePostViewModel.fetchedPostMediaDataForUpdate = true
-                    if (createUpdatePostViewModel.fetchedPostMediaDataForUpdate &&
+                    createUpdatePostViewModel.fetchedPostImageDataForUpdate = true
+                    if (createUpdatePostViewModel.fetchedPostImageDataForUpdate &&
+                        createUpdatePostViewModel.fetchedPostVideoDataForUpdate &&
+                        createUpdatePostViewModel.fetchedPostGeneralFileDataForUpdate) {
+                        createUpdatePostViewModel.fetchedPostDataForUpdate = true
+                    }
+
+                    // set views with post data
+                    if (createUpdatePostViewModel.fetchedPostDataForUpdate) {
+                        fetchPetDataAndSetRecyclerView()
+                    }
+                }
+            }, {}, {})
+        }
+    }
+
+    private fun fetchPostVideoData(postVideo: Array<FileMetaData>) {
+        for(index in postVideo.indices) {
+            val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+                .fetchPostVideoReq(postVideo[index].url)
+            ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+                // get file extension
+                val extension = postVideo[index].url.split('.').last()
+
+                // copy file and get real path
+                val videoByteArray = response.body()!!.byteStream().readBytes()
+                createUpdatePostViewModel.videoPathList[index] =
+                    ServerUtil.createCopyAndReturnRealPathServer(requireContext(), videoByteArray, extension, CREATE_UPDATE_POST_DIRECTORY)
+
+                // if all is done fetching -> set RecyclerView + set usage + show main ScrollView
+                if("" !in createUpdatePostViewModel.videoPathList) {
+                    // update RecyclerView and photo usage
+                    mediaAdapter.setResult(createUpdatePostViewModel.mediaList)
+                    updateVideoUsage()
+
+                    // set fetched to true
+                    createUpdatePostViewModel.fetchedPostVideoDataForUpdate = true
+                    if (createUpdatePostViewModel.fetchedPostImageDataForUpdate &&
+                        createUpdatePostViewModel.fetchedPostVideoDataForUpdate &&
                         createUpdatePostViewModel.fetchedPostGeneralFileDataForUpdate) {
                         createUpdatePostViewModel.fetchedPostDataForUpdate = true
                     }
@@ -1103,7 +1133,8 @@ class CreateUpdatePostFragment : Fragment() {
 
                     // set fetched to true
                     createUpdatePostViewModel.fetchedPostGeneralFileDataForUpdate = true
-                    if (createUpdatePostViewModel.fetchedPostMediaDataForUpdate &&
+                    if (createUpdatePostViewModel.fetchedPostImageDataForUpdate &&
+                        createUpdatePostViewModel.fetchedPostVideoDataForUpdate &&
                         createUpdatePostViewModel.fetchedPostGeneralFileDataForUpdate) {
                         createUpdatePostViewModel.fetchedPostDataForUpdate = true
                     }
@@ -1133,23 +1164,40 @@ class CreateUpdatePostFragment : Fragment() {
             }
             createUpdatePostViewModel.postEditText = post.contents
 
-            // fetch post media (photos) data // TODO: fetch post media (videos) data
-            if(post.imageAttachments != null) {
-                val postMedia =
+            // fetch post media (photos) data
+            if (post.imageAttachments != null) {
+                val postImage =
                     Gson().fromJson(post.imageAttachments, Array<FileMetaData>::class.java)
 
                 // initialize lists
-                for (i in postMedia.indices) {
+                for (i in postImage.indices) {
                     createUpdatePostViewModel.photoPathList.add("")
                     createUpdatePostViewModel.mediaList.add(MediaListItem(false, i))
                 }
 
                 verifyAndEnableConfirmButton()
 
-                fetchPostMediaData(postMedia)
+                fetchPostImageData(postImage)
+            } else {
+                createUpdatePostViewModel.fetchedPostImageDataForUpdate = true
             }
-            else {
-                createUpdatePostViewModel.fetchedPostMediaDataForUpdate = true
+
+            // fetch post media (videos) data
+            if (post.videoAttachments != null) {
+                val postVideo =
+                    Gson().fromJson(post.videoAttachments, Array<FileMetaData>::class.java)
+
+                // initialize lists
+                for (i in postVideo.indices) {
+                    createUpdatePostViewModel.videoPathList.add("")
+                    createUpdatePostViewModel.mediaList.add(MediaListItem(true, i))
+                }
+
+                verifyAndEnableConfirmButton()
+
+                fetchPostVideoData(postVideo)
+            } else {
+                createUpdatePostViewModel.fetchedPostVideoDataForUpdate = true
             }
 
             // fetch post general data
@@ -1165,8 +1213,7 @@ class CreateUpdatePostFragment : Fragment() {
                 verifyAndEnableConfirmButton()
 
                 fetchPostGeneralData(post.id, postGeneral)
-            }
-            else {
+            } else {
                 createUpdatePostViewModel.fetchedPostGeneralFileDataForUpdate = true
             }
 

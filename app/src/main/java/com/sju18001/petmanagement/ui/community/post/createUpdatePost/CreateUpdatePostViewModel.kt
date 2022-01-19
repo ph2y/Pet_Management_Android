@@ -101,9 +101,14 @@ class CreateUpdatePostViewModel(private val handle: SavedStateHandle) : ViewMode
             handle.set("fetchedPostDataForUpdate", value)
             field = value
         }
-    var fetchedPostMediaDataForUpdate = handle.get<Boolean>("fetchedPostMediaDataForUpdate")?: false
+    var fetchedPostImageDataForUpdate = handle.get<Boolean>("fetchedPostImageDataForUpdate")?: false
         set(value) {
-            handle.set("fetchedPostMediaDataForUpdate", value)
+            handle.set("fetchedPostImageDataForUpdate", value)
+            field = value
+        }
+    var fetchedPostVideoDataForUpdate = handle.get<Boolean>("fetchedPostVideoDataForUpdate")?: false
+        set(value) {
+            handle.set("fetchedPostVideoDataForUpdate", value)
             field = value
         }
     var fetchedPostGeneralFileDataForUpdate = handle.get<Boolean>("fetchedPostGeneralFileDataForUpdate")?: false

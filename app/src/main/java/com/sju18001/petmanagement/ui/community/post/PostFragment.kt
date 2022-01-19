@@ -413,7 +413,8 @@ class PostFragment : Fragment() {
                     createUpdatePostActivityIntent.putExtra("fragmentType", "update_post")
                     createUpdatePostActivityIntent.putExtra("postId", post.id)
                     createUpdatePostActivityIntent.putExtra("position", position)
-                    createUpdatePostActivityIntent.putExtra("originalMediaCount", Util.getArrayFromMediaAttachments(post.imageAttachments).size)
+                    createUpdatePostActivityIntent.putExtra("originalImageCount", Util.getArrayFromMediaAttachments(post.imageAttachments).size)
+                    createUpdatePostActivityIntent.putExtra("originalVideoCount", Util.getArrayFromMediaAttachments(post.videoAttachments).size)
                     createUpdatePostActivityIntent.putExtra("originalGeneralFilesCount", Util.getArrayFromMediaAttachments(post.fileAttachments).size)
 
                     startForUpdateResult.launch(createUpdatePostActivityIntent)
