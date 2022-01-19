@@ -14,7 +14,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.databinding.ActivityMainBinding
+import com.sju18001.petmanagement.restapi.RetrofitBuilder
+import com.sju18001.petmanagement.restapi.ServerUtil
+import com.sju18001.petmanagement.restapi.dto.UpdateFcmRegistrationTokenReqDto
 import com.sju18001.petmanagement.restapi.fcm.FcmUtil
 import com.sju18001.petmanagement.ui.community.CommunityFragment
 import com.sju18001.petmanagement.ui.community.followerFollowing.FollowerFollowingActivity
@@ -198,7 +202,7 @@ class MainActivity : AppCompatActivity() {
             false
         }
 
-        FcmUtil.getFirebaseMessagingToken {}
+        FcmUtil.getFirebaseMessagingToken { token -> sendRegistrationToServer(token) }
     }
 
     override fun onDestroy() {
@@ -281,5 +285,22 @@ class MainActivity : AppCompatActivity() {
         if(fragmentManager.findFragmentByTag(tag) == null){
             fragmentManager.beginTransaction().add(R.id.nav_host_fragment_activity_main, fragment, tag).commitNow()
         }
+    }
+
+
+    // For fcm token
+    private fun sendRegistrationToServer(p0: String) {
+        SessionManager.fetchLoggedInAccount(baseContext)?.let {
+            // 최신 토큰과, 계정 토큰이 다를 경우 업데이트한다.
+            if(it.fcmRegistrationToken != p0) {
+                updateFcmRegistrationToken(p0)
+            }
+        }
+    }
+
+    private fun updateFcmRegistrationToken(fcmRegistrationToken: String) {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
+            .updateFcmRegistrationTokenReq(UpdateFcmRegistrationTokenReqDto(fcmRegistrationToken))
+        ServerUtil.enqueueApiCall(call, {false}, baseContext, {},{},{})
     }
 }
