@@ -11,6 +11,9 @@ import com.google.firebase.messaging.RemoteMessage
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.AlarmBroadcastReceiver
 import com.sju18001.petmanagement.controller.SessionManager
+import com.sju18001.petmanagement.restapi.RetrofitBuilder
+import com.sju18001.petmanagement.restapi.ServerUtil
+import com.sju18001.petmanagement.restapi.dto.UpdateFcmRegistrationTokenReqDto
 
 class MyFirebaseMessagingService: FirebaseMessagingService() {
     private val TAG = "MyFirebaseMessagingService"
@@ -20,8 +23,6 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
         // If you want to send messages to this application instance or
         // manage this apps subscriptions on the server side, send the
         // FCM registration token to your app server.
-        // sendRegistrationToServer(p0)
-        // TODO: 토큰을 서버에 업데이트
     }
 
     override fun onMessageReceived(p0: RemoteMessage) {
