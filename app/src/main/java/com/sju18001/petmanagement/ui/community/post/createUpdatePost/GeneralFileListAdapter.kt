@@ -13,7 +13,7 @@ import java.io.File
 
 class GeneralFileListAdapter(private val createUpdatePostViewModel: CreateUpdatePostViewModel,
                              private val context: Context, private val binding: FragmentCreateUpdatePostBinding,
-                             private val confirmButtonVerificationInterface: ConfirmButtonVerificationInterface) :
+                             private val confirmButtonAndUsageInterface: ConfirmButtonAndUsageInterface) :
     RecyclerView.Adapter<GeneralFileListAdapter.HistoryListViewHolder>() {
 
     private var resultList = mutableListOf<String>()
@@ -69,7 +69,7 @@ class GeneralFileListAdapter(private val createUpdatePostViewModel: CreateUpdate
         // update recyclerview
         notifyDataSetChanged()
 
-        confirmButtonVerificationInterface.verifyAndEnableConfirmButton()
+        confirmButtonAndUsageInterface.verifyAndEnableConfirmButton()
     }
 
     public fun setResult(result: MutableList<String>){
