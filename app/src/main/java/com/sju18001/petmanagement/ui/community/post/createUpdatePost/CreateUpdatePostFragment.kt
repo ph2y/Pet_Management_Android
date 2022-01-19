@@ -1218,7 +1218,7 @@ class CreateUpdatePostFragment : Fragment() {
             }
 
             // if no attachments
-            if (post.imageAttachments == null && post.fileAttachments == null) {
+            if (post.imageAttachments == null && post.videoAttachments == null && post.fileAttachments == null) {
                 // set fetched to true
                 createUpdatePostViewModel.fetchedPostDataForUpdate = true
 
