@@ -13,7 +13,7 @@ import com.sju18001.petmanagement.R
 import de.hdodenhof.circleimageview.CircleImageView
 
 class PetListAdapter(private val createUpdatePostViewModel: CreateUpdatePostViewModel, private val context: Context,
-                     private val confirmButtonVerificationInterface: ConfirmButtonVerificationInterface):
+                     private val confirmButtonAndUsageInterface: ConfirmButtonAndUsageInterface):
     RecyclerView.Adapter<PetListAdapter.ViewHolder>() {
 
     private var dataSet = mutableListOf<PetListItem>()
@@ -87,7 +87,7 @@ class PetListAdapter(private val createUpdatePostViewModel: CreateUpdatePostView
             }
             notifyItemChanged(position)
 
-            confirmButtonVerificationInterface.verifyAndEnableConfirmButton()
+            confirmButtonAndUsageInterface.verifyAndEnableConfirmButton()
         }
     }
 

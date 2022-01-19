@@ -428,7 +428,7 @@ class CreateUpdatePostFragment : Fragment() {
 
     private fun initializeRecyclerViews() {
         // interface for confirm button verification inside RecyclerView adapter
-        val confirmButtonVerificationInterface = object: ConfirmButtonVerificationInterface {
+        val confirmButtonAndUsageInterface = object: ConfirmButtonAndUsageInterface {
             override fun verifyAndEnableConfirmButton() {
                 this@CreateUpdatePostFragment.verifyAndEnableConfirmButton()
             }
@@ -441,21 +441,21 @@ class CreateUpdatePostFragment : Fragment() {
         }
 
         // initialize RecyclerView (for pet)
-        petAdapter = PetListAdapter(createUpdatePostViewModel, requireContext(), confirmButtonVerificationInterface)
+        petAdapter = PetListAdapter(createUpdatePostViewModel, requireContext(), confirmButtonAndUsageInterface)
         binding.petRecyclerView.adapter = petAdapter
         binding.petRecyclerView.layoutManager = LinearLayoutManager(activity)
         (binding.petRecyclerView.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.HORIZONTAL
         petAdapter.updateDataSet(createUpdatePostViewModel.petList)
 
         // initialize RecyclerView (for media)
-        mediaAdapter = MediaListAdapter(createUpdatePostViewModel, requireContext(), binding, confirmButtonVerificationInterface)
+        mediaAdapter = MediaListAdapter(createUpdatePostViewModel, requireContext(), binding, confirmButtonAndUsageInterface)
         binding.mediaRecyclerView.adapter = mediaAdapter
         binding.mediaRecyclerView.layoutManager = LinearLayoutManager(activity)
         (binding.mediaRecyclerView.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.HORIZONTAL
         mediaAdapter.setResult(createUpdatePostViewModel.mediaList)
 
         // initialize RecyclerView (for general files)
-        generalFilesAdapter = GeneralFileListAdapter(createUpdatePostViewModel, requireContext(), binding, confirmButtonVerificationInterface)
+        generalFilesAdapter = GeneralFileListAdapter(createUpdatePostViewModel, requireContext(), binding, confirmButtonAndUsageInterface)
         binding.generalRecyclerView.adapter = generalFilesAdapter
         binding.generalRecyclerView.layoutManager = LinearLayoutManager(activity)
         (binding.generalRecyclerView.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.VERTICAL
@@ -1314,7 +1314,7 @@ class CreateUpdatePostFragment : Fragment() {
     }
 }
 
-interface ConfirmButtonVerificationInterface {
+interface ConfirmButtonAndUsageInterface {
     fun verifyAndEnableConfirmButton()
     fun updatePhotoUsage()
     fun updateVideoUsage()

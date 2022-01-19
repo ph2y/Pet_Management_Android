@@ -1,8 +1,6 @@
 package com.sju18001.petmanagement.ui.community.post.createUpdatePost
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,13 +8,12 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentCreateUpdatePostBinding
 import java.io.File
 
 class MediaListAdapter(private val createUpdatePostViewModel: CreateUpdatePostViewModel,
                        private val context: Context, private val binding: FragmentCreateUpdatePostBinding,
-                       private val confirmButtonVerificationInterface: ConfirmButtonVerificationInterface) :
+                       private val confirmButtonAndUsageInterface: ConfirmButtonAndUsageInterface) :
         RecyclerView.Adapter<MediaListAdapter.HistoryListViewHolder>() {
 
     private var resultList = mutableListOf<MediaListItem>()
@@ -55,10 +52,10 @@ class MediaListAdapter(private val createUpdatePostViewModel: CreateUpdatePostVi
 
             if (!resultList[position].isVideo) { // if photo
                 deletePhoto(position)
-                confirmButtonVerificationInterface.updatePhotoUsage()
+                confirmButtonAndUsageInterface.updatePhotoUsage()
             } else { // if video
                 deleteVideo(position)
-                confirmButtonVerificationInterface.updateVideoUsage()
+                confirmButtonAndUsageInterface.updateVideoUsage()
             }
         }
     }
@@ -83,7 +80,7 @@ class MediaListAdapter(private val createUpdatePostViewModel: CreateUpdatePostVi
             }
         }
 
-        confirmButtonVerificationInterface.verifyAndEnableConfirmButton()
+        confirmButtonAndUsageInterface.verifyAndEnableConfirmButton()
     }
 
     private fun deleteVideo(position: Int) {
@@ -106,7 +103,7 @@ class MediaListAdapter(private val createUpdatePostViewModel: CreateUpdatePostVi
             }
         }
 
-        confirmButtonVerificationInterface.verifyAndEnableConfirmButton()
+        confirmButtonAndUsageInterface.verifyAndEnableConfirmButton()
     }
 
     public fun setResult(result: MutableList<MediaListItem>){
