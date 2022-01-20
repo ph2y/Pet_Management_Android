@@ -91,9 +91,10 @@ class CreateUpdatePostViewModel(private val handle: SavedStateHandle) : ViewMode
         }
 
     // for API
-    var apiIsLoading = handle.get<Boolean>("apiIsLoading")?: false
+    var isApiLoading = handle.get<Boolean>("isApiLoading")?: false
         set(value) {
-            handle.set("apiIsLoading", value)
+            handle.set("isApiLoading", value)
+            field = value
         }
 
     // for update
