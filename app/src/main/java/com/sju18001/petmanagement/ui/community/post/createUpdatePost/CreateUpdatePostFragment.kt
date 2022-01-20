@@ -10,7 +10,6 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -96,7 +95,7 @@ class CreateUpdatePostFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        if(!createUpdatePostViewModel.isFetched) {
+        if(!createUpdatePostViewModel.isFetched && !createUpdatePostViewModel.isApiLoading) {
             when(requireActivity().intent.getStringExtra("fragmentType")) {
                 // fetch post data for update
                 "update_post" -> {
@@ -507,6 +506,8 @@ class CreateUpdatePostFragment : Fragment() {
     }
 
     private fun showLoadingScreen() {
+        createUpdatePostViewModel.isApiLoading = true
+
         binding.locationButton.visibility = View.INVISIBLE
         binding.disclosureButton.visibility = View.INVISIBLE
         binding.dividerD.visibility = View.INVISIBLE
@@ -517,6 +518,8 @@ class CreateUpdatePostFragment : Fragment() {
     }
 
     private fun hideLoadingScreen() {
+        createUpdatePostViewModel.isApiLoading = false
+
         binding.locationButton.visibility = View.VISIBLE
         binding.disclosureButton.visibility = View.VISIBLE
         binding.dividerD.visibility = View.VISIBLE
@@ -633,6 +636,8 @@ class CreateUpdatePostFragment : Fragment() {
 
 
     private fun lockViews() {
+        createUpdatePostViewModel.isApiLoading = true
+
         binding.postButton.isEnabled = false
         binding.postButton.text = ""
         binding.createUpdatePostProgressBar.visibility = View.VISIBLE
@@ -669,6 +674,8 @@ class CreateUpdatePostFragment : Fragment() {
     }
 
     private fun unlockViews() {
+        createUpdatePostViewModel.isApiLoading = false
+
         binding.postButton.isEnabled = true
         binding.postButton.text = requireContext().getText(R.string.confirm)
         binding.createUpdatePostProgressBar.visibility = View.GONE
@@ -716,11 +723,10 @@ class CreateUpdatePostFragment : Fragment() {
                 && createUpdatePostViewModel.postEditText.trim().isEmpty())
                 && createUpdatePostViewModel.selectedPetId != null
                 && binding.postDataLoadingLayout.visibility == View.GONE
+                && !createUpdatePostViewModel.isApiLoading
     }
 
     private fun createPost() {
-        // set api state/button to loading
-        createUpdatePostViewModel.apiIsLoading = true
         lockViews()
 
         // get location data(if enabled)
@@ -758,12 +764,8 @@ class CreateUpdatePostFragment : Fragment() {
             updatePostVideo(response.body()!!.id)
             updatePostGeneralFiles(response.body()!!.id)
         }, {
-            // set api state/button to normal
-            createUpdatePostViewModel.apiIsLoading = false
             unlockViews()
         }, {
-            // set api state/button to normal
-            createUpdatePostViewModel.apiIsLoading = false
             unlockViews()
         })
     }
@@ -799,8 +801,6 @@ class CreateUpdatePostFragment : Fragment() {
     }
 
     private fun updatePost() {
-        // set api state/button to loading
-        createUpdatePostViewModel.apiIsLoading = true
         lockViews()
 
         // get location data(if enabled)
@@ -889,11 +889,8 @@ class CreateUpdatePostFragment : Fragment() {
                 updatePostGeneralFiles(createUpdatePostViewModel.postId!!)
             }
         }, {
-            // set api state/button to normal
-            createUpdatePostViewModel.apiIsLoading = false
             unlockViews()
         }, {
-            createUpdatePostViewModel.apiIsLoading = false
             unlockViews()
         })
     }
@@ -914,11 +911,8 @@ class CreateUpdatePostFragment : Fragment() {
                 closeAfterSuccess()
             }
         }, {
-            // set api state/button to normal
-            createUpdatePostViewModel.apiIsLoading = false
             unlockViews()
         }, {
-            createUpdatePostViewModel.apiIsLoading = false
             unlockViews()
         })
     }
@@ -954,11 +948,8 @@ class CreateUpdatePostFragment : Fragment() {
                     closeAfterSuccess()
                 }
             }, {
-                // set api state/button to normal
-                createUpdatePostViewModel.apiIsLoading = false
                 unlockViews()
             }, {
-                createUpdatePostViewModel.apiIsLoading = false
                 unlockViews()
             })
         }
@@ -995,11 +986,8 @@ class CreateUpdatePostFragment : Fragment() {
                     closeAfterSuccess()
                 }
             }, {
-                // set api state/button to normal
-                createUpdatePostViewModel.apiIsLoading = false
                 unlockViews()
             }, {
-                createUpdatePostViewModel.apiIsLoading = false
                 unlockViews()
             })
         }
@@ -1035,11 +1023,8 @@ class CreateUpdatePostFragment : Fragment() {
                     closeAfterSuccess()
                 }
             }, {
-                // set api state/button to normal
-                createUpdatePostViewModel.apiIsLoading = false
                 unlockViews()
             }, {
-                createUpdatePostViewModel.apiIsLoading = false
                 unlockViews()
             })
         }
@@ -1056,8 +1041,6 @@ class CreateUpdatePostFragment : Fragment() {
 
     // close after success
     private fun closeAfterSuccess() {
-        // set api state/button to normal
-        createUpdatePostViewModel.apiIsLoading = false
         unlockViews()
 
         // delete copied files(if any)
