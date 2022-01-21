@@ -119,6 +119,9 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
             holder.viewPager.adapter = PostListAdapter.PostMediaItemCollectionAdapter(communityPostListAdapterInterface, data.id, mediaAttachments, holder)
             holder.viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         }else{
+            // 더미 이미지 제거
+            holder.dummyLayout.visibility = View.GONE
+
             holder.viewPager.visibility = View.GONE
             holder.viewPager.adapter = PostListAdapter.PostMediaItemCollectionAdapter(communityPostListAdapterInterface, 0, arrayOf(), holder)
         }
