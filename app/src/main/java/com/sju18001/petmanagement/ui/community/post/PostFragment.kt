@@ -7,6 +7,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -273,7 +274,7 @@ class PostFragment : Fragment() {
                         holder.postMediaVideo.visibility = View.GONE
                         postMediaImage.setImageBitmap(photoBitmap)
 
-                        // 영상의 사이즈를 가로로 꽉 채우되, 비율을 유지합니다.
+                        // 사진의 사이즈를 가로로 꽉 채우되, 비율을 유지합니다.
                         val screenWidth = Util.getScreenWidthInPixel(requireActivity())
                         val ratio: Float = screenWidth.toFloat() / photoBitmap.width.toFloat()
                         postMediaImage.layoutParams.height = (photoBitmap.height.toFloat() * ratio).toInt()

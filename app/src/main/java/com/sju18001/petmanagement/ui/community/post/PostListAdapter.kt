@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
@@ -288,12 +289,13 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
 
         private fun setListenerOnView(holder: ViewPagerHolder) {
             viewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    super.onPageSelected(position)
-
-                    // resize postMediaImage size when image is selected
-                    if(holder.postMediaImage.isVisible){
-                        holder.postMediaImage.requestLayout()
+                override fun onPageScrollStateChanged(state: Int) {
+                    super.onPageScrollStateChanged(state)
+                    if(state == ViewPager2.SCROLL_STATE_IDLE) {
+                        // resize postMediaImage size when image is selected
+                        if(holder.postMediaImage.isVisible){
+                            holder.postMediaImage.requestLayout()
+                        }
                     }
                 }
             })
