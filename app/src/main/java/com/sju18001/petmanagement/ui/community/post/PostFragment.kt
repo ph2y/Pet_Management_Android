@@ -236,6 +236,7 @@ class PostFragment : Fragment() {
                     // View
                     val postMediaVideo = holder.postMediaVideo
                     postMediaVideo.visibility = View.VISIBLE
+                    holder.postMediaImage.visibility = View.GONE
 
                     // set video URL
                     val encodedUrl = RetrofitBuilder.BASE_URL + "/api/post/video/fetch?url=" + URLEncoder.encode(url, "UTF8")
@@ -264,6 +265,7 @@ class PostFragment : Fragment() {
                         // Set post image
                         val postMediaImage = holder.postMediaImage
                         postMediaImage.visibility = View.VISIBLE
+                        holder.postMediaVideo.visibility = View.GONE
                         postMediaImage.setImageBitmap(photoBitmap)
 
                         // 영상의 사이즈를 가로로 꽉 채우되, 비율을 유지합니다.
