@@ -250,6 +250,11 @@ class PostFragment : Fragment() {
                         // 더미 이미지 제거
                         dummyImageView.visibility = View.GONE
 
+                        // set layout height
+                        postMediaVideo.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                        postMediaVideo.alpha = 1f
+                        postMediaVideo.requestLayout()
+
                         postMediaVideo.start()
                     }
                 }
