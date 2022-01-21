@@ -229,9 +229,6 @@ class PostFragment : Fragment() {
                 url: String,
                 dummyImageView: ConstraintLayout
             ) {
-                // 더미 이미지 제거
-                dummyImageView.visibility = View.GONE
-
                 if(Util.isUrlVideo(url)){
                     // View
                     val postMediaVideo = holder.postMediaVideo
@@ -250,6 +247,9 @@ class PostFragment : Fragment() {
                     postMediaVideo.setVideoPath(encodedUrl)
                     postMediaVideo.requestFocus()
                     postMediaVideo.setOnPreparedListener {
+                        // 더미 이미지 제거
+                        dummyImageView.visibility = View.GONE
+
                         postMediaVideo.start()
                     }
                 }
@@ -272,6 +272,9 @@ class PostFragment : Fragment() {
                         val screenWidth = Util.getScreenWidthInPixel(requireActivity())
                         val ratio: Float = screenWidth.toFloat() / photoBitmap.width.toFloat()
                         postMediaImage.layoutParams.height = (photoBitmap.height.toFloat() * ratio).toInt()
+
+                        // 더미 이미지 제거
+                        dummyImageView.visibility = View.GONE
                     }, { dummyImageView.visibility = View.GONE }, { dummyImageView.visibility = View.GONE })
                 }
             }
