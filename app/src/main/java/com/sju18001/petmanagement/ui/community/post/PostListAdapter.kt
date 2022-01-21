@@ -287,12 +287,13 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
         }
 
         private fun setListenerOnView(holder: ViewPagerHolder) {
-            // 페이지 전환 시 자동 재생
             viewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
                     super.onPageSelected(position)
-                    if(holder.postMediaVideo.isVisible){
-                        holder.postMediaVideo.start()
+
+                    // resize postMediaImage size when image is selected
+                    if(holder.postMediaImage.isVisible){
+                        holder.postMediaImage.requestLayout()
                     }
                 }
             })
