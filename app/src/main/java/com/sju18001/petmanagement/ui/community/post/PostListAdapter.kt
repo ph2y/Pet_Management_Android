@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.doOnLayout
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
@@ -118,6 +119,9 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
             holder.viewPager.adapter = PostListAdapter.PostMediaItemCollectionAdapter(communityPostListAdapterInterface, data.id, mediaAttachments, holder)
             holder.viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         }else{
+            // 더미 이미지 제거
+            holder.dummyLayout.visibility = View.GONE
+
             holder.viewPager.visibility = View.GONE
             holder.viewPager.adapter = PostListAdapter.PostMediaItemCollectionAdapter(communityPostListAdapterInterface, 0, arrayOf(), holder)
         }
@@ -287,12 +291,14 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
         }
 
         private fun setListenerOnView(holder: ViewPagerHolder) {
-            // 페이지 전환 시 자동 재생
             viewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
-                override fun onPageSelected(position: Int) {
-                    super.onPageSelected(position)
-                    if(holder.postMediaVideo.isVisible){
-                        holder.postMediaVideo.start()
+                override fun onPageScrollStateChanged(state: Int) {
+                    super.onPageScrollStateChanged(state)
+                    if(state == ViewPager2.SCROLL_STATE_IDLE) {
+                        // resize postMediaImage size when image is selected
+                        if(holder.postMediaImage.isVisible){
+                            holder.postMediaImage.requestLayout()
+                        }
                     }
                 }
             })

@@ -7,6 +7,7 @@ import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,7 +34,6 @@ import com.sju18001.petmanagement.ui.community.CommunityViewModel
 import com.sju18001.petmanagement.ui.community.comment.CommentActivity
 import com.sju18001.petmanagement.ui.community.post.createUpdatePost.CreateUpdatePostActivity
 import com.sju18001.petmanagement.ui.community.post.generalFiles.GeneralFilesActivity
-import wseemann.media.FFmpegMediaMetadataRetriever
 import java.net.URLEncoder
 
 class PostFragment : Fragment() {
@@ -230,44 +230,33 @@ class PostFragment : Fragment() {
                 url: String,
                 dummyImageView: ConstraintLayout
             ) {
-                // 더미 이미지 제거
-                dummyImageView.visibility = View.GONE
-
                 if(Util.isUrlVideo(url)){
-                    try{
-                        // View
-                        val postMediaVideo = holder.postMediaVideo
-                        postMediaVideo.visibility = View.VISIBLE
+                    // View
+                    val postMediaVideo = holder.postMediaVideo
+                    postMediaVideo.visibility = View.VISIBLE
+                    holder.postMediaImage.visibility = View.GONE
 
-                        // 영상의 비율을 유지한 채로, 영상의 사이즈를 가로로 꽉 채웁니다.
-                        val encodedUrl = RetrofitBuilder.BASE_URL + "/api/post/video/fetch?url=" + URLEncoder.encode(url, "UTF8")
+                    // set video URL
+                    val encodedUrl = RetrofitBuilder.BASE_URL + "/api/post/video/fetch?url=" + URLEncoder.encode(url, "UTF8")
 
-                        val retriever = FFmpegMediaMetadataRetriever()
-                        retriever.setDataSource(encodedUrl)
+                    // 반복 재생
+                    postMediaVideo.setOnCompletionListener {
+                        postMediaVideo.start()
+                    }
 
-                        val videoWidth = Integer.parseInt(retriever.extractMetadata(
-                            FFmpegMediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH))
-                        val videoHeight = Integer.parseInt(retriever.extractMetadata(
-                            FFmpegMediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT))
+                    // 재생
+                    postMediaVideo.setVideoPath(encodedUrl)
+                    postMediaVideo.requestFocus()
+                    postMediaVideo.setOnPreparedListener {
+                        // 더미 이미지 제거
+                        dummyImageView.visibility = View.GONE
 
-                        val screenWidth = Util.getScreenWidthInPixel(requireActivity())
-                        val ratio: Float = screenWidth.toFloat() / videoWidth.toFloat()
+                        // set layout height
+                        postMediaVideo.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                        postMediaVideo.alpha = 1f
+                        postMediaVideo.requestLayout()
 
-                        postMediaVideo.layoutParams.height = (videoHeight.toFloat() * ratio).toInt()
-
-                        // 반복 재생
-                        postMediaVideo.setOnCompletionListener {
-                            postMediaVideo.start()
-                        }
-
-                        // 재생
-                        postMediaVideo.setVideoPath(encodedUrl)
-                        postMediaVideo.requestFocus()
-                        postMediaVideo.setOnPreparedListener {
-                            postMediaVideo.start()
-                        }
-                    }catch(e: Exception){
-
+                        postMediaVideo.start()
                     }
                 }
                 // 이미지
@@ -282,12 +271,16 @@ class PostFragment : Fragment() {
                         // Set post image
                         val postMediaImage = holder.postMediaImage
                         postMediaImage.visibility = View.VISIBLE
+                        holder.postMediaVideo.visibility = View.GONE
                         postMediaImage.setImageBitmap(photoBitmap)
 
-                        // 영상의 사이즈를 가로로 꽉 채우되, 비율을 유지합니다.
+                        // 사진의 사이즈를 가로로 꽉 채우되, 비율을 유지합니다.
                         val screenWidth = Util.getScreenWidthInPixel(requireActivity())
                         val ratio: Float = screenWidth.toFloat() / photoBitmap.width.toFloat()
                         postMediaImage.layoutParams.height = (photoBitmap.height.toFloat() * ratio).toInt()
+
+                        // 더미 이미지 제거
+                        dummyImageView.visibility = View.GONE
                     }, { dummyImageView.visibility = View.GONE }, { dummyImageView.visibility = View.GONE })
                 }
             }
