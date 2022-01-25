@@ -290,12 +290,27 @@ class Util {
             }
         }
 
-        fun showToastAndLog(context: Context, message: String){
-            val toastMessage: String = context.getText(R.string.default_error_message) as String
+        fun showToastAndLog(context: Context, errorMessage: String){
+            // get error message + handle exceptions
+            // TODO: 서버에서 받는 모든 종류의 에러 메세지에 따라 Toast로 보여줄 메세지 설정하기
+            val toastMessage: String = when(errorMessage) {
+                // if no such account exists -> show Toast message
+                "Account not exists" -> {
+                    context.getText(R.string.account_does_not_exist_exception_message) as String
+                }
+                // if fetched self -> show Toast message
+                "Fetched self" -> {
+                    context.getText(R.string.fetched_self_exception_message) as String
+                }
+                // other exceptions -> show Toast message + log
+                else -> {
+                    context.getText(R.string.default_error_message) as String
+                }
+            }
 
             Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
-            log(context, message)
-            Log.d("error", message)
+            log(context, errorMessage)
+            Log.d("error", errorMessage)
         }
 
         fun log(context: Context, text: String) {
