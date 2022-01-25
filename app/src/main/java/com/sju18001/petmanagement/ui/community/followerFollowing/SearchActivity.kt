@@ -212,22 +212,6 @@ class SearchActivity : AppCompatActivity() {
             // set api state/button to normal
             searchViewModel.apiIsLoading = false
             unlockViews()
-
-            // get error message + handle exceptions
-            when(val errorMessage = Util.getMessageFromErrorBody(response.errorBody()!!)) {
-                // if no such account exists -> show Toast message
-                "Account not exists" -> {
-                    Util.showToastAndLog(this@SearchActivity, getString(R.string.account_does_not_exist_exception_message))
-                }
-                // if fetched self -> show Toast message
-                "Fetched self" -> {
-                    Util.showToastAndLog(this@SearchActivity, getString(R.string.fetched_self_exception_message))
-                }
-                // other exceptions -> show Toast message + log
-                else -> {
-                    Util.showToastAndLogForFailedResponse(this@SearchActivity, response.errorBody())
-                }
-            }
         }, {
             // set api state/button to normal
             searchViewModel.apiIsLoading = false
