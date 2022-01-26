@@ -434,7 +434,7 @@ class PostFragment : Fragment() {
         builder.setItems(arrayOf("수정", "삭제")) { _, which ->
             when (which) {
                 0 -> {
-                    launchCreateUpdatePostActivityForUpdate(post, position)
+                    startCreateUpdatePostActivityForUpdate(post, position)
                 }
                 1 -> {
                     showDeletePostDialog(post.id, position)
@@ -444,7 +444,7 @@ class PostFragment : Fragment() {
             .create().show()
     }
 
-    private fun launchCreateUpdatePostActivityForUpdate(post: Post, position: Int){
+    private fun startCreateUpdatePostActivityForUpdate(post: Post, position: Int){
         val createUpdatePostActivityIntent =
             getCreateUpdatePostActivityIntentForUpdate(post, position)
         startForUpdateResult.launch(createUpdatePostActivityIntent)
