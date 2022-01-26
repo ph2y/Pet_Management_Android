@@ -448,7 +448,7 @@ class UpdateAccountFragment : Fragment() {
 
     private fun restoreState() {
         if(settingViewModel.accountPhotoByteArray != null) {
-            val bitmap = BitmapFactory.decodeByteArray(settingViewModel.accountPhotoByteArray, 0, settingViewModel.accountPhotoByteArray!!.size)
+            val bitmap = Util.getBitmapFromByteArray(settingViewModel.accountPhotoByteArray!!)
             binding.accountPhotoInput.setImageBitmap(bitmap)
         }
         else if(settingViewModel.accountPhotoPathValue != "") {

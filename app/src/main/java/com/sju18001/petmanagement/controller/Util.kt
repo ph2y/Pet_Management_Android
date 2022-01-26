@@ -3,6 +3,8 @@ package com.sju18001.petmanagement.controller
 import android.app.Activity
 import android.content.*
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
@@ -24,10 +26,7 @@ import com.sju18001.petmanagement.restapi.kakaoapi.Place
 import com.sju18001.petmanagement.restapi.global.FileMetaData
 import okhttp3.ResponseBody
 import org.json.JSONObject
-import java.io.BufferedWriter
-import java.io.File
-import java.io.FileWriter
-import java.io.IOException
+import java.io.*
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -384,6 +383,15 @@ class Util {
             }
 
             return petNames
+        }
+
+        fun getBitmapFromInputStream(photoByte: InputStream): Bitmap {
+            val byteArray = photoByte.readBytes()
+            return getBitmapFromByteArray(byteArray)
+        }
+
+        fun getBitmapFromByteArray(byteArray: ByteArray): Bitmap {
+            return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
         }
     }
 }

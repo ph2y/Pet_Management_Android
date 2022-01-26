@@ -169,9 +169,10 @@ class SettingFragment : Fragment() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchAccountPhotoReq(FetchAccountPhotoReqDto(null))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-            // save in ViewModel by byte array
             settingViewModel.accountPhotoProfileByteArray = response.body()!!.byteStream().readBytes()
-            binding.accountPhoto.setImageBitmap(BitmapFactory.decodeByteArray(settingViewModel.accountPhotoProfileByteArray, 0, settingViewModel.accountPhotoProfileByteArray!!.size))
+
+            val bitmap = Util.getBitmapFromByteArray(settingViewModel.accountPhotoProfileByteArray!!)
+            binding.accountPhoto.setImageBitmap(bitmap)
         }, {}, {})
     }
 

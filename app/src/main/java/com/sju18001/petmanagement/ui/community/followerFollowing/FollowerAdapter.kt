@@ -14,6 +14,7 @@ import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
+import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.community.CommunityUtil
@@ -143,11 +144,7 @@ class FollowerAdapter(val context: Context) :
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(context)!!)
             .fetchAccountPhotoReq(FetchAccountPhotoReqDto(id))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, context, { response ->
-            // convert photo to byte array + get bitmap
-            val photoByteArray = response.body()!!.byteStream().readBytes()
-            val photoBitmap = BitmapFactory.decodeByteArray(photoByteArray, 0, photoByteArray.size)
-
-            // set account photo + save photo value
+            val photoBitmap = Util.getBitmapFromInputStream(response.body()!!.byteStream())
             holder.accountPhoto.setImageBitmap(photoBitmap)
 
             val currentItem = resultList[position]

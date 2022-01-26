@@ -418,18 +418,14 @@ class CommentFragment : Fragment() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchAccountPhotoReq(FetchAccountPhotoReqDto(id))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-            // convert photo to byte array + get bitmap
-            val photoByteArray = response.body()!!.byteStream().readBytes()
-            val photoBitmap = BitmapFactory.decodeByteArray(photoByteArray, 0, photoByteArray.size)
-
-            // set account photo
+            val photoBitmap = Util.getBitmapFromInputStream(response.body()!!.byteStream())
             imageView.setImageBitmap(photoBitmap)
         }, {}, {})
     }
 
     private fun setEmptyNotificationView(itemCount: Int?) {
-        // set notification view
-        val visibility = if(itemCount != 0) View.GONE else View.VISIBLE
-        binding.emptyCommentListNotification.visibility = visibility
+        binding.emptyCommentListNotification.visibility =
+            if(itemCount != 0) View.GONE
+            else View.VISIBLE
     }
 }

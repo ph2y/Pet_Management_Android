@@ -350,8 +350,7 @@ class PetProfileFragment : Fragment(){
 
     private fun setPhotoViews() {
         if(myPetViewModel.petPhotoByteArrayProfile != null) {
-            val bitmap = BitmapFactory.decodeByteArray(myPetViewModel.petPhotoByteArrayProfile, 0,
-                myPetViewModel.petPhotoByteArrayProfile!!.size)
+            val bitmap = Util.getBitmapFromByteArray(myPetViewModel.petPhotoByteArrayProfile!!)
             Glide.with(requireContext()).load(bitmap).into(binding.petPhoto)
         }
         else {
@@ -359,8 +358,7 @@ class PetProfileFragment : Fragment(){
         }
 
         if(myPetViewModel.accountPhotoByteArray != null) {
-            val bitmap = BitmapFactory.decodeByteArray(myPetViewModel.accountPhotoByteArray, 0,
-                myPetViewModel.accountPhotoByteArray!!.size)
+            val bitmap = Util.getBitmapFromByteArray(myPetViewModel.accountPhotoByteArray!!)
             binding.accountPhoto.setImageBitmap(bitmap)
         }
         else {

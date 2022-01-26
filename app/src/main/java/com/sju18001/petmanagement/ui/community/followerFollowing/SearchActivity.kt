@@ -151,8 +151,8 @@ class SearchActivity : AppCompatActivity() {
 
     private fun setAccountPhoto() {
         if(searchViewModel.accountPhotoUrl != null) {
-            binding.accountPhoto.setImageBitmap(BitmapFactory.decodeByteArray(searchViewModel.accountPhotoByteArray,
-                0, searchViewModel.accountPhotoByteArray!!.size))
+            val bitmap = Util.getBitmapFromByteArray(searchViewModel.accountPhotoByteArray!!)
+            binding.accountPhoto.setImageBitmap(bitmap)
         }
         else {
             binding.accountPhoto.setImageDrawable(getDrawable(R.drawable.ic_baseline_account_circle_24))
@@ -286,8 +286,8 @@ class SearchActivity : AppCompatActivity() {
 
             // account photo
             if(searchViewModel.accountPhotoUrl != null) {
-                binding.accountPhoto.setImageBitmap(BitmapFactory.decodeByteArray(searchViewModel.accountPhotoByteArray,
-                    0, searchViewModel.accountPhotoByteArray!!.size))
+                val bitmap = Util.getBitmapFromByteArray(searchViewModel.accountPhotoByteArray!!)
+                binding.accountPhoto.setImageBitmap(bitmap)
             }
 
             // account nickname

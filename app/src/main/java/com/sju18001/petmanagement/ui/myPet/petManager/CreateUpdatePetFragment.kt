@@ -476,8 +476,7 @@ class CreateUpdatePetFragment : Fragment() {
         // if photo not selected, and is in update mode -> set photo
         else if(requireActivity().intent.getStringExtra("fragmentType") == "pet_profile_pet_manager") {
             if(myPetViewModel.petPhotoByteArray != null) {
-                val bitmap = BitmapFactory.decodeByteArray(myPetViewModel.petPhotoByteArray, 0,
-                    myPetViewModel.petPhotoByteArray!!.size)
+                val bitmap = Util.getBitmapFromByteArray(myPetViewModel.petPhotoByteArray!!)
                 Glide.with(requireContext()).load(bitmap).into(binding.petPhotoInput)
             }
             else {
