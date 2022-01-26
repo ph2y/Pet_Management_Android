@@ -155,7 +155,7 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
             else View.VISIBLE
     }
 
-    private fun setLikeButton(holder: ViewHolder, position: Int) {
+    fun setLikeButton(holder: ViewHolder, position: Int) {
         if(isPostLiked[position]){
             holder.createLikeButton.visibility = View.GONE
             holder.deleteLikeButton.visibility = View.VISIBLE

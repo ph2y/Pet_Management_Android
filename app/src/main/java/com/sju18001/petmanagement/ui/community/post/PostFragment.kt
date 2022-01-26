@@ -172,29 +172,23 @@ class PostFragment : Fragment() {
                 val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
                     .createLikeReq(CreateLikeReqDto(postId, null))
                 ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
-                    adapter.setLikedCount(position, adapter.getLikedCount(position) + 1)
-                    adapter.setIsPostLiked(position, true)
+                    // notify하는 대신, 텍스트에 1을 추가하는 것으로 마친다.(bind에는 큰 소요가 있으므로)
+                    holder.likeCountTextView.text = ((holder.likeCountTextView.text).toString().toLong() + 1).toString()
 
-                    adapter.notifyItemChanged(position)
-                }, {
                     adapter.setIsPostLiked(position, true)
-
-                    adapter.notifyItemChanged(position)
-                }, {})
+                    adapter.setLikeButton(holder, position)
+                }, {}, {})
             }
 
             override fun deleteLike(postId: Long, holder: PostListAdapter.ViewHolder, position: Int) {
                 val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
                     .deleteLikeReq(DeleteLikeReqDto(postId, null))
                 ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
-                    adapter.setLikedCount(position, adapter.getLikedCount(position) - 1)
-                    adapter.setIsPostLiked(position, false)
+                    holder.likeCountTextView.text = ((holder.likeCountTextView.text).toString().toLong() - 1).toString()
 
-                    adapter.notifyItemChanged(position)
+                    adapter.setIsPostLiked(position, false)
+                    adapter.setLikeButton(holder, position)
                 }, {
-                    adapter.setIsPostLiked(position, false)
-
-                    adapter.notifyItemChanged(position)
                 }, {})
             }
 
