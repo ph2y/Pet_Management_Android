@@ -294,18 +294,35 @@ class Util {
             // get error message + handle exceptions
             // TODO: 서버에서 받는 모든 종류의 에러 메세지에 따라 Toast로 보여줄 메세지 설정하기
             val toastMessage: String = when(errorMessage) {
-                // if no such account exists -> show Toast message
+                // Account
+                "Email already exists" -> {
+                    context.getString(R.string.email_message_overlap)
+                }
+                "Username already exists" -> {
+                    context.getString(R.string.id_message_overlap)
+                }
+                "Phone number already exists" -> {
+                    context.getString(R.string.phone_message_overlap)
+                }
+                "Verification code send failed" -> {
+                    context.getString(R.string.verification_code_send_fail_exception_message)
+                }
+                "Wrong password" -> {
+                    context.getString(R.string.wrong_password_exception_message)
+                }
+                // Pet
+                // Follow
                 "Account not exists" -> {
-                    context.getText(R.string.account_does_not_exist_exception_message) as String
+                    context.getString(R.string.account_does_not_exist_exception_message)
                 }
-                // if fetched self -> show Toast message
                 "Fetched self" -> {
-                    context.getText(R.string.fetched_self_exception_message) as String
+                    context.getString(R.string.fetched_self_exception_message)
                 }
-                // other exceptions -> show Toast message + log
                 else -> {
-                    context.getText(R.string.default_error_message) as String
+                    context.getString(R.string.default_error_message)
                 }
+                // Post
+
             }
 
             Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
