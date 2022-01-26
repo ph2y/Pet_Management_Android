@@ -50,8 +50,6 @@ class PostFragment : Fragment() {
         }
     }
 
-    val communityViewModel: CommunityViewModel by activityViewModels()
-
     private var _binding: FragmentPostBinding? = null
     private val binding get() = _binding!!
 
@@ -63,7 +61,10 @@ class PostFragment : Fragment() {
 
     private var isViewDestroyed = false
 
-    // 글 새로고침
+    /**
+     * fetch post를 위한 변수입니다. topPostId를 기준으로 페이징하여
+     * 순차적으로 fetch post 작업을 할 수 있습니다.
+     */
     private var isLast = false
     private var topPostId: Long? = null
     private var pageIndex: Int = 1
@@ -172,7 +173,7 @@ class PostFragment : Fragment() {
                 val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
                     .createLikeReq(CreateLikeReqDto(postId, null))
                 ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
-                    // notify하는 대신, 텍스트에 1을 추가하는 것으로 마친다.(bind에는 큰 소요가 있으므로)
+                    // bind에는 큰 소요가 있으므로, notify하는 대신, 텍스트에 1을 추가하는 것으로 마친다.
                     holder.likeCountTextView.text = ((holder.likeCountTextView.text).toString().toLong() + 1).toString()
 
                     adapter.setIsPostLiked(position, true)
@@ -184,12 +185,12 @@ class PostFragment : Fragment() {
                 val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
                     .deleteLikeReq(DeleteLikeReqDto(postId, null))
                 ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+                    // bind에는 큰 소요가 있으므로, notify하는 대신, 텍스트에 1을 감소시키는 것으로 마친다.
                     holder.likeCountTextView.text = ((holder.likeCountTextView.text).toString().toLong() - 1).toString()
 
                     adapter.setIsPostLiked(position, false)
                     adapter.setLikeButton(holder, position)
-                }, {
-                }, {})
+                }, {}, {})
             }
 
             override fun onClickPostFunctionButton(post: Post, position: Int) {
