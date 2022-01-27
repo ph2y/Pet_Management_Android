@@ -294,8 +294,15 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
-    <!-- Error Message -->
+    <!-- Server Error Message -->
     <string name="verification_code_send_fail_exception_message">인증 코드를 보내는 데 실패했어요.</string>
     <string name="wrong_password_exception_message">비밀번호가 틀렸어요!</string>
+    <string name="pet_not_exist_exception_message">해당 반려동물이 삭제되었거나 존재하지 않아요!</string>
+    <string name="petSchedule_not_exist_exception_message">해당 일정이 삭제되었거나 존재하지 않아요!</string>
+    <string name="post_not_exist_exception_message">해당 포스트가 삭제되었거나 존재하지 않아요!</string>
+    <string name="post_attachment_type_type_invalid_exception_message">앱에서 지원하는 파일 형식이 아니에요!</string>
+    <string name="comment_not_exist_exception_message">해당 댓글이 삭제되었거나 존재하지 않아요!</string>
+    <string name="like_not_exist_exception_message">해당 좋아요가 삭제되었거나 존재하지 않아요!</string>
+    <string name="like_duplicate_exception_message">이미 좋아요를 누르셨어요!</string>
     <string name="default_error_message">에러가 발생하였습니다!\n다시 시도해주세요!</string>
 </resources>

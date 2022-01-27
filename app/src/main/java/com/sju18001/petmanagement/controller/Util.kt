@@ -291,8 +291,7 @@ class Util {
         }
 
         fun showToastAndLog(context: Context, errorMessage: String){
-            // get error message + handle exceptions
-            // TODO: 서버에서 받는 모든 종류의 에러 메세지에 따라 Toast로 보여줄 메세지 설정하기
+            // get server error message + handle exceptions
             val toastMessage: String = when(errorMessage) {
                 // Account
                 "Email already exists" -> {
@@ -311,6 +310,12 @@ class Util {
                     context.getString(R.string.wrong_password_exception_message)
                 }
                 // Pet
+                "Pet entity does not exist" -> {
+                    context.getString(R.string.pet_not_exist_exception_message)
+                }
+                "PetSchedule entity does not exist" -> {
+                    context.getString(R.string.petSchedule_not_exist_exception_message)
+                }
                 // Follow
                 "Account not exists" -> {
                     context.getString(R.string.account_does_not_exist_exception_message)
@@ -318,11 +323,28 @@ class Util {
                 "Fetched self" -> {
                     context.getString(R.string.fetched_self_exception_message)
                 }
+                "Self follow is not allowed" -> {
+                    context.getString(R.string.fetched_self_exception_message)
+                }
+                // Post
+                "Post entity does not exist" -> {
+                    context.getString(R.string.post_not_exist_exception_message)
+                }
+                "Post attachment file type is invalid" -> {
+                    context.getString(R.string.post_attachment_type_type_invalid_exception_message)
+                }
+                "Comment entity does not exist" -> {
+                    context.getString(R.string.comment_not_exist_exception_message)
+                }
+                "Like entity does not exist" -> {
+                    context.getString(R.string.like_not_exist_exception_message)
+                }
+                "Already liked" -> {
+                    context.getString(R.string.like_duplicate_exception_message)
+                }
                 else -> {
                     context.getString(R.string.default_error_message)
                 }
-                // Post
-
             }
 
             Toast.makeText(context, toastMessage, Toast.LENGTH_SHORT).show()
