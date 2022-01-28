@@ -80,7 +80,6 @@ class MainActivity : AppCompatActivity() {
                 actionBar?.setTitle(R.string.title_my_pet)
                 actionBar?.show()
             }
-            /* TODO: 지도 복구 시 해당 코드 복구 + 0123으로 인덱싱
             1 -> {
                 addFragmentWhenFragmentIsNull(mapFragment, "map")
                 activeFragment = mapFragment
@@ -89,8 +88,8 @@ class MainActivity : AppCompatActivity() {
                 activeFragmentIndex = 1
                 invalidateOptionsMenu()
                 actionBar?.hide()
-            }*/
-            1 -> {
+            }
+            2 -> {
                 addFragmentWhenFragmentIsNull(communityFragment, "community")
                 activeFragment = communityFragment
 
@@ -100,7 +99,7 @@ class MainActivity : AppCompatActivity() {
                 actionBar?.setTitle(R.string.title_community)
                 actionBar?.show()
             }
-            2 -> {
+            3 -> {
                 addFragmentWhenFragmentIsNull(settingFragment, "setting")
                 activeFragment = settingFragment
 
@@ -147,10 +146,6 @@ class MainActivity : AppCompatActivity() {
 
                     true
                 }
-                /*
-                TODO: 지도 복구 시 해당 코드 복구
-                commit: 80872d41103f4a4782e59ab014c6c14d24995b45
-
                 R.id.navigation_map -> {
                     addFragmentWhenFragmentIsNull(mapFragment, "map")
                     fragmentManager.beginTransaction().hide(activeFragment).show(mapFragment).commitNow()
@@ -165,18 +160,18 @@ class MainActivity : AppCompatActivity() {
                     activeFragment = mapFragment
 
                     true
-                }*/
+                }
                 R.id.navigation_community -> {
                     addFragmentWhenFragmentIsNull(communityFragment, "community")
                     fragmentManager.beginTransaction().hide(activeFragment).show(communityFragment).commitNow()
 
-                    navView.menu.getItem(1).isChecked = true
+                    navView.menu.getItem(2).isChecked = true
 
                     invalidateOptionsMenu()
                     actionBar?.setTitle(R.string.title_community)
                     actionBar?.show()
 
-                    activeFragmentIndex = 1
+                    activeFragmentIndex = 2
                     activeFragment = communityFragment
 
                     (activeFragment as CommunityFragment).startAllVideos()
@@ -187,13 +182,13 @@ class MainActivity : AppCompatActivity() {
                     addFragmentWhenFragmentIsNull(settingFragment, "setting")
                     fragmentManager.beginTransaction().hide(activeFragment).show(settingFragment).commitNow()
 
-                    navView.menu.getItem(2).isChecked = true
+                    navView.menu.getItem(3).isChecked = true
 
                     invalidateOptionsMenu()
                     actionBar?.setTitle(R.string.title_setting)
                     actionBar?.show()
 
-                    activeFragmentIndex = 2
+                    activeFragmentIndex = 3
                     activeFragment = settingFragment
 
                     true
@@ -238,12 +233,12 @@ class MainActivity : AppCompatActivity() {
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         when(activeFragmentIndex) {
             0 -> { return false }
-            // 1 -> { return false } TODO: 지도 복구 시 해당 코드 복구
-            1 -> {
+            1 -> { return false }
+            2 -> {
                 menuInflater.inflate(R.menu.follower_following_menu, menu)
                 return true
             }
-            2 -> { return false }
+            3 -> { return false }
         }
         return false
     }
@@ -251,15 +246,15 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(activeFragmentIndex) {
             0 -> { return false }
-            // 1 -> { return false } TODO: 지도 복구 시 해당 코드 복구
-            1 -> {
+            1 -> { return false }
+            2 -> {
                 // start follower following activity
                 startActivity(Intent(this, FollowerFollowingActivity::class.java))
                 overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
 
                 return super.onOptionsItemSelected(item)
             }
-            2 -> { return false }
+            3 -> { return false }
         }
         return false
     }
