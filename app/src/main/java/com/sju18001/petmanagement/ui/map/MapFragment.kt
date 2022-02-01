@@ -31,6 +31,7 @@ import kotlinx.coroutines.launch
 import net.daum.mf.map.api.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.*
 import kotlin.system.exitProcess
 
 
@@ -345,6 +346,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             val document = currentDocuments!![item.tag]
 
             setLocationInformationTexts(document)
+            setLocationInformationRating(4.3f)
             setLocationInformationButtons(document)
         }else{
             Log.e("MapFragment", "currentDocuments is null")
@@ -359,6 +361,42 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         locationPlaceName.text = document.place_name
         locationCategoryName.text = document.category_group_name
         setLocationDistance(locationDistance, document.distance)
+    }
+
+    private fun setLocationInformationRating(rating: Float){
+        binding.textRating.text = rating.toString()
+        setRatingStars(rating)
+    }
+
+    private fun setRatingStars(rating: Float){
+        val context = requireContext()
+        val starImages = getStarImages()
+        for(i in 0 until starImages.size){
+            val drawableId = getDrawableIdOfStarImage(rating, i)
+            val drawable = context.resources.getDrawable(drawableId, context.theme)
+            starImages[i].setImageDrawable(drawable)
+        }
+    }
+
+    private fun getStarImages(): ArrayList<ImageView> {
+        val starImages = arrayListOf<ImageView>()
+        for(i in 1..5){
+            // View id: image_star1 ~ image_star5
+            val id = resources.getIdentifier("image_star$i", "id", requireContext().packageName)
+            val elem: ImageView = binding.locationInformationRating.findViewById(id)
+            starImages.add(elem)
+        }
+        return starImages
+    }
+
+    private fun getDrawableIdOfStarImage(rating: Float, index: Int): Int{
+        return if(rating > index+0.75){
+            R.drawable.ic_baseline_star_16
+        }else if(rating > index+0.25){
+            R.drawable.ic_baseline_star_half_16
+        }else{
+            R.drawable.ic_baseline_star_border_16
+        }
     }
 
     private fun setLocationInformationButtons(document: Place){
