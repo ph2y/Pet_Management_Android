@@ -54,7 +54,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     // 상수
     private val CURRENT_LOCATION_BUTTON_MARGIN: Int = 16
     private val NAVVIEW_HEIGHT: Int = 56
-    private val LOCATION_INFORMATION_HEIGHT: Int = 128
+    private val LOCATION_INFORMATION_HEIGHT: Int = 138
     private val ANIMATION_DURATION: Long = 200
 
     // View
