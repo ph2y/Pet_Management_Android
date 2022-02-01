@@ -24,6 +24,7 @@ import com.sju18001.petmanagement.databinding.FragmentMapBinding
 import com.sju18001.petmanagement.restapi.kakaoapi.KakaoApi
 import com.sju18001.petmanagement.restapi.kakaoapi.Place
 import com.sju18001.petmanagement.restapi.ServerUtil
+import com.sju18001.petmanagement.ui.map.review.ReviewActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
@@ -114,6 +115,11 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         }
 
 
+        // location information -> review fragment
+        binding.locationInformation.setOnClickListener {
+            startReviewActivity(1) // TODO
+        }
+
         // 현재 위치 버튼
         currentLocationButton = binding.currentLocationButton.apply{
             setOnClickListener{
@@ -177,10 +183,12 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         return root
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-        isViewDestroyed = true
+    private fun startReviewActivity(placeId: Long) {
+        val reviewActivityIntent = Intent(context, ReviewActivity::class.java)
+        reviewActivityIntent.putExtra("placeId", placeId)
+
+        startActivity(reviewActivityIntent)
+        requireActivity().overridePendingTransition(R.anim.enter_from_bottom, R.anim.exit_to_top)
     }
 
 
@@ -346,7 +354,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             val document = currentDocuments!![item.tag]
 
             setLocationInformationTexts(document)
-            setLocationInformationRating(4.3f)
+            setLocationInformationRating(4.3f) // TODO: place에 rating이 추가되면 변경
             setLocationInformationButtons(document)
         }else{
             Log.e("MapFragment", "currentDocuments is null")
@@ -590,6 +598,12 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                 decreasingCurrentLocationButtonMarginAnim!!.isRunning ||
                 showingLocationInformationAnim!!.isRunning ||
                 hidingLocationInformationAnim!!.isRunning
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        isViewDestroyed = true
     }
 
 

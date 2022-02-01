@@ -21,17 +21,24 @@
         android:roundIcon="@mipmap/ic_app_icon_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PetManagement">
-        <receiver android:name=".controller.AlarmBroadcastReceiver"
-            android:exported="false"
-            android:enabled="true">
+        <activity
+            android:name=".ui.map.review.ReviewActivity"
+            android:exported="false" />
+
+        <receiver
+            android:name=".controller.AlarmBroadcastReceiver"
+            android:enabled="true"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
 
-        <activity android:name=".ui.community.post.generalFiles.GeneralFilesActivity"
+        <activity
+            android:name=".ui.community.post.generalFiles.GeneralFilesActivity"
             android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
-        <activity android:name=".ui.community.followerFollowing.SearchActivity"
+        <activity
+            android:name=".ui.community.followerFollowing.SearchActivity"
             android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
         <activity android:name=".ui.community.followerFollowing.FollowerFollowingActivity" />
         <activity android:name=".ui.community.comment.updateComment.UpdateCommentActivity" />
@@ -52,16 +59,15 @@
         <meta-data
             android:name="com.kakao.sdk.AppKey"
             android:value="fc8b31553a5077fdddb778cdda5b0d41" />
-
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_channel_id"
-            android:value="@string/default_notification_channel_id"/>
+            android:value="@string/default_notification_channel_id" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/app_icon"/>
+            android:resource="@drawable/app_icon" />
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"
-            android:resource="@color/pumpkin"/>
+            android:resource="@color/pumpkin" />
 
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -76,11 +82,12 @@
         <activity android:name=".ui.myPet.MyPetActivity" />
         <activity android:name=".ui.setting.SettingActivity" />
         <activity android:name=".MainActivity" />
+
         <service
             android:name=".controller.firebase.MyFirebaseMessagingService"
             android:exported="false">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
     </application>
