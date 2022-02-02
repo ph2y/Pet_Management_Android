@@ -145,6 +145,10 @@
     <string name="shop">샵</string>
     <string name="hospital">병원</string>
 
+    <!-- Review Fragment -->
+    <string name="review">리뷰</string>
+    <string name="empty_review_list_notification">불러올 리뷰가 없어요.\n새 리뷰를 추가해보세요!</string>
+
     <!-- Setting Fragment -->
     <string name="preferences_title">설정</string>
     <string name="info_version_title">버전 및 정보</string>

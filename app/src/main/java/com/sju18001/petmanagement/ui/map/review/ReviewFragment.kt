@@ -25,8 +25,6 @@ class ReviewFragment : Fragment() {
     ): View? {
         _binding = FragmentReviewBinding.inflate(inflater, container, false)
 
-        binding.testForPlaceId.text = placeId.toString()
-
         return binding.root
     }
 

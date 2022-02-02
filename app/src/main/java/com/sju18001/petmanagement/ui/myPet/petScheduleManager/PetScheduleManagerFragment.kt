@@ -49,7 +49,7 @@ class PetScheduleManagerFragment : Fragment() {
         initializeAdapter()
 
         // 추가 버튼
-        binding.addPetScheduleFab.setOnClickListener{
+        binding.createPetScheduleFab.setOnClickListener{
             checkIfAccountHasPetAndStartCreatePetSchedule()
         }
 

@@ -212,46 +212,14 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         }
     }
 
-    private fun addCircleCenteredAtCurrentLocation(mapView: MapView, radius: Int): MapCircle?{
-        var searchAreaCircle:MapCircle? = null
-        mapView.removeAllCircles()
-
-        try{
-            searchAreaCircle = MapCircle(
-                currentMapPoint,
-                radius,
-                Color.argb(128, 255, 0, 0),
-                Color.argb(0, 0, 0, 0)
-            )
-            searchAreaCircle.tag = 1000
-            mapView.addCircle(searchAreaCircle)
-        }catch(e: Exception){
-            // currentMapPoint가 아직 초기화되지 않았을 경우
-            Log.e("MapFragment", e.stackTrace.toString())
-        }
-
-        return searchAreaCircle
-    }
-    private fun moveCameraOnCircle(mapView: MapView, circle: MapCircle, padding: Int){
-        try{
-            val mapPointBoundsArray = arrayOf(circle.bound, circle.bound)
-            val mapPointBounds = MapPointBounds(mapPointBoundsArray)
-            mapView.moveCamera(CameraUpdateFactory.newMapPointBounds(mapPointBounds, padding))
-        }catch(e:Exception){
-            // circle을 반환받지 못했을 경우
-            Log.i("MapFragment", e.stackTrace.toString())
-        }
-    }
-
 
     // * 검색
     private fun doSearch(keyword: String, mapView:MapView, keyboardView: View){
         searchKeyword(keyword, mapView)
 
-        /* WARNING: 에뮬레이터에서 Circle이 정상 작동하지 않을 시 밑의 3줄 주석 처리를 해야한다.
         setMapCenterPointToCurrentLocation(mapView)
         val searchAreaCircle = addCircleCenteredAtCurrentLocation(mapView, searchRadiusMeter)
-        moveCameraOnCircle(mapView, searchAreaCircle!!, 50) */
+        moveCameraOnCircle(mapView, searchAreaCircle!!, 50)
     }
 
     private fun searchKeyword(keyword: String, mapView:MapView){
@@ -310,6 +278,37 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             }
 
             mapView.addPOIItem(newMarker)
+        }
+    }
+
+    private fun addCircleCenteredAtCurrentLocation(mapView: MapView, radius: Int): MapCircle?{
+        var searchAreaCircle:MapCircle? = null
+        mapView.removeAllCircles()
+
+        try{
+            searchAreaCircle = MapCircle(
+                currentMapPoint,
+                radius,
+                Color.argb(128, 255, 0, 0),
+                Color.argb(0, 0, 0, 0)
+            )
+            searchAreaCircle.tag = 1000
+            mapView.addCircle(searchAreaCircle)
+        }catch(e: Exception){
+            // currentMapPoint가 아직 초기화되지 않았을 경우
+            Log.e("MapFragment", e.stackTrace.toString())
+        }
+
+        return searchAreaCircle
+    }
+    private fun moveCameraOnCircle(mapView: MapView, circle: MapCircle, padding: Int){
+        try{
+            val mapPointBoundsArray = arrayOf(circle.bound, circle.bound)
+            val mapPointBounds = MapPointBounds(mapPointBoundsArray)
+            mapView.moveCamera(CameraUpdateFactory.newMapPointBounds(mapPointBounds, padding))
+        }catch(e:Exception){
+            // circle을 반환받지 못했을 경우
+            Log.i("MapFragment", e.stackTrace.toString())
         }
     }
 
