@@ -92,16 +92,6 @@ class ReviewListAdapter(
 
     private fun getStarImages(holder: ViewHolder) = arrayListOf(holder.starImage1, holder.starImage2, holder.starImage3, holder.starImage4, holder.starImage5)
 
-    private fun getDrawableIdOfStarImage(rating: Float, index: Int): Int{
-        return if(rating > index+0.75){
-            R.drawable.ic_baseline_star_16
-        }else if(rating > index+0.25){
-            R.drawable.ic_baseline_star_half_16
-        }else{
-            R.drawable.ic_baseline_star_border_16
-        }
-    }
-
     override fun getItemCount(): Int = dataSet.size
 
 

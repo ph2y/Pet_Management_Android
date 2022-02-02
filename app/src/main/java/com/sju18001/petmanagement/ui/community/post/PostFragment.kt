@@ -144,9 +144,8 @@ class PostFragment : Fragment() {
         isViewDestroyed = false
 
         initializeAdapter()
-        resetAndUpdatePostRecyclerView()
-
         CustomProgressBar.addProgressBar(requireContext(), binding.fragmentPostParentLayout, 80, R.color.white)
+        resetAndUpdatePostRecyclerView()
 
         return binding.root
     }

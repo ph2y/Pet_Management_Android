@@ -9,6 +9,7 @@ import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
+import com.sju18001.petmanagement.controller.CustomProgressBar
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentReviewBinding
@@ -44,9 +45,8 @@ class ReviewFragment : Fragment() {
         isViewDestroyed = false
 
         initializeAdapter()
+        CustomProgressBar.addProgressBar(requireContext(), binding.fragmentReviewParentLayout, 80, R.color.white)
         resetAndUpdateReviewRecyclerView()
-        
-        // TODO: 로딩
 
         return binding.root
     }
@@ -133,6 +133,7 @@ class ReviewFragment : Fragment() {
 
                     // TODO: set rating
                     reviewCount = it.size
+
                     setViewsAfterFetch()
                 }
             }
@@ -144,6 +145,8 @@ class ReviewFragment : Fragment() {
         Util.setRatingStars(getStarImages(), rating, requireContext())
         binding.textRating.text = "$rating"
         binding.textReviewCount.text = "$reviewCount"
+
+        CustomProgressBar.removeProgressBar(binding.fragmentReviewParentLayout)
     }
 
     private fun getStarImages(): ArrayList<ImageView> {
