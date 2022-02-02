@@ -23,7 +23,7 @@ import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.global.FileMetaData
 import com.sju18001.petmanagement.ui.community.CommunityUtil
 
-interface PostListAdapterInterface{
+interface PostListAdapterInterface {
     fun startCommentActivity(postId: Long)
     fun createLike(postId: Long, holder: PostListAdapter.ViewHolder, position: Int)
     fun deleteLike(postId: Long, holder: PostListAdapter.ViewHolder, position: Int)

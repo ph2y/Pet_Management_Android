@@ -10,12 +10,20 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.Util
+import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dao.Review
+
+interface ReviewListAdapterInterface {
+    fun setAccountPhoto(id: Long, holder: ReviewListAdapter.ViewHolder)
+    fun setAccountDefaultPhoto(holder: ReviewListAdapter.ViewHolder)
+}
 
 class ReviewListAdapter(
     private var dataSet: ArrayList<Review>,
     private val context: Context
 ): RecyclerView.Adapter<ReviewListAdapter.ViewHolder>() {
+    lateinit var reviewListAdapterInterface: ReviewListAdapterInterface
+
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
         val profileImage: ImageView = view.findViewById(R.id.image_profile)
         val nicknameText: TextView = view.findViewById(R.id.text_nickname)
@@ -69,9 +77,17 @@ class ReviewListAdapter(
         holder.contentsText.text = data.contents
         holder.timestampText.text = Util.getTimestampForDisplay(data.timestamp) + " 전"
 
-        // profileImage
+        setAccountPhoto(holder, data.author)
         Util.setViewMore(holder.contentsText, holder.viewMoreText, 3)
         setRatingStars(data.rating.toFloat(), holder)
+    }
+
+    private fun setAccountPhoto(holder: ViewHolder, author: Account) {
+        if(!author.photoUrl.isNullOrEmpty()){
+            reviewListAdapterInterface.setAccountPhoto(author.id, holder)
+        }else{
+            reviewListAdapterInterface.setAccountDefaultPhoto(holder)
+        }
     }
 
     private fun setRatingStars(rating: Float, holder: ViewHolder) {
