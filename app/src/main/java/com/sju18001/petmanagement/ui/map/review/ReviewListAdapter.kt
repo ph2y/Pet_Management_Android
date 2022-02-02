@@ -16,6 +16,7 @@ import com.sju18001.petmanagement.restapi.dao.Review
 interface ReviewListAdapterInterface {
     fun setAccountPhoto(id: Long, holder: ReviewListAdapter.ViewHolder)
     fun setAccountDefaultPhoto(holder: ReviewListAdapter.ViewHolder)
+    fun onClickReviewFunctionButton(review: Review, position: Int)
 }
 
 class ReviewListAdapter(
@@ -57,7 +58,9 @@ class ReviewListAdapter(
         }
 
         holder.dialogButton.setOnClickListener {
-
+            val position = holder.absoluteAdapterPosition
+            val item = dataSet[position]
+            reviewListAdapterInterface.onClickReviewFunctionButton(item, position)
         }
 
         holder.viewMoreText.setOnClickListener {
@@ -101,5 +104,9 @@ class ReviewListAdapter(
 
     fun resetItem() {
         dataSet = arrayListOf()
+    }
+
+    fun removeItem(index: Int){
+        dataSet.removeAt(index)
     }
 }

@@ -1,11 +1,14 @@
 package com.sju18001.petmanagement.ui.map.review
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
@@ -16,7 +19,9 @@ import com.sju18001.petmanagement.databinding.FragmentReviewBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.dao.Account
+import com.sju18001.petmanagement.restapi.dao.Post
 import com.sju18001.petmanagement.restapi.dao.Review
+import com.sju18001.petmanagement.restapi.dto.DeleteReviewReqDto
 import com.sju18001.petmanagement.restapi.dto.FetchAccountPhotoReqDto
 import com.sju18001.petmanagement.restapi.dto.FetchReviewReqDto
 
@@ -53,6 +58,9 @@ class ReviewFragment : Fragment() {
         return binding.root
     }
 
+    /**
+     * 리싸이클러뷰 초기화
+     */
     private fun initializeAdapter() {
         // 빈 배열로 초기화
         adapter = ReviewListAdapter(arrayListOf(), requireContext())
@@ -70,6 +78,17 @@ class ReviewFragment : Fragment() {
 
             override fun setAccountDefaultPhoto(holder: ReviewListAdapter.ViewHolder) {
                 holder.profileImage.setImageDrawable(requireContext().getDrawable(R.drawable.ic_baseline_account_circle_24))
+            }
+
+            override fun onClickReviewFunctionButton(review: Review, position: Int) {
+                val loggedInAccount = SessionManager.fetchLoggedInAccount(requireContext())!!
+
+                // 자기 자신이 쓴 글인가?
+                if(loggedInAccount.id == review.author.id){
+                    showReviewDialogForAuthor(review, position)
+                }else{
+                    showReviewDialogForNonAuthor()
+                }
             }
         }
 
@@ -100,12 +119,70 @@ class ReviewFragment : Fragment() {
         })
     }
 
+    /**
+     * Review function button 관련
+     */
+    private fun showReviewDialogForAuthor(review: Review, position: Int){
+        val builder = AlertDialog.Builder(requireActivity())
+        builder.setItems(arrayOf("수정", "삭제")) { _, which ->
+            when (which) {
+                0 -> {
+                    // TODO: startCreateUpdateReviewActivityForUpdate(review, position)
+                }
+                1 -> {
+                    showDeleteReviewDialog(review.id, position)
+                }
+            }
+        }
+            .create().show()
+    }
+
+    private fun showDeleteReviewDialog(reviewId: Long, position: Int) {
+        val builder = AlertDialog.Builder(requireActivity())
+        builder.setMessage(getString(R.string.delete_review_dialog))
+            .setPositiveButton(R.string.confirm) { _, _ ->
+                deleteReview(reviewId, position)
+            }
+            .setNegativeButton(R.string.cancel) { dialog, _ ->
+                dialog.cancel()
+            }
+            .create().show()
+    }
+
+    private fun deleteReview(id: Long, position: Int){
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .deleteReviewReq(DeleteReviewReqDto(id))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            adapter.removeItem(position)
+            adapter.notifyItemRemoved(position)
+            adapter.notifyItemRangeChanged(position, adapter.itemCount)
+
+            Toast.makeText(context, getString(R.string.delete_review_successful), Toast.LENGTH_LONG).show()
+        }, {}, {})
+    }
+
+    private fun showReviewDialogForNonAuthor(){
+        val builder = AlertDialog.Builder(requireActivity())
+        builder.setItems(arrayOf("신고"), DialogInterface.OnClickListener{ _, which ->
+            when(which){
+                0 -> {
+                    // TODO
+                }
+            }
+        })
+            .create().show()
+    }
+
     private fun setEmptyNotificationView(itemCount: Int?) {
         binding.emptyReviewListNotification.visibility =
             if(itemCount != 0) View.GONE
             else View.VISIBLE
     }
 
+
+    /**
+     * 리싸이클러뷰 함수
+     */
     private fun resetAndUpdateReviewRecyclerView() {
         resetReviewData()
         updateReviewRecyclerView(
@@ -135,9 +212,9 @@ class ReviewFragment : Fragment() {
 
                     // TODO: set rating
                     reviewCount = it.size
-
-                    setViewsAfterFetch()
                 }
+
+                setViewsAfterFetch()
             }
         }, { setViewsAfterFetch() }, { setViewsAfterFetch() })
     }

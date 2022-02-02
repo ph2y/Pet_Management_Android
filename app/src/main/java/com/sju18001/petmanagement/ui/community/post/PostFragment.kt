@@ -491,7 +491,6 @@ class PostFragment : Fragment() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .deletePostReq(DeletePostReqDto(id))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
-            // 데이터셋에서 삭제
             adapter.removeItem(position)
             adapter.notifyItemRemoved(position)
             adapter.notifyItemRangeChanged(position, adapter.itemCount)

@@ -113,6 +113,9 @@ interface ServerApi {
     @POST("api/review/fetch")
     fun fetchReviewReq(@Body fetchReviewReqDto: FetchReviewReqDto): Call<FetchReviewResDto>
 
+    @POST("api/review/delete")
+    fun deleteReviewReq(@Body deleteReviewReqDto: DeleteReviewReqDto): Call<DeleteReviewResDto>
+
 
     // Post API
     @POST("api/post/create")

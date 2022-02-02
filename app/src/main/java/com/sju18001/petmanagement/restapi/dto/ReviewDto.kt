@@ -13,3 +13,11 @@ data class FetchReviewResDto(
     val _metadata: DtoMetadata,
     val reviewList: List<Review>
 )
+
+data class DeleteReviewReqDto(
+    val id: Long
+)
+
+data class DeleteReviewResDto(
+    val _metadata: DtoMetadata
+)
