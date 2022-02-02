@@ -18,6 +18,7 @@ import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -487,6 +488,24 @@ class Util {
             val now = ZonedDateTime.of(LocalDateTime.now(), zone)
 
             return kotlin.math.abs(now.toEpochSecond() - time.toEpochSecond())
+        }
+
+        fun setRatingStars(starImages: ArrayList<ImageView>, rating: Float, context: Context) {
+            for(i in 0 until starImages.size){
+                val drawableId = getDrawableIdOfStarImage(rating, i)
+                val drawable = context.resources.getDrawable(drawableId, context.theme)
+                starImages[i].setImageDrawable(drawable)
+            }
+        }
+
+        private fun getDrawableIdOfStarImage(rating: Float, index: Int): Int{
+            return if(rating > index+0.75){
+                R.drawable.ic_baseline_star_16
+            }else if(rating > index+0.25){
+                R.drawable.ic_baseline_star_half_16
+            }else{
+                R.drawable.ic_baseline_star_border_16
+            }
         }
     }
 }

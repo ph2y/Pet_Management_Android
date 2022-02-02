@@ -5,6 +5,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
@@ -27,6 +28,8 @@ class ReviewFragment : Fragment() {
     private var isViewDestroyed = false
 
     private var placeId: Long = -1
+    private var rating: Float = 3.7f // TODO
+    private var reviewCount: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -121,15 +124,37 @@ class ReviewFragment : Fragment() {
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             response.body()!!.reviewList?.let {
                 if(it.isNotEmpty()){
-                    it.map { item ->
-                        adapter.addItem(item)
-                    }
+                    // TODO: pagination
+
+                    it.map { item -> adapter.addItem(item) }
                     adapter.notifyDataSetChanged()
 
                     setEmptyNotificationView(adapter.itemCount)
+
+                    // TODO: set rating
+                    reviewCount = it.size
+                    setViewsAfterFetch()
                 }
             }
-        }, {}, {})
+        }, { setViewsAfterFetch() }, { setViewsAfterFetch() })
+    }
+
+    // Fetch한 뒤에 호출해야함에 유의하라.
+    private fun setViewsAfterFetch() {
+        Util.setRatingStars(getStarImages(), rating, requireContext())
+        binding.textRating.text = "$rating"
+        binding.textReviewCount.text = "$reviewCount"
+    }
+
+    private fun getStarImages(): ArrayList<ImageView> {
+        val starImages = arrayListOf<ImageView>()
+        for(i in 1..5){
+            // View id: image_star1 ~ image_star5
+            val id = resources.getIdentifier("image_star$i", "id", requireContext().packageName)
+            val elem: ImageView = binding.layoutStars.findViewById(id)
+            starImages.add(elem)
+        }
+        return starImages
     }
 
 

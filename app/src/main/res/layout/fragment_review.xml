@@ -101,12 +101,20 @@
                         android:id="@+id/text_rating"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="4.3점"/>
+                        android:text="4.3"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="점("/>
                     <TextView
                         android:id="@+id/text_review_count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="(19명)"/>
+                        android:text="19"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="명)"/>
                 </LinearLayout>
             </LinearLayout>
 

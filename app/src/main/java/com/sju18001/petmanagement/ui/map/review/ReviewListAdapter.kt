@@ -79,7 +79,7 @@ class ReviewListAdapter(
 
         setAccountPhoto(holder, data.author)
         Util.setViewMore(holder.contentsText, holder.viewMoreText, 3)
-        setRatingStars(data.rating.toFloat(), holder)
+        Util.setRatingStars(getStarImages(holder), data.rating.toFloat(), context)
     }
 
     private fun setAccountPhoto(holder: ViewHolder, author: Account) {
@@ -87,15 +87,6 @@ class ReviewListAdapter(
             reviewListAdapterInterface.setAccountPhoto(author.id, holder)
         }else{
             reviewListAdapterInterface.setAccountDefaultPhoto(holder)
-        }
-    }
-
-    private fun setRatingStars(rating: Float, holder: ViewHolder) {
-        val starImages = getStarImages(holder)
-        for(i in 0 until starImages.size){
-            val drawableId = getDrawableIdOfStarImage(rating, i)
-            val drawable = context.resources.getDrawable(drawableId, context.theme)
-            starImages[i].setImageDrawable(drawable)
         }
     }
 

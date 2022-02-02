@@ -372,17 +372,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
     private fun setLocationInformationRating(rating: Float){
         binding.textRating.text = rating.toString()
-        setRatingStars(rating)
-    }
-
-    private fun setRatingStars(rating: Float){
-        val context = requireContext()
-        val starImages = getStarImages()
-        for(i in 0 until starImages.size){
-            val drawableId = getDrawableIdOfStarImage(rating, i)
-            val drawable = context.resources.getDrawable(drawableId, context.theme)
-            starImages[i].setImageDrawable(drawable)
-        }
+        Util.setRatingStars(getStarImages(), rating, requireContext())
     }
 
     private fun getStarImages(): ArrayList<ImageView> {
@@ -394,16 +384,6 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             starImages.add(elem)
         }
         return starImages
-    }
-
-    private fun getDrawableIdOfStarImage(rating: Float, index: Int): Int{
-        return if(rating > index+0.75){
-            R.drawable.ic_baseline_star_16
-        }else if(rating > index+0.25){
-            R.drawable.ic_baseline_star_half_16
-        }else{
-            R.drawable.ic_baseline_star_border_16
-        }
     }
 
     private fun setLocationInformationButtons(document: Place){
