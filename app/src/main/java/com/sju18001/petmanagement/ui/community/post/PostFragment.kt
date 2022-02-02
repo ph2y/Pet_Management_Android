@@ -372,11 +372,11 @@ class PostFragment : Fragment() {
         }
     }
 
-    private fun getPetIdFromArguments(): Long?{
+    private fun getPetIdFromArguments(): Long? {
         return arguments?.getLong("petId")
     }
 
-    private fun updatePostRecyclerView(body: FetchPostReqDto){
+    private fun updatePostRecyclerView(body: FetchPostReqDto) {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchPostReq(body)
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->

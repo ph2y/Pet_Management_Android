@@ -112,4 +112,13 @@ class ReviewListAdapter(
     }
 
     override fun getItemCount(): Int = dataSet.size
+
+
+    fun addItem(review: Review) {
+        dataSet.add(review)
+    }
+
+    fun resetItem() {
+        dataSet = arrayListOf()
+    }
 }

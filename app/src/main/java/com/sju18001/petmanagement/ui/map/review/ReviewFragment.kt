@@ -16,6 +16,7 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dao.Review
 import com.sju18001.petmanagement.restapi.dto.FetchAccountPhotoReqDto
+import com.sju18001.petmanagement.restapi.dto.FetchReviewReqDto
 
 class ReviewFragment : Fragment() {
     private var _binding: FragmentReviewBinding? = null
@@ -40,24 +41,18 @@ class ReviewFragment : Fragment() {
         isViewDestroyed = false
 
         initializeAdapter()
+        resetAndUpdateReviewRecyclerView()
+        
+        // TODO: 로딩
 
         return binding.root
     }
 
     private fun initializeAdapter() {
-        val tmp = Review(
-            1,
-            Account(2, "asdasd", "fchopinof99@naver.com", "010-6426-1370", null, false, "asdasd", "/app/data/accounts/account_2/account_profile_photo_.jpg", null, 1, "fTKHB2AlQIWudipGmllj5c:APA91bE-eb4r-oayXX85aMJdrWXzsicmYdmc1mIXycF8t1o3LgJGegjT2uRd7gC2sOYCOTWwqSgGUljBKMKrIaheNh5abUdEUOjlqB9R_paSRRfpaWHm4Ghf_tpzZABNxs1Cr6Es-1OF", true),
-            null,
-            1,
-            "무난한 동물병원이에요!",
-            3,
-            "2022-02-01T08:40:18",
-            false,
-            null
-        )
-        adapter = ReviewListAdapter(arrayListOf(tmp, tmp), requireContext())
+        // 빈 배열로 초기화
+        adapter = ReviewListAdapter(arrayListOf(), requireContext())
 
+        // 인터페이스 구현
         adapter.reviewListAdapterInterface = object: ReviewListAdapterInterface {
             override fun setAccountPhoto(id: Long, holder: ReviewListAdapter.ViewHolder) {
                 val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
@@ -78,18 +73,68 @@ class ReviewFragment : Fragment() {
             it.layoutManager = LinearLayoutManager(activity)
 
             it.addOnScrollListener(object: RecyclerView.OnScrollListener() {
-
+                // TODO: page index 추가 이후에 작업
             })
         }
 
         adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
+            override fun onChanged() {
+                super.onChanged()
+                setEmptyNotificationView(adapter.itemCount)
+            }
 
+            override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
+                super.onItemRangeRemoved(positionStart, itemCount)
+                setEmptyNotificationView(adapter.itemCount)
+            }
+
+            override fun onItemRangeInserted(positionStart: Int, itemCount: Int) {
+                super.onItemRangeInserted(positionStart, itemCount)
+                setEmptyNotificationView(adapter.itemCount)
+            }
         })
+    }
+
+    private fun setEmptyNotificationView(itemCount: Int?) {
+        binding.emptyReviewListNotification.visibility =
+            if(itemCount != 0) View.GONE
+            else View.VISIBLE
+    }
+
+    private fun resetAndUpdateReviewRecyclerView() {
+        resetReviewData()
+        updateReviewRecyclerView(
+            FetchReviewReqDto(null, placeId, null)
+        )
+    }
+
+    private fun resetReviewData() {
+        adapter.resetItem()
+        binding.recyclerViewReview.post{
+            adapter.notifyDataSetChanged()
+        }
+    }
+
+    private fun updateReviewRecyclerView(body: FetchReviewReqDto) {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .fetchReviewReq(body)
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            response.body()!!.reviewList?.let {
+                if(it.isNotEmpty()){
+                    it.map { item ->
+                        adapter.addItem(item)
+                    }
+                    adapter.notifyDataSetChanged()
+
+                    setEmptyNotificationView(adapter.itemCount)
+                }
+            }
+        }, {}, {})
     }
 
 
     override fun onDestroyView() {
-        super.onDestroy()
+        super.onDestroyView()
 
         _binding = null
         isViewDestroyed = true

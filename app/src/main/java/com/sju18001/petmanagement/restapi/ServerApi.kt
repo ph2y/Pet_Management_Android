@@ -109,6 +109,11 @@ interface ServerApi {
     fun updatePetScheduleReq(@Body updatePetScheduleReqDto: UpdatePetScheduleReqDto): Call<UpdatePetScheduleResDto>
 
 
+    // Review API
+    @POST("api/review/fetch")
+    fun fetchReviewReq(@Body fetchReviewReqDto: FetchReviewReqDto): Call<FetchReviewResDto>
+
+
     // Post API
     @POST("api/post/create")
     fun createPostReq(@Body createPostReqDto: CreatePostReqDto): Call<CreatePostResDto>
