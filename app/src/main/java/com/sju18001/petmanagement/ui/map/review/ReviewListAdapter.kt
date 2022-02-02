@@ -68,7 +68,7 @@ class ReviewListAdapter(
         // starImage
         holder.contentsText.text = data.contents
         Util.setViewMore(holder.contentsText, holder.viewMoreText, 3)
-        // timestampText
+        holder.timestampText.text = Util.getTimestampForDisplay(data.timestamp) + " 전"
     }
 
     override fun getItemCount(): Int = dataSet.size

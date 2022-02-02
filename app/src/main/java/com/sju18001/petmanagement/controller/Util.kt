@@ -28,11 +28,9 @@ import com.sju18001.petmanagement.restapi.global.FileMetaData
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import java.io.*
+import java.sql.Timestamp
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.Period
-import java.time.ZoneId
+import java.time.*
 import java.util.*
 
 
@@ -145,14 +143,6 @@ class Util {
             }
 
             return res
-        }
-
-        @RequiresApi(Build.VERSION_CODES.O)
-        fun getSecondDifferenceInLocalDateTime(localDateTime: LocalDateTime): Long{
-            val time = localDateTime.atZone(ZoneId.of("Asia/Seoul"))
-            val now = LocalDateTime.now().atZone(ZoneId.of("Asia/Seoul"))
-
-            return kotlin.math.abs(now.toEpochSecond() - time.toEpochSecond())
         }
 
         fun isUrlPhoto(url: String): Boolean{
@@ -471,6 +461,32 @@ class Util {
                     }
                 }
             }
+        }
+
+        fun getTimestampForDisplay(timestamp: String): String{
+            val secondDiff: Long = getSecondDifferenceInLocalDateTime(LocalDateTime.parse(timestamp))
+            val minuteDiff: Long = secondDiff / 60
+            val hourDiff: Long = minuteDiff / 60
+            val dateDiff: Long = hourDiff / 24
+            val monthDiff: Long = dateDiff / 30
+            val yearDiff: Long = monthDiff / 12
+
+            return when {
+                yearDiff > 0 -> "${yearDiff}년"
+                monthDiff > 0 -> "${monthDiff}달"
+                dateDiff > 0 -> "${dateDiff}일"
+                hourDiff > 0 -> "${hourDiff}시간"
+                minuteDiff > 0 -> "${minuteDiff}분"
+                else -> "${secondDiff}초"
+            }
+        }
+
+        private fun getSecondDifferenceInLocalDateTime(localDateTime: LocalDateTime): Long{
+            val zone = ZoneId.of("Asia/Seoul")
+            val time = ZonedDateTime.of(localDateTime.plusHours(9), zone)
+            val now = ZonedDateTime.of(LocalDateTime.now(), zone)
+
+            return kotlin.math.abs(now.toEpochSecond() - time.toEpochSecond())
         }
     }
 }

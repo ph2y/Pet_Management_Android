@@ -110,7 +110,7 @@ class CommentListAdapter(
     private fun updateDataSetToViewHolder(holder: CommentListAdapter.ViewHolder, data: Comment, position: Int){
         holder.nicknameTextView.text = data.author.nickname
         holder.contentsTextView.text = data.contents
-        holder.timestampTextView.text = getTimestampForDisplay(data.timestamp)
+        holder.timestampTextView.text = Util.getTimestampForDisplay(data.timestamp)
 
         // Set photo
         if(!data.author.photoUrl.isNullOrEmpty()){
@@ -128,25 +128,6 @@ class CommentListAdapter(
 
         // Comment, Reply를 구분하여 이에 따라 뷰 세팅
         setViewDependingOnCommentOrReply(holder, position)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun getTimestampForDisplay(timestamp: String): String{
-        val secondDiff: Long = Util.getSecondDifferenceInLocalDateTime(LocalDateTime.parse(timestamp))
-        val minuteDiff: Long = secondDiff / 60
-        val hourDiff: Long = minuteDiff / 60
-        val dateDiff: Long = hourDiff / 24
-        val monthDiff: Long = dateDiff / 30
-        val yearDiff: Long = monthDiff / 12
-
-        return when {
-            yearDiff > 0 -> "${yearDiff}년"
-            monthDiff > 0 -> "${monthDiff}달"
-            dateDiff > 0 -> "${dateDiff}일"
-            hourDiff > 0 -> "${hourDiff}시간"
-            minuteDiff > 0 -> "${minuteDiff}분"
-            else -> "${secondDiff}초"
-        }
     }
 
     private fun setSpanToContent(nicknameTextView: TextView, contentTextView: TextView){
