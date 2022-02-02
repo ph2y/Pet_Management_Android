@@ -61,6 +61,41 @@ class CommentListAdapter(
         return holder
     }
 
+    private fun setListenerOnView(holder: ViewHolder){
+        // start pet profile
+        holder.profileImage.setOnClickListener {
+            val position = holder.absoluteAdapterPosition
+            commentListAdapterInterface.startPetProfile(dataSet[position].author)
+        }
+        holder.nicknameTextView.setOnClickListener {
+            val position = holder.absoluteAdapterPosition
+            commentListAdapterInterface.startPetProfile(dataSet[position].author)
+        }
+
+        holder.replyTextView.setOnClickListener {
+            val position = holder.absoluteAdapterPosition
+            dataSet[position].author.nickname?.let {
+                commentListAdapterInterface.onClickReply(dataSet[position].id, it)
+            }
+        }
+
+        holder.commentLayout.setOnLongClickListener { _ ->
+            val position = holder.absoluteAdapterPosition
+            commentListAdapterInterface.onLongClickComment(dataSet[position].author.id, dataSet[position].id, dataSet[position].contents, position)
+            true
+        }
+
+        holder.loadReplyTextView.setOnClickListener {
+            val position = holder.absoluteAdapterPosition
+            commentListAdapterInterface.fetchReplyComment(pageIndices[position], null, dataSet[position].id, position)
+            pageIndices[position] += 1
+
+            // 답글 불러오기 -> 이전 답글 불러오기
+            holder.loadReplyTextView.text = commentListAdapterInterface.getActivity().getString(R.string.load_prev_reply_title)
+        }
+    }
+
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         updateDataSetToViewHolder(holder, dataSet[position], position)
@@ -137,40 +172,6 @@ class CommentListAdapter(
 
         // 답글일 시 답글 달기 제거
         holder.replyTextView.visibility = if(isReply) View.GONE else View.VISIBLE
-    }
-
-    private fun setListenerOnView(holder: ViewHolder){
-        // start pet profile
-        holder.profileImage.setOnClickListener {
-            val position = holder.absoluteAdapterPosition
-            commentListAdapterInterface.startPetProfile(dataSet[position].author)
-        }
-        holder.nicknameTextView.setOnClickListener {
-            val position = holder.absoluteAdapterPosition
-            commentListAdapterInterface.startPetProfile(dataSet[position].author)
-        }
-
-        holder.replyTextView.setOnClickListener {
-            val position = holder.absoluteAdapterPosition
-            dataSet[position].author.nickname?.let {
-                commentListAdapterInterface.onClickReply(dataSet[position].id, it)
-            }
-        }
-
-        holder.commentLayout.setOnLongClickListener { _ ->
-            val position = holder.absoluteAdapterPosition
-            commentListAdapterInterface.onLongClickComment(dataSet[position].author.id, dataSet[position].id, dataSet[position].contents, position)
-            true
-        }
-
-        holder.loadReplyTextView.setOnClickListener {
-            val position = holder.absoluteAdapterPosition
-            commentListAdapterInterface.fetchReplyComment(pageIndices[position], null, dataSet[position].id, position)
-            pageIndices[position] += 1
-            
-            // 답글 불러오기 -> 이전 답글 불러오기
-            holder.loadReplyTextView.text = commentListAdapterInterface.getActivity().getString(R.string.load_prev_reply_title)
-        }
     }
 
     fun addItem(item: Comment){

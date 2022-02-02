@@ -35,8 +35,6 @@ interface PostListAdapterInterface{
     fun getContext(): Context
 }
 
-private const val MAX_LINE = 5
-
 class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCounts: ArrayList<Long>, private var isPostLiked: ArrayList<Boolean>) : RecyclerView.Adapter<PostListAdapter.ViewHolder>() {
     lateinit var communityPostListAdapterInterface: PostListAdapterInterface
 
@@ -131,7 +129,7 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
         setLikeButton(holder, position)
         setViewPager(holder, post)
         setTag(holder, post.serializedHashTags)
-        setViewMore(holder.contentsTextView, holder.viewMoreTextView)
+        Util.setViewMore(holder.contentsTextView, holder.viewMoreTextView, 5)
     }
 
     private fun setTextViews(holder: ViewHolder, post: Post, likedCount: Long) {
@@ -197,29 +195,6 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
             holder.tagRecyclerView.apply {
                 visibility = View.GONE
                 adapter = PostTagListAdapter(arrayListOf())
-            }
-        }
-    }
-
-    private fun setViewMore(contentsTextView: TextView, viewMoreTextView: TextView){
-        // 더보기를 없는 것으로 초기화를 한다. 조건에 맞을 시 VISIBLE
-        contentsTextView.maxLines = MAX_LINE
-        viewMoreTextView.visibility = View.GONE
-
-        // getEllipsisCount()을 통한 더보기 표시 및 구현
-        contentsTextView.post {
-            val lineCount = contentsTextView.layout.lineCount
-            if (lineCount > 0) {
-                if (contentsTextView.layout.getEllipsisCount(lineCount - 1) > 0) {
-                    // 더보기 표시
-                    viewMoreTextView.visibility = View.VISIBLE
-
-                    // 더보기 클릭 이벤트
-                    viewMoreTextView.setOnClickListener {
-                        contentsTextView.maxLines = Int.MAX_VALUE
-                        viewMoreTextView.visibility = View.GONE
-                    }
-                }
             }
         }
     }

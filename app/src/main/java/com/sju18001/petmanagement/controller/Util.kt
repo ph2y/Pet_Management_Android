@@ -18,6 +18,7 @@ import android.view.ViewGroup
 import android.view.WindowInsets
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import com.google.gson.Gson
@@ -446,6 +447,30 @@ class Util {
 
         fun getBitmapFromByteArray(byteArray: ByteArray): Bitmap {
             return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+        }
+
+
+        fun setViewMore(contentsTextView: TextView, viewMoreTextView: TextView, maxLine: Int){
+            // 더보기를 없는 것으로 초기화를 한다. 조건에 맞을 시 VISIBLE
+            contentsTextView.maxLines = maxLine
+            viewMoreTextView.visibility = View.GONE
+
+            // getEllipsisCount()을 통한 더보기 표시 및 구현
+            contentsTextView.post {
+                val lineCount = contentsTextView.layout.lineCount
+                if (lineCount > 0) {
+                    if (contentsTextView.layout.getEllipsisCount(lineCount - 1) > 0) {
+                        // 더보기 표시
+                        viewMoreTextView.visibility = View.VISIBLE
+
+                        // 더보기 클릭 이벤트
+                        viewMoreTextView.setOnClickListener {
+                            contentsTextView.maxLines = Int.MAX_VALUE
+                            viewMoreTextView.visibility = View.GONE
+                        }
+                    }
+                }
+            }
         }
     }
 }
