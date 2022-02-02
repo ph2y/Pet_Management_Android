@@ -48,6 +48,8 @@ class ReviewFragment : Fragment() {
         CustomProgressBar.addProgressBar(requireContext(), binding.fragmentReviewParentLayout, 80, R.color.white)
         resetAndUpdateReviewRecyclerView()
 
+        setListenerOnViews()
+
         return binding.root
     }
 
@@ -158,6 +160,15 @@ class ReviewFragment : Fragment() {
             starImages.add(elem)
         }
         return starImages
+    }
+
+    private fun setListenerOnViews() {
+        binding.buttonBack.setOnClickListener {
+            activity?.finish()
+        }
+        binding.createReviewFab.setOnClickListener {
+
+        }
     }
 
 
