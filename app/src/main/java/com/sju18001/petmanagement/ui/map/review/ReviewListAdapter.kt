@@ -1,5 +1,6 @@
 package com.sju18001.petmanagement.ui.map.review
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,7 +13,8 @@ import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.restapi.dao.Review
 
 class ReviewListAdapter(
-    private var dataSet: ArrayList<Review>
+    private var dataSet: ArrayList<Review>,
+    private val context: Context
 ): RecyclerView.Adapter<ReviewListAdapter.ViewHolder>() {
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
         val profileImage: ImageView = view.findViewById(R.id.image_profile)
@@ -60,15 +62,37 @@ class ReviewListAdapter(
         updateDataSetToViewHolder(holder, position)
     }
 
-    private fun updateDataSetToViewHolder(holder: ViewHolder, position: Int){
+    private fun updateDataSetToViewHolder(holder: ViewHolder, position: Int) {
         val data = dataSet[position]
 
-        // profileImage
         holder.nicknameText.text = data.author.nickname
-        // starImage
         holder.contentsText.text = data.contents
-        Util.setViewMore(holder.contentsText, holder.viewMoreText, 3)
         holder.timestampText.text = Util.getTimestampForDisplay(data.timestamp) + " 전"
+
+        // profileImage
+        Util.setViewMore(holder.contentsText, holder.viewMoreText, 3)
+        setRatingStars(data.rating.toFloat(), holder)
+    }
+
+    private fun setRatingStars(rating: Float, holder: ViewHolder) {
+        val starImages = getStarImages(holder)
+        for(i in 0 until starImages.size){
+            val drawableId = getDrawableIdOfStarImage(rating, i)
+            val drawable = context.resources.getDrawable(drawableId, context.theme)
+            starImages[i].setImageDrawable(drawable)
+        }
+    }
+
+    private fun getStarImages(holder: ViewHolder) = arrayListOf(holder.starImage1, holder.starImage2, holder.starImage3, holder.starImage4, holder.starImage5)
+
+    private fun getDrawableIdOfStarImage(rating: Float, index: Int): Int{
+        return if(rating > index+0.75){
+            R.drawable.ic_baseline_star_16
+        }else if(rating > index+0.25){
+            R.drawable.ic_baseline_star_half_16
+        }else{
+            R.drawable.ic_baseline_star_border_16
+        }
     }
 
     override fun getItemCount(): Int = dataSet.size

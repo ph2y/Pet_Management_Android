@@ -47,7 +47,7 @@ class ReviewFragment : Fragment() {
             "2022-02-01T08:40:18",
             false,
             null
-        )))
+        )), requireContext())
         binding.recyclerViewReview?.let{
             it.adapter = adapter
             it.layoutManager = LinearLayoutManager(activity)
