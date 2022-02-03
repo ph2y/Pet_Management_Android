@@ -17,6 +17,7 @@ interface ReviewListAdapterInterface {
     fun setAccountPhoto(id: Long, holder: ReviewListAdapter.ViewHolder)
     fun setAccountDefaultPhoto(holder: ReviewListAdapter.ViewHolder)
     fun onClickReviewFunctionButton(review: Review, position: Int)
+    fun startPetProfile(author: Account)
 }
 
 class ReviewListAdapter(
@@ -51,20 +52,18 @@ class ReviewListAdapter(
 
     private fun setListenerOnView(holder:ViewHolder) {
         holder.profileImage.setOnClickListener {
-
+            val position = holder.absoluteAdapterPosition
+            reviewListAdapterInterface.startPetProfile(dataSet[position].author)
         }
         holder.nicknameText.setOnClickListener {
-
+            val position = holder.absoluteAdapterPosition
+            reviewListAdapterInterface.startPetProfile(dataSet[position].author)
         }
 
         holder.dialogButton.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             val item = dataSet[position]
             reviewListAdapterInterface.onClickReviewFunctionButton(item, position)
-        }
-
-        holder.viewMoreText.setOnClickListener {
-
         }
     }
 

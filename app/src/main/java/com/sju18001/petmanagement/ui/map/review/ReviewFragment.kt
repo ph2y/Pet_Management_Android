@@ -24,6 +24,7 @@ import com.sju18001.petmanagement.restapi.dao.Review
 import com.sju18001.petmanagement.restapi.dto.DeleteReviewReqDto
 import com.sju18001.petmanagement.restapi.dto.FetchAccountPhotoReqDto
 import com.sju18001.petmanagement.restapi.dto.FetchReviewReqDto
+import com.sju18001.petmanagement.ui.community.CommunityUtil
 
 class ReviewFragment : Fragment() {
     private var _binding: FragmentReviewBinding? = null
@@ -89,6 +90,10 @@ class ReviewFragment : Fragment() {
                 }else{
                     showReviewDialogForNonAuthor()
                 }
+            }
+
+            override fun startPetProfile(author: Account) {
+                CommunityUtil.fetchRepresentativePetAndStartPetProfile(requireContext(), author, isViewDestroyed)
             }
         }
 
