@@ -499,12 +499,10 @@ class Util {
         }
 
         private fun getDrawableIdOfStarImage(rating: Float, index: Int): Int{
-            return if(rating > index+0.75){
-                R.drawable.ic_baseline_star_16
-            }else if(rating > index+0.25){
-                R.drawable.ic_baseline_star_half_16
-            }else{
-                R.drawable.ic_baseline_star_border_16
+            return when {
+                rating > index + 0.75 -> R.drawable.ic_baseline_star_16
+                rating > index + 0.25 -> R.drawable.ic_baseline_star_half_16
+                else -> R.drawable.ic_baseline_star_border_16
             }
         }
     }
