@@ -338,7 +338,7 @@ class FollowerFollowingFragment : Fragment() {
         }, {})
     }
 
-    private fun updateFollowerIdList() {
+    fun updateFollowerIdList() {
         // reset list
         followerFollowingViewModel.followerIdList = mutableListOf()
 
@@ -400,4 +400,8 @@ class FollowerFollowingFragment : Fragment() {
 
         isViewDestroyed = true
     }
+}
+
+interface FollowUnfollowButtonInterface {
+    fun updateFollowUnfollowButton()
 }

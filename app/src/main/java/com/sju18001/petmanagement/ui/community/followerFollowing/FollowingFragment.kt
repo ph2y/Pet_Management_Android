@@ -59,7 +59,11 @@ class FollowingFragment : Fragment() {
         ).get(FollowerFollowingViewModel::class.java)
 
         // initialize RecyclerView
-        followingAdapter = FollowingAdapter(requireContext(), followerFollowingViewModel)
+        followingAdapter = FollowingAdapter(requireContext(), followerFollowingViewModel, object: FollowUnfollowButtonInterface {
+            override fun updateFollowUnfollowButton() {
+                (parentFragment as FollowerFollowingFragment).updateFollowerIdList()
+            }
+        })
         binding.followingRecyclerView.setHasFixedSize(true)
         binding.followingRecyclerView.adapter = followingAdapter
         binding.followingRecyclerView.layoutManager = LinearLayoutManager(activity)

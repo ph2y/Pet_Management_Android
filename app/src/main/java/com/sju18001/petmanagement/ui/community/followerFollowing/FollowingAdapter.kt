@@ -22,7 +22,8 @@ import com.sju18001.petmanagement.restapi.dto.FetchAccountPhotoReqDto
 import com.sju18001.petmanagement.ui.community.CommunityUtil
 import de.hdodenhof.circleimageview.CircleImageView
 
-class FollowingAdapter(val context: Context, val followerFollowingViewModel: FollowerFollowingViewModel):
+class FollowingAdapter(val context: Context, private val followerFollowingViewModel: FollowerFollowingViewModel,
+                       private val followUnfollowButtonInterface: FollowUnfollowButtonInterface):
     RecyclerView.Adapter<FollowingAdapter.HistoryListViewHolder>() {
 
     private var resultList = mutableListOf<FollowerFollowingListItem>()
@@ -125,6 +126,8 @@ class FollowingAdapter(val context: Context, val followerFollowingViewModel: Fol
             // show animation
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, resultList.size)
+
+            followUnfollowButtonInterface.updateFollowUnfollowButton()
         }, {
             holder.followUnfollowButton.isEnabled = true
         }, {
