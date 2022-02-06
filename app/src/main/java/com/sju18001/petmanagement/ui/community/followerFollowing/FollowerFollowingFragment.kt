@@ -2,9 +2,12 @@ package com.sju18001.petmanagement.ui.community.followerFollowing
 
 import android.content.Intent
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateViewModelFactory
@@ -13,10 +16,15 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.sju18001.petmanagement.R
+import com.sju18001.petmanagement.controller.PatternRegex
 import com.sju18001.petmanagement.databinding.FragmentFollowerFollowingBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
+import com.sju18001.petmanagement.controller.Util
+import com.sju18001.petmanagement.restapi.dao.Account
+import com.sju18001.petmanagement.restapi.dto.*
+import com.sju18001.petmanagement.ui.community.CommunityUtil
 
 class FollowerFollowingFragment : Fragment() {
 
@@ -64,6 +72,37 @@ class FollowerFollowingFragment : Fragment() {
         TabLayoutMediator(tabLayout, viewPager){ tab, position ->
             tab.text = TAB_ELEMENTS[position]
         }.attach()
+
+        // searchEditText listeners
+        binding.searchEditText.setOnEditorActionListener{ _, _, _ ->
+            checkPatternNicknameAndSearchAccount()
+            true
+        }
+        binding.searchEditText.addTextChangedListener(object: TextWatcher {
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                followerFollowingViewModel.searchEditText = s.toString()
+            }
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun afterTextChanged(s: Editable?) {}
+        })
+
+        // for follow unfollow button
+        binding.followUnfollowButton.setOnClickListener {
+            // set API/button state to loading
+            followerFollowingViewModel.apiIsLoading = true
+            setButtonState()
+
+            // API call
+            if(followerFollowingViewModel.accountId !in followerFollowingViewModel.followerIdList!!) {
+                createFollow()
+            }
+            else {
+                deleteFollow()
+            }
+        }
+
+        // for hiding keyboard
+        Util.setupViewsForHideKeyboard(requireActivity(), binding.fragmentFollowerFollowingParentLayout)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -106,6 +145,13 @@ class FollowerFollowingFragment : Fragment() {
         // set tab layout titles
         setFollowerCount()
         setFollowingCount()
+
+        // initialize follower id list
+        if(followerFollowingViewModel.followerIdList == null) {
+            updateFollowerIdList()
+        }
+
+        restoreState()
     }
 
     class FollowerFollowingCollectionAdapter(fragment: Fragment): FragmentStateAdapter(fragment){
@@ -145,6 +191,196 @@ class FollowerFollowingFragment : Fragment() {
                     ' ' + followingCount.toString()
             followerFollowingViewModel.setFollowingTitle(followingText)
         }, {}, {})
+    }
+
+    private fun checkPatternNicknameAndSearchAccount(){
+        if(!PatternRegex.checkNicknameRegex(followerFollowingViewModel.searchEditText)) {
+            Toast.makeText(requireContext(), getString(R.string.nickname_regex_exception_message), Toast.LENGTH_LONG).show()
+        }
+        else {
+            // set api state/button to loading
+            followerFollowingViewModel.apiIsLoading = true
+            lockViews()
+
+            searchAccount(followerFollowingViewModel.searchEditText)
+        }
+    }
+
+    private fun searchAccount(nickname: String) {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .fetchAccountByNicknameReq(FetchAccountReqDto(null, null, nickname))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            // set api state/button to normal
+            followerFollowingViewModel.apiIsLoading = false
+            unlockViews()
+
+            setAccountInfoViews(response.body()!!)
+        }, {
+            // set api state/button to normal
+            followerFollowingViewModel.apiIsLoading = false
+            unlockViews()
+        }, {
+            // set api state/button to normal
+            followerFollowingViewModel.apiIsLoading = false
+            unlockViews()
+        })
+    }
+
+    private fun setAccountInfoViews(fetchAccountResDto: FetchAccountResDto) {
+        // set layout's visibility to visible(if not already done)
+        if(binding.accountInfoCardView.visibility != View.VISIBLE) {
+            binding.accountInfoCardView.visibility = View.VISIBLE
+        }
+
+        // start pet profile
+        binding.accountInfoCardView.setOnClickListener {
+            CommunityUtil.fetchRepresentativePetAndStartPetProfile(requireContext(), Account(
+                fetchAccountResDto.id, fetchAccountResDto.username, fetchAccountResDto.email, fetchAccountResDto.phone,
+                "", fetchAccountResDto.marketing, fetchAccountResDto.nickname, fetchAccountResDto.photoUrl,
+                fetchAccountResDto.userMessage, fetchAccountResDto.representativePetId, fetchAccountResDto.fcmRegistrationToken, fetchAccountResDto.notification), isViewDestroyed
+            )
+        }
+
+        // if url is not null -> fetch photo and set it
+        if(fetchAccountResDto.photoUrl != null) {
+            followerFollowingViewModel.accountPhotoUrl = fetchAccountResDto.photoUrl
+            fetchAccountPhoto(fetchAccountResDto.id)
+        }
+        // else -> reset photo related values
+        else {
+            followerFollowingViewModel.accountPhotoUrl = null
+            followerFollowingViewModel.accountPhotoByteArray = null
+            setAccountPhoto()
+        }
+
+        // save id value
+        followerFollowingViewModel.accountId = fetchAccountResDto.id
+
+        // save and set nickname value
+        followerFollowingViewModel.accountNickname = fetchAccountResDto.nickname
+        val nicknameText = followerFollowingViewModel.accountNickname + '님'
+        binding.accountNickname.text = nicknameText
+
+        setButtonState()
+    }
+
+    private fun fetchAccountPhoto(id: Long) {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .fetchAccountPhotoReq(FetchAccountPhotoReqDto(id))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            // save photo as byte array
+            followerFollowingViewModel.accountPhotoByteArray = response.body()!!.byteStream().readBytes()
+
+            setAccountPhoto()
+        }, {}, {})
+    }
+
+    private fun setAccountPhoto() {
+        if(followerFollowingViewModel.accountPhotoUrl != null) {
+            val bitmap = Util.getBitmapFromByteArray(followerFollowingViewModel.accountPhotoByteArray!!)
+            binding.accountPhoto.setImageBitmap(bitmap)
+        }
+        else {
+            binding.accountPhoto.setImageDrawable(requireContext().getDrawable(R.drawable.ic_baseline_account_circle_24))
+        }
+    }
+
+    private fun setButtonState() {
+        // exception
+        if(followerFollowingViewModel.accountId == null) { return }
+
+        // for follow/unfollow button
+        if (followerFollowingViewModel.accountId in followerFollowingViewModel.followerIdList!!) {
+            binding.followUnfollowButton.setBackgroundColor(requireContext().getColor(R.color.border_line))
+            binding.followUnfollowButton.setTextColor(requireContext().resources.getColor(R.color.black))
+            binding.followUnfollowButton.text = getText(R.string.unfollow_button)
+        } else {
+            binding.followUnfollowButton.setBackgroundColor(requireContext().getColor(R.color.carrot))
+            binding.followUnfollowButton.setTextColor(requireContext().resources.getColor(R.color.white))
+            binding.followUnfollowButton.text = getText(R.string.follow_button)
+        }
+
+        // if API is loading -> set button to loading, else -> set button to normal
+        binding.followUnfollowButton.isEnabled = !followerFollowingViewModel.apiIsLoading
+    }
+
+    private fun createFollow() {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .createFollowReq(CreateFollowReqDto(followerFollowingViewModel.accountId!!))
+
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            updateFollowerIdList()
+
+            followerFollowingViewModel.apiIsLoading = false
+        }, {
+            // set api state/button to normal
+            followerFollowingViewModel.apiIsLoading = false
+            setButtonState()
+        }, {})
+    }
+
+    private fun deleteFollow() {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .deleteFollowReq(DeleteFollowReqDto(followerFollowingViewModel.accountId!!))
+
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            updateFollowerIdList()
+
+            followerFollowingViewModel.apiIsLoading = false
+        }, {
+            // set api state/button to normal
+            followerFollowingViewModel.apiIsLoading = false
+            setButtonState()
+        }, {})
+    }
+
+    private fun updateFollowerIdList() {
+        // reset list
+        followerFollowingViewModel.followerIdList = mutableListOf()
+
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .fetchFollowerReq(ServerUtil.getEmptyBody())
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            response.body()!!.followerList.map {
+                followerFollowingViewModel.followerIdList!!.add(it.id)
+            }
+
+            // update button state
+            setButtonState()
+        }, {}, {})
+    }
+
+    private fun lockViews() {
+        binding.searchEditText.isEnabled = false
+        binding.searchButton.isEnabled = false
+    }
+
+    private fun unlockViews() {
+        binding.searchEditText.isEnabled = true
+        binding.searchButton.isEnabled = true
+    }
+
+    private fun restoreState() {
+        // restore EditText
+        binding.searchEditText.setText(followerFollowingViewModel.searchEditText)
+
+        // restore account info layout
+        if(followerFollowingViewModel.accountId != null) {
+            binding.accountInfoCardView.visibility = View.VISIBLE
+
+            // account photo
+            if(followerFollowingViewModel.accountPhotoUrl != null) {
+                val bitmap = Util.getBitmapFromByteArray(followerFollowingViewModel.accountPhotoByteArray!!)
+                binding.accountPhoto.setImageBitmap(bitmap)
+            }
+
+            // account nickname
+            val nicknameText = followerFollowingViewModel.accountNickname + '님'
+            binding.accountNickname.text = nicknameText
+
+            // follow unfollow button
+            setButtonState()
+        }
     }
 
     override fun onDestroyView() {

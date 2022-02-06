@@ -6,7 +6,6 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 
 class FollowerFollowingViewModel(private val handle: SavedStateHandle) : ViewModel() {
-    // for updating title
     private val followerTitle: MutableLiveData<String> = MutableLiveData()
     private val followingTitle: MutableLiveData<String> = MutableLiveData()
 
@@ -22,4 +21,46 @@ class FollowerFollowingViewModel(private val handle: SavedStateHandle) : ViewMod
     public fun getFollowingTitle(): LiveData<String> {
         return followingTitle
     }
+
+    var followerIdList = handle.get<MutableList<Long>>("followerIdList")
+        set(value) {
+            handle.set("followerIdList", value)
+            field = value
+        }
+
+    var searchEditText = handle.get<String>("searchEditText")?: ""
+        set(value){
+            handle.set("searchEditText", value)
+            field = value
+        }
+
+    var accountPhotoUrl = handle.get<String>("accountPhotoUrl")
+        set(value){
+            handle.set("accountPhotoUrl", value)
+            field = value
+        }
+
+    var accountPhotoByteArray = handle.get<ByteArray>("accountPhotoByteArray")
+        set(value){
+            handle.set("accountPhotoByteArray", value)
+            field = value
+        }
+
+    var accountId = handle.get<Long>("accountId")
+        set(value){
+            handle.set("accountId", value)
+            field = value
+        }
+
+    var accountNickname = handle.get<String>("accountNickname")
+        set(value){
+            handle.set("accountNickname", value)
+            field = value
+        }
+
+    var apiIsLoading = handle.get<Boolean>("apiIsLoading")?: false
+        set(value){
+            handle.set("apiIsLoading", value)
+            field = value
+        }
 }
