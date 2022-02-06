@@ -2,7 +2,6 @@ package com.sju18001.petmanagement.ui.setting
 
 import android.app.AlertDialog
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -103,7 +102,7 @@ class SettingFragment : Fragment() {
                     R.string.confirm
                 ) { _, _ ->
                     // delete temporary files + set size to 0 after deletion
-                    File(requireContext().getExternalFilesDir(null).toString()).deleteRecursively()
+                    deleteTemporaryFiles()
                     setTemporaryFilesSize()
                 }
                 .setNegativeButton(
@@ -148,7 +147,6 @@ class SettingFragment : Fragment() {
         isViewDestroyed = true
     }
 
-    // fetch account profile
     private fun fetchAccountProfileData() {
         // create empty body
         accountData = SessionManager.fetchLoggedInAccount(requireContext())!!
@@ -158,7 +156,6 @@ class SettingFragment : Fragment() {
         setViewsWithAccountProfileData()
     }
 
-    // fetch account photo
     private fun fetchAccountPhotoAndSetView() {
         if(accountData!!.photoUrl == null){
             // 기본 사진으로 세팅
@@ -176,13 +173,27 @@ class SettingFragment : Fragment() {
         }, {}, {})
     }
 
-    // set views for account profile
     private fun setViewsWithAccountProfileData() {
         fetchAccountPhotoAndSetView()
         binding.nicknameText.text = settingViewModel.accountNicknameProfileValue
     }
 
-    // set temporary files size
+    private fun deleteTemporaryFiles() {
+        val dir = File(requireContext().getExternalFilesDir(null).toString())
+
+        if (dir.exists()) {
+            val files = dir.listFiles()
+
+            if (files != null) {
+                for (file in files) {
+                    if (Util.LOG_FILE_NAME !in file.toString()) {
+                        file.deleteRecursively()
+                    }
+                }
+            }
+        }
+    }
+
     private fun setTemporaryFilesSize() {
         val size = String.format("%.1f", (Util.getTemporaryFilesSize(requireContext()) / 1e6)) + "MB"
         binding.temporaryFilesSize.text = size
