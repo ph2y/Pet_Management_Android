@@ -97,7 +97,7 @@ class FollowerFollowingFragment : Fragment() {
             binding.searchEditText.setText("")
         }
 
-        // for follow unfollow button
+        // for follow unfollow button (search)
         binding.followUnfollowButton.setOnClickListener {
             // set API/button state to loading
             followerFollowingViewModel.apiIsLoading = true
@@ -110,6 +110,16 @@ class FollowerFollowingFragment : Fragment() {
             else {
                 deleteFollow()
             }
+        }
+
+        // for starting pet profile
+        binding.accountInfoCardView.setOnClickListener {
+            CommunityUtil.fetchRepresentativePetAndStartPetProfile(requireContext(), Account(
+                followerFollowingViewModel.accountId!!, followerFollowingViewModel.accountUsername!!,
+                "", "", "", null, followerFollowingViewModel.accountNickname,
+                followerFollowingViewModel.accountPhotoUrl, "", followerFollowingViewModel.accountRepresentativePetId,
+                null, null), isViewDestroyed
+            )
         }
 
         // for hiding keyboard
@@ -243,15 +253,6 @@ class FollowerFollowingFragment : Fragment() {
             binding.accountInfoCardView.visibility = View.VISIBLE
         }
 
-        // start pet profile
-        binding.accountInfoCardView.setOnClickListener {
-            CommunityUtil.fetchRepresentativePetAndStartPetProfile(requireContext(), Account(
-                fetchAccountResDto.id, fetchAccountResDto.username, fetchAccountResDto.email, fetchAccountResDto.phone,
-                "", fetchAccountResDto.marketing, fetchAccountResDto.nickname, fetchAccountResDto.photoUrl,
-                fetchAccountResDto.userMessage, fetchAccountResDto.representativePetId, fetchAccountResDto.fcmRegistrationToken, fetchAccountResDto.notification), isViewDestroyed
-            )
-        }
-
         // if url is not null -> fetch photo and set it
         if(fetchAccountResDto.photoUrl != null) {
             followerFollowingViewModel.accountPhotoUrl = fetchAccountResDto.photoUrl
@@ -264,11 +265,13 @@ class FollowerFollowingFragment : Fragment() {
             setAccountPhoto()
         }
 
-        // save id value
+        // save necessary account information
         followerFollowingViewModel.accountId = fetchAccountResDto.id
-
-        // save and set nickname value
+        followerFollowingViewModel.accountUsername = fetchAccountResDto.username
         followerFollowingViewModel.accountNickname = fetchAccountResDto.nickname
+        followerFollowingViewModel.accountRepresentativePetId = fetchAccountResDto.representativePetId
+
+        // set nickname
         val nicknameText = followerFollowingViewModel.accountNickname + '님'
         binding.accountNickname.text = nicknameText
 

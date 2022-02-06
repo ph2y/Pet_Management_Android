@@ -52,9 +52,21 @@ class FollowerFollowingViewModel(private val handle: SavedStateHandle) : ViewMod
             field = value
         }
 
+    var accountUsername = handle.get<String>("accountUsername")
+        set(value){
+            handle.set("accountUsername", value)
+            field = value
+        }
+
     var accountNickname = handle.get<String>("accountNickname")
         set(value){
             handle.set("accountNickname", value)
+            field = value
+        }
+
+    var accountRepresentativePetId = handle.get<Long>("accountRepresentativePetId")
+        set(value){
+            handle.set("accountRepresentativePetId", value)
             field = value
         }
 
