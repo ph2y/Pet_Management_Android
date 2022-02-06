@@ -75,8 +75,7 @@ class FollowerFragment : Fragment() {
         // initialize ViewModel
         followerFollowingViewModel = ViewModelProvider(requireActivity(),
             SavedStateViewModelFactory(requireActivity().application, requireActivity())
-        )
-            .get(FollowerFollowingViewModel::class.java)
+        ).get(FollowerFollowingViewModel::class.java)
     }
 
     override fun onResume() {
@@ -95,7 +94,7 @@ class FollowerFragment : Fragment() {
         binding.emptyFollowerList.visibility = visibility
     }
 
-    private fun updateRecyclerView() {  // update followingIdList -> fetch follower
+    fun updateRecyclerView() {  // update followingIdList -> fetch follower
         // reset list
         followingIdList = mutableListOf()
 

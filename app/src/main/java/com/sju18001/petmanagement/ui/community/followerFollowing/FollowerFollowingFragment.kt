@@ -312,6 +312,8 @@ class FollowerFollowingFragment : Fragment() {
             updateFollowerIdList()
 
             followerFollowingViewModel.apiIsLoading = false
+
+            updateViewPager()
         }, {
             // set api state/button to normal
             followerFollowingViewModel.apiIsLoading = false
@@ -327,6 +329,8 @@ class FollowerFollowingFragment : Fragment() {
             updateFollowerIdList()
 
             followerFollowingViewModel.apiIsLoading = false
+
+            updateViewPager()
         }, {
             // set api state/button to normal
             followerFollowingViewModel.apiIsLoading = false
@@ -348,6 +352,13 @@ class FollowerFollowingFragment : Fragment() {
             // update button state
             setButtonState()
         }, {}, {})
+    }
+
+    private fun updateViewPager() {
+        (childFragmentManager.fragments[0] as FollowerFragment).updateRecyclerView()
+        if (childFragmentManager.fragments.size == 2) {
+            (childFragmentManager.fragments[1] as FollowingFragment).fetchFollowing()
+        }
     }
 
     private fun lockViews() {
