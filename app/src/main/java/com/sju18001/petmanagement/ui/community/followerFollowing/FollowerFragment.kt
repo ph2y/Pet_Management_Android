@@ -44,7 +44,11 @@ class FollowerFragment : Fragment() {
         val root = binding.root
 
         // initialize RecyclerView
-        followerAdapter = FollowerAdapter(requireContext())
+        followerAdapter = FollowerAdapter(requireContext(), object: FollowUnfollowButtonInterface {
+            override fun updateFollowUnfollowButton() {
+                (parentFragment as FollowerFollowingFragment).updateFollowerIdList()
+            }
+        })
         binding.followerRecyclerView.setHasFixedSize(true)
         binding.followerRecyclerView.adapter = followerAdapter
         binding.followerRecyclerView.layoutManager = LinearLayoutManager(activity)

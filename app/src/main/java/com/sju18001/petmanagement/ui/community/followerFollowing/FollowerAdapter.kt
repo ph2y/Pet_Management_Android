@@ -1,7 +1,6 @@
 package com.sju18001.petmanagement.ui.community.followerFollowing
 
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -20,7 +19,7 @@ import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.community.CommunityUtil
 import de.hdodenhof.circleimageview.CircleImageView
 
-class FollowerAdapter(val context: Context) :
+class FollowerAdapter(val context: Context, private val followUnfollowButtonInterface: FollowUnfollowButtonInterface):
     RecyclerView.Adapter<FollowerAdapter.HistoryListViewHolder>() {
 
     private var resultList = mutableListOf<FollowerFollowingListItem>()
@@ -115,6 +114,8 @@ class FollowerAdapter(val context: Context) :
             notifyItemChanged(position)
 
             holder.followUnfollowButton.isEnabled = true
+
+            followUnfollowButtonInterface.updateFollowUnfollowButton()
         }, {
             holder.followUnfollowButton.isEnabled = true
         }, {})
@@ -133,6 +134,8 @@ class FollowerAdapter(val context: Context) :
             notifyItemChanged(position)
 
             holder.followUnfollowButton.isEnabled = true
+
+            followUnfollowButtonInterface.updateFollowUnfollowButton()
         }, {
             holder.followUnfollowButton.isEnabled = true
         }, {
