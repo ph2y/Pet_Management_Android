@@ -150,14 +150,6 @@ class FollowerFollowingFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        // for search button
-        binding.searchButton.setOnClickListener {
-            // start search activity
-            val searchActivityIntent = Intent(context, SearchActivity::class.java)
-            startActivity(searchActivityIntent)
-            requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
-        }
-
         // for back button
         binding.backButton.setOnClickListener {
             activity?.finish()
@@ -377,12 +369,12 @@ class FollowerFollowingFragment : Fragment() {
 
     private fun lockViews() {
         binding.searchEditText.isEnabled = false
-        binding.searchButton.isEnabled = false
+        binding.searchClearButton.isEnabled = false
     }
 
     private fun unlockViews() {
         binding.searchEditText.isEnabled = true
-        binding.searchButton.isEnabled = true
+        binding.searchClearButton.isEnabled = true
     }
 
     private fun restoreState() {

@@ -37,9 +37,6 @@
         <activity
             android:name=".ui.community.post.generalFiles.GeneralFilesActivity"
             android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
-        <activity
-            android:name=".ui.community.followerFollowing.SearchActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
         <activity android:name=".ui.community.followerFollowing.FollowerFollowingActivity" />
         <activity android:name=".ui.community.comment.updateComment.UpdateCommentActivity" />
         <activity android:name=".ui.community.comment.CommentActivity" />
