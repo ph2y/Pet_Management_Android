@@ -93,7 +93,7 @@ class FollowingFragment : Fragment() {
         binding.emptyFollowingList.visibility = visibility
     }
 
-    private fun fetchFollowing() {
+    fun fetchFollowing() {
         // reset list
         followingList = mutableListOf()
 
