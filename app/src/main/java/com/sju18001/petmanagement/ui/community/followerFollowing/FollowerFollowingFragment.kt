@@ -81,10 +81,21 @@ class FollowerFollowingFragment : Fragment() {
         binding.searchEditText.addTextChangedListener(object: TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 followerFollowingViewModel.searchEditText = s.toString()
+
+                if (followerFollowingViewModel.searchEditText.isEmpty()) {
+                    binding.searchClearButton.visibility = View.INVISIBLE
+                } else {
+                    binding.searchClearButton.visibility = View.VISIBLE
+                }
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
         })
+
+        // for search clear button
+        binding.searchClearButton.setOnClickListener {
+            binding.searchEditText.setText("")
+        }
 
         // for follow unfollow button
         binding.followUnfollowButton.setOnClickListener {

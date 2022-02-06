@@ -4,6 +4,7 @@
     android:id="@+id/fragment_follower_following_parent_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:focusableInTouchMode="true"
     android:focusable="true">
 
@@ -14,7 +15,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/search_edit_text"
+        app:layout_constraintBottom_toTopOf="@id/search_layout"
         android:padding="16dp"
         android:background="?android:colorBackground">
 
@@ -55,27 +56,55 @@
 
     </RelativeLayout>
 
-    <EditText
-        android:id="@+id/search_edit_text"
+    <RelativeLayout
+        android:id="@+id/search_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/back_button_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/account_info_card_view"
-        android:background="@drawable/border_with_radius_8"
-        android:layout_weight="1"
-        android:maxLength="20"
-        android:inputType="text"
-        android:imeOptions="actionSearch"
-        android:theme="@style/onSelectedThemeCarrot"/>
+        android:layout_marginStart="3dp"
+        android:layout_marginEnd="3dp">
+
+        <EditText
+            android:id="@+id/search_edit_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="12dp"
+            android:drawableStart="@drawable/ic_baseline_search_24"
+            android:drawablePadding="4dp"
+            android:background="@drawable/border_with_radius_8"
+            android:textSize="18sp"
+            android:maxLength="20"
+            android:inputType="text"
+            android:imeOptions="actionSearch"
+            android:hint="@string/search_dialog_message"
+            android:theme="@style/onSelectedThemeCarrot"/>
+
+        <ImageView
+            android:id="@+id/search_clear_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:elevation="1dp"
+            android:focusable="true"
+            android:visibility="invisible"
+            android:src="@drawable/ic_baseline_close_24"
+            app:civ_border_width="0dp" />
+
+    </RelativeLayout>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/account_info_card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_edit_text"
+        app:layout_constraintTop_toBottomOf="@id/search_layout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/tab_layout"
         android:layout_margin="4dp"
