@@ -37,7 +37,7 @@ import java.util.*
 
 class Util {
     companion object{
-        private const val LOG_FILE_NAME = "client_log_file"
+        const val LOG_FILE_NAME = "client_log_file"
 
         fun convertDpToPixel(dp: Int): Int{
             return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp.toFloat(), Resources.getSystem().displayMetrics).toInt()
