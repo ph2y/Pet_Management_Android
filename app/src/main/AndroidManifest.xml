@@ -23,6 +23,7 @@
         android:theme="@style/Theme.PetManagement">
         <activity
             android:name=".ui.map.review.createUpdateReview.CreateUpdateReviewActivity"
+            android:windowSoftInputMode="adjustResize"
             android:exported="false" />
         <activity
             android:name=".ui.map.review.ReviewActivity"
