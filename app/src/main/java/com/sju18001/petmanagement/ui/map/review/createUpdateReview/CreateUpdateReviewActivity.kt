@@ -52,9 +52,13 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
 
 
     /**
-     * xml의 onClick에서 처리하는 영역입니다. 따라서 따로 리스너를 달지 않아도 됩니다.
+     * Databinding functions
      */
     fun onBackButtonClicked() {
         finish()
+    }
+
+    fun onStarImageClicked(index: Int) {
+        model.rating.set(index)
     }
 }
