@@ -75,8 +75,8 @@ class PostFragment : Fragment() {
      * 구체적으로 기존의 recycler view에 대해, 새 item을 추가(create)하거나,
      * 기존 item을 수정(update)하는 기능을 수행합니다.
      */
-    private val startForCreateResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            result: ActivityResult ->
+    private val startForCreateResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         if(result.resultCode == Activity.RESULT_OK){
             result.data?.let{
                 val postId = it.getLongExtra("postId", -1)
@@ -95,8 +95,8 @@ class PostFragment : Fragment() {
         }
     }
 
-    private val startForUpdateResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
-            result: ActivityResult ->
+    private val startForUpdateResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         if(result.resultCode == Activity.RESULT_OK){
             result.data?.let{
                 val postId = it.getLongExtra("postId", -1)
@@ -433,7 +433,7 @@ class PostFragment : Fragment() {
         builder.setItems(arrayOf("수정", "삭제")) { _, which ->
             when (which) {
                 0 -> {
-                    startCreateUpdatePostActivityForUpdate(post, position)
+                    startUpdatePostActivity(post, position)
                 }
                 1 -> {
                     showDeletePostDialog(post.id, position)
@@ -443,18 +443,14 @@ class PostFragment : Fragment() {
             .create().show()
     }
 
-    private fun startCreateUpdatePostActivityForUpdate(post: Post, position: Int){
-        val createUpdatePostActivityIntent =
-            getCreateUpdatePostActivityIntentForUpdate(post, position)
+    private fun startUpdatePostActivity(post: Post, position: Int){
+        val createUpdatePostActivityIntent = getUpdatePostActivityIntent(post, position)
         startForUpdateResult.launch(createUpdatePostActivityIntent)
 
-        requireActivity().overridePendingTransition(
-            R.anim.enter_from_right,
-            R.anim.exit_to_left
-        )
+        requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
     }
 
-    private fun getCreateUpdatePostActivityIntentForUpdate(post: Post, position: Int): Intent {
+    private fun getUpdatePostActivityIntent(post: Post, position: Int): Intent {
         val res = Intent(context, CreateUpdatePostActivity::class.java)
         res.putExtra("fragmentType", "update_post")
         res.putExtra("postId", post.id)
