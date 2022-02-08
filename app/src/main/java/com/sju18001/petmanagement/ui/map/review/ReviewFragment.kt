@@ -44,6 +44,10 @@ class ReviewFragment : Fragment() {
     private var rating: Float = 3.7f // TODO
     private var reviewCount: Int = 0
 
+    /**
+     * CreateUpdateReviewActivity에서 리뷰를 생성하거나 수정합니다. 아래의 변수는
+     * 위 행동을 한 뒤에, 다시 ReviewFragment로 돌아와서 수행할 코드를 지정해줍니다.
+     */
     private val startForCreateResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         if(result.resultCode == Activity.RESULT_OK){
@@ -87,6 +91,7 @@ class ReviewFragment : Fragment() {
             }
         }, {}, {})
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

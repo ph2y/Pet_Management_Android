@@ -70,10 +70,8 @@ class PostFragment : Fragment() {
     private var pageIndex: Int = 1
 
     /**
-     * CreateUpdatePostFragment에서 글을 생성 또는 삭제합니다. 여기에 있는 변수는,
+     * CreateUpdatePostFragment에서 글 생성 또는 수정을 합니다. 여기에 있는 변수는,
      * 위 행동을 한 뒤에, 다시 PostFragment로 돌아와서 수행할 코드를 지정해줍니다.
-     * 구체적으로 기존의 recycler view에 대해, 새 item을 추가(create)하거나,
-     * 기존 item을 수정(update)하는 기능을 수행합니다.
      */
     private val startForCreateResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
