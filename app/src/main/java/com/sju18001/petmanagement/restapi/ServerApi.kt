@@ -111,7 +111,7 @@ interface ServerApi {
 
     // Review API
     @POST("api/review/create")
-    fun createReviewReq(@Body createReviewReqDto: CreateReviewReqDto): Call<CreateReviewReqDto>
+    fun createReviewReq(@Body createReviewReqDto: CreateReviewReqDto): Call<CreateReviewResDto>
 
     @POST("api/review/fetch")
     fun fetchReviewReq(@Body fetchReviewReqDto: FetchReviewReqDto): Call<FetchReviewResDto>
