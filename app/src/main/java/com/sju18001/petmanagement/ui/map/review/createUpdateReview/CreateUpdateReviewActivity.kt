@@ -84,12 +84,6 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
         }, { finish() }, { finish() })
     }
 
-
-    override fun finish() {
-        super.finish()
-        overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
-    }
-
     override fun onBackPressed() {
         val builder = AlertDialog.Builder(this)
         builder.setMessage(this.getString(R.string.cancel_dialog_message))
@@ -107,6 +101,11 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
         if(resultCode != Activity.RESULT_OK) {
             Toast.makeText(baseContext, getText(R.string.default_error_message), Toast.LENGTH_SHORT).show()
         }
+    }
+
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
     }
 
 
