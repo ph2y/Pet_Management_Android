@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 
 class CreateUpdateReviewViewModel: ViewModel() {
     var fragmentType: Int = 0
+    var placeId: Long = -1
     var reviewId: Long = -1 // update review일 때 필요합니다.
 
     var isReviewFetched: Boolean = false

@@ -162,9 +162,8 @@ class ReviewFragment : Fragment() {
     }
 
     private fun startUpdateReviewActivity(review: Review, position: Int) {
-        val createUpdateReviewActivityIntent = getUpdateReviewActivityIntent(review, position)
-        startForUpdateResult.launch(createUpdateReviewActivityIntent)
-
+        val updateReviewActivityIntent = getUpdateReviewActivityIntent(review, position)
+        startForUpdateResult.launch(updateReviewActivityIntent)
         requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
     }
 
@@ -289,11 +288,17 @@ class ReviewFragment : Fragment() {
     }
 
     private fun startCreateReviewActivity() {
-        val createUpdateReviewActivityIntent = Intent(context, CreateUpdateReviewActivity::class.java)
-        createUpdateReviewActivityIntent.putExtra("fragmentType", CreateUpdateReviewActivity.CREATE_REVIEW)
-
-        startForCreateResult.launch(createUpdateReviewActivityIntent)
+        val createReviewActivityIntent = getCreateReviewActivityIntent()
+        startForCreateResult.launch(createReviewActivityIntent)
         requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
+    }
+
+    private fun getCreateReviewActivityIntent(): Intent {
+        val res = Intent(context, CreateUpdateReviewActivity::class.java)
+        res.putExtra("fragmentType", CreateUpdateReviewActivity.CREATE_REVIEW)
+        res.putExtra("placeId", placeId)
+
+        return res
     }
 
 
