@@ -13,4 +13,6 @@ class CreateUpdateReviewViewModel: ViewModel() {
     // UPDATE_REVIEW일 때, FetchReview 이후에 아래 값들을 불러옵니다.
     var rating: ObservableField<Int> = ObservableField(0)
     var contents: ObservableField<String> = ObservableField("")
+
+    var isApiCalling: ObservableField<Boolean> = ObservableField(false)
 }

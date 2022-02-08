@@ -62,6 +62,8 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     }
 
     private fun fetchReviewForUpdate(reviewId: Long) {
+        viewModel.isApiCalling.set(true)
+
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
             .fetchReviewReq(FetchReviewReqDto(reviewId, null, null))
         ServerUtil.enqueueApiCall(call, {isDestroyed}, baseContext, { response ->
@@ -71,13 +73,19 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
             }
 
             viewModel.isReviewFetched = true
-        }, { finish() }, { finish() })
+            viewModel.isApiCalling.set(false)
+        }, {}, {})
     }
 
 
     override fun finish() {
         super.finish()
         overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        // TODO: 작성 취소? dialog
     }
 
 
