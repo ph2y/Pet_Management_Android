@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
@@ -12,8 +13,10 @@ import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.databinding.ActivityCreateUpdateReviewBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
+import com.sju18001.petmanagement.restapi.dto.CreateReviewReqDto
 import com.sju18001.petmanagement.restapi.dto.FetchReviewReqDto
 import com.sju18001.petmanagement.restapi.dto.FetchReviewResDto
+import com.sju18001.petmanagement.restapi.dto.UpdateReviewReqDto
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -53,6 +56,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
 
     private fun initializeViewModelWithExtra() {
         viewModel.fragmentType = intent.getIntExtra("fragmentType", 0)
+        viewModel.placeId = intent.getLongExtra("placeId", -1)
         viewModel.reviewId = intent.getLongExtra("reviewId", -1)
     }
 
@@ -74,7 +78,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
 
             viewModel.isReviewFetched = true
             viewModel.isApiCalling.set(false)
-        }, {}, {})
+        }, { finish() }, { finish() })
     }
 
 
@@ -98,5 +102,42 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
 
     fun onStarImageClicked(index: Int) {
         viewModel.rating.set(index)
+    }
+
+    fun onConfirmButtonClicked() {
+        when(viewModel.fragmentType){
+            CREATE_REVIEW -> {
+                createReviewAndFinishActivity()
+            }
+            UPDATE_REVIEW -> {
+                updateReviewAndFinishActivity()
+            }
+        }
+    }
+
+    private fun createReviewAndFinishActivity() {
+        if(viewModel.rating.get() == 0 || viewModel.contents.get().toString().isNullOrEmpty()) return
+
+        viewModel.isApiCalling.set(true)
+
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
+            .createReviewReq(CreateReviewReqDto(viewModel.placeId, viewModel.rating.get()!!, viewModel.contents.get()!!))
+        ServerUtil.enqueueApiCall(call, {isDestroyed}, baseContext, {
+            Toast.makeText(baseContext, getText(R.string.create_review_successful), Toast.LENGTH_LONG).show()
+            finish()
+        }, { viewModel.isApiCalling.set(false) }, { viewModel.isApiCalling.set(false) })
+    }
+
+    private fun updateReviewAndFinishActivity() {
+        if(viewModel.rating.get() == 0 || viewModel.contents.get().toString().isNullOrEmpty()) return
+
+        viewModel.isApiCalling.set(true)
+
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
+            .updateReviewReq(UpdateReviewReqDto(viewModel.reviewId, viewModel.rating.get()!!, viewModel.contents.get()!!))
+        ServerUtil.enqueueApiCall(call, {isDestroyed}, baseContext, {
+            Toast.makeText(baseContext, getText(R.string.update_review_successful), Toast.LENGTH_LONG).show()
+            finish()
+        }, { viewModel.isApiCalling.set(false) }, { viewModel.isApiCalling.set(false) })
     }
 }

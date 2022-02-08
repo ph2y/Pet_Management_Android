@@ -149,6 +149,7 @@
                 android:insetBottom="0dp"
                 android:text="@string/complete"
                 android:textSize="18sp"
+                android:onClick="@{() -> activity.onConfirmButtonClicked()}"
                 app:cornerRadius="0dp" />
 
             <ProgressBar
