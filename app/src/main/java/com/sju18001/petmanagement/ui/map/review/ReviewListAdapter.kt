@@ -105,7 +105,11 @@ class ReviewListAdapter(
         dataSet = arrayListOf()
     }
 
-    fun removeItem(index: Int){
+    fun removeItem(index: Int) {
         dataSet.removeAt(index)
+    }
+
+    fun setItem(position: Int, review: Review) {
+        dataSet[position] = review
     }
 }

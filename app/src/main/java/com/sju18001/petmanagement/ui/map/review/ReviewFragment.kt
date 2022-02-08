@@ -64,7 +64,17 @@ class ReviewFragment : Fragment() {
     private val startForUpdateResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         if(result.resultCode == Activity.RESULT_OK){
+            result.data?.let{
+                val reviewId = it.getLongExtra("reviewId", -1)
+                val position = it.getIntExtra("position", -1)
 
+                if(reviewId != -1L && position != -1){
+                    fetchOneReviewAndInvoke(reviewId) { item ->
+                        adapter.setItem(position, item)
+                        adapter.notifyItemChanged(position)
+                    }
+                }
+            }
         }
     }
 
