@@ -1,7 +1,9 @@
 package com.sju18001.petmanagement.ui.map.review
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.DialogInterface
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -9,6 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
@@ -25,6 +29,7 @@ import com.sju18001.petmanagement.restapi.dto.DeleteReviewReqDto
 import com.sju18001.petmanagement.restapi.dto.FetchAccountPhotoReqDto
 import com.sju18001.petmanagement.restapi.dto.FetchReviewReqDto
 import com.sju18001.petmanagement.ui.community.CommunityUtil
+import com.sju18001.petmanagement.ui.map.review.createUpdateReview.CreateUpdateReviewActivity
 
 class ReviewFragment : Fragment() {
     private var _binding: FragmentReviewBinding? = null
@@ -37,6 +42,20 @@ class ReviewFragment : Fragment() {
     private var placeId: Long = -1
     private var rating: Float = 3.7f // TODO
     private var reviewCount: Int = 0
+
+    private val startForCreateResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if(result.resultCode == Activity.RESULT_OK){
+
+        }
+    }
+
+    private val startForUpdateResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if(result.resultCode == Activity.RESULT_OK){
+
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -132,7 +151,7 @@ class ReviewFragment : Fragment() {
         builder.setItems(arrayOf("수정", "삭제")) { _, which ->
             when (which) {
                 0 -> {
-                    // TODO: startCreateUpdateReviewActivityForUpdate(review, position)
+                    startUpdateReviewActivity(review, position)
                 }
                 1 -> {
                     showDeleteReviewDialog(review.id, position)
@@ -140,6 +159,22 @@ class ReviewFragment : Fragment() {
             }
         }
             .create().show()
+    }
+
+    private fun startUpdateReviewActivity(review: Review, position: Int) {
+        val createUpdateReviewActivityIntent = getUpdateReviewActivityIntent(review, position)
+        startForUpdateResult.launch(createUpdateReviewActivityIntent)
+
+        requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
+    }
+
+    private fun getUpdateReviewActivityIntent(review: Review, position: Int): Intent {
+        val res = Intent(context, CreateUpdateReviewActivity::class.java)
+        res.putExtra("fragmentType", CreateUpdateReviewActivity.UPDATE_REVIEW)
+        res.putExtra("reviewId", review.id)
+        res.putExtra("position", position)
+
+        return res
     }
 
     private fun showDeleteReviewDialog(reviewId: Long, position: Int) {
@@ -249,8 +284,16 @@ class ReviewFragment : Fragment() {
             activity?.finish()
         }
         binding.createReviewFab.setOnClickListener {
-
+            startCreateReviewActivity()
         }
+    }
+
+    private fun startCreateReviewActivity() {
+        val createUpdateReviewActivityIntent = Intent(context, CreateUpdateReviewActivity::class.java)
+        createUpdateReviewActivityIntent.putExtra("fragmentType", CreateUpdateReviewActivity.CREATE_REVIEW)
+
+        startForCreateResult.launch(createUpdateReviewActivityIntent)
+        requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
     }
 
 

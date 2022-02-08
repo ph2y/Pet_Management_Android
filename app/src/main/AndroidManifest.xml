@@ -22,6 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PetManagement">
         <activity
+            android:name=".ui.map.review.createUpdateReview.CreateUpdateReviewActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.map.review.ReviewActivity"
             android:exported="false" />
 
