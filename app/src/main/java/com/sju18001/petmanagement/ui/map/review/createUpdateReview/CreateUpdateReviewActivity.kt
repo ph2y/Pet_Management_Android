@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.activity.viewModels
+import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.databinding.ActivityCreateUpdateReviewBinding
@@ -16,7 +17,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     }
 
     private lateinit var binding: ActivityCreateUpdateReviewBinding
-    private val model: CreateUpdateReviewViewModel by viewModels()
+    private val viewModel: CreateUpdateReviewViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,7 +31,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
 
         binding.lifecycleOwner = this
         binding.activity = this@CreateUpdateReviewActivity
-        binding.viewModel = model
+        binding.viewModel = viewModel
     }
 
     override fun onStart() {
@@ -40,7 +41,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     }
 
     private fun initializeViewModelWithExtra() {
-        model.fragmentType = intent.getIntExtra("fragmentType", 0)
+        viewModel.fragmentType = intent.getIntExtra("fragmentType", 0)
         // TODO: review data for update
     }
 
@@ -59,6 +60,6 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     }
 
     fun onStarImageClicked(index: Int) {
-        model.rating.set(index)
+        viewModel.rating.set(index)
     }
 }
