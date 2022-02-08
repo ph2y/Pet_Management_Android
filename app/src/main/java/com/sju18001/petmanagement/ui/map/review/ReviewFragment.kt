@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -46,7 +47,17 @@ class ReviewFragment : Fragment() {
     private val startForCreateResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
         if(result.resultCode == Activity.RESULT_OK){
+            result.data?.let{
+                val reviewId = it.getLongExtra("reviewId", -1)
+                if(reviewId != -1L){
+                    fetchOneReviewAndInvoke(reviewId) { item ->
+                        adapter.addItem(item)
+                        adapter.notifyItemInserted(adapter.itemCount)
 
+                        binding.recyclerViewReview.scrollToPosition(adapter.itemCount-1)
+                    }
+                }
+            }
         }
     }
 
@@ -55,6 +66,16 @@ class ReviewFragment : Fragment() {
         if(result.resultCode == Activity.RESULT_OK){
 
         }
+    }
+
+    private fun fetchOneReviewAndInvoke(reviewId: Long, callback: ((Review)->Unit)) {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .fetchReviewReq(FetchReviewReqDto(reviewId, null, null))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            response.body()?.reviewList?.get(0)?.let{
+                callback.invoke(it)
+            }
+        }, {}, {})
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

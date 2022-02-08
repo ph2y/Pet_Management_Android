@@ -1,5 +1,7 @@
 package com.sju18001.petmanagement.ui.map.review.createUpdateReview
 
+import android.app.Activity
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -92,6 +94,14 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
         // TODO: 작성 취소? dialog
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        if(resultCode != Activity.RESULT_OK) {
+            Toast.makeText(baseContext, getText(R.string.default_error_message), Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
     /**
      * Databinding functions
@@ -124,6 +134,9 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
             .createReviewReq(CreateReviewReqDto(viewModel.placeId, viewModel.rating.get()!!, viewModel.contents.get()!!))
         ServerUtil.enqueueApiCall(call, {isDestroyed}, baseContext, {
             Toast.makeText(baseContext, getText(R.string.create_review_successful), Toast.LENGTH_LONG).show()
+
+            intent.putExtra("reviewId", it.body()!!.id)
+            setResult(Activity.RESULT_OK, intent)
             finish()
         }, { viewModel.isApiCalling.set(false) }, { viewModel.isApiCalling.set(false) })
     }
@@ -137,6 +150,8 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
             .updateReviewReq(UpdateReviewReqDto(viewModel.reviewId, viewModel.rating.get()!!, viewModel.contents.get()!!))
         ServerUtil.enqueueApiCall(call, {isDestroyed}, baseContext, {
             Toast.makeText(baseContext, getText(R.string.update_review_successful), Toast.LENGTH_LONG).show()
+
+            setResult(Activity.RESULT_OK, intent)
             finish()
         }, { viewModel.isApiCalling.set(false) }, { viewModel.isApiCalling.set(false) })
     }

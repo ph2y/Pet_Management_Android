@@ -10,7 +10,8 @@ data class CreateReviewReqDto(
 )
 
 data class CreateReviewResDto(
-    val _metadata: DtoMetadata
+    val _metadata: DtoMetadata,
+    val id: Long
 )
 
 data class FetchReviewReqDto(

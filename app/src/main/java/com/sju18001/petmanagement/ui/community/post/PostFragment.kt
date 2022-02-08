@@ -80,7 +80,7 @@ class PostFragment : Fragment() {
         if(result.resultCode == Activity.RESULT_OK){
             result.data?.let{
                 val postId = it.getLongExtra("postId", -1)
-                if(postId != (-1).toLong()){
+                if(postId != -1L){
                     fetchOnePostAndInvoke(postId) { item ->
                         adapter.addItemToTop(item)
                         adapter.notifyItemInserted(0)
@@ -102,7 +102,7 @@ class PostFragment : Fragment() {
                 val postId = it.getLongExtra("postId", -1)
                 val position = it.getIntExtra("position", -1)
 
-                if(postId != (-1).toLong() && position != -1){
+                if(postId != -1L && position != -1){
                     fetchOnePostAndInvoke(postId) { item ->
                         adapter.setPost(position, item)
                         adapter.notifyItemChanged(position)
