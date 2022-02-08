@@ -98,6 +98,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
+        // 정상적으로 종료될 때만 RESULT_OK를 갖게 된다.
         if(resultCode != Activity.RESULT_OK) {
             Toast.makeText(baseContext, getText(R.string.default_error_message), Toast.LENGTH_SHORT).show()
         }
