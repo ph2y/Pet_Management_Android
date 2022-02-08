@@ -1,6 +1,7 @@
 package com.sju18001.petmanagement.ui.map.review.createUpdateReview
 
 import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -90,8 +91,14 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        super.onBackPressed()
-        // TODO: 작성 취소? dialog
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage(this.getString(R.string.cancel_dialog_message))
+            .setPositiveButton(R.string.confirm) { _, _ ->
+                super.onBackPressed()
+            }
+            .setNegativeButton(R.string.cancel) { dialog, _ ->
+                dialog.cancel()
+            }.create().show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
