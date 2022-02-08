@@ -8,7 +8,15 @@ import androidx.activity.viewModels
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import com.sju18001.petmanagement.R
+import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.databinding.ActivityCreateUpdateReviewBinding
+import com.sju18001.petmanagement.restapi.RetrofitBuilder
+import com.sju18001.petmanagement.restapi.ServerUtil
+import com.sju18001.petmanagement.restapi.dto.FetchReviewReqDto
+import com.sju18001.petmanagement.restapi.dto.FetchReviewResDto
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class CreateUpdateReviewActivity : AppCompatActivity() {
     companion object {
@@ -38,11 +46,32 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
         super.onStart()
 
         initializeViewModelWithExtra()
+        if(isFragmentForUpdateReviewAndIsReviewNotFetched()) {
+            fetchReviewForUpdate(viewModel.reviewId)
+        }
     }
 
     private fun initializeViewModelWithExtra() {
         viewModel.fragmentType = intent.getIntExtra("fragmentType", 0)
-        // TODO: review data for update
+        viewModel.reviewId = intent.getLongExtra("reviewId", -1)
+    }
+
+    // UpdateReview를 위한 FetchReview는 최초 1회만 수행해야함에 유의해야한다.
+    private fun isFragmentForUpdateReviewAndIsReviewNotFetched(): Boolean {
+        return viewModel.fragmentType == UPDATE_REVIEW && !viewModel.isReviewFetched
+    }
+
+    private fun fetchReviewForUpdate(reviewId: Long) {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
+            .fetchReviewReq(FetchReviewReqDto(reviewId, null, null))
+        ServerUtil.enqueueApiCall(call, {isDestroyed}, baseContext, { response ->
+            response.body()?.reviewList?.get(0)?.let {
+                viewModel.contents.set(it.contents)
+                viewModel.rating.set(it.rating)
+            }
+
+            viewModel.isReviewFetched = true
+        }, { finish() }, { finish() })
     }
 
 
