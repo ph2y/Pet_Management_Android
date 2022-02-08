@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="activity"
             type="com.sju18001.petmanagement.ui.map.review.createUpdateReview.CreateUpdateReviewActivity" />
@@ -68,6 +69,7 @@
                     android:layout_height="48dp"
                     android:src="@{viewModel.rating >= 1 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
                     android:onClick="@{() -> activity.onStarImageClicked(1)}"
+                    android:clickable="@{!viewModel.isApiCalling}"
                     />
                 <ImageView
                     android:id="@+id/image_star2"
@@ -75,6 +77,7 @@
                     android:layout_height="48dp"
                     android:src="@{viewModel.rating >= 2 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
                     android:onClick="@{() -> activity.onStarImageClicked(2)}"
+                    android:clickable="@{!viewModel.isApiCalling}"
                     />
                 <ImageView
                     android:id="@+id/image_star3"
@@ -82,6 +85,7 @@
                     android:layout_height="48dp"
                     android:src="@{viewModel.rating >= 3 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
                     android:onClick="@{() -> activity.onStarImageClicked(3)}"
+                    android:clickable="@{!viewModel.isApiCalling}"
                     />
                 <ImageView
                     android:id="@+id/image_star4"
@@ -89,6 +93,7 @@
                     android:layout_height="48dp"
                     android:src="@{viewModel.rating >= 4 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
                     android:onClick="@{() -> activity.onStarImageClicked(4)}"
+                    android:clickable="@{!viewModel.isApiCalling}"
                     />
                 <ImageView
                     android:id="@+id/image_star5"
@@ -96,6 +101,7 @@
                     android:layout_height="48dp"
                     android:src="@{viewModel.rating >= 5 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
                     android:onClick="@{() -> activity.onStarImageClicked(5)}"
+                    android:clickable="@{!viewModel.isApiCalling}"
                     />
             </LinearLayout>
 
@@ -113,9 +119,18 @@
                 android:theme="@style/onSelectedThemeCarrot"
                 android:background="@android:color/transparent"
                 android:text="@={viewModel.contents}"
+                android:enabled="@{!viewModel.isApiCalling}"
                 app:layout_constraintTop_toBottomOf="@id/layout_stars"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="@{viewModel.isApiCalling ? View.VISIBLE : View.GONE}"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <RelativeLayout
@@ -129,7 +144,7 @@
                 android:id="@+id/confirm_button"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:enabled="@{(viewModel.rating != 0 &amp;&amp; viewModel.contents.length() != 0) ? true : false}"
+                android:enabled="@{(!viewModel.isApiCalling &amp;&amp; (viewModel.rating != 0 &amp;&amp; viewModel.contents.length() != 0)) ? true : false}"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:text="@string/complete"
