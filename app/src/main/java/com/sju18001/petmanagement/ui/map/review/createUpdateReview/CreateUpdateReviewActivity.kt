@@ -86,7 +86,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
 
     override fun onBackPressed() {
         val builder = AlertDialog.Builder(this)
-        builder.setMessage(this.getString(R.string.cancel_dialog_message))
+        builder.setMessage(this.getString(R.string.cancel_review_dialog_message))
             .setPositiveButton(R.string.confirm) { _, _ ->
                 super.onBackPressed()
             }
@@ -114,7 +114,14 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
      * Databinding functions
      */
     fun onBackButtonClicked() {
-        finish()
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage(this.getString(R.string.cancel_review_dialog_message))
+            .setPositiveButton(R.string.confirm) { _, _ ->
+                finish()
+            }
+            .setNegativeButton(R.string.cancel) { dialog, _ ->
+                dialog.cancel()
+            }.create().show()
     }
 
     fun onStarImageClicked(index: Int) {
@@ -122,14 +129,21 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     }
 
     fun onConfirmButtonClicked() {
-        when(viewModel.fragmentType){
-            CREATE_REVIEW -> {
-                createReviewAndFinishActivity()
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage(this.getString(R.string.post_review_dialog_message))
+            .setPositiveButton(R.string.confirm) { _, _ ->
+                when(viewModel.fragmentType){
+                    CREATE_REVIEW -> {
+                        createReviewAndFinishActivity()
+                    }
+                    UPDATE_REVIEW -> {
+                        updateReviewAndFinishActivity()
+                    }
+                }
             }
-            UPDATE_REVIEW -> {
-                updateReviewAndFinishActivity()
-            }
-        }
+            .setNegativeButton(R.string.cancel) { dialog, _ ->
+                dialog.cancel()
+            }.create().show()
     }
 
     private fun createReviewAndFinishActivity() {
