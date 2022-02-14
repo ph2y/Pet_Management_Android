@@ -14,7 +14,10 @@ import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
+import androidx.databinding.BindingAdapter
+import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sju18001.petmanagement.R
@@ -35,39 +38,39 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
 import kotlin.system.exitProcess
 
-
 class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.MapViewEventListener, MapView.POIItemEventListener {
-    val API_KEY = "KakaoAK fcb50b998a702691c31e6e2b3a4555be"
-    val BASE_URL = "https://dapi.kakao.com/"
+    companion object {
+        private const val API_KEY = "KakaoAK fcb50b998a702691c31e6e2b3a4555be"
+        private const val BASE_URL = "https://dapi.kakao.com/"
 
-    private lateinit var mapViewModel: MapViewModel
+        private const val CURRENT_LOCATION_BUTTON_MARGIN: Int = 16
+        private const val NAV_VIEW_HEIGHT: Int = 56
+        private const val LOCATION_INFORMATION_HEIGHT: Int = 138
+
+        private const val ANIMATION_DURATION: Long = 200
+
+        private const val SEARCH_METER_RADIUS: Int = 3000
+
+        // search_shortcut 버튼의 쿼리 키워드
+        const val CAFE_KEYWORD = "애견카페"
+        const val GROOMING_KEYWORD = "애견미용"
+        const val SUPPLY_KEYWORD = "애견용품"
+        const val HOSPITAL_KEYWORD = "동물병원"
+    }
 
     private var _binding: FragmentMapBinding? = null
     private val binding get() = _binding!!
-
+    private val viewModel: MapViewModel by viewModels()
     private var isViewDestroyed = false
 
     // 지도 관련
+    private var mapView: MapView? = null
     private var currentMapPoint: MapPoint? = null
     private var isLoadingCurrentMapPoint: Boolean = false
-    private var searchRadiusMeter: Int = 3000
-    private var searchTextInput: EditText? = null
 
-    // 상수
-    private val CURRENT_LOCATION_BUTTON_MARGIN: Int = 16
-    private val NAVVIEW_HEIGHT: Int = 56
-    private val LOCATION_INFORMATION_HEIGHT: Int = 138
-    private val ANIMATION_DURATION: Long = 200
+    private var currentPlaces: List<Place>? = null
 
-    // View
-    private var currentLocationButton: View? = null
-    private var navView: View? = null
-    private var locationInformation: View? = null
-
-    // 검색 기능 관련
-    private var currentDocuments: List<Place>? = null
-
-    // 애니메이션
+    // 애니메이션의 진행 여부를 파악하고자 멤버 변수로 둡니다.
     private var showingNavViewAnim: ValueAnimator? = null
     private var hidingNavViewAnim: ValueAnimator? = null
     private var increasingCurrentLocationButtonMarginAnim: ValueAnimator? = null
@@ -80,149 +83,89 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        mapViewModel =
-            ViewModelProvider(this).get(MapViewModel::class.java)
-
-        _binding = FragmentMapBinding.inflate(inflater, container, false)
+        setBinding(inflater, container)
         isViewDestroyed = false
 
-        val root: View = binding.root
-
-        navView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
-
-        // 맵 권한
         Permission.requestNotGrantedPermissions(requireActivity(), Permission.requiredPermissionsForLocation)
-
-        // MavView 초기화
-        val mapView = MapView(this.activity)
-        val mapViewContainer = binding.mapView
-        mapViewContainer.addView(mapView)
-
-        mapView.setCurrentLocationEventListener(this)
-        mapView.setMapViewEventListener(this)
-        mapView.setPOIItemEventListener(this)
-
-        mapView.setCustomCurrentLocationMarkerTrackingImage(R.drawable.marker_current_location, MapPOIItem.ImageOffset(16, 16))
-        mapView.setCalloutBalloonAdapter(CustomCalloutBalloonAdapter(inflater))
-        
-        // 위치 권한이 없을 때, 아래에서 에러가 발생함
-        try{
-            mapView.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeadingWithoutMapMoving
-            setMapCenterPointToCurrentLocation(mapView)
-        }catch(e: Exception){
-            Toast.makeText(requireContext(), "앱의 정상적인 작동을 위해, 위치 권한이 필요합니다.", Toast.LENGTH_LONG).show()
-            exitProcess(-1)
-        }
-
-
-        // location information -> review fragment
-        binding.locationInformation.setOnClickListener {
-            startReviewActivity(1) // TODO
-        }
-
-        // 현재 위치 버튼
-        currentLocationButton = binding.currentLocationButton.apply{
-            setOnClickListener{
-                setMapCenterPointToCurrentLocation(mapView)
-            }
-
-            val currentLocationButtonParams = layoutParams as ViewGroup.MarginLayoutParams
-            currentLocationButtonParams.bottomMargin += Util.convertDpToPixel(NAVVIEW_HEIGHT)
-            layoutParams = currentLocationButtonParams
-        }
-
-
-        // 검색바
-        searchTextInput = binding.searchTextInput.apply {
-            // 취소 버튼
-            var searchTextCancel = binding.searchTextCancel.apply {
-                setOnClickListener{
-                    searchTextInput!!.setText("")
-                }
-            }
-
-            // 검색 바로가기
-            binding.searchShortcutCafe.apply {
-                setOnClickListener{ doSearch("애견카페", mapView, this) }
-            }
-
-            binding.searchShortcutGrooming.apply {
-                setOnClickListener{ doSearch("애견미용", mapView, this) }
-            }
-
-            binding.searchShortcutSupply.apply {
-                setOnClickListener{ doSearch("애견용품", mapView, this) }
-            }
-
-            binding.searchShortcutHospital.apply {
-                setOnClickListener{ doSearch("동물병원", mapView, this) }
-            }
-
-
-            setOnEditorActionListener{ textView, _, _ ->
-                doSearch(textView.text.toString(), mapView, textView)
-                Util.hideKeyboard(requireActivity())
-
-                true
-            }
-
-            addTextChangedListener {
-                if(!searchTextInput!!.text.isEmpty()){
-                    searchTextCancel.visibility = View.VISIBLE
-                }else{
-                    searchTextCancel.visibility = View.INVISIBLE
-                }
-            }
-        }
-
+        initializeMapView(inflater)
 
         initializeAnimations()
+        setupViews()
 
-        Util.setupViewsForHideKeyboard(requireActivity(), binding.fragmentMapParentLayout)
-
-        return root
+        return binding.root
     }
 
-    private fun startReviewActivity(placeId: Long) {
-        val reviewActivityIntent = Intent(context, ReviewActivity::class.java)
-        reviewActivityIntent.putExtra("placeId", placeId)
+    private fun setBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        _binding = DataBindingUtil.inflate(inflater, R.layout.fragment_map, container, false)
 
-        startActivity(reviewActivityIntent)
-        requireActivity().overridePendingTransition(R.anim.enter_from_bottom, R.anim.exit_to_top)
+        binding.lifecycleOwner = this
+        binding.fragment = this@MapFragment
+        binding.viewModel = viewModel
     }
 
 
-    // * MapView
-    private fun setMapCenterPointToCurrentLocation(mapView: MapView){
-        if(currentMapPoint!=null){
-            mapView.setMapCenterPoint(currentMapPoint, true)
-        }else{ // 현재 위치 정보를 얻기 전
+    /**
+     * initializeMapView
+     */
+    private fun initializeMapView(inflater: LayoutInflater) {
+        mapView = MapView(this.activity)
+        binding.mapView.addView(mapView)
+
+        mapView!!.setCurrentLocationEventListener(this)
+        mapView!!.setMapViewEventListener(this)
+        mapView!!.setPOIItemEventListener(this)
+
+        mapView!!.setCustomCurrentLocationMarkerTrackingImage(R.drawable.marker_current_location, MapPOIItem.ImageOffset(16, 16))
+        mapView!!.setCalloutBalloonAdapter(CustomCalloutBalloonAdapter(inflater))
+
+        // 위치 권한이 없을 때, 아래에서 에러가 발생함
+        try{
+            mapView!!.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeadingWithoutMapMoving
+            setMapCenterPointToCurrentLocation()
+        }catch(e: Exception){
+            Toast.makeText(requireContext(), getString(R.string.map_permission_error_message), Toast.LENGTH_LONG).show()
+            mapView = null // nullify함으로써 mapView 관련 작업이 수행되는 것을 방지한다.
+        }
+    }
+
+    fun setMapCenterPointToCurrentLocation(){
+        if(mapView == null) return
+
+        // 현위치를 얻은 적이 있는 경우
+        if(currentMapPoint != null){
+            mapView!!.setMapCenterPoint(currentMapPoint, true)
+        }else{
+            // 중복 실행을 허용하지 않습니다.
             if(!isLoadingCurrentMapPoint){
                 isLoadingCurrentMapPoint = true
 
                 GlobalScope.launch(Dispatchers.IO){
-                    while(currentMapPoint==null){
+                    while(currentMapPoint == null){
                         // Wait for Loading
                         delay(100L)
                     }
 
-                    mapView.setMapCenterPoint(currentMapPoint, true)
+                    mapView!!.setMapCenterPoint(currentMapPoint, true)
                 }
             }
         }
     }
 
 
-    // * 검색
-    private fun doSearch(keyword: String, mapView:MapView, keyboardView: View){
-        searchKeyword(keyword, mapView)
+    /**
+     * initializeAnimations
+     */
+    fun doSearch(keyword: String){
+        if(mapView == null) return
 
-        setMapCenterPointToCurrentLocation(mapView)
-        val searchAreaCircle = addCircleCenteredAtCurrentLocation(mapView, searchRadiusMeter)
-        moveCameraOnCircle(mapView, searchAreaCircle!!, 50)
+        searchKeyword(keyword, mapView!!)
+
+        setMapCenterPointToCurrentLocation()
+        val searchAreaCircle = addCircleCenteredAtCurrentLocation(mapView!!, SEARCH_METER_RADIUS)
+        moveCameraOnCircle(mapView!!, searchAreaCircle!!, 50)
     }
 
-    private fun searchKeyword(keyword: String, mapView:MapView){
+    private fun searchKeyword(keyword: String, mapView: MapView){
         // Retrofit 구성
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -237,13 +180,13 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                 keyword,
                 currentMapPoint!!.mapPointGeoCoord.longitude.toString(),
                 currentMapPoint!!.mapPointGeoCoord.latitude.toString(),
-                searchRadiusMeter
+                SEARCH_METER_RADIUS
             )
             ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
                 val body = response.body()
                 if(body != null){
-                    currentDocuments = body.documents
-                    addPOIItemsForDocuments(currentDocuments!!, mapView)
+                    currentPlaces = body.documents
+                    addPOIItems(currentPlaces!!, mapView)
                 }
             }, {}, {})
         }catch(e: Exception){
@@ -252,11 +195,11 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         }
     }
 
-    private fun addPOIItemsForDocuments(documents: List<Place>, mapView: MapView){
+    private fun addPOIItems(places: List<Place>, mapView: MapView){
         mapView.removeAllPOIItems()
 
-        for(i: Int in 0 until documents.count()){
-            var iconId: Int = when(documents[i].category_group_code){
+        for(i: Int in 0 until places.count()){
+            var iconId: Int = when(places[i].category_group_code){
                 "MT1", "CS2" -> R.drawable.marker_store
                 "PS3", "SC4", "AC5" -> R.drawable.marker_school
                 "PK6", "OL7" -> R.drawable.marker_car
@@ -267,9 +210,9 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             }
 
             val newMarker: MapPOIItem = MapPOIItem().apply{
-                itemName = documents[i].place_name
+                itemName = places[i].place_name
                 tag = i
-                mapPoint = MapPoint.mapPointWithGeoCoord(documents[i].y.toDouble(), documents[i].x.toDouble())
+                mapPoint = MapPoint.mapPointWithGeoCoord(places[i].y.toDouble(), places[i].x.toDouble())
 
                 markerType = MapPOIItem.MarkerType.CustomImage
                 isCustomImageAutoscale = false
@@ -301,6 +244,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
         return searchAreaCircle
     }
+
     private fun moveCameraOnCircle(mapView: MapView, circle: MapCircle, padding: Int){
         try{
             val mapPointBoundsArray = arrayOf(circle.bound, circle.bound)
@@ -313,259 +257,65 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
 
-    // * 특정 위치의 정보 표시
-    private fun showLocationInformation(item: MapPOIItem){
-        try{
-            if(isAnimationRunning()){
-                return
-            }
-
-            // 네비게이션바가 열려있는 상태일 때
-            if(navView!!.height > 0){
-                hidingNavViewAnim!!.doOnEnd { anim ->
-                    showingLocationInformationAnim!!.start()
-
-                    anim.removeAllListeners()
-                }
-
-                updateLocationInformation(item)
-
-                hidingNavViewAnim!!.start()
-                decreasingCurrentLocationButtonMarginAnim!!.start()
-            }else{ // 장소 정보가 열려있는 상태일 때
-                hidingLocationInformationAnim!!.doOnEnd { anim ->
-                    updateLocationInformation(item)
-
-                    showingLocationInformationAnim!!.start()
-
-                    anim.removeAllListeners()
-                }
-
-                hidingLocationInformationAnim!!.start()
-            }
-        }catch(e: Exception){
-            Log.e("MapFragment", "Failed to show location information: " + e.message)
-        }
-    }
-
-    private fun updateLocationInformation(item: MapPOIItem){
-        if(currentDocuments != null){
-            val document = currentDocuments!![item.tag]
-
-            setLocationInformationTexts(document)
-            setLocationInformationRating(4.3f) // TODO: place에 rating이 추가되면 변경
-            setLocationInformationButtons(document)
-        }else{
-            Log.e("MapFragment", "currentDocuments is null")
-        }
-    }
-
-    private fun setLocationInformationTexts(document: Place){
-        val locationPlaceName = binding.locationPlaceName
-        val locationCategoryName = binding.locationCategoryName
-        val locationDistance = binding.locationDistance
-
-        locationPlaceName.text = document.place_name
-        locationCategoryName.text = document.category_group_name
-        setLocationDistance(locationDistance, document.distance)
-    }
-
-    private fun setLocationInformationRating(rating: Float){
-        binding.textRating.text = rating.toString()
-        Util.setRatingStars(getStarImages(), rating, requireContext())
-    }
-
-    private fun getStarImages(): ArrayList<ImageView> {
-        val starImages = arrayListOf<ImageView>()
-        for(i in 1..5){
-            // View id: image_star1 ~ image_star5
-            val id = resources.getIdentifier("image_star$i", "id", requireContext().packageName)
-            val elem: ImageView = binding.locationInformationRating.findViewById(id)
-            starImages.add(elem)
-        }
-        return starImages
-    }
-
-    private fun setLocationInformationButtons(document: Place){
-        setLocationInformationPathfindingButton(document)
-        setLocationInformationCallButton(document)
-        setLocationInformationShareButton(document)
-    }
-
-    private fun setLocationInformationPathfindingButton(document: Place){
-        val builder = AlertDialog.Builder(context)
-            .setTitle("길찾기")
-            .setMessage("길찾기를 위해 카카오맵 웹페이지로 이동합니다.")
-            .setPositiveButton("확인",
-                DialogInterface.OnClickListener { _, _ ->
-                    Util.openWebPage(requireActivity(), "https://map.kakao.com/link/to/" + document.id)
-                })
-            .setNegativeButton("취소",
-                DialogInterface.OnClickListener { dialog, _ ->
-                    dialog.cancel()
-                })
-            .create()
-
-        // 버튼 이벤트
-        val pathfindingButton = binding.pathfindingButton
-        pathfindingButton.setOnClickListener{ _ ->
-            builder.show()
-        }
-    }
-
-    private fun setLocationInformationCallButton(document: Place){
-        // 전화번호 정보가 없을 때는 전화 버튼을 숨김
-        if(document.phone.isEmpty()){
-            setCallButtonHorizontalWeight(0f)
-        }else{
-            setCallButtonHorizontalWeight(1f)
-
-            // AlertDialog 구성
-            val buttonStrings: Array<CharSequence> = arrayOf("전화하기", "연락처 저장하기", "클립보드에 복사하기")
-            val builder = AlertDialog.Builder(context)
-                .setTitle(document.phone)
-                .setItems(buttonStrings,
-                    DialogInterface.OnClickListener{ _, which ->
-                        when(which){
-                            0 -> {
-                                if(Permission.isAllPermissionsGranted(requireContext(), Permission.requiredPermissionsForCall)){
-                                    Util.doCall(requireActivity(), document.phone)
-                                }else{
-                                    Permission.requestNotGrantedPermissions(requireActivity(), Permission.requiredPermissionsForCall)
-                                }
-                            }
-                            1 -> {
-                                if(Permission.isAllPermissionsGranted(requireContext(), Permission.requiredPermissionsForContacts)){
-                                    Util.insertContactsContract(requireActivity(), document)
-                                }else{
-                                    Permission.requestNotGrantedPermissions(requireActivity(), Permission.requiredPermissionsForContacts)
-                                }
-                            }
-                            2 -> Util.doCopy(requireActivity(), document.phone)
-                        }
-                    })
-                .setNegativeButton("취소",
-                    DialogInterface.OnClickListener { dialog, _ ->
-                        dialog.cancel()
-                    })
-                .create()
-            
-            // 버튼 이벤트
-            val callButton = binding.callButton
-            callButton.setOnClickListener{ _ ->
-                builder.show()
-            }
-        }
-    }
-
-    private fun setCallButtonHorizontalWeight(weight: Float){
-        val locationInformationButtons = binding.locationInformationButtons
-        val constraintSet = ConstraintSet()
-
-        constraintSet.clone(locationInformationButtons)
-        constraintSet.setHorizontalWeight(R.id.call_button, weight)
-        constraintSet.applyTo(locationInformationButtons)
-    }
-
-    private fun setLocationInformationShareButton(document: Place){
-        // 버튼 이벤트
-        val shareButton = binding.shareButton
-        shareButton.setOnClickListener{ _ ->
-            Util.shareText(requireActivity(), document.place_url)
-        }
-    }
-
-    private fun setLocationDistance(locationDistance: TextView, distance: String){
-        locationDistance.text = distance + "m"
-
-        // 거리에 따라 색상을 지정함
-        val color:Int = when (distance.toInt()){
-            in 0..750 -> ContextCompat.getColor(requireContext(), R.color.emerald)
-            in 751..1500 -> ContextCompat.getColor(requireContext(), R.color.sunflower)
-            in 1501..2250 -> ContextCompat.getColor(requireContext(), R.color.carrot)
-            else -> ContextCompat.getColor(requireContext(), R.color.alizarin)
-        }
-
-        locationDistance.setTextColor(color)
-    }
-
-    private fun hideLocationInformation(){
-        try{
-            if(isAnimationRunning()){
-                return
-            }
-
-            hidingLocationInformationAnim!!.doOnEnd { anim ->
-                showingNavViewAnim!!.start()
-                increasingCurrentLocationButtonMarginAnim!!.start()
-
-                anim.removeAllListeners()
-            }
-
-            hidingLocationInformationAnim!!.start()
-        }catch(e: Exception){
-            Log.e("MapFragment", "Failed to show location information: " + e.message)
-        }
-    }
-
-
-    // * 애니메이션
+    /**
+     * initializeAnimations
+     */
     private fun initializeAnimations(){
-        showingNavViewAnim = ValueAnimator.ofInt(0, Util.convertDpToPixel(NAVVIEW_HEIGHT))
+        showingNavViewAnim = ValueAnimator.ofInt(0, Util.convertDpToPixel(NAV_VIEW_HEIGHT))
         showingNavViewAnim!!.addUpdateListener { valueAnimator ->
             val value = valueAnimator.animatedValue as Int
+            val navView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
 
-            navView!!.layoutParams.height = value
-            navView!!.requestLayout()
+            navView.layoutParams.height = value
+            navView.requestLayout()
         }
         showingNavViewAnim!!.duration = ANIMATION_DURATION
 
-        hidingNavViewAnim = ValueAnimator.ofInt(Util.convertDpToPixel(NAVVIEW_HEIGHT), 0)
+        hidingNavViewAnim = ValueAnimator.ofInt(Util.convertDpToPixel(NAV_VIEW_HEIGHT), 0)
         hidingNavViewAnim!!.addUpdateListener { valueAnimator ->
             val value = valueAnimator.animatedValue as Int
+            val navView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
 
-            navView!!.layoutParams.height = value
-            navView!!.requestLayout()
+            navView.layoutParams.height = value
+            navView.requestLayout()
         }
         hidingNavViewAnim!!.duration = ANIMATION_DURATION
 
-        increasingCurrentLocationButtonMarginAnim = ValueAnimator.ofInt(Util.convertDpToPixel(CURRENT_LOCATION_BUTTON_MARGIN), Util.convertDpToPixel(NAVVIEW_HEIGHT + CURRENT_LOCATION_BUTTON_MARGIN))
+        increasingCurrentLocationButtonMarginAnim = ValueAnimator.ofInt(Util.convertDpToPixel(CURRENT_LOCATION_BUTTON_MARGIN), Util.convertDpToPixel(NAV_VIEW_HEIGHT + CURRENT_LOCATION_BUTTON_MARGIN))
         increasingCurrentLocationButtonMarginAnim!!.addUpdateListener { valueAnimator ->
             val value = valueAnimator.animatedValue as Int
-            val params = currentLocationButton!!.layoutParams as (ViewGroup.MarginLayoutParams)
+            val params = binding.currentLocationButton.layoutParams as (ViewGroup.MarginLayoutParams)
 
             params.bottomMargin = value
-            currentLocationButton!!.requestLayout()
+            binding.currentLocationButton.requestLayout()
         }
         increasingCurrentLocationButtonMarginAnim!!.duration = ANIMATION_DURATION
 
-        decreasingCurrentLocationButtonMarginAnim = ValueAnimator.ofInt(Util.convertDpToPixel(NAVVIEW_HEIGHT + CURRENT_LOCATION_BUTTON_MARGIN), Util.convertDpToPixel(CURRENT_LOCATION_BUTTON_MARGIN))
+        decreasingCurrentLocationButtonMarginAnim = ValueAnimator.ofInt(Util.convertDpToPixel(NAV_VIEW_HEIGHT + CURRENT_LOCATION_BUTTON_MARGIN), Util.convertDpToPixel(CURRENT_LOCATION_BUTTON_MARGIN))
         decreasingCurrentLocationButtonMarginAnim!!.addUpdateListener { valueAnimator ->
             val value = valueAnimator.animatedValue as Int
-            val params = currentLocationButton!!.layoutParams as (ViewGroup.MarginLayoutParams)
+            val params = binding.currentLocationButton.layoutParams as (ViewGroup.MarginLayoutParams)
 
             params.bottomMargin = value
-            currentLocationButton!!.requestLayout()
+            binding.currentLocationButton.requestLayout()
         }
         decreasingCurrentLocationButtonMarginAnim!!.duration = ANIMATION_DURATION
 
         showingLocationInformationAnim = ValueAnimator.ofInt(1, Util.convertDpToPixel(LOCATION_INFORMATION_HEIGHT))
         showingLocationInformationAnim!!.addUpdateListener { valueAnimator ->
             val value = valueAnimator.animatedValue as Int
-            if(locationInformation == null) locationInformation = binding.locationInformation
 
-            locationInformation!!.layoutParams.height = value
-            locationInformation!!.requestLayout()
+            binding.locationInformation.layoutParams.height = value
+            binding.locationInformation.requestLayout()
         }
         showingLocationInformationAnim!!.duration = ANIMATION_DURATION
 
         hidingLocationInformationAnim = ValueAnimator.ofInt(Util.convertDpToPixel(LOCATION_INFORMATION_HEIGHT), 1)
         hidingLocationInformationAnim!!.addUpdateListener { valueAnimator ->
             val value = valueAnimator.animatedValue as Int
-            if(locationInformation == null) locationInformation = binding.locationInformation
 
-            locationInformation!!.layoutParams.height = value
-            locationInformation!!.requestLayout()
+            binding.locationInformation.layoutParams.height = value
+            binding.locationInformation.requestLayout()
         }
         hidingLocationInformationAnim!!.duration = ANIMATION_DURATION
     }
@@ -579,6 +329,36 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                 hidingLocationInformationAnim!!.isRunning
     }
 
+    
+    /**
+     * setupViews
+     */
+    private fun setupViews() {
+        Util.setupViewsForHideKeyboard(requireActivity(), binding.fragmentMapParentLayout)
+        addMarginBottomToCurrentLocationButton()
+        setEditorActionListenerToSearchTextInput()
+    }
+
+    private fun addMarginBottomToCurrentLocationButton() {
+        binding.currentLocationButton.apply {
+            val currentLocationButtonParams = layoutParams as ViewGroup.MarginLayoutParams
+            currentLocationButtonParams.bottomMargin += Util.convertDpToPixel(NAV_VIEW_HEIGHT)
+
+            layoutParams = currentLocationButtonParams
+        }
+    }
+
+    // 검색바에 포커스된 채로 키보드의 '확인'을 누를 때의 이벤트 등록
+    private fun setEditorActionListenerToSearchTextInput() {
+        binding.searchTextInput.setOnEditorActionListener { textView, _, _ ->
+            doSearch(textView.text.toString())
+            Util.hideKeyboard(requireActivity())
+
+            true
+        }
+    }
+
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -586,7 +366,25 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
 
-    // * CurrentLocationEventListener 인터페이스
+    /**
+     * Databinding functions
+     */
+    fun onSearchTextCancelClicked() {
+        binding.searchTextInput!!.setText("")
+    }
+
+    fun startReviewActivity(placeId: Long) {
+        val reviewActivityIntent = Intent(context, ReviewActivity::class.java)
+        reviewActivityIntent.putExtra("placeId", placeId)
+
+        startActivity(reviewActivityIntent)
+        requireActivity().overridePendingTransition(R.anim.enter_from_bottom, R.anim.exit_to_top)
+    }
+
+
+    /**
+     * CurrentLocationEventListener 인터페이스 구현
+     */
     override fun onCurrentLocationUpdate(p0: MapView?, p1: MapPoint?, p2: Float) {
         if (p1 != null) {
             currentMapPoint = p1
@@ -603,7 +401,9 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
 
-    // * MapViewEventListener 인터페이스
+    /**
+     * MapViewEventListener 인터페이스 구현
+     */
     override fun onMapViewInitialized(p0: MapView?) {
     }
 
@@ -614,11 +414,30 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
     override fun onMapViewSingleTapped(p0: MapView?, p1: MapPoint?) {
-        // 장소 정보가 열려있을 때
-        if(navView != null && locationInformation != null){
-            if (navView!!.height == 0 && locationInformation!!.height > 0){
-                hideLocationInformation()
+        if (isLocationInformationOpened()){
+            hideLocationInformation()
+        }
+    }
+
+    private fun isLocationInformationOpened(): Boolean {
+        val navView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
+        return navView.height == 0 && binding.locationInformation.height > 0
+    }
+
+    private fun hideLocationInformation(){
+        try{
+            if(isAnimationRunning()) return
+
+            hidingLocationInformationAnim!!.doOnEnd { anim ->
+                showingNavViewAnim!!.start()
+                increasingCurrentLocationButtonMarginAnim!!.start()
+
+                anim.removeAllListeners()
             }
+
+            hidingLocationInformationAnim!!.start()
+        }catch(e: Exception){
+            Log.e("MapFragment", "Failed to show location information: " + e.message)
         }
     }
 
@@ -638,40 +457,190 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
 
-    // * MapView.POIItemEventListener 인터페이스
+    /**
+     * MapView.POIItemEventListener 인터페이스 구현
+     */
     override fun onPOIItemSelected(p0: MapView?, p1: MapPOIItem?) {
-        if(p1!=null){
+        if(p1 != null){
             showLocationInformation(p1!!)
         }
+    }
+
+    private fun showLocationInformation(item: MapPOIItem){
+        try{
+            if(isAnimationRunning()) return
+
+            // 이미 다른 곳의 정보창이 열려있을 경우
+            if(isLocationInformationOpened()){
+                hidingLocationInformationAnim!!.doOnEnd { anim ->
+                    updateLocationInformation(item)
+                    showingLocationInformationAnim!!.start()
+                    anim.removeAllListeners()
+                }
+
+                hidingLocationInformationAnim!!.start()
+            }else{
+                hidingNavViewAnim!!.doOnEnd { anim ->
+                    showingLocationInformationAnim!!.start()
+                    anim.removeAllListeners()
+                }
+
+                updateLocationInformation(item)
+
+                hidingNavViewAnim!!.start()
+                decreasingCurrentLocationButtonMarginAnim!!.start()
+            }
+        }catch(e: Exception){
+            Log.e("MapFragment", "Failed to show location information: " + e.message)
+        }
+    }
+
+    private fun updateLocationInformation(item: MapPOIItem){
+        // TODO: set placeIdInLocationInformation of view model
+        currentPlaces?.get(item.tag)?.let { place ->
+            setLocationInformationTexts(place)
+            setLocationInformationRating(4.3f) // TODO: place에 rating이 추가되면 변경
+            setLocationInformationButtons(place)
+        }
+    }
+
+    private fun setLocationInformationTexts(place: Place){
+        val locationPlaceName = binding.locationPlaceName
+        val locationCategoryName = binding.locationCategoryName
+        val locationDistance = binding.locationDistance
+
+        locationPlaceName.text = place.place_name
+        locationCategoryName.text = place.category_group_name
+        setLocationDistance(locationDistance, place.distance)
+    }
+
+    private fun setLocationDistance(locationDistance: TextView, distance: String){
+        locationDistance.text = distance + "m"
+
+        // 거리에 따라 색상을 지정함
+        val color:Int = when (distance.toInt()){
+            in 0..750 -> ContextCompat.getColor(requireContext(), R.color.emerald)
+            in 751..1500 -> ContextCompat.getColor(requireContext(), R.color.sunflower)
+            in 1501..2250 -> ContextCompat.getColor(requireContext(), R.color.carrot)
+            else -> ContextCompat.getColor(requireContext(), R.color.alizarin)
+        }
+
+        locationDistance.setTextColor(color)
+    }
+
+    private fun setLocationInformationRating(rating: Float){
+        binding.textRating.text = rating.toString()
+        Util.setRatingStars(getStarImages(), rating, requireContext())
+    }
+
+    private fun getStarImages(): ArrayList<ImageView> {
+        val starImages = arrayListOf<ImageView>()
+        for(i in 1..5){
+            // View id: image_star1 ~ image_star5
+            val id = resources.getIdentifier("image_star$i", "id", requireContext().packageName)
+            val elem: ImageView = binding.locationInformationRating.findViewById(id)
+            starImages.add(elem)
+        }
+        return starImages
+    }
+
+    private fun setLocationInformationButtons(place: Place){
+        setLocationInformationPathfindingButton(place)
+        setLocationInformationCallButton(place)
+        setLocationInformationShareButton(place)
+        setLocationInformationBookmarkButton(place)
+    }
+
+    private fun setLocationInformationPathfindingButton(place: Place){
+        val builder = AlertDialog.Builder(context)
+            .setTitle("길찾기")
+            .setMessage("길찾기를 위해 카카오맵 웹페이지로 이동합니다.")
+            .setPositiveButton("확인") { _, _ ->
+                Util.openWebPage(requireActivity(), "https://map.kakao.com/link/to/" + place.id)
+            }
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.cancel()
+            }
+            .create()
+
+        // 버튼 이벤트
+        val pathfindingButton = binding.pathfindingButton
+        pathfindingButton.setOnClickListener{ _ ->
+            builder.show()
+        }
+    }
+
+    private fun setLocationInformationCallButton(place: Place){
+        if(place.phone.isEmpty()){
+            setCallButtonHorizontalWeight(0f)
+        }else{
+            setCallButtonHorizontalWeight(1f)
+
+            // AlertDialog 구성
+            val buttonStrings: Array<CharSequence> = arrayOf("전화하기", "연락처 저장하기", "클립보드에 복사하기")
+            val builder = AlertDialog.Builder(context)
+                .setTitle(place.phone)
+                .setItems(buttonStrings,
+                    DialogInterface.OnClickListener{ _, which ->
+                        when(which){
+                            0 -> {
+                                if(Permission.isAllPermissionsGranted(requireContext(), Permission.requiredPermissionsForCall)){
+                                    Util.doCall(requireActivity(), place.phone)
+                                }else{
+                                    Permission.requestNotGrantedPermissions(requireActivity(), Permission.requiredPermissionsForCall)
+                                }
+                            }
+                            1 -> {
+                                if(Permission.isAllPermissionsGranted(requireContext(), Permission.requiredPermissionsForContacts)){
+                                    Util.insertContactsContract(requireActivity(), place)
+                                }else{
+                                    Permission.requestNotGrantedPermissions(requireActivity(), Permission.requiredPermissionsForContacts)
+                                }
+                            }
+                            2 -> Util.doCopy(requireActivity(), place.phone)
+                        }
+                    })
+                .setNegativeButton("취소",
+                    DialogInterface.OnClickListener { dialog, _ ->
+                        dialog.cancel()
+                    })
+                .create()
+
+            // 버튼 이벤트
+            val callButton = binding.callButton
+            callButton.setOnClickListener{ _ ->
+                builder.show()
+            }
+        }
+    }
+
+    private fun setCallButtonHorizontalWeight(weight: Float){
+        val locationInformationButtons = binding.locationInformationButtons
+        val constraintSet = ConstraintSet()
+
+        constraintSet.clone(locationInformationButtons)
+        constraintSet.setHorizontalWeight(R.id.call_button, weight)
+        constraintSet.applyTo(locationInformationButtons)
+    }
+
+    private fun setLocationInformationShareButton(place: Place){
+        // 버튼 이벤트
+        val shareButton = binding.shareButton
+        shareButton.setOnClickListener{ _ ->
+            Util.shareText(requireActivity(), place.place_url)
+        }
+    }
+
+    private fun setLocationInformationBookmarkButton(place: Place){
+        // TODO
     }
 
     override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?) {
     }
 
-    override fun onCalloutBalloonOfPOIItemTouched(
-        p0: MapView?,
-        p1: MapPOIItem?,
-        p2: MapPOIItem.CalloutBalloonButtonType?
-    ) {
+    override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?, p2: MapPOIItem.CalloutBalloonButtonType?) {
     }
 
     override fun onDraggablePOIItemMoved(p0: MapView?, p1: MapPOIItem?, p2: MapPoint?) {
-    }
-
-    // * 커스텀 말풍선 클래스
-    class CustomCalloutBalloonAdapter(inflater: LayoutInflater) : CalloutBalloonAdapter {
-        private val mCalloutBalloon: View = inflater.inflate(R.layout.custom_callout_balloon, null)
-
-        override fun getCalloutBalloon(poiItem: MapPOIItem): View {
-            val customCalloutBalloonImage = (mCalloutBalloon.findViewById<View>(R.id.custom_callout_balloon_image) as ImageView)
-            customCalloutBalloonImage.setImageResource(R.drawable.ic_baseline_place_48)
-            customCalloutBalloonImage.y = 8f
-
-            return mCalloutBalloon
-        }
-
-        override fun getPressedCalloutBalloon(poiItem: MapPOIItem?): View? {
-            return null
-        }
     }
 }
