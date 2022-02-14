@@ -2,7 +2,6 @@ package com.sju18001.petmanagement.ui.community.followerFollowing
 
 import android.app.AlertDialog
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
@@ -80,7 +79,7 @@ class FollowingAdapter(val context: Context, private val followerFollowingViewMo
             CommunityUtil.fetchRepresentativePetAndStartPetProfile(context, Account(
                 resultList[position].getId(), resultList[position].getUsername(), "", "", null,
                 null, resultList[position].getNickname(), if (resultList[position].getHasPhoto()) "true" else null,
-                "", resultList[position].getRepresentativePetId(), null, null), isViewDestroyed)
+                "", resultList[position].getRepresentativePetId(), null, null, 0.0), isViewDestroyed)
         }
 
         holder.followUnfollowButton.setOnClickListener {

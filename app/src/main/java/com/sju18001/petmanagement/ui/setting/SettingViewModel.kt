@@ -77,6 +77,11 @@ class SettingViewModel(private val handle: SavedStateHandle) : ViewModel() {
             handle.set("notification", value)
             field = value
         }
+    var mapSearchRadius = handle.get<Double>("mapSearchRadius")?:0.0
+        set(value){
+            handle.set("mapSearchRadius", value)
+            field = value
+        }
     var accountPwValid = handle.get<Boolean>("createAccountPwValid")?: false
         set(value){
             handle.set("createAccountPwValid", value)
@@ -86,9 +91,5 @@ class SettingViewModel(private val handle: SavedStateHandle) : ViewModel() {
         set(value){
             handle.set("createAccountPwCheckValid", value)
             field = value
-        }
-    var accountApiIsLoading = handle.get<Boolean>("accountApiIsLoading")?: false
-        set(value) {
-            handle.set("accountApiIsLoading", value)
         }
 }

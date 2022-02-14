@@ -66,7 +66,8 @@ data class FetchAccountResDto(
     val userMessage: String?,
     val representativePetId: Long?,
     val fcmRegistrationToken: String?,
-    val notification: Boolean
+    val notification: Boolean,
+    val mapSearchRadius: Double
 )
 
 data class FetchFcmRegistrationTokenResDto(
@@ -81,7 +82,8 @@ data class UpdateAccountReqDto(
     val marketing: Boolean?,
     val userMessage: String?,
     val representativePetId: Long?,
-    val notification: Boolean?
+    val notification: Boolean?,
+    val mapSearchRadius: Double
 )
 
 data class UpdateFcmRegistrationTokenReqDto(

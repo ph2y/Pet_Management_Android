@@ -9,7 +9,6 @@ import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Account
-import com.sju18001.petmanagement.restapi.dto.UpdateFcmRegistrationTokenReqDto
 import com.sju18001.petmanagement.ui.login.LoginActivity
 
 class SplashActivity: AppCompatActivity() {
@@ -42,7 +41,8 @@ class SplashActivity: AppCompatActivity() {
             ServerUtil.enqueueApiCall(call, { isViewDestroyed }, baseContext, { response ->
                 val intent = Intent(this@SplashActivity, MainActivity::class.java)
                 response.body()?.run{
-                    val account = Account(id, username, email, phone, null, marketing, nickname, photoUrl, userMessage, representativePetId, fcmRegistrationToken, notification)
+                    val account = Account(id, username, email, phone, null, marketing, nickname, photoUrl,
+                        userMessage, representativePetId, fcmRegistrationToken, notification, mapSearchRadius)
                     SessionManager.saveLoggedInAccount(this@SplashActivity, account)
 
                     startActivity(intent)

@@ -2,7 +2,6 @@ package com.sju18001.petmanagement.ui.myPet.petManager
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.transition.AutoTransition
@@ -414,7 +413,8 @@ class PetProfileFragment : Fragment(){
             accountData.marketing,
             accountData.userMessage,
             myPetViewModel.petIdValue,
-            accountData.notification
+            accountData.notification,
+            accountData.mapSearchRadius
         )
 
         // update account
@@ -425,7 +425,8 @@ class PetProfileFragment : Fragment(){
                 // update session(update representative pet id value)
                 val account = Account(
                     accountData.id, accountData.username, accountData.email, accountData.phone, accountData.password,
-                    accountData.marketing, accountData.nickname, accountData.photoUrl, accountData.userMessage, myPetViewModel.petIdValue, accountData.fcmRegistrationToken, accountData.notification
+                    accountData.marketing, accountData.nickname, accountData.photoUrl, accountData.userMessage,
+                    myPetViewModel.petIdValue, accountData.fcmRegistrationToken, accountData.notification, accountData.mapSearchRadius
                 )
                 SessionManager.saveLoggedInAccount(requireContext(), account)
 

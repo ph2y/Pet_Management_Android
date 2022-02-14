@@ -60,6 +60,7 @@ class SettingFragment : Fragment() {
             accountLookupIntent.putExtra("representativePetId", accountData.representativePetId)
             accountLookupIntent.putExtra("fcmRegistrationToken", accountData.fcmRegistrationToken)
             accountLookupIntent.putExtra("notification", accountData.notification)
+            accountLookupIntent.putExtra("mapSearchRadius", accountData.mapSearchRadius)
 
             if(accountData.photoUrl != null) {
                 Util.saveByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),

@@ -1,6 +1,5 @@
 package com.sju18001.petmanagement.ui.community.followerFollowing
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -118,7 +117,7 @@ class FollowerFollowingFragment : Fragment() {
                 followerFollowingViewModel.accountId!!, followerFollowingViewModel.accountUsername!!,
                 "", "", "", null, followerFollowingViewModel.accountNickname,
                 followerFollowingViewModel.accountPhotoUrl, "", followerFollowingViewModel.accountRepresentativePetId,
-                null, null), isViewDestroyed
+                null, null, 0.0), isViewDestroyed
             )
         }
 

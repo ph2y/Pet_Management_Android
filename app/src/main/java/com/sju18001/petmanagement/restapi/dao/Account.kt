@@ -12,5 +12,6 @@ data class Account(
     val userMessage: String?,
     val representativePetId: Long?,
     val fcmRegistrationToken: String? = null,
-    val notification: Boolean?
+    val notification: Boolean?,
+    val mapSearchRadius: Double
 )
