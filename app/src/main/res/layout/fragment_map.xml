@@ -219,85 +219,85 @@
             android:onClick="@{() -> fragment.setMapCenterPointToCurrentLocation()}"
             app:tint="@color/black"
             app:borderWidth="0dp"
-            app:layout_constraintBottom_toTopOf="@id/location_information"
+            app:layout_constraintBottom_toTopOf="@id/place_card"
             app:layout_constraintEnd_toEndOf="parent"
             />
 
         <!-- TODO: onClick에서 1를 place id로 변경 after Place DAO update -->
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/location_information"
+            android:id="@+id/place_card"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@drawable/border"
             android:padding="16dp"
             android:clipChildren="false"
             android:clipToPadding="false"
-            android:onClick="@{() -> fragment.onLocationInformationClicked(1)}"
+            android:onClick="@{() -> fragment.onPlaceCardClicked(1)}"
             app:layout_constraintBottom_toBottomOf="parent"
             >
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/location_information_texts"
+                android:id="@+id/place_card_texts"
                 android:layout_width="match_parent"
                 android:layout_height="28dp"
                 app:layout_constraintTop_toTopOf="parent">
                 <androidx.constraintlayout.widget.ConstraintLayout
-                    android:id="@+id/location_place_category_layout"
+                    android:id="@+id/place_name_layout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/location_distance"
+                    app:layout_constraintEnd_toStartOf="@id/place_distance"
                     app:layout_constraintHorizontal_chainStyle="spread_inside">
                     <TextView
-                        android:id="@+id/location_place_name"
+                        android:id="@+id/place_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="20sp"
                         android:textColor="@color/black"
                         android:singleLine="true"
-                        android:text="@{viewModel.placeForLocationInformation.place_name}"
+                        android:text="@{viewModel.placeCard.place_name}"
                         app:layout_constraintHorizontal_chainStyle="packed"
                         app:layout_constraintHorizontal_bias="0"
                         app:layout_constrainedWidth="true"
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintEnd_toStartOf="@id/location_category_name"
+                        app:layout_constraintEnd_toStartOf="@id/place_category_name"
                         />
                     <TextView
-                        android:id="@+id/location_category_name"
+                        android:id="@+id/place_category_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
                         android:layout_marginStart="8dp"
-                        android:text="@{viewModel.placeForLocationInformation.category_group_name}"
-                        app:layout_constraintStart_toEndOf="@id/location_place_name"
-                        app:layout_constraintBottom_toBottomOf="@id/location_place_name"
+                        android:text="@{viewModel.placeCard.category_group_name}"
+                        app:layout_constraintStart_toEndOf="@id/place_name"
+                        app:layout_constraintBottom_toBottomOf="@id/place_name"
                         app:layout_constraintEnd_toEndOf="parent"
                         />
                 </androidx.constraintlayout.widget.ConstraintLayout>
                 <TextView
-                    android:id="@+id/location_distance"
+                    android:id="@+id/place_distance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
                     android:layout_marginStart="8dp"
-                    android:text="@{@string/distance_text(viewModel.placeForLocationInformation.distance)}"
-                    android:textColor="@{fragment.getLocationDistanceTextColor(viewModel.placeForLocationInformation.distance)}"
-                    app:layout_constraintStart_toEndOf="@id/location_place_category_layout"
-                    app:layout_constraintBottom_toBottomOf="@id/location_place_category_layout"
+                    android:text="@{@string/distance_text(viewModel.placeCard.distance)}"
+                    android:textColor="@{fragment.getPlaceDistanceTextColor(viewModel.placeCard.distance)}"
+                    app:layout_constraintStart_toEndOf="@id/place_name_layout"
+                    app:layout_constraintBottom_toBottomOf="@id/place_name_layout"
                     app:layout_constraintEnd_toEndOf="parent"
                     />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
-                android:id="@+id/location_information_rating"
+                android:id="@+id/place_rating"
                 android:layout_width="match_parent"
                 android:layout_height="22dp"
                 android:layout_marginTop="4dp"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                app:layout_constraintTop_toBottomOf="@id/location_information_texts"
+                app:layout_constraintTop_toBottomOf="@id/place_card_texts"
                 >
                 <TextView
                     android:id="@+id/text_rating"
@@ -346,18 +346,18 @@
             </LinearLayout>
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/location_information_buttons"
+                android:id="@+id/place_card_buttons"
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
                 android:layout_marginTop="8dp"
-                app:layout_constraintTop_toBottomOf="@id/location_information_rating">
+                app:layout_constraintTop_toBottomOf="@id/place_rating">
                 <ImageButton
                     android:id="@+id/pathfinding_button"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:src="@drawable/ic_baseline_swap_calls_20"
                     android:background="@drawable/border"
-                    android:onClick="@{() -> fragment.onPathfindingButtonClicked(viewModel.placeForLocationInformation.id)}"
+                    android:onClick="@{() -> fragment.onPathfindingButtonClicked(viewModel.placeCard.id)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toLeftOf="@id/call_button"
@@ -369,8 +369,8 @@
                     android:layout_height="match_parent"
                     android:src="@drawable/ic_baseline_call_20"
                     android:background="@drawable/border"
-                    android:visibility="@{viewModel.placeForLocationInformation.phone.length() == 0? View.GONE:View.VISIBLE}"
-                    android:onClick="@{() -> fragment.onCallButtonClicked(viewModel.placeForLocationInformation)}"
+                    android:visibility="@{viewModel.placeCard.phone.length() == 0? View.GONE:View.VISIBLE}"
+                    android:onClick="@{() -> fragment.onCallButtonClicked(viewModel.placeCard)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toRightOf="@+id/pathfinding_button"
                     app:layout_constraintRight_toLeftOf="@+id/share_button"
@@ -382,7 +382,7 @@
                     android:layout_height="match_parent"
                     android:src="@drawable/ic_baseline_share_20"
                     android:background="@drawable/border"
-                    android:onClick="@{() -> fragment.onShareButtonClicked(viewModel.placeForLocationInformation)}"
+                    android:onClick="@{() -> fragment.onShareButtonClicked(viewModel.placeCard)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toRightOf="@id/call_button"
                     app:layout_constraintRight_toLeftOf="@id/bookmark_button"
@@ -394,7 +394,7 @@
                     android:layout_height="match_parent"
                     android:src="@drawable/ic_baseline_bookmark_border_20"
                     android:background="@drawable/border"
-                    android:onClick="@{() -> fragment.onBookmarkButtonClicked(viewModel.placeForLocationInformation)}"
+                    android:onClick="@{() -> fragment.onBookmarkButtonClicked(viewModel.placeCard)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toRightOf="@id/share_button"
                     app:layout_constraintRight_toRightOf="parent"
