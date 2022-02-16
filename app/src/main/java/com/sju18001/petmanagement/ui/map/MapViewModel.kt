@@ -8,8 +8,12 @@ import com.sju18001.petmanagement.restapi.kakaoapi.Place
 
 class MapViewModel : ViewModel() {
     var searchText: ObservableField<String> = ObservableField("")
-    var placeCard: ObservableField<Place> = ObservableField(
-        Place("0", "def", "def", "", "",
-        "0", "def", "def", "0", "0", "", "0")
+    var placeCard: ObservableField<PlaceCard> = ObservableField(
+        PlaceCard(
+            Place("0", "def", "def", "",
+                "", "0", "def", "def",
+                "0", "0", "", "0"),
+            false
+        )
     )
 }

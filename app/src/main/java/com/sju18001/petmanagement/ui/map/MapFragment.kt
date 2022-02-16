@@ -477,8 +477,10 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
     private fun updatePlaceCard(item: MapPOIItem){
         currentPlaces?.get(item.tag)?.let { place ->
-            viewModel.placeCard.set(place)
-            setPlaceCardRating(4.3f) // TODO: place에 rating이 추가되면 databinding으로 변경
+            viewModel.placeCard.set(
+                PlaceCard(place, false) // TODO: bookmarkedAccountIdList 생긴 뒤에 값을 조절할 것
+            )
+            setPlaceCardRating(4.3f) // TODO: place에 rating이 추가되면 databinding으로 변경: 'place_rating' item
         }
     }
 
@@ -583,6 +585,15 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
     fun onBookmarkButtonClicked(place: Place){
-        // TODO: bookmarkedAccountIdList가 생기면, 이걸로 북마크 여부 확인할 것
+        when(viewModel.placeCard.get()?.isBookmarked){
+            true -> {
+                viewModel.placeCard.set(PlaceCard(place, false))
+                // TODO: Delete bookmark
+            }
+            false -> {
+                viewModel.placeCard.set(PlaceCard(place, true))
+                // TODO: Create bookmark
+            }
+        }
     }
 }
