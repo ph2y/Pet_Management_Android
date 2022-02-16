@@ -13,12 +13,9 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
-import androidx.core.widget.addTextChangedListener
-import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.Permission
@@ -36,7 +33,6 @@ import net.daum.mf.map.api.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.*
-import kotlin.system.exitProcess
 
 class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.MapViewEventListener, MapView.POIItemEventListener {
     companion object {
@@ -191,7 +187,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             }, {}, {})
         }catch(e: Exception){
             // currentMapPoint가 아직 초기화되지 않았을 경우
-            Log.e("MapFragment", e.stackTrace.toString())
+            Log.e("MapFragment", e.message.toString())
         }
     }
 
@@ -225,7 +221,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
     private fun addCircleCenteredAtCurrentLocation(mapView: MapView, radius: Int): MapCircle?{
-        var searchAreaCircle:MapCircle? = null
+        var searchAreaCircle: MapCircle? = null
         mapView.removeAllCircles()
 
         try{
@@ -239,7 +235,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             mapView.addCircle(searchAreaCircle)
         }catch(e: Exception){
             // currentMapPoint가 아직 초기화되지 않았을 경우
-            Log.e("MapFragment", e.stackTrace.toString())
+            Log.e("MapFragment", e.message.toString())
         }
 
         return searchAreaCircle
@@ -251,8 +247,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             val mapPointBounds = MapPointBounds(mapPointBoundsArray)
             mapView.moveCamera(CameraUpdateFactory.newMapPointBounds(mapPointBounds, padding))
         }catch(e:Exception){
-            // circle을 반환받지 못했을 경우
-            Log.i("MapFragment", e.stackTrace.toString())
+            Log.i("MapFragment", e.message.toString())
         }
     }
 
@@ -367,22 +362,6 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
 
     /**
-     * Databinding functions
-     */
-    fun onSearchTextCancelClicked() {
-        binding.searchTextInput!!.setText("")
-    }
-
-    fun startReviewActivity(placeId: Long) {
-        val reviewActivityIntent = Intent(context, ReviewActivity::class.java)
-        reviewActivityIntent.putExtra("placeId", placeId)
-
-        startActivity(reviewActivityIntent)
-        requireActivity().overridePendingTransition(R.anim.enter_from_bottom, R.anim.exit_to_top)
-    }
-
-
-    /**
      * CurrentLocationEventListener 인터페이스 구현
      */
     override fun onCurrentLocationUpdate(p0: MapView?, p1: MapPoint?, p2: Float) {
@@ -474,6 +453,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             if(isLocationInformationOpened()){
                 hidingLocationInformationAnim!!.doOnEnd { anim ->
                     updateLocationInformation(item)
+
                     showingLocationInformationAnim!!.start()
                     anim.removeAllListeners()
                 }
@@ -496,36 +476,10 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
     private fun updateLocationInformation(item: MapPOIItem){
-        // TODO: set placeIdInLocationInformation of view model
         currentPlaces?.get(item.tag)?.let { place ->
-            setLocationInformationTexts(place)
-            setLocationInformationRating(4.3f) // TODO: place에 rating이 추가되면 변경
-            setLocationInformationButtons(place)
+            viewModel.placeForLocationInformation.set(place)
+            setLocationInformationRating(4.3f) // TODO: place에 rating이 추가되면 databinding으로 변경
         }
-    }
-
-    private fun setLocationInformationTexts(place: Place){
-        val locationPlaceName = binding.locationPlaceName
-        val locationCategoryName = binding.locationCategoryName
-        val locationDistance = binding.locationDistance
-
-        locationPlaceName.text = place.place_name
-        locationCategoryName.text = place.category_group_name
-        setLocationDistance(locationDistance, place.distance)
-    }
-
-    private fun setLocationDistance(locationDistance: TextView, distance: String){
-        locationDistance.text = distance + "m"
-
-        // 거리에 따라 색상을 지정함
-        val color:Int = when (distance.toInt()){
-            in 0..750 -> ContextCompat.getColor(requireContext(), R.color.emerald)
-            in 751..1500 -> ContextCompat.getColor(requireContext(), R.color.sunflower)
-            in 1501..2250 -> ContextCompat.getColor(requireContext(), R.color.carrot)
-            else -> ContextCompat.getColor(requireContext(), R.color.alizarin)
-        }
-
-        locationDistance.setTextColor(color)
     }
 
     private fun setLocationInformationRating(rating: Float){
@@ -544,97 +498,6 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         return starImages
     }
 
-    private fun setLocationInformationButtons(place: Place){
-        setLocationInformationPathfindingButton(place)
-        setLocationInformationCallButton(place)
-        setLocationInformationShareButton(place)
-        setLocationInformationBookmarkButton(place)
-    }
-
-    private fun setLocationInformationPathfindingButton(place: Place){
-        val builder = AlertDialog.Builder(context)
-            .setTitle("길찾기")
-            .setMessage("길찾기를 위해 카카오맵 웹페이지로 이동합니다.")
-            .setPositiveButton("확인") { _, _ ->
-                Util.openWebPage(requireActivity(), "https://map.kakao.com/link/to/" + place.id)
-            }
-            .setNegativeButton("취소") { dialog, _ ->
-                dialog.cancel()
-            }
-            .create()
-
-        // 버튼 이벤트
-        val pathfindingButton = binding.pathfindingButton
-        pathfindingButton.setOnClickListener{ _ ->
-            builder.show()
-        }
-    }
-
-    private fun setLocationInformationCallButton(place: Place){
-        if(place.phone.isEmpty()){
-            setCallButtonHorizontalWeight(0f)
-        }else{
-            setCallButtonHorizontalWeight(1f)
-
-            // AlertDialog 구성
-            val buttonStrings: Array<CharSequence> = arrayOf("전화하기", "연락처 저장하기", "클립보드에 복사하기")
-            val builder = AlertDialog.Builder(context)
-                .setTitle(place.phone)
-                .setItems(buttonStrings,
-                    DialogInterface.OnClickListener{ _, which ->
-                        when(which){
-                            0 -> {
-                                if(Permission.isAllPermissionsGranted(requireContext(), Permission.requiredPermissionsForCall)){
-                                    Util.doCall(requireActivity(), place.phone)
-                                }else{
-                                    Permission.requestNotGrantedPermissions(requireActivity(), Permission.requiredPermissionsForCall)
-                                }
-                            }
-                            1 -> {
-                                if(Permission.isAllPermissionsGranted(requireContext(), Permission.requiredPermissionsForContacts)){
-                                    Util.insertContactsContract(requireActivity(), place)
-                                }else{
-                                    Permission.requestNotGrantedPermissions(requireActivity(), Permission.requiredPermissionsForContacts)
-                                }
-                            }
-                            2 -> Util.doCopy(requireActivity(), place.phone)
-                        }
-                    })
-                .setNegativeButton("취소",
-                    DialogInterface.OnClickListener { dialog, _ ->
-                        dialog.cancel()
-                    })
-                .create()
-
-            // 버튼 이벤트
-            val callButton = binding.callButton
-            callButton.setOnClickListener{ _ ->
-                builder.show()
-            }
-        }
-    }
-
-    private fun setCallButtonHorizontalWeight(weight: Float){
-        val locationInformationButtons = binding.locationInformationButtons
-        val constraintSet = ConstraintSet()
-
-        constraintSet.clone(locationInformationButtons)
-        constraintSet.setHorizontalWeight(R.id.call_button, weight)
-        constraintSet.applyTo(locationInformationButtons)
-    }
-
-    private fun setLocationInformationShareButton(place: Place){
-        // 버튼 이벤트
-        val shareButton = binding.shareButton
-        shareButton.setOnClickListener{ _ ->
-            Util.shareText(requireActivity(), place.place_url)
-        }
-    }
-
-    private fun setLocationInformationBookmarkButton(place: Place){
-        // TODO
-    }
-
     override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?) {
     }
 
@@ -642,5 +505,84 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
     override fun onDraggablePOIItemMoved(p0: MapView?, p1: MapPOIItem?, p2: MapPoint?) {
+    }
+
+
+    /**
+     * Databinding functions
+     */
+    fun onSearchTextCancelClicked() {
+        binding.searchTextInput!!.setText("")
+    }
+
+    fun onLocationInformationClicked(placeId: Long) {
+        startReviewActivity(placeId)
+    }
+
+    private fun startReviewActivity(placeId: Long) {
+        val reviewActivityIntent = Intent(context, ReviewActivity::class.java)
+        reviewActivityIntent.putExtra("placeId", placeId)
+
+        startActivity(reviewActivityIntent)
+        requireActivity().overridePendingTransition(R.anim.enter_from_bottom, R.anim.exit_to_top)
+    }
+
+    fun getLocationDistanceTextColor(distance: String): Int{
+        return when (distance.toInt()){
+            in 0..750 -> ContextCompat.getColor(requireContext(), R.color.emerald)
+            in 751..1500 -> ContextCompat.getColor(requireContext(), R.color.sunflower)
+            in 1501..2250 -> ContextCompat.getColor(requireContext(), R.color.carrot)
+            else -> ContextCompat.getColor(requireContext(), R.color.alizarin)
+        }
+    }
+
+    fun onPathfindingButtonClicked(placeId: String){
+        AlertDialog.Builder(context)
+            .setTitle("길찾기")
+            .setMessage("길찾기를 위해 카카오맵 웹페이지로 이동합니다.")
+            .setPositiveButton("확인") { _, _ ->
+                Util.openWebPage(requireActivity(), "https://map.kakao.com/link/to/$placeId")
+            }
+            .setNegativeButton("취소") { dialog, _ ->
+                dialog.cancel()
+            }
+            .create().show()
+    }
+
+    fun onCallButtonClicked(place: Place){
+        val buttonStrings: Array<CharSequence> = arrayOf("전화하기", "연락처 저장하기", "클립보드에 복사하기")
+        AlertDialog.Builder(context)
+            .setTitle(place.phone)
+            .setItems(buttonStrings){ _, which ->
+                when(which){
+                    0 -> {
+                        if(Permission.isAllPermissionsGranted(requireContext(), Permission.requiredPermissionsForCall)){
+                            Util.doCall(requireActivity(), place.phone)
+                        }else{
+                            Permission.requestNotGrantedPermissions(requireActivity(), Permission.requiredPermissionsForCall)
+                        }
+                    }
+                    1 -> {
+                        if(Permission.isAllPermissionsGranted(requireContext(), Permission.requiredPermissionsForContacts)){
+                            Util.insertContactsContract(requireActivity(), place)
+                        }else{
+                            Permission.requestNotGrantedPermissions(requireActivity(), Permission.requiredPermissionsForContacts)
+                        }
+                    }
+                    2 -> Util.doCopy(requireActivity(), place.phone)
+                }
+            }
+            .setNegativeButton("취소"){ dialog, _ ->
+                dialog.cancel()
+            }
+            .create().show()
+    }
+
+    fun onShareButtonClicked(place: Place){
+        Util.shareText(requireActivity(), place.place_url)
+    }
+
+    fun onBookmarkButtonClicked(place: Place){
+        // TODO: bookmarkedAccountIdList가 생기면, 이걸로 북마크 여부 확인할 것
     }
 }
