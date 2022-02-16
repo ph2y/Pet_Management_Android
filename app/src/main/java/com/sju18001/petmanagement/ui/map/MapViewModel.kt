@@ -16,4 +16,10 @@ class MapViewModel : ViewModel() {
             false
         )
     )
+
+    fun getIsBookmarked() = placeCard.get()!!.isBookmarked
+    fun setIsBookmarked(flag: Boolean) {
+        val place = placeCard.get()!!.place
+        placeCard.set(PlaceCard(place, flag))
+    }
 }
