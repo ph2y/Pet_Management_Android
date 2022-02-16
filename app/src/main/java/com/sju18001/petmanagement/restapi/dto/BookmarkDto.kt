@@ -12,3 +12,11 @@ data class CreateBookmarkReqDto(
 data class CreateBookmarkResDto(
     val _metadata: DtoMetadata
 )
+
+data class DeleteBookmarkReqDto(
+    val placeId: Long
+)
+
+data class DeleteBookmarkResDto(
+    val _metadata: DtoMetadata
+)

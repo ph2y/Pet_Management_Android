@@ -27,6 +27,7 @@ import com.sju18001.petmanagement.restapi.kakaoapi.KakaoApi
 import com.sju18001.petmanagement.restapi.kakaoapi.Place
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.dto.CreateBookmarkReqDto
+import com.sju18001.petmanagement.restapi.dto.DeleteBookmarkReqDto
 import com.sju18001.petmanagement.ui.map.review.ReviewActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -590,12 +591,8 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
     fun onBookmarkButtonClicked(place: Place){
         when(viewModel.getIsBookmarked()){
-            true -> {
-                // TODO: Delete bookmark
-            }
-            false -> {
-                createBookmark(place)
-            }
+            false -> createBookmark(place)
+            true -> deleteBookmark(1) // TODO: 1 -> place.id
         }
 
         viewModel.setIsBookmarked(!viewModel.getIsBookmarked())
@@ -610,7 +607,12 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                 place.category_group_name,
                 getString(R.string.bookmark_default_folder) // 우선 기본 폴더에 등록한다.
             ))
-        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {},
-            { viewModel.setIsBookmarked(false) }, { viewModel.setIsBookmarked(false) })
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {}, {}, {})
+    }
+
+    private fun deleteBookmark(placeId: Long) {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .deleteBookmarkReq(DeleteBookmarkReqDto(placeId))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {}, {}, {})
     }
 }

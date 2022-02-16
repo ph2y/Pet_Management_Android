@@ -108,9 +108,14 @@ interface ServerApi {
     @POST("api/pet/schedule/update")
     fun updatePetScheduleReq(@Body updatePetScheduleReqDto: UpdatePetScheduleReqDto): Call<UpdatePetScheduleResDto>
 
+
     // Bookmark API
     @POST("api/bookmark/create")
     fun createBookmarkReq(@Body createBookmarkReqDto: CreateBookmarkReqDto): Call<CreateBookmarkResDto>
+
+    @POST("api/bookmark/delete")
+    fun deleteBookmarkReq(@Body deleteBookmarkReqDto: DeleteBookmarkReqDto): Call<DeleteReviewResDto>
+
 
     // Review API
     @POST("api/review/create")
