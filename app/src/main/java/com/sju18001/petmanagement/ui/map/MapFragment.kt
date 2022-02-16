@@ -19,11 +19,14 @@ import androidx.fragment.app.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.Permission
+import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentMapBinding
+import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.kakaoapi.KakaoApi
 import com.sju18001.petmanagement.restapi.kakaoapi.Place
 import com.sju18001.petmanagement.restapi.ServerUtil
+import com.sju18001.petmanagement.restapi.dto.CreateBookmarkReqDto
 import com.sju18001.petmanagement.ui.map.review.ReviewActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -162,6 +165,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
     private fun searchKeyword(keyword: String, mapView: MapView){
+        // TODO: 자체 Place 검색이 구현되면 그것으로 대체할 것
         // Retrofit 구성
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -585,15 +589,28 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
     fun onBookmarkButtonClicked(place: Place){
-        when(viewModel.placeCard.get()?.isBookmarked){
+        when(viewModel.getIsBookmarked()){
             true -> {
-                viewModel.placeCard.set(PlaceCard(place, false))
                 // TODO: Delete bookmark
             }
             false -> {
-                viewModel.placeCard.set(PlaceCard(place, true))
-                // TODO: Create bookmark
+                createBookmark(place)
             }
         }
+
+        viewModel.setIsBookmarked(!viewModel.getIsBookmarked())
+    }
+
+    private fun createBookmark(place: Place) {
+        // TODO: 자체 Place로 바꿀 것
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .createBookmarkReq(CreateBookmarkReqDto(
+                1, // TODO: place.id로 바꿀 것
+                place.place_name,
+                place.category_group_name,
+                getString(R.string.bookmark_default_folder) // 우선 기본 폴더에 등록한다.
+            ))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {},
+            { viewModel.setIsBookmarked(false) }, { viewModel.setIsBookmarked(false) })
     }
 }
