@@ -223,6 +223,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             />
 
+        <!-- TODO: onClick에서 1를 place id로 변경 after Place DAO update -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/location_information"
             android:layout_width="match_parent"
@@ -231,7 +232,7 @@
             android:padding="16dp"
             android:clipChildren="false"
             android:clipToPadding="false"
-            android:onClick="@{() -> fragment.startReviewActivity(viewModel.placeIdInLocationInformation)}"
+            android:onClick="@{() -> fragment.onLocationInformationClicked(1)}"
             app:layout_constraintBottom_toBottomOf="parent"
             >
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -250,12 +251,12 @@
                     app:layout_constraintHorizontal_chainStyle="spread_inside">
                     <TextView
                         android:id="@+id/location_place_name"
-                        android:text="place_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="20sp"
                         android:textColor="@color/black"
                         android:singleLine="true"
+                        android:text="@{viewModel.placeForLocationInformation.place_name}"
                         app:layout_constraintHorizontal_chainStyle="packed"
                         app:layout_constraintHorizontal_bias="0"
                         app:layout_constrainedWidth="true"
@@ -265,11 +266,11 @@
                         />
                     <TextView
                         android:id="@+id/location_category_name"
-                        android:text="category_name"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
                         android:layout_marginStart="8dp"
+                        android:text="@{viewModel.placeForLocationInformation.category_group_name}"
                         app:layout_constraintStart_toEndOf="@id/location_place_name"
                         app:layout_constraintBottom_toBottomOf="@id/location_place_name"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -277,12 +278,12 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
                 <TextView
                     android:id="@+id/location_distance"
-                    android:text="0m"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="18sp"
-                    android:textColor="@color/carrot"
                     android:layout_marginStart="8dp"
+                    android:text="@{@string/distance_text(viewModel.placeForLocationInformation.distance)}"
+                    android:textColor="@{fragment.getLocationDistanceTextColor(viewModel.placeForLocationInformation.distance)}"
                     app:layout_constraintStart_toEndOf="@id/location_place_category_layout"
                     app:layout_constraintBottom_toBottomOf="@id/location_place_category_layout"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -303,7 +304,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textSize="14sp"
-                    android:text="5.0"
+                    android:text="4.3"
                     android:textColor="@color/alizarin"/>
                 <ImageView
                     android:id="@+id/image_star1"
@@ -356,6 +357,7 @@
                     android:layout_height="match_parent"
                     android:src="@drawable/ic_baseline_swap_calls_20"
                     android:background="@drawable/border"
+                    android:onClick="@{() -> fragment.onPathfindingButtonClicked(viewModel.placeForLocationInformation.id)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toLeftOf="@id/call_button"
@@ -367,6 +369,8 @@
                     android:layout_height="match_parent"
                     android:src="@drawable/ic_baseline_call_20"
                     android:background="@drawable/border"
+                    android:visibility="@{viewModel.placeForLocationInformation.phone.length() == 0? View.GONE:View.VISIBLE}"
+                    android:onClick="@{() -> fragment.onCallButtonClicked(viewModel.placeForLocationInformation)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toRightOf="@+id/pathfinding_button"
                     app:layout_constraintRight_toLeftOf="@+id/share_button"
@@ -378,6 +382,7 @@
                     android:layout_height="match_parent"
                     android:src="@drawable/ic_baseline_share_20"
                     android:background="@drawable/border"
+                    android:onClick="@{() -> fragment.onShareButtonClicked(viewModel.placeForLocationInformation)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toRightOf="@id/call_button"
                     app:layout_constraintRight_toLeftOf="@id/bookmark_button"
@@ -389,6 +394,7 @@
                     android:layout_height="match_parent"
                     android:src="@drawable/ic_baseline_bookmark_border_20"
                     android:background="@drawable/border"
+                    android:onClick="@{() -> fragment.onBookmarkButtonClicked(viewModel.placeForLocationInformation)}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintLeft_toRightOf="@id/share_button"
                     app:layout_constraintRight_toRightOf="parent"

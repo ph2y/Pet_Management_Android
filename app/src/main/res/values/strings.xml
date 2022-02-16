@@ -145,6 +145,7 @@
     <string name="shop">샵</string>
     <string name="hospital">병원</string>
     <string name="map_permission_error_message">앱의 정상적인 작동을 위해, 위치 권한이 필요합니다.</string>
+    <string name="distance_text">%sm</string>
 
     <!-- Review Fragment -->
     <string name="review">리뷰</string>
