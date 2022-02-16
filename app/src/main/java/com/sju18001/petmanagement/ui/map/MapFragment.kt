@@ -41,7 +41,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
         private const val CURRENT_LOCATION_BUTTON_MARGIN: Int = 16
         private const val NAV_VIEW_HEIGHT: Int = 56
-        private const val LOCATION_INFORMATION_HEIGHT: Int = 138
+        private const val PLACE_CARD_HEIGHT: Int = 138
 
         private const val ANIMATION_DURATION: Long = 200
 
@@ -71,8 +71,8 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     private var hidingNavViewAnim: ValueAnimator? = null
     private var increasingCurrentLocationButtonMarginAnim: ValueAnimator? = null
     private var decreasingCurrentLocationButtonMarginAnim: ValueAnimator? = null
-    private var showingLocationInformationAnim: ValueAnimator? = null
-    private var hidingLocationInformationAnim: ValueAnimator? = null
+    private var showingPlaceCardAnim: ValueAnimator? = null
+    private var hidingPlaceCardAnim: ValueAnimator? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -296,23 +296,23 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         }
         decreasingCurrentLocationButtonMarginAnim!!.duration = ANIMATION_DURATION
 
-        showingLocationInformationAnim = ValueAnimator.ofInt(1, Util.convertDpToPixel(LOCATION_INFORMATION_HEIGHT))
-        showingLocationInformationAnim!!.addUpdateListener { valueAnimator ->
+        showingPlaceCardAnim = ValueAnimator.ofInt(1, Util.convertDpToPixel(PLACE_CARD_HEIGHT))
+        showingPlaceCardAnim!!.addUpdateListener { valueAnimator ->
             val value = valueAnimator.animatedValue as Int
 
-            binding.locationInformation.layoutParams.height = value
-            binding.locationInformation.requestLayout()
+            binding.placeCard.layoutParams.height = value
+            binding.placeCard.requestLayout()
         }
-        showingLocationInformationAnim!!.duration = ANIMATION_DURATION
+        showingPlaceCardAnim!!.duration = ANIMATION_DURATION
 
-        hidingLocationInformationAnim = ValueAnimator.ofInt(Util.convertDpToPixel(LOCATION_INFORMATION_HEIGHT), 1)
-        hidingLocationInformationAnim!!.addUpdateListener { valueAnimator ->
+        hidingPlaceCardAnim = ValueAnimator.ofInt(Util.convertDpToPixel(PLACE_CARD_HEIGHT), 1)
+        hidingPlaceCardAnim!!.addUpdateListener { valueAnimator ->
             val value = valueAnimator.animatedValue as Int
 
-            binding.locationInformation.layoutParams.height = value
-            binding.locationInformation.requestLayout()
+            binding.placeCard.layoutParams.height = value
+            binding.placeCard.requestLayout()
         }
-        hidingLocationInformationAnim!!.duration = ANIMATION_DURATION
+        hidingPlaceCardAnim!!.duration = ANIMATION_DURATION
     }
 
     private fun isAnimationRunning(): Boolean{
@@ -320,8 +320,8 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                 hidingNavViewAnim!!.isRunning ||
                 increasingCurrentLocationButtonMarginAnim!!.isRunning ||
                 decreasingCurrentLocationButtonMarginAnim!!.isRunning ||
-                showingLocationInformationAnim!!.isRunning ||
-                hidingLocationInformationAnim!!.isRunning
+                showingPlaceCardAnim!!.isRunning ||
+                hidingPlaceCardAnim!!.isRunning
     }
 
     
@@ -393,30 +393,30 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
     override fun onMapViewSingleTapped(p0: MapView?, p1: MapPoint?) {
-        if (isLocationInformationOpened()){
-            hideLocationInformation()
+        if (isPlaceCardOpened()){
+            hidePlaceCard()
         }
     }
 
-    private fun isLocationInformationOpened(): Boolean {
+    private fun isPlaceCardOpened(): Boolean {
         val navView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
-        return navView.height == 0 && binding.locationInformation.height > 0
+        return navView.height == 0 && binding.placeCard.height > 0
     }
 
-    private fun hideLocationInformation(){
+    private fun hidePlaceCard(){
         try{
             if(isAnimationRunning()) return
 
-            hidingLocationInformationAnim!!.doOnEnd { anim ->
+            hidingPlaceCardAnim!!.doOnEnd { anim ->
                 showingNavViewAnim!!.start()
                 increasingCurrentLocationButtonMarginAnim!!.start()
 
                 anim.removeAllListeners()
             }
 
-            hidingLocationInformationAnim!!.start()
+            hidingPlaceCardAnim!!.start()
         }catch(e: Exception){
-            Log.e("MapFragment", "Failed to show location information: " + e.message)
+            Log.e("MapFragment", "Failed to show place card: " + e.message)
         }
     }
 
@@ -441,48 +441,48 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
      */
     override fun onPOIItemSelected(p0: MapView?, p1: MapPOIItem?) {
         if(p1 != null){
-            showLocationInformation(p1!!)
+            showPlaceCard(p1!!)
         }
     }
 
-    private fun showLocationInformation(item: MapPOIItem){
+    private fun showPlaceCard(item: MapPOIItem){
         try{
             if(isAnimationRunning()) return
 
             // 이미 다른 곳의 정보창이 열려있을 경우
-            if(isLocationInformationOpened()){
-                hidingLocationInformationAnim!!.doOnEnd { anim ->
-                    updateLocationInformation(item)
+            if(isPlaceCardOpened()){
+                hidingPlaceCardAnim!!.doOnEnd { anim ->
+                    updatePlaceCard(item)
 
-                    showingLocationInformationAnim!!.start()
+                    showingPlaceCardAnim!!.start()
                     anim.removeAllListeners()
                 }
 
-                hidingLocationInformationAnim!!.start()
+                hidingPlaceCardAnim!!.start()
             }else{
                 hidingNavViewAnim!!.doOnEnd { anim ->
-                    showingLocationInformationAnim!!.start()
+                    showingPlaceCardAnim!!.start()
                     anim.removeAllListeners()
                 }
 
-                updateLocationInformation(item)
+                updatePlaceCard(item)
 
                 hidingNavViewAnim!!.start()
                 decreasingCurrentLocationButtonMarginAnim!!.start()
             }
         }catch(e: Exception){
-            Log.e("MapFragment", "Failed to show location information: " + e.message)
+            Log.e("MapFragment", "Failed to show place card: " + e.message)
         }
     }
 
-    private fun updateLocationInformation(item: MapPOIItem){
+    private fun updatePlaceCard(item: MapPOIItem){
         currentPlaces?.get(item.tag)?.let { place ->
-            viewModel.placeForLocationInformation.set(place)
-            setLocationInformationRating(4.3f) // TODO: place에 rating이 추가되면 databinding으로 변경
+            viewModel.placeCard.set(place)
+            setPlaceCardRating(4.3f) // TODO: place에 rating이 추가되면 databinding으로 변경
         }
     }
 
-    private fun setLocationInformationRating(rating: Float){
+    private fun setPlaceCardRating(rating: Float){
         binding.textRating.text = rating.toString()
         Util.setRatingStars(getStarImages(), rating, requireContext())
     }
@@ -492,7 +492,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         for(i in 1..5){
             // View id: image_star1 ~ image_star5
             val id = resources.getIdentifier("image_star$i", "id", requireContext().packageName)
-            val elem: ImageView = binding.locationInformationRating.findViewById(id)
+            val elem: ImageView = binding.placeRating.findViewById(id)
             starImages.add(elem)
         }
         return starImages
@@ -515,7 +515,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         binding.searchTextInput!!.setText("")
     }
 
-    fun onLocationInformationClicked(placeId: Long) {
+    fun onPlaceCardClicked(placeId: Long) {
         startReviewActivity(placeId)
     }
 
@@ -527,7 +527,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         requireActivity().overridePendingTransition(R.anim.enter_from_bottom, R.anim.exit_to_top)
     }
 
-    fun getLocationDistanceTextColor(distance: String): Int{
+    fun getPlaceDistanceTextColor(distance: String): Int{
         return when (distance.toInt()){
             in 0..750 -> ContextCompat.getColor(requireContext(), R.color.emerald)
             in 751..1500 -> ContextCompat.getColor(requireContext(), R.color.sunflower)
