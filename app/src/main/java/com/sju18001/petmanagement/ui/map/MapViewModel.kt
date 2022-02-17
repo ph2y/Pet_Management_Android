@@ -1,9 +1,11 @@
 package com.sju18001.petmanagement.ui.map
 
+import androidx.databinding.ObservableArrayList
 import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.sju18001.petmanagement.restapi.dao.Bookmark
 import com.sju18001.petmanagement.restapi.kakaoapi.Place
 
 class MapViewModel : ViewModel() {
@@ -16,6 +18,8 @@ class MapViewModel : ViewModel() {
             false
         )
     )
+
+    var folderToBookmarks: HashMap<String, Bookmark> = hashMapOf()
 
     fun getIsBookmarked() = placeCard.get()!!.isBookmarked
     fun setIsBookmarked(flag: Boolean) {

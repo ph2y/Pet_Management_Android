@@ -69,10 +69,10 @@ class ReviewListAdapter(
 
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        updateDataSetToViewHolder(holder, position)
+        updateViewHolderByDataSet(holder, position)
     }
 
-    private fun updateDataSetToViewHolder(holder: ViewHolder, position: Int) {
+    private fun updateViewHolderByDataSet(holder: ViewHolder, position: Int) {
         val data = dataSet[position]
 
         holder.nicknameText.text = data.author.nickname
