@@ -61,7 +61,7 @@ class CommentListAdapter(
         return holder
     }
 
-    private fun setListenerOnView(holder: ViewHolder){
+    private fun setListenerOnView(holder: ViewHolder) {
         // start pet profile
         holder.profileImage.setOnClickListener {
             val position = holder.absoluteAdapterPosition
@@ -96,9 +96,8 @@ class CommentListAdapter(
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        updateDataSetToViewHolder(holder, dataSet[position], position)
+        updateViewHolderByDataSet(holder, dataSet[position], position)
         
         // 댓글 내용에 indent 추가
         setSpanToContent(holder.nicknameTextView, holder.contentsTextView)
@@ -106,8 +105,7 @@ class CommentListAdapter(
 
     override fun getItemCount(): Int = dataSet.size
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun updateDataSetToViewHolder(holder: CommentListAdapter.ViewHolder, data: Comment, position: Int){
+    private fun updateViewHolderByDataSet(holder: CommentListAdapter.ViewHolder, data: Comment, position: Int){
         holder.nicknameTextView.text = data.author.nickname
         holder.contentsTextView.text = data.contents
         holder.timestampTextView.text = Util.getTimestampForDisplay(data.timestamp)

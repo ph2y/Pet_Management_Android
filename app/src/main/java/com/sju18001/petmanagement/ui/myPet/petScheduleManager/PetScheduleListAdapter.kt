@@ -48,7 +48,7 @@ class PetScheduleListAdapter(private var dataSet: ArrayList<PetSchedule>, privat
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        updateDataSetToViewHolder(holder, dataSet[position])
+        updateViewHolderByDataSet(holder, dataSet[position])
     }
 
     override fun getItemCount(): Int = dataSet.size
@@ -93,7 +93,7 @@ class PetScheduleListAdapter(private var dataSet: ArrayList<PetSchedule>, privat
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun updateDataSetToViewHolder(holder: ViewHolder, data: PetSchedule){
+    private fun updateViewHolderByDataSet(holder: ViewHolder, data: PetSchedule){
         val localTime = LocalTime.parse(data.time)
         holder.noonTextView.text = if(localTime.hour <= 12) "오전" else "오후"
         holder.timeTextView.text = localTime.hour.toString().padStart(2, '0') + ":" + localTime.minute.toString().padStart(2, '0')

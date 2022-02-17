@@ -18,6 +18,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.Permission
@@ -30,6 +31,7 @@ import com.sju18001.petmanagement.restapi.kakaoapi.Place
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.dto.CreateBookmarkReqDto
 import com.sju18001.petmanagement.restapi.dto.DeleteBookmarkReqDto
+import com.sju18001.petmanagement.restapi.dto.FetchBookmarkReqDto
 import com.sju18001.petmanagement.ui.map.review.ReviewActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -65,7 +67,9 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     private val viewModel: MapViewModel by viewModels()
     private var isViewDestroyed = false
 
-    // 지도 관련
+    lateinit var bookmarkTreeAdapter: BookmarkTreeAdapter
+
+    // 카카오맵 관련
     private var mapView: MapView? = null
     private var currentMapPoint: MapPoint? = null
     private var isLoadingCurrentMapPoint: Boolean = false
@@ -157,18 +161,46 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
 
     private fun initializeDrawerLayout() {
+        initializeBookmarkRecyclerView()
+
         binding.layoutDrawer.addDrawerListener(object: DrawerLayout.DrawerListener {
             override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
-                // TODO: FetchBookmark if not fetched yet
             }
             override fun onDrawerOpened(drawerView: View) {
-                // TODO: FetchBookmark if not fetched yet
+                fetchBookmark()
             }
             override fun onDrawerClosed(drawerView: View) {
             }
             override fun onDrawerStateChanged(newState: Int) {
             }
         })
+    }
+
+    private fun initializeBookmarkRecyclerView() {
+        bookmarkTreeAdapter = BookmarkTreeAdapter(arrayListOf())
+        binding.recylerViewBookmarkTree?.let{
+            it.adapter = bookmarkTreeAdapter
+            it.layoutManager = LinearLayoutManager(requireContext())
+        }
+    }
+
+    private fun fetchBookmark() {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .fetchBookmarkReq(FetchBookmarkReqDto(null, null))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            response.body()?.bookmarkList?.map { bookmark ->
+                viewModel.folderToBookmarks.put(bookmark.folder, bookmark)
+            }
+
+            addAndNotifyFoldersByFolderToBookmarks()
+        }, {}, {})
+    }
+
+    private fun addAndNotifyFoldersByFolderToBookmarks() {
+        for((folder, _) in viewModel.folderToBookmarks) {
+            bookmarkTreeAdapter.addItem(BookmarkTreeItem(false, null, folder))
+            bookmarkTreeAdapter.notifyItemInserted(bookmarkTreeAdapter.itemCount)
+        }
     }
 
 

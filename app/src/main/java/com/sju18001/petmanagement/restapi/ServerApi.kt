@@ -113,6 +113,9 @@ interface ServerApi {
     @POST("api/bookmark/create")
     fun createBookmarkReq(@Body createBookmarkReqDto: CreateBookmarkReqDto): Call<CreateBookmarkResDto>
 
+    @POST("api/bookmark/fetch")
+    fun fetchBookmarkReq(@Body fetchBookmarkReqDto: FetchBookmarkReqDto): Call<FetchBookmarkResDto>
+
     @POST("api/bookmark/delete")
     fun deleteBookmarkReq(@Body deleteBookmarkReqDto: DeleteBookmarkReqDto): Call<DeleteReviewResDto>
 

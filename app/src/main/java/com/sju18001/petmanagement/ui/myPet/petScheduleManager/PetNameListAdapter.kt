@@ -37,7 +37,7 @@ class PetNameListAdapter(private val dataSet: ArrayList<PetNameListItem>) : Recy
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        updateDataSetToViewHolder(holder, dataSet[position])
+        updateViewHolderByDataSet(holder, dataSet[position])
 
         petNameListAdapterInterface.setCheckBoxForViewModel(holder.petNameCheckBox, position)
     }
@@ -53,7 +53,7 @@ class PetNameListAdapter(private val dataSet: ArrayList<PetNameListItem>) : Recy
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
-    private fun updateDataSetToViewHolder(holder: ViewHolder, data: PetNameListItem){
+    private fun updateViewHolderByDataSet(holder: ViewHolder, data: PetNameListItem){
         holder.petNameCheckBox.text = data.name
     }
 
