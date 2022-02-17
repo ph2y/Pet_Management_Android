@@ -10,10 +10,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -87,9 +89,11 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         isViewDestroyed = false
 
         Permission.requestNotGrantedPermissions(requireActivity(), Permission.requiredPermissionsForLocation)
-        initializeMapView(inflater)
 
+        initializeMapView(inflater)
+        initializeDrawerLayout()
         initializeAnimations()
+
         setupViews()
 
         return binding.root
@@ -105,7 +109,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
 
     /**
-     * initializeMapView
+     * initializing logic
      */
     private fun initializeMapView(inflater: LayoutInflater) {
         mapView = MapView(this.activity)
@@ -152,9 +156,120 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
 
+    private fun initializeDrawerLayout() {
+        binding.layoutDrawer.addDrawerListener(object: DrawerLayout.DrawerListener {
+            override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
+                // TODO: FetchBookmark if not fetched yet
+            }
+            override fun onDrawerOpened(drawerView: View) {
+                // TODO: FetchBookmark if not fetched yet
+            }
+            override fun onDrawerClosed(drawerView: View) {
+            }
+            override fun onDrawerStateChanged(newState: Int) {
+            }
+        })
+    }
+
+
+    private fun initializeAnimations(){
+        showingNavViewAnim = ValueAnimator.ofInt(0, Util.convertDpToPixel(NAV_VIEW_HEIGHT))
+        showingNavViewAnim!!.addUpdateListener { valueAnimator ->
+            val value = valueAnimator.animatedValue as Int
+            val navView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
+
+            navView.layoutParams.height = value
+            navView.requestLayout()
+        }
+        showingNavViewAnim!!.duration = ANIMATION_DURATION
+
+        hidingNavViewAnim = ValueAnimator.ofInt(Util.convertDpToPixel(NAV_VIEW_HEIGHT), 0)
+        hidingNavViewAnim!!.addUpdateListener { valueAnimator ->
+            val value = valueAnimator.animatedValue as Int
+            val navView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
+
+            navView.layoutParams.height = value
+            navView.requestLayout()
+        }
+        hidingNavViewAnim!!.duration = ANIMATION_DURATION
+
+        increasingCurrentLocationButtonMarginAnim = ValueAnimator.ofInt(Util.convertDpToPixel(CURRENT_LOCATION_BUTTON_MARGIN), Util.convertDpToPixel(NAV_VIEW_HEIGHT + CURRENT_LOCATION_BUTTON_MARGIN))
+        increasingCurrentLocationButtonMarginAnim!!.addUpdateListener { valueAnimator ->
+            val value = valueAnimator.animatedValue as Int
+            val params = binding.currentLocationButton.layoutParams as (ViewGroup.MarginLayoutParams)
+
+            params.bottomMargin = value
+            binding.currentLocationButton.requestLayout()
+        }
+        increasingCurrentLocationButtonMarginAnim!!.duration = ANIMATION_DURATION
+
+        decreasingCurrentLocationButtonMarginAnim = ValueAnimator.ofInt(Util.convertDpToPixel(NAV_VIEW_HEIGHT + CURRENT_LOCATION_BUTTON_MARGIN), Util.convertDpToPixel(CURRENT_LOCATION_BUTTON_MARGIN))
+        decreasingCurrentLocationButtonMarginAnim!!.addUpdateListener { valueAnimator ->
+            val value = valueAnimator.animatedValue as Int
+            val params = binding.currentLocationButton.layoutParams as (ViewGroup.MarginLayoutParams)
+
+            params.bottomMargin = value
+            binding.currentLocationButton.requestLayout()
+        }
+        decreasingCurrentLocationButtonMarginAnim!!.duration = ANIMATION_DURATION
+
+        showingPlaceCardAnim = ValueAnimator.ofInt(1, Util.convertDpToPixel(PLACE_CARD_HEIGHT))
+        showingPlaceCardAnim!!.addUpdateListener { valueAnimator ->
+            val value = valueAnimator.animatedValue as Int
+
+            binding.placeCard.layoutParams.height = value
+            binding.placeCard.requestLayout()
+        }
+        showingPlaceCardAnim!!.duration = ANIMATION_DURATION
+
+        hidingPlaceCardAnim = ValueAnimator.ofInt(Util.convertDpToPixel(PLACE_CARD_HEIGHT), 1)
+        hidingPlaceCardAnim!!.addUpdateListener { valueAnimator ->
+            val value = valueAnimator.animatedValue as Int
+
+            binding.placeCard.layoutParams.height = value
+            binding.placeCard.requestLayout()
+        }
+        hidingPlaceCardAnim!!.duration = ANIMATION_DURATION
+    }
+
+    private fun isAnimationRunning(): Boolean{
+        return showingNavViewAnim!!.isRunning ||
+                hidingNavViewAnim!!.isRunning ||
+                increasingCurrentLocationButtonMarginAnim!!.isRunning ||
+                decreasingCurrentLocationButtonMarginAnim!!.isRunning ||
+                showingPlaceCardAnim!!.isRunning ||
+                hidingPlaceCardAnim!!.isRunning
+    }
+
+    
     /**
-     * initializeAnimations
+     * setupViews
      */
+    private fun setupViews() {
+        Util.setupViewsForHideKeyboard(requireActivity(), binding.fragmentMapParentLayout)
+        addMarginBottomToCurrentLocationButton()
+        setEditorActionListenerToSearchTextInput()
+    }
+
+    private fun addMarginBottomToCurrentLocationButton() {
+        binding.currentLocationButton.apply {
+            val currentLocationButtonParams = layoutParams as ViewGroup.MarginLayoutParams
+            currentLocationButtonParams.bottomMargin += Util.convertDpToPixel(NAV_VIEW_HEIGHT)
+
+            layoutParams = currentLocationButtonParams
+        }
+    }
+
+    // 검색바에 포커스된 채로 키보드의 '확인'을 누를 때의 이벤트 등록
+    private fun setEditorActionListenerToSearchTextInput() {
+        binding.searchTextInput.setOnEditorActionListener { textView, _, _ ->
+            doSearch(textView.text.toString())
+            Util.hideKeyboard(requireActivity())
+
+            true
+        }
+    }
+
     fun doSearch(keyword: String){
         if(mapView == null) return
 
@@ -257,108 +372,6 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
 
-    /**
-     * initializeAnimations
-     */
-    private fun initializeAnimations(){
-        showingNavViewAnim = ValueAnimator.ofInt(0, Util.convertDpToPixel(NAV_VIEW_HEIGHT))
-        showingNavViewAnim!!.addUpdateListener { valueAnimator ->
-            val value = valueAnimator.animatedValue as Int
-            val navView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
-
-            navView.layoutParams.height = value
-            navView.requestLayout()
-        }
-        showingNavViewAnim!!.duration = ANIMATION_DURATION
-
-        hidingNavViewAnim = ValueAnimator.ofInt(Util.convertDpToPixel(NAV_VIEW_HEIGHT), 0)
-        hidingNavViewAnim!!.addUpdateListener { valueAnimator ->
-            val value = valueAnimator.animatedValue as Int
-            val navView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
-
-            navView.layoutParams.height = value
-            navView.requestLayout()
-        }
-        hidingNavViewAnim!!.duration = ANIMATION_DURATION
-
-        increasingCurrentLocationButtonMarginAnim = ValueAnimator.ofInt(Util.convertDpToPixel(CURRENT_LOCATION_BUTTON_MARGIN), Util.convertDpToPixel(NAV_VIEW_HEIGHT + CURRENT_LOCATION_BUTTON_MARGIN))
-        increasingCurrentLocationButtonMarginAnim!!.addUpdateListener { valueAnimator ->
-            val value = valueAnimator.animatedValue as Int
-            val params = binding.currentLocationButton.layoutParams as (ViewGroup.MarginLayoutParams)
-
-            params.bottomMargin = value
-            binding.currentLocationButton.requestLayout()
-        }
-        increasingCurrentLocationButtonMarginAnim!!.duration = ANIMATION_DURATION
-
-        decreasingCurrentLocationButtonMarginAnim = ValueAnimator.ofInt(Util.convertDpToPixel(NAV_VIEW_HEIGHT + CURRENT_LOCATION_BUTTON_MARGIN), Util.convertDpToPixel(CURRENT_LOCATION_BUTTON_MARGIN))
-        decreasingCurrentLocationButtonMarginAnim!!.addUpdateListener { valueAnimator ->
-            val value = valueAnimator.animatedValue as Int
-            val params = binding.currentLocationButton.layoutParams as (ViewGroup.MarginLayoutParams)
-
-            params.bottomMargin = value
-            binding.currentLocationButton.requestLayout()
-        }
-        decreasingCurrentLocationButtonMarginAnim!!.duration = ANIMATION_DURATION
-
-        showingPlaceCardAnim = ValueAnimator.ofInt(1, Util.convertDpToPixel(PLACE_CARD_HEIGHT))
-        showingPlaceCardAnim!!.addUpdateListener { valueAnimator ->
-            val value = valueAnimator.animatedValue as Int
-
-            binding.placeCard.layoutParams.height = value
-            binding.placeCard.requestLayout()
-        }
-        showingPlaceCardAnim!!.duration = ANIMATION_DURATION
-
-        hidingPlaceCardAnim = ValueAnimator.ofInt(Util.convertDpToPixel(PLACE_CARD_HEIGHT), 1)
-        hidingPlaceCardAnim!!.addUpdateListener { valueAnimator ->
-            val value = valueAnimator.animatedValue as Int
-
-            binding.placeCard.layoutParams.height = value
-            binding.placeCard.requestLayout()
-        }
-        hidingPlaceCardAnim!!.duration = ANIMATION_DURATION
-    }
-
-    private fun isAnimationRunning(): Boolean{
-        return showingNavViewAnim!!.isRunning ||
-                hidingNavViewAnim!!.isRunning ||
-                increasingCurrentLocationButtonMarginAnim!!.isRunning ||
-                decreasingCurrentLocationButtonMarginAnim!!.isRunning ||
-                showingPlaceCardAnim!!.isRunning ||
-                hidingPlaceCardAnim!!.isRunning
-    }
-
-    
-    /**
-     * setupViews
-     */
-    private fun setupViews() {
-        Util.setupViewsForHideKeyboard(requireActivity(), binding.fragmentMapParentLayout)
-        addMarginBottomToCurrentLocationButton()
-        setEditorActionListenerToSearchTextInput()
-    }
-
-    private fun addMarginBottomToCurrentLocationButton() {
-        binding.currentLocationButton.apply {
-            val currentLocationButtonParams = layoutParams as ViewGroup.MarginLayoutParams
-            currentLocationButtonParams.bottomMargin += Util.convertDpToPixel(NAV_VIEW_HEIGHT)
-
-            layoutParams = currentLocationButtonParams
-        }
-    }
-
-    // 검색바에 포커스된 채로 키보드의 '확인'을 누를 때의 이벤트 등록
-    private fun setEditorActionListenerToSearchTextInput() {
-        binding.searchTextInput.setOnEditorActionListener { textView, _, _ ->
-            doSearch(textView.text.toString())
-            Util.hideKeyboard(requireActivity())
-
-            true
-        }
-    }
-
-
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
@@ -369,33 +382,27 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     /**
      * CurrentLocationEventListener 인터페이스 구현
      */
+    override fun onCurrentLocationDeviceHeadingUpdate(p0: MapView?, p1: Float) {}
+    override fun onCurrentLocationUpdateFailed(p0: MapView?) {}
+    override fun onCurrentLocationUpdateCancelled(p0: MapView?) {}
     override fun onCurrentLocationUpdate(p0: MapView?, p1: MapPoint?, p2: Float) {
         if (p1 != null) {
             currentMapPoint = p1
         }
     }
 
-    override fun onCurrentLocationDeviceHeadingUpdate(p0: MapView?, p1: Float) {
-    }
-
-    override fun onCurrentLocationUpdateFailed(p0: MapView?) {
-    }
-
-    override fun onCurrentLocationUpdateCancelled(p0: MapView?) {
-    }
-
 
     /**
      * MapViewEventListener 인터페이스 구현
      */
-    override fun onMapViewInitialized(p0: MapView?) {
-    }
-
-    override fun onMapViewCenterPointMoved(p0: MapView?, p1: MapPoint?) {
-    }
-
-    override fun onMapViewZoomLevelChanged(p0: MapView?, p1: Int) {
-    }
+    override fun onMapViewInitialized(p0: MapView?) {}
+    override fun onMapViewCenterPointMoved(p0: MapView?, p1: MapPoint?) {}
+    override fun onMapViewZoomLevelChanged(p0: MapView?, p1: Int) {}
+    override fun onMapViewDoubleTapped(p0: MapView?, p1: MapPoint?) {}
+    override fun onMapViewLongPressed(p0: MapView?, p1: MapPoint?) {}
+    override fun onMapViewDragStarted(p0: MapView?, p1: MapPoint?) {}
+    override fun onMapViewDragEnded(p0: MapView?, p1: MapPoint?) {}
+    override fun onMapViewMoveFinished(p0: MapView?, p1: MapPoint?) {}
 
     override fun onMapViewSingleTapped(p0: MapView?, p1: MapPoint?) {
         if (isPlaceCardOpened()){
@@ -425,25 +432,14 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         }
     }
 
-    override fun onMapViewDoubleTapped(p0: MapView?, p1: MapPoint?) {
-    }
-
-    override fun onMapViewLongPressed(p0: MapView?, p1: MapPoint?) {
-    }
-
-    override fun onMapViewDragStarted(p0: MapView?, p1: MapPoint?) {
-    }
-
-    override fun onMapViewDragEnded(p0: MapView?, p1: MapPoint?) {
-    }
-
-    override fun onMapViewMoveFinished(p0: MapView?, p1: MapPoint?) {
-    }
-
 
     /**
      * MapView.POIItemEventListener 인터페이스 구현
      */
+    override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?) {}
+    override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?, p2: MapPOIItem.CalloutBalloonButtonType?) {}
+    override fun onDraggablePOIItemMoved(p0: MapView?, p1: MapPOIItem?, p2: MapPoint?) {}
+
     override fun onPOIItemSelected(p0: MapView?, p1: MapPOIItem?) {
         if(p1 != null){
             showPlaceCard(p1!!)
@@ -503,15 +499,6 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             starImages.add(elem)
         }
         return starImages
-    }
-
-    override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?) {
-    }
-
-    override fun onCalloutBalloonOfPOIItemTouched(p0: MapView?, p1: MapPOIItem?, p2: MapPOIItem.CalloutBalloonButtonType?) {
-    }
-
-    override fun onDraggablePOIItemMoved(p0: MapView?, p1: MapPOIItem?, p2: MapPoint?) {
     }
 
 
