@@ -518,6 +518,10 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     /**
      * Databinding functions
      */
+    fun onDrawerButtonClicked() {
+        binding.layoutDrawer.open()
+    }
+
     fun onSearchTextCancelClicked() {
         binding.searchTextInput!!.setText("")
     }
