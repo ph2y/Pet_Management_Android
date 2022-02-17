@@ -57,4 +57,8 @@ class BookmarkTreeAdapter(
     fun addItem(item: BookmarkTreeItem) {
         dataSet.add(item)
     }
+
+    fun resetDataSet() {
+        dataSet = arrayListOf()
+    }
 }

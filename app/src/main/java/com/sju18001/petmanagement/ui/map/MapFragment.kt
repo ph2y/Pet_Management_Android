@@ -29,6 +29,7 @@ import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.kakaoapi.KakaoApi
 import com.sju18001.petmanagement.restapi.kakaoapi.Place
 import com.sju18001.petmanagement.restapi.ServerUtil
+import com.sju18001.petmanagement.restapi.dao.Bookmark
 import com.sju18001.petmanagement.restapi.dto.CreateBookmarkReqDto
 import com.sju18001.petmanagement.restapi.dto.DeleteBookmarkReqDto
 import com.sju18001.petmanagement.restapi.dto.FetchBookmarkReqDto
@@ -185,21 +186,26 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
     private fun fetchBookmark() {
+        bookmarkTreeAdapter.resetDataSet()
+
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchBookmarkReq(FetchBookmarkReqDto(null, null))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-            response.body()?.bookmarkList?.map { bookmark ->
-                viewModel.folderToBookmarks.put(bookmark.folder, bookmark)
-            }
-
-            addAndNotifyFoldersByFolderToBookmarks()
+            updateFolderToBookmarksByBookmarkList(response.body()?.bookmarkList)
+            addFoldersByFolderToBookmarks()
+            bookmarkTreeAdapter.notifyDataSetChanged()
         }, {}, {})
     }
 
-    private fun addAndNotifyFoldersByFolderToBookmarks() {
+    private fun updateFolderToBookmarksByBookmarkList(bookmarkList: List<Bookmark>?) {
+        bookmarkList?.map { bookmark ->
+            viewModel.folderToBookmarks.put(bookmark.folder, bookmark)
+        }
+    }
+
+    private fun addFoldersByFolderToBookmarks() {
         for((folder, _) in viewModel.folderToBookmarks) {
             bookmarkTreeAdapter.addItem(BookmarkTreeItem(false, null, folder))
-            bookmarkTreeAdapter.notifyItemInserted(bookmarkTreeAdapter.itemCount)
         }
     }
 
