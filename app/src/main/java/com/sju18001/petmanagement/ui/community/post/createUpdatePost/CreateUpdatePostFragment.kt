@@ -10,6 +10,7 @@ import android.location.LocationManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -81,8 +82,6 @@ class CreateUpdatePostFragment : Fragment() {
     ): View? {
         _binding = FragmentCreateUpdatePostBinding.inflate(inflater, container, false)
         isViewDestroyed = false
-
-        binding.locationButton.isEnabled = false // TODO: delete this
 
         return binding.root
     }
@@ -685,7 +684,7 @@ class CreateUpdatePostFragment : Fragment() {
                 it.findViewHolderForLayoutPosition(i)?.itemView?.isClickable = true
             }
         }
-        //binding.locationButton.isEnabled = true // TODO: uncomment this
+        binding.locationButton.isEnabled = true
         binding.photoAttachmentButton.isEnabled = true
         binding.videoAttachmentButton.isEnabled = true
         binding.generalAttachmentButton.isEnabled = true
