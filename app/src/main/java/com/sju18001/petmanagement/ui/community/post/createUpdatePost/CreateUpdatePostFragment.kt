@@ -268,7 +268,7 @@ class CreateUpdatePostFragment : Fragment() {
         increaseApiCallCountForFetch()
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .fetchPostReq(FetchPostReqDto(null, null, null, createUpdatePostViewModel.postId))
+            .fetchPostReq(FetchPostReqDto(null, null, null, createUpdatePostViewModel.postId, null, null))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             // fetch post data (excluding files) and save to ViewModel
             val post = response.body()?.postList!![0]
@@ -733,7 +733,7 @@ class CreateUpdatePostFragment : Fragment() {
         val latAndLong = getGeolocation()
 
         // 위치 정보 사용에 동의했지만, 권한이 없는 경우
-        if(latAndLong[0] == (-1.0).toBigDecimal()){
+        if(latAndLong[0] == (-1.0)){
             Permission.requestNotGrantedPermissions(requireContext(), Permission.requiredPermissionsForLocation)
 
             // 권한 요청이 비동기적이기 때문에, 권한 요청 이후에 CreatePost 버튼을 다시 눌러야한다.
@@ -771,29 +771,29 @@ class CreateUpdatePostFragment : Fragment() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun getGeolocation(): MutableList<BigDecimal> {
-        val latAndLong: MutableList<BigDecimal> = mutableListOf()
+    private fun getGeolocation(): MutableList<Double> {
+        val latAndLong: MutableList<Double> = mutableListOf()
 
         if(!createUpdatePostViewModel.isUsingLocation) {
-            latAndLong.add(0.0.toBigDecimal())
-            latAndLong.add(0.0.toBigDecimal())
+            latAndLong.add(0.0)
+            latAndLong.add(0.0)
         }else{
             if (Permission.isAllPermissionsGranted(requireContext(), Permission.requiredPermissionsForLocation)) {
                 val location = (requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager)
                     .getLastKnownLocation(LocationManager.GPS_PROVIDER)
 
                 if(location != null){
-                    latAndLong.add(location.latitude!!.toBigDecimal())
-                    latAndLong.add(location.longitude!!.toBigDecimal())
+                    latAndLong.add(location.latitude)
+                    latAndLong.add(location.longitude)
                 }else{
                     // 정보 로드 실패 예외처리
-                    latAndLong.add(0.0.toBigDecimal())
-                    latAndLong.add(0.0.toBigDecimal())
+                    latAndLong.add(0.0)
+                    latAndLong.add(0.0)
                 }
             }else{
                 // 특수 처리를 위해 (-1, -1)을 넣음
-                latAndLong.add((-1.0).toBigDecimal())
-                latAndLong.add((-1.0).toBigDecimal())
+                latAndLong.add((-1.0))
+                latAndLong.add((-1.0))
             }
         }
 
@@ -807,7 +807,7 @@ class CreateUpdatePostFragment : Fragment() {
         val latAndLong = getGeolocation()
 
         // 위치 정보 사용에 동의했지만, 권한이 없는 경우
-        if(latAndLong[0] == (-1.0).toBigDecimal()){
+        if(latAndLong[0] == (-1.0)){
             Permission.requestNotGrantedPermissions(requireContext(), Permission.requiredPermissionsForLocation)
 
             // 권한 요청이 비동기적이기 때문에, 권한 요청 이후에 CreatePost 버튼을 다시 눌러야한다.

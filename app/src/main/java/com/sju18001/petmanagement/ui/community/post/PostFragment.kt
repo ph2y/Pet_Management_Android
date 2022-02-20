@@ -117,7 +117,7 @@ class PostFragment : Fragment() {
      */
     private fun fetchOnePostAndInvoke(postId: Long, callback: ((Post)->Unit)){
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .fetchPostReq(FetchPostReqDto(null, null, null, postId))
+            .fetchPostReq(FetchPostReqDto(null, null, null, postId, null, null))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             response.body()?.postList?.get(0)?.let{ item ->
                 /**
@@ -253,8 +253,8 @@ class PostFragment : Fragment() {
                     if(!recyclerView.canScrollVertically(1) && adapter.itemCount != 0 && !isLast){
                         updatePostRecyclerView(
                             FetchPostReqDto(
-                            pageIndex, topPostId, arguments?.getLong("petId"), null
-                        )
+                            pageIndex, topPostId, arguments?.getLong("petId"), null, null, null
+                            )
                         )
                         pageIndex += 1
                     }
@@ -354,7 +354,7 @@ class PostFragment : Fragment() {
     private fun resetAndUpdatePostRecyclerView(){
         resetPostData()
         updatePostRecyclerView(
-            FetchPostReqDto(null, null, getPetIdFromArguments(), null)
+            FetchPostReqDto(null, null, getPetIdFromArguments(), null, null, null)
         )
     }
 

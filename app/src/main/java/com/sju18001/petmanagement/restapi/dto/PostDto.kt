@@ -11,8 +11,8 @@ data class CreatePostReqDto(
     val contents: String?,
     val hashTags: List<String>,
     val disclosure: String,
-    val geoTagLat: BigDecimal?,
-    val geoTagLong: BigDecimal?
+    val geoTagLat: Double?,
+    val geoTagLong: Double?
 )
 
 data class CreatePostResDto(
@@ -26,8 +26,8 @@ data class UpdatePostReqDto(
     val contents: String?,
     val hashTags: List<String>,
     val disclosure: String,
-    val geoTagLat: BigDecimal?,
-    val geoTagLong: BigDecimal?
+    val geoTagLat: Double?,
+    val geoTagLong: Double?
 )
 
 data class UpdatePostResDto(
@@ -38,7 +38,9 @@ data class FetchPostReqDto (
     val pageIndex: Int?,
     val topPostId: Long?,
     val petId: Long?,
-    val id: Long?
+    val id: Long?,
+    val currentLat: Double?,
+    val currentLong: Double?
 )
 
 data class FetchPostResDto (
@@ -60,11 +62,6 @@ data class FetchPostImageReqDto (
     val id: Long,
     val index: Int,
     val imageType: Int
-)
-
-data class FetchPostVideoReqDto (
-    val id: Long,
-    val index: Int
 )
 
 data class UpdatePostMediaResDto (
