@@ -1,19 +1,26 @@
 package com.sju18001.petmanagement.ui.map
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.databinding.BookmarkTreeItemBinding
+import com.sju18001.petmanagement.restapi.dao.Bookmark
 
 class BookmarkTreeAdapter(
     private var dataSet: ArrayList<BookmarkTreeItem>
     ): RecyclerView.Adapter<BookmarkTreeAdapter.ViewHolder>() {
+    var folderToBookmarks: HashMap<String, ArrayList<Bookmark>> = hashMapOf()
+
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
+        val itemLayout: LinearLayout = view.findViewById(R.id.layout_item)
         val bookmarkImage: ImageView = view.findViewById(R.id.image_bookmark)
         val folderImage: ImageView = view.findViewById(R.id.image_folder)
         val nameText: TextView = view.findViewById(R.id.text_name)
@@ -30,7 +37,32 @@ class BookmarkTreeAdapter(
     }
 
     private fun setListenerOnView(holder: ViewHolder) {
+        holder.itemLayout.setOnClickListener {
+            val position = holder.absoluteAdapterPosition
+            if(dataSet[position].isBookmark){
 
+            }
+            else{
+                val bookmarkCount = folderToBookmarks[holder.nameText.text]!!.count()
+
+                when(dataSet[position].isOpened){
+                    true -> {
+                        for(i in 1..bookmarkCount){
+                            dataSet.removeAt(position + 1)
+                        }
+                        notifyItemRangeRemoved(position + 1, bookmarkCount)
+                    }
+                    false -> {
+                        folderToBookmarks[holder.nameText.text]?.mapIndexed{ i, bookmark ->
+                            dataSet.add(position + i + 1, BookmarkTreeItem(true, bookmark, null, false))
+                        }
+                        notifyItemRangeInserted(position + 1, bookmarkCount)
+                    }
+                }
+
+                dataSet[position].isOpened = !dataSet[position].isOpened
+            }
+        }
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -42,7 +74,7 @@ class BookmarkTreeAdapter(
     private fun updateViewHolderByDataSet(holder: ViewHolder, data: BookmarkTreeItem) {
         when(data.isBookmark){
             true -> {
-                holder.nameText.text = data.bookmark!!.place.name
+                holder.nameText.text = data.bookmark!!.name
                 holder.bookmarkImage.visibility = View.VISIBLE
                 holder.folderImage.visibility = View.GONE
             }
@@ -60,5 +92,6 @@ class BookmarkTreeAdapter(
 
     fun resetDataSet() {
         dataSet = arrayListOf()
+        folderToBookmarks = hashMapOf()
     }
 }
