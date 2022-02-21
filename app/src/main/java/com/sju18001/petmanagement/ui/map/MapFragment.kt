@@ -75,7 +75,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     private var currentMapPoint: MapPoint? = null
     private var isLoadingCurrentMapPoint: Boolean = false
 
-    private var currentPlaces: List<Place>? = null
+    private var currentPlaces: ArrayList<Place> = arrayListOf()
 
     // 애니메이션의 진행 여부를 파악하고자 멤버 변수로 둡니다.
     private var showingNavViewAnim: ValueAnimator? = null
@@ -178,7 +178,27 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
     private fun initializeBookmarkRecyclerView() {
-        bookmarkTreeAdapter = BookmarkTreeAdapter(arrayListOf())
+        bookmarkTreeAdapter = BookmarkTreeAdapter(arrayListOf(), object: BookmarkTreeAdapterInterface{
+            override fun addBookmarkPOIItem(place: com.sju18001.petmanagement.restapi.dao.Place) {
+                val newMarker: MapPOIItem = MapPOIItem().apply{
+                    itemName = place.name
+                    tag = currentPlaces.count()
+                    mapPoint = MapPoint.mapPointWithGeoCoord(place.latitude, place.longitude)
+
+                    markerType = MapPOIItem.MarkerType.CustomImage
+                    isCustomImageAutoscale = false
+                    setCustomImageAnchor(0.5f, 0.5f)
+                    customImageResourceId = R.drawable.marker_pet
+                }
+                // currentPlaces.add(place) TODO: Place 타입이 통일되면 추가할 것. 이로 인해 POI Item 클릭 시 버그가 발생함
+
+                mapView!!.addPOIItem(newMarker)
+            }
+
+            override fun closeDrawer() {
+                binding.layoutDrawer.close()
+            }
+        })
         binding.recylerViewBookmarkTree?.let{
             it.adapter = bookmarkTreeAdapter
             it.layoutManager = LinearLayoutManager(requireContext())
@@ -338,8 +358,9 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
                 val body = response.body()
                 if(body != null){
-                    currentPlaces = body.documents
-                    addPOIItems(currentPlaces!!, mapView)
+                    currentPlaces = arrayListOf()
+                    body.documents.map{ currentPlaces.add(it) }
+                    addPOIItems(currentPlaces, mapView)
                 }
             }, {}, {})
         }catch(e: Exception){
@@ -516,7 +537,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     private fun updatePlaceCard(item: MapPOIItem){
         currentPlaces?.get(item.tag)?.let { place ->
             viewModel.placeCard.set(
-                PlaceCard(place, false) // TODO: bookmarkedAccountIdList 생긴 뒤에 값을 조절할 것
+                PlaceCard(place, false) // TODO: bookmarkedAccountIdList 생긴 뒤에 불린값을 조절할 것
             )
             setPlaceCardRating(4.3f) // TODO: place에 rating이 추가되면 databinding으로 변경: 'place_rating' item
         }
