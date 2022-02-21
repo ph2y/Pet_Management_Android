@@ -14,8 +14,14 @@ import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.databinding.BookmarkTreeItemBinding
 import com.sju18001.petmanagement.restapi.dao.Bookmark
 
+interface BookmarkTreeAdapterInterface {
+    fun addBookmarkPOIItem(place: com.sju18001.petmanagement.restapi.dao.Place)
+    fun closeDrawer()
+}
+
 class BookmarkTreeAdapter(
-    private var dataSet: ArrayList<BookmarkTreeItem>
+    private var dataSet: ArrayList<BookmarkTreeItem>,
+    private var bookmarkTreeAdapterInterface: BookmarkTreeAdapterInterface
     ): RecyclerView.Adapter<BookmarkTreeAdapter.ViewHolder>() {
     var folderToBookmarks: HashMap<String, ArrayList<Bookmark>> = hashMapOf()
 
@@ -40,7 +46,8 @@ class BookmarkTreeAdapter(
         holder.itemLayout.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             if(dataSet[position].isBookmark){
-
+                bookmarkTreeAdapterInterface.closeDrawer()
+                bookmarkTreeAdapterInterface.addBookmarkPOIItem(dataSet[position].bookmark!!.place)
             }
             else{
                 val bookmarkCount = folderToBookmarks[holder.nameText.text]!!.count()
