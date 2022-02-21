@@ -19,7 +19,7 @@ class MapViewModel : ViewModel() {
         )
     )
 
-    var folderToBookmarks: HashMap<String, Bookmark> = hashMapOf()
+    var isBookmarkFetched: Boolean = false
 
     fun getIsBookmarked() = placeCard.get()!!.isBookmarked
     fun setIsBookmarked(flag: Boolean) {

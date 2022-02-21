@@ -168,7 +168,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             override fun onDrawerSlide(drawerView: View, slideOffset: Float) {
             }
             override fun onDrawerOpened(drawerView: View) {
-                fetchBookmark()
+                fetchBookmarkIfBookmarkIsNotFetched()
             }
             override fun onDrawerClosed(drawerView: View) {
             }
@@ -185,28 +185,27 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         }
     }
 
-    private fun fetchBookmark() {
+    private fun fetchBookmarkIfBookmarkIsNotFetched() {
+        if(viewModel.isBookmarkFetched) return
+
         bookmarkTreeAdapter.resetDataSet()
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchBookmarkReq(FetchBookmarkReqDto(null, null))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-            updateFolderToBookmarksByBookmarkList(response.body()?.bookmarkList)
-            addFoldersByFolderToBookmarks()
+            response.body()?.bookmarkList?.map { bookmark ->
+                // 해당 폴더에 처음 접근할 경우
+                if(!bookmarkTreeAdapter.folderToBookmarks.containsKey(bookmark.folder)){
+                    bookmarkTreeAdapter.addItem(BookmarkTreeItem(false, null, bookmark.folder, false))
+                    bookmarkTreeAdapter.folderToBookmarks[bookmark.folder] = arrayListOf()
+                }
+                bookmarkTreeAdapter.folderToBookmarks[bookmark.folder]!!.add(bookmark)
+            }
+
             bookmarkTreeAdapter.notifyDataSetChanged()
+
+            viewModel.isBookmarkFetched = true
         }, {}, {})
-    }
-
-    private fun updateFolderToBookmarksByBookmarkList(bookmarkList: List<Bookmark>?) {
-        bookmarkList?.map { bookmark ->
-            viewModel.folderToBookmarks.put(bookmark.folder, bookmark)
-        }
-    }
-
-    private fun addFoldersByFolderToBookmarks() {
-        for((folder, _) in viewModel.folderToBookmarks) {
-            bookmarkTreeAdapter.addItem(BookmarkTreeItem(false, null, folder))
-        }
     }
 
 
@@ -636,12 +635,16 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                 place.category_group_name,
                 getString(R.string.bookmark_default_folder) // 우선 기본 폴더에 등록한다.
             ))
-        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {}, {}, {})
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            viewModel.isBookmarkFetched = false // 북마크를 다시 fetch하도록 유도
+        }, {}, {})
     }
 
     private fun deleteBookmark(placeId: Long) {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .deleteBookmarkReq(DeleteBookmarkReqDto(placeId))
-        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {}, {}, {})
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            viewModel.isBookmarkFetched = false // 북마크를 다시 fetch하도록 유도
+        }, {}, {})
     }
 }
