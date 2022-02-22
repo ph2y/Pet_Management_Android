@@ -149,6 +149,7 @@
 
     <!-- Bookmark -->
     <string name="bookmark_default_folder">기본 폴더</string>
+    <string name="empty_bookmark">아직 북마크된 장소가 없어요.\n자주 가는 곳에 북마크를 추가해보세요!</string>
 
     <!-- Review Fragment -->
     <string name="review">리뷰</string>

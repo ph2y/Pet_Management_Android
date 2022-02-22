@@ -429,36 +429,65 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:layout_gravity="start">
-
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <ScrollView
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="16dp">
-                <ImageView
-                    android:id="@+id/image_bookmark"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/ic_baseline_bookmark_border_36"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"/>
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="24sp"
-                    android:text="북마크"
-                    android:layout_marginLeft="4dp"
-                    app:layout_constraintTop_toTopOf="@id/image_bookmark"
-                    app:layout_constraintBottom_toBottomOf="@id/image_bookmark"
-                    app:layout_constraintStart_toEndOf="@id/image_bookmark"/>
+                android:layout_height="match_parent">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyler_view_bookmark_tree"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    app:layout_constraintTop_toBottomOf="@id/image_bookmark"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:layout_height="match_parent"
+                    android:padding="16dp">
+                    <ImageView
+                        android:id="@+id/image_bookmark"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_baseline_bookmark_border_36"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="24sp"
+                        android:text="북마크"
+                        android:layout_marginLeft="4dp"
+                        app:layout_constraintTop_toTopOf="@id/image_bookmark"
+                        app:layout_constraintBottom_toBottomOf="@id/image_bookmark"
+                        app:layout_constraintStart_toEndOf="@id/image_bookmark"/>
 
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/recycler_view_bookmark_tree"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        app:layout_constraintTop_toBottomOf="@id/image_bookmark"/>
+
+                    <TextView
+                        android:id="@+id/text_empty_bookmark"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/empty_bookmark"
+                        android:gravity="center_horizontal"
+                        android:visibility="gone"
+                        android:layout_marginTop="36dp"
+                        android:layout_marginBottom="36dp"
+                        app:layout_constraintTop_toBottomOf="@id/image_bookmark"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+
+                    <ProgressBar
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="36dp"
+                        android:layout_marginBottom="36dp"
+                        android:visibility="@{viewModel.isBookmarkFetched? View.GONE: View.VISIBLE}"
+                        app:layout_constraintTop_toBottomOf="@id/image_bookmark"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"/>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </ScrollView>
         </com.google.android.material.navigation.NavigationView>
     </androidx.drawerlayout.widget.DrawerLayout>
 

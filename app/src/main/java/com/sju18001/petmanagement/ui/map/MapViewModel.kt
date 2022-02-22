@@ -19,7 +19,7 @@ class MapViewModel : ViewModel() {
         )
     )
 
-    var isBookmarkFetched: Boolean = false
+    var isBookmarkFetched: ObservableField<Boolean> = ObservableField(false)
 
     fun getIsBookmarked() = placeCard.get()!!.isBookmarked
     fun setIsBookmarked(flag: Boolean) {
