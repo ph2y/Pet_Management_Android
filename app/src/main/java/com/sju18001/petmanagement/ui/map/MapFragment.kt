@@ -199,16 +199,17 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                 binding.layoutDrawer.close()
             }
         })
-        binding.recylerViewBookmarkTree?.let{
+        binding.recyclerViewBookmarkTree?.let{
             it.adapter = bookmarkTreeAdapter
             it.layoutManager = LinearLayoutManager(requireContext())
         }
     }
 
     private fun fetchBookmarkIfBookmarkIsNotFetched() {
-        if(viewModel.isBookmarkFetched) return
+        if(viewModel.isBookmarkFetched.get() == true) return
 
         bookmarkTreeAdapter.resetDataSet()
+        binding.textEmptyBookmark.visibility = View.GONE
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchBookmarkReq(FetchBookmarkReqDto(null, null, null))
@@ -224,7 +225,11 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
             bookmarkTreeAdapter.notifyDataSetChanged()
 
-            viewModel.isBookmarkFetched = true
+            viewModel.isBookmarkFetched.set(true)
+
+            if(bookmarkTreeAdapter.folderToBookmarks.count() == 0) {
+                binding.textEmptyBookmark.visibility = View.VISIBLE
+            }
         }, {}, {})
     }
 
@@ -669,7 +674,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                 getString(R.string.bookmark_default_folder) // 우선 기본 폴더에 등록한다.
             ))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
-            viewModel.isBookmarkFetched = false // 북마크를 다시 fetch하도록 유도
+            viewModel.isBookmarkFetched.set(false) // 북마크를 다시 fetch하도록 유도
         }, {}, {})
     }
 
@@ -677,7 +682,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .deleteBookmarkReq(DeleteBookmarkReqDto(null, placeId))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
-            viewModel.isBookmarkFetched = false // 북마크를 다시 fetch하도록 유도
+            viewModel.isBookmarkFetched.set(false) // 북마크를 다시 fetch하도록 유도
         }, {}, {})
     }
 }
