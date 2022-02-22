@@ -16,16 +16,19 @@ data class CreateBookmarkResDto(
 
 data class FetchBookmarkReqDto(
     val id: Long?,
-    val folder: String?
+    val folder: String?,
+    val placeId: Long?
 )
 
 data class FetchBookmarkResDto(
     val _metadata: DtoMetadata,
-    val bookmarkList: List<Bookmark>
+    val bookmarkList: List<Bookmark>,
+    val bookmarkedAccountIdList: List<Long>
 )
 
 data class DeleteBookmarkReqDto(
-    val placeId: Long
+    val id: Long?,
+    val placeId: Long?
 )
 
 data class DeleteBookmarkResDto(
