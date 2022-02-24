@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.google.android.material.slider.Slider
+import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.databinding.FragmentRadiusPreferencesBinding
 import com.sju18001.petmanagement.ui.setting.SettingViewModel
 
@@ -34,7 +35,7 @@ class RadiusPreferencesFragment : Fragment() {
 
         settingViewModel.initializeViewModelForRadius(requireContext())
         setLiveDataObservers()
-        setViewListeners()
+        setViewDetails()
 
         isViewDestroyed = false
 
@@ -64,16 +65,18 @@ class RadiusPreferencesFragment : Fragment() {
             binding.radiusSwitch.isChecked = newValue != 0.0
 
             if (binding.radiusSwitch.isChecked) {
-                binding.radiusSlider.visibility = View.VISIBLE
+                binding.radiusSliderLayout.visibility = View.VISIBLE
                 binding.radiusSlider.value = newValue.toFloat()
+                binding.radiusMessage.setText(R.string.radius_enabled_message)
             } else {
-                binding.radiusSlider.visibility = View.GONE
+                binding.radiusSliderLayout.visibility = View.GONE
+                binding.radiusMessage.setText(R.string.radius_disabled_message)
             }
         }
         settingViewModel.radiusSlider.observe(this, radiusSliderObserver)
     }
 
-    private fun setViewListeners() {
+    private fun setViewDetails() {
         binding.radiusSwitch.setOnClickListener {
             if (binding.radiusSwitch.isChecked) {
                 settingViewModel.updateAccountWithNewRadius(requireContext(), isViewDestroyed,
@@ -92,5 +95,9 @@ class RadiusPreferencesFragment : Fragment() {
                     binding.radiusSlider.value.toDouble())
             }
         })
+
+        binding.radiusSlider.setLabelFormatter { value ->
+            return@setLabelFormatter "${value.toInt() / 1000}km"
+        }
     }
 }

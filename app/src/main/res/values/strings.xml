@@ -164,9 +164,10 @@
     <string name="storage_title">저장소</string>
     <string name="preferences">환경 설정</string>
     <string name="radius_preferences">위치 반경 설정</string>
+    <string name="radius_label">위치 반경</string>
     <string name="enable_radius_preference">위치 기반 커뮤니티 피드</string>
-    <string name="radius_disabled_message">내가 작성한 글과 내가 팔로우하는 계정의 글만 피드에 표시돼요!</string>
-    <string name="radius_enabled_message">내가 작성한 글과 내가 팔로우하는 계정, 그리고 설정한 반경 내 작성된 모든 글이 피드에 표시돼요!</string>
+    <string name="radius_disabled_message">내가 작성한 글과 내가 팔로우하는 계정의 글만 피드에 표시돼요.</string>
+    <string name="radius_enabled_message">내가 작성한 글과 내가 팔로우하는 계정, 그리고 설정한 반경 내 작성된 모든 글이 피드에 표시돼요.</string>
     <string name="radius_update_success_message">변경사항을 저장했어요!</string>
     <string name="notification_preferences">알림 설정</string>
     <string name="theme_preferences">테마 설정</string>

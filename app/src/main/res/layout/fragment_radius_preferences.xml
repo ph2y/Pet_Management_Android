@@ -12,21 +12,23 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:animateLayoutChanges="true">
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:padding="16dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:layout_toStartOf="@id/radius_switch_layout"
                     android:layout_alignParentBottom="true"
                     android:layout_centerVertical="true"
-                    android:textSize="50dp"
+                    android:layout_toStartOf="@id/radius_switch_layout"
+                    android:textSize="20sp"
                     android:text="@string/enable_radius_preference"/>
 
                 <RelativeLayout
@@ -50,25 +52,51 @@
                         android:layout_width="30dp"
                         android:layout_height="30dp"
                         android:layout_centerInParent="true"
-                        android:indeterminateTint="@color/carrot" />
+                        android:indeterminateTint="@color/carrot"/>
 
                 </RelativeLayout>
 
             </RelativeLayout>
 
-            <com.google.android.material.slider.Slider
-                android:id="@+id/radius_slider"
-                android:layout_width="wrap_content"
+            <RelativeLayout
+                android:id="@+id/radius_slider_layout"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:valueFrom="5000"
-                android:valueTo="500000"/>
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:layout_marginBottom="16dp">
 
-            <!-- TODO: remove the text -->
+                <TextView
+                    android:id="@+id/radius_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:textSize="16sp"
+                    android:text="@string/radius_label"/>
+
+                <com.google.android.material.slider.Slider
+                    android:id="@+id/radius_slider"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/radius_label"
+                    android:layout_marginStart="8dp"
+                    android:layout_centerVertical="true"
+                    android:valueFrom="5000"
+                    android:valueTo="500000"
+                    android:stepSize="1000"
+                    app:tickVisible="false"/>
+
+            </RelativeLayout>
+
             <TextView
                 android:id="@+id/radius_message"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/radius_disabled_message"/>
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"/>
 
         </LinearLayout>
 

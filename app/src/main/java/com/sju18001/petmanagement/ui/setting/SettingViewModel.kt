@@ -141,7 +141,7 @@ class SettingViewModel(private val handle: SavedStateHandle) : ViewModel() {
                 radiusSlider.value = mapSearchRadius
                 isApiLoading.value = false
 
-                Toast.makeText(context, context.getText(R.string.radius_update_success_message), Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.radius_update_success_message, Toast.LENGTH_SHORT).show()
             }
         }, { isApiLoading.value = false }, { isApiLoading.value = false })
     }
