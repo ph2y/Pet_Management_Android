@@ -13,6 +13,7 @@ import com.sju18001.petmanagement.ui.setting.information.LicenseFragment
 import com.sju18001.petmanagement.ui.setting.information.PrivacyTermsFragment
 import com.sju18001.petmanagement.ui.setting.information.UsageTermsFragment
 import com.sju18001.petmanagement.ui.setting.preferences.NotificationPreferencesFragment
+import com.sju18001.petmanagement.ui.setting.preferences.RadiusPreferencesFragment
 import com.sju18001.petmanagement.ui.setting.preferences.ThemePreferencesFragment
 
 class SettingActivity : AppCompatActivity() {
@@ -46,7 +47,7 @@ class SettingActivity : AppCompatActivity() {
                 }
                 "radius_preferences" -> {
                     actionBar?.setTitle(R.string.radius_preferences)
-                    LicenseFragment() // TODO: create fragment
+                    RadiusPreferencesFragment()
                 }
                 "notification_preferences" -> {
                     actionBar?.setTitle(R.string.notification_preferences)
