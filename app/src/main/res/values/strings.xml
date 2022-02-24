@@ -163,6 +163,7 @@
     <string name="info_version_title">버전 및 정보</string>
     <string name="storage_title">저장소</string>
     <string name="preferences">환경 설정</string>
+    <string name="radius_preferences">반경 설정</string>
     <string name="notification_preferences">알림 설정</string>
     <string name="theme_preferences">테마 설정</string>
     <string name="delete_temporary_files_button">임시파일 삭제</string>

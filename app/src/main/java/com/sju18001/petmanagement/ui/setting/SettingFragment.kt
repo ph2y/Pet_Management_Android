@@ -75,9 +75,9 @@ class SettingFragment : Fragment() {
             requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
         }
 
-        binding.preferencesLookup.setOnClickListener {
+        binding.radiusLookup.setOnClickListener {
             val preferencesLookupIntent = Intent(context, SettingActivity::class.java)
-            preferencesLookupIntent.putExtra("fragmentType", "preferences")
+            preferencesLookupIntent.putExtra("fragmentType", "radius_preferences")
             startActivity(preferencesLookupIntent)
             requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
         }

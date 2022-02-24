@@ -45,7 +45,6 @@ class UpdateAccountFragment : Fragment() {
     private val PICK_PHOTO = 0
     private var UPDATE_ACCOUNT_DIRECTORY: String = "update_account"
 
-    private lateinit var updateAccountViewModel: UpdateAccountViewModel
     private var _binding: FragmentUpdateAccountBinding? = null
 
     // This property is only valid between onCreateView and
@@ -62,9 +61,6 @@ class UpdateAccountFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        updateAccountViewModel =
-            ViewModelProvider(this).get(UpdateAccountViewModel::class.java)
-
         _binding = FragmentUpdateAccountBinding.inflate(inflater, container, false)
         isViewDestroyed = false
 

@@ -13,7 +13,6 @@ import com.sju18001.petmanagement.ui.setting.information.LicenseFragment
 import com.sju18001.petmanagement.ui.setting.information.PrivacyTermsFragment
 import com.sju18001.petmanagement.ui.setting.information.UsageTermsFragment
 import com.sju18001.petmanagement.ui.setting.preferences.NotificationPreferencesFragment
-import com.sju18001.petmanagement.ui.setting.preferences.PreferencesFragment
 import com.sju18001.petmanagement.ui.setting.preferences.ThemePreferencesFragment
 
 class SettingActivity : AppCompatActivity() {
@@ -45,9 +44,9 @@ class SettingActivity : AppCompatActivity() {
                     actionBar?.setTitle(R.string.account)
                     UpdateAccountFragment()
                 }
-                "preferences" -> {
-                    actionBar?.setTitle(R.string.preferences)
-                    PreferencesFragment()
+                "radius_preferences" -> {
+                    actionBar?.setTitle(R.string.radius_preferences)
+                    LicenseFragment() // TODO: create fragment
                 }
                 "notification_preferences" -> {
                     actionBar?.setTitle(R.string.notification_preferences)
@@ -69,7 +68,7 @@ class SettingActivity : AppCompatActivity() {
                     actionBar?.setTitle(R.string.license_title)
                     LicenseFragment()
                 }
-                else -> PreferencesFragment()
+                else -> LicenseFragment()
             }
             supportFragmentManager
                 .beginTransaction()
