@@ -1,10 +1,12 @@
 package com.sju18001.petmanagement.controller
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.*
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.LocationManager
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
@@ -21,7 +23,6 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import com.google.gson.Gson
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.restapi.kakaoapi.Place
@@ -29,7 +30,6 @@ import com.sju18001.petmanagement.restapi.global.FileMetaData
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import java.io.*
-import java.sql.Timestamp
 import java.text.SimpleDateFormat
 import java.time.*
 import java.util.*
@@ -440,7 +440,6 @@ class Util {
             return BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
         }
 
-
         fun setViewMore(contentsTextView: TextView, viewMoreTextView: TextView, maxLine: Int){
             // 더보기를 없는 것으로 초기화를 한다. 조건에 맞을 시 VISIBLE
             contentsTextView.maxLines = maxLine
@@ -504,6 +503,31 @@ class Util {
                 rating > index + 0.25 -> R.drawable.ic_baseline_star_half_16
                 else -> R.drawable.ic_baseline_star_border_16
             }
+        }
+
+        @SuppressLint("MissingPermission")
+        fun getGeolocation(context: Context): MutableList<Double> {
+            val latAndLong: MutableList<Double> = mutableListOf()
+
+            if (Permission.isAllPermissionsGranted(context, Permission.requiredPermissionsForLocation)) {
+                val location = (context.getSystemService(Context.LOCATION_SERVICE) as LocationManager)
+                    .getLastKnownLocation(LocationManager.GPS_PROVIDER)
+
+                if(location != null){
+                    latAndLong.add(location.latitude)
+                    latAndLong.add(location.longitude)
+                }else{
+                    // 정보 로드 실패 예외처리
+                    latAndLong.add(0.0)
+                    latAndLong.add(0.0)
+                }
+            }else{
+                // 특수 처리를 위해 (-1, -1)을 넣음
+                latAndLong.add((-1.0))
+                latAndLong.add((-1.0))
+            }
+
+            return latAndLong
         }
     }
 }
