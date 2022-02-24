@@ -1,7 +1,16 @@
 package com.sju18001.petmanagement.ui.setting
 
+import android.content.Context
+import android.widget.Toast
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.sju18001.petmanagement.R
+import com.sju18001.petmanagement.controller.SessionManager
+import com.sju18001.petmanagement.restapi.RetrofitBuilder
+import com.sju18001.petmanagement.restapi.ServerUtil
+import com.sju18001.petmanagement.restapi.dao.Account
+import com.sju18001.petmanagement.restapi.dto.UpdateAccountReqDto
 
 class SettingViewModel(private val handle: SavedStateHandle) : ViewModel() {
     // variables for account profile fetch in setting
@@ -92,4 +101,59 @@ class SettingViewModel(private val handle: SavedStateHandle) : ViewModel() {
             handle.set("createAccountPwCheckValid", value)
             field = value
         }
+
+    // ViewModel for radius preference fragment
+    private val isViewModelInitializedForRadius: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>(false)
+    }
+    val isApiLoading: MutableLiveData<Boolean> by lazy {
+        MutableLiveData<Boolean>()
+    }
+    val radiusSlider: MutableLiveData<Double> by lazy {
+        MutableLiveData<Double>()
+    }
+
+    fun initializeViewModelForRadius(context: Context) {
+        if (isViewModelInitializedForRadius.value!!) {
+            return
+        }
+
+        isApiLoading.value = false
+        radiusSlider.value = SessionManager.fetchLoggedInAccount(context)!!.mapSearchRadius
+
+        isViewModelInitializedForRadius.value = true
+    }
+
+    fun updateAccountWithNewRadius(context: Context, isViewDestroyed: Boolean, mapSearchRadius: Double) {
+        val loggedInAccount = SessionManager.fetchLoggedInAccount(context)!!
+        val updateAccountReqDto = UpdateAccountReqDto(
+            loggedInAccount.email, loggedInAccount.phone, loggedInAccount.nickname, loggedInAccount.marketing,
+            loggedInAccount.userMessage, loggedInAccount.representativePetId, loggedInAccount.notification,
+            mapSearchRadius
+        )
+
+        isApiLoading.value = true
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(context)!!)
+            .updateAccountReq(updateAccountReqDto)
+        ServerUtil.enqueueApiCall(call, { isViewDestroyed }, context, { response ->
+            if (response.body()?._metadata?.status == true) {
+                updateLoggedInAccount(context, loggedInAccount, mapSearchRadius)
+                radiusSlider.value = mapSearchRadius
+                isApiLoading.value = false
+
+                Toast.makeText(context, context.getText(R.string.radius_update_success_message), Toast.LENGTH_SHORT).show()
+            }
+        }, { isApiLoading.value = false }, { isApiLoading.value = false })
+    }
+
+    private fun updateLoggedInAccount(context: Context, prevAccount: Account, mapSearchRadius: Double) {
+        val updatedAccount = Account(
+            prevAccount.id, prevAccount.username, prevAccount.email, prevAccount.phone, prevAccount.password,
+            prevAccount.marketing, prevAccount.nickname, prevAccount.photoUrl, prevAccount.userMessage,
+            prevAccount.representativePetId, prevAccount.fcmRegistrationToken, prevAccount.notification,
+            mapSearchRadius
+        )
+
+        SessionManager.saveLoggedInAccount(context, updatedAccount)
+    }
 }

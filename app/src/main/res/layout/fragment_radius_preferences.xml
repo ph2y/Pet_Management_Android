@@ -23,28 +23,45 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_alignParentTop="true"
-                    android:layout_toStartOf="@id/enable_radius_switch"
+                    android:layout_toStartOf="@id/radius_switch_layout"
                     android:layout_alignParentBottom="true"
                     android:layout_centerVertical="true"
+                    android:textSize="50dp"
                     android:text="@string/enable_radius_preference"/>
 
-                <Switch
-                    android:id="@+id/enable_radius_switch"
+                <RelativeLayout
+                    android:id="@+id/radius_switch_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentTop="true"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentBottom="true"
-                    android:layout_centerVertical="true"
-                    tools:ignore="UseSwitchCompatOrMaterialXml"/>
+                    android:layout_centerVertical="true">
+
+                    <Switch
+                        android:id="@+id/radius_switch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        tools:ignore="UseSwitchCompatOrMaterialXml"/>
+
+                    <ProgressBar
+                        android:id="@+id/radius_switch_progress_bar"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:layout_centerInParent="true"
+                        android:indeterminateTint="@color/carrot" />
+
+                </RelativeLayout>
 
             </RelativeLayout>
 
-            <!-- TODO: make this gone -->
             <com.google.android.material.slider.Slider
                 android:id="@+id/radius_slider"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:valueFrom="5000"
+                android:valueTo="500000"/>
 
             <!-- TODO: remove the text -->
             <TextView
