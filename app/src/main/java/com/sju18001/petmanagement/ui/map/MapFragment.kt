@@ -191,8 +191,8 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                     customImageResourceId = R.drawable.marker_pet
                 }
                 // currentPlaces.add(place) TODO: Place 타입이 통일되면 추가할 것. 이로 인해 POI Item 클릭 시 버그가 발생함
-
-                mapView!!.addPOIItem(newMarker)
+                
+                mapView!!.addPOIItem(newMarker) // TODO: currentPlaces를 통한 중복 체크(현재는 Place 타입 문제로 불가능함)
             }
 
             override fun closeDrawer() {
