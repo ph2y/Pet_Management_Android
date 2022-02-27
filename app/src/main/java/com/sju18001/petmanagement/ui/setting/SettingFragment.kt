@@ -60,6 +60,7 @@ class SettingFragment : Fragment() {
             accountLookupIntent.putExtra("representativePetId", accountData.representativePetId)
             accountLookupIntent.putExtra("fcmRegistrationToken", accountData.fcmRegistrationToken)
             accountLookupIntent.putExtra("notification", accountData.notification)
+            accountLookupIntent.putExtra("mapSearchRadius", accountData.mapSearchRadius)
 
             if(accountData.photoUrl != null) {
                 Util.saveByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
@@ -74,9 +75,9 @@ class SettingFragment : Fragment() {
             requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
         }
 
-        binding.preferencesLookup.setOnClickListener {
+        binding.radiusLookup.setOnClickListener {
             val preferencesLookupIntent = Intent(context, SettingActivity::class.java)
-            preferencesLookupIntent.putExtra("fragmentType", "preferences")
+            preferencesLookupIntent.putExtra("fragmentType", "radius_preferences")
             startActivity(preferencesLookupIntent)
             requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
         }

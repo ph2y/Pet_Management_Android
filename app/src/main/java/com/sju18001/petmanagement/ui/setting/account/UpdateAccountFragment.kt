@@ -45,7 +45,6 @@ class UpdateAccountFragment : Fragment() {
     private val PICK_PHOTO = 0
     private var UPDATE_ACCOUNT_DIRECTORY: String = "update_account"
 
-    private lateinit var updateAccountViewModel: UpdateAccountViewModel
     private var _binding: FragmentUpdateAccountBinding? = null
 
     // This property is only valid between onCreateView and
@@ -62,9 +61,6 @@ class UpdateAccountFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        updateAccountViewModel =
-            ViewModelProvider(this).get(UpdateAccountViewModel::class.java)
-
         _binding = FragmentUpdateAccountBinding.inflate(inflater, container, false)
         isViewDestroyed = false
 
@@ -291,7 +287,8 @@ class UpdateAccountFragment : Fragment() {
             settingViewModel.accountMarketingValue,
             settingViewModel.accountUserMessageValue,
             settingViewModel.representativePetId,
-            settingViewModel.notification
+            settingViewModel.notification,
+            settingViewModel.mapSearchRadius
         )
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
@@ -305,7 +302,8 @@ class UpdateAccountFragment : Fragment() {
                 val account = Account(
                     prevAccount.id, prevAccount.username, settingViewModel.accountEmailValue, settingViewModel.accountPhoneValue,
                     null, settingViewModel.accountMarketingValue, settingViewModel.accountNicknameValue, prevAccount.photoUrl,
-                    settingViewModel.accountUserMessageValue, settingViewModel.representativePetId, settingViewModel.fcmRegistrationToken, settingViewModel.notification
+                    settingViewModel.accountUserMessageValue, settingViewModel.representativePetId, settingViewModel.fcmRegistrationToken,
+                    settingViewModel.notification, settingViewModel.mapSearchRadius
                 )
                 SessionManager.saveLoggedInAccount(requireContext(), account)
             }
@@ -443,7 +441,7 @@ class UpdateAccountFragment : Fragment() {
         settingViewModel.representativePetId = requireActivity().intent.getLongExtra("representativePetId", 0)
         settingViewModel.fcmRegistrationToken = requireActivity().intent.getStringExtra("fcmRegistrationToken")
         settingViewModel.notification = requireActivity().intent.getBooleanExtra("notification", true)
-
+        settingViewModel.mapSearchRadius = requireActivity().intent.getDoubleExtra("mapSearchRadius", 0.0)
     }
 
     private fun restoreState() {

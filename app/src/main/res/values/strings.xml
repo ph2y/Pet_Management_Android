@@ -169,6 +169,12 @@
     <string name="info_version_title">버전 및 정보</string>
     <string name="storage_title">저장소</string>
     <string name="preferences">환경 설정</string>
+    <string name="radius_preferences">위치 반경 설정</string>
+    <string name="radius_label">위치 반경</string>
+    <string name="enable_radius_preference">위치 기반 커뮤니티 피드</string>
+    <string name="radius_disabled_message">내가 작성한 글과 내가 팔로우하는 계정의 글만 피드에 표시돼요.</string>
+    <string name="radius_enabled_message">내가 작성한 글과 내가 팔로우하는 계정, 그리고 설정한 반경 내 작성된 모든 글이 피드에 표시돼요.</string>
+    <string name="radius_update_success_message">변경사항을 저장했어요!</string>
     <string name="notification_preferences">알림 설정</string>
     <string name="theme_preferences">테마 설정</string>
     <string name="delete_temporary_files_button">임시파일 삭제</string>
@@ -178,10 +184,7 @@
     <string name="license">라이센스</string>
     <string name="version_title">현재 버전</string>
     <string name="version">0.0.1</string>
-
-    <!-- Preferences Fragment -->
     <string name="preference_file_key">com.sju18.petmanagement.PREFERENCE_FILE_KEY</string>
-    <string name="map_radius">지도 반경 설정</string>
 
     <!-- Feed Preferences Fragment -->
     <string name="feed_notification">피드 알림</string>

@@ -82,7 +82,7 @@ class FollowerAdapter(val context: Context, private val followUnfollowButtonInte
             CommunityUtil.fetchRepresentativePetAndStartPetProfile(context, Account(
                 resultList[position].getId(), resultList[position].getUsername(), "", "", null,
                 null, resultList[position].getNickname(), if (resultList[position].getHasPhoto()) "true" else null,
-                "", resultList[position].getRepresentativePetId(), null, null), isViewDestroyed)
+                "", resultList[position].getRepresentativePetId(), null, null, 0.0), isViewDestroyed)
         }
 
         holder.followUnfollowButton.setOnClickListener {

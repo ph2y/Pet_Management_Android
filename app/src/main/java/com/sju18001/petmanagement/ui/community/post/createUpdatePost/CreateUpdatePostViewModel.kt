@@ -29,7 +29,7 @@ class CreateUpdatePostViewModel(private val handle: SavedStateHandle) : ViewMode
         }
 
     // for location
-    var isUsingLocation = handle.get<Boolean>("isUsingLocation")?: false // TODO: set default value to true
+    var isUsingLocation = handle.get<Boolean>("isUsingLocation")?: true
         set(value) {
             handle.set("isUsingLocation", value)
             field = value

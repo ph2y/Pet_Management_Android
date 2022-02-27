@@ -173,8 +173,8 @@ class LoginFragment : Fragment() {
 
     // 첫 로그인인지 체킹 후 액티비티 전환
     private fun checkIsFirstLoginAndSwitchActivity(token: String){
-        val call = RetrofitBuilder.getServerApiWithToken(token).fetchAccountReq(ServerUtil.getEmptyBody())
-        call.enqueue(object: Callback<FetchAccountResDto> {
+        val fetchAccountCall = RetrofitBuilder.getServerApiWithToken(token).fetchAccountReq(ServerUtil.getEmptyBody())
+        fetchAccountCall.enqueue(object: Callback<FetchAccountResDto> {
             override fun onResponse(
                 call: Call<FetchAccountResDto>,
                 response: Response<FetchAccountResDto>
@@ -187,16 +187,18 @@ class LoginFragment : Fragment() {
                         // 첫 로그인일 시
                         if(it.nickname == "#"){
                             // nickname => username 변경
-                            val call = RetrofitBuilder.getServerApiWithToken(token)
-                                .updateAccountReq(UpdateAccountReqDto(it.email, it.phone, it.username, it.marketing, it.userMessage, it.representativePetId, it.notification))
-                            ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {}, {}, {})
+                            val updateAccountCall = RetrofitBuilder.getServerApiWithToken(token)
+                                .updateAccountReq(UpdateAccountReqDto(it.email, it.phone, it.username, it.marketing,
+                                    it.userMessage, it.representativePetId, it.notification, it.mapSearchRadius))
+                            ServerUtil.enqueueApiCall(updateAccountCall, {isViewDestroyed}, requireContext(), {}, {}, {})
 
                             // 웰컴 페이지 호출
                             val intent = Intent(context, WelcomePageActivity::class.java)
                             SessionManager.saveUserToken(requireContext(), token)
                             response.body()?.run{
                                 // nickname에 username을 넣은 것에 유의할 것
-                                val account = Account(id, username, email, phone, null, marketing, username, photoUrl, userMessage, representativePetId, fcmRegistrationToken, notification)
+                                val account = Account(id, username, email, phone, null, marketing, username, photoUrl,
+                                    userMessage, representativePetId, fcmRegistrationToken, notification, mapSearchRadius)
                                 SessionManager.saveLoggedInAccount(requireContext(), account)
                             }
 
@@ -209,7 +211,8 @@ class LoginFragment : Fragment() {
                             val intent = Intent(context, MainActivity::class.java)
                             SessionManager.saveUserToken(requireContext(), token)
                             response.body()?.run{
-                                val account = Account(id, username, email, phone, null, marketing, nickname, photoUrl, userMessage, representativePetId, fcmRegistrationToken, notification)
+                                val account = Account(id, username, email, phone, null, marketing, nickname, photoUrl,
+                                    userMessage, representativePetId, fcmRegistrationToken, notification, mapSearchRadius)
                                 SessionManager.saveLoggedInAccount(requireContext(), account)
                             }
 

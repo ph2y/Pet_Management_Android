@@ -5,9 +5,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,7 +15,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
@@ -30,7 +27,6 @@ import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Post
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.restapi.global.FileType
-import com.sju18001.petmanagement.ui.community.CommunityViewModel
 import com.sju18001.petmanagement.ui.community.comment.CommentActivity
 import com.sju18001.petmanagement.ui.community.post.createUpdatePost.CreateUpdatePostActivity
 import com.sju18001.petmanagement.ui.community.post.generalFiles.GeneralFilesActivity
@@ -116,8 +112,9 @@ class PostFragment : Fragment() {
      * 호출을 이용하여 글의 내용을 얻습니다.
      */
     private fun fetchOnePostAndInvoke(postId: Long, callback: ((Post)->Unit)){
+        val latAndLong = Util.getGeolocation(requireContext())
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .fetchPostReq(FetchPostReqDto(null, null, null, postId))
+            .fetchPostReq(FetchPostReqDto(null, null, null, postId, latAndLong[0], latAndLong[1]))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             response.body()?.postList?.get(0)?.let{ item ->
                 /**
@@ -251,10 +248,11 @@ class PostFragment : Fragment() {
             it.addOnScrollListener(object: RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if(!recyclerView.canScrollVertically(1) && adapter.itemCount != 0 && !isLast){
+                        val latAndLong = Util.getGeolocation(requireContext())
                         updatePostRecyclerView(
                             FetchPostReqDto(
-                            pageIndex, topPostId, arguments?.getLong("petId"), null
-                        )
+                            pageIndex, topPostId, arguments?.getLong("petId"), null, latAndLong[0], latAndLong[1]
+                            )
                         )
                         pageIndex += 1
                     }
@@ -353,8 +351,10 @@ class PostFragment : Fragment() {
      */
     private fun resetAndUpdatePostRecyclerView(){
         resetPostData()
+
+        val latAndLong = Util.getGeolocation(requireContext())
         updatePostRecyclerView(
-            FetchPostReqDto(null, null, getPetIdFromArguments(), null)
+            FetchPostReqDto(null, null, getPetIdFromArguments(), null, latAndLong[0], latAndLong[1])
         )
     }
 

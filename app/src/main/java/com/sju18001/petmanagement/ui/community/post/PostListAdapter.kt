@@ -1,26 +1,18 @@
 package com.sju18001.petmanagement.ui.community.post
 
-import android.app.Activity
 import android.content.Context
-import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.restapi.dao.Post
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.doOnLayout
-import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.viewpager2.widget.ViewPager2
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.controller.CustomProgressBar
 import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.restapi.dao.Account
-import com.sju18001.petmanagement.restapi.global.FileMetaData
 import com.sju18001.petmanagement.ui.community.CommunityUtil
 
 interface PostListAdapterInterface {

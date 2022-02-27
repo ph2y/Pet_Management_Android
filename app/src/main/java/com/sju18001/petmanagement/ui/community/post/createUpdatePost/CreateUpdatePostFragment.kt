@@ -1,12 +1,9 @@
 package com.sju18001.petmanagement.ui.community.post.createUpdatePost
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
-import android.location.LocationManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -37,7 +34,6 @@ import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.File
-import java.math.BigDecimal
 
 class CreateUpdatePostFragment : Fragment() {
 
@@ -81,8 +77,6 @@ class CreateUpdatePostFragment : Fragment() {
     ): View? {
         _binding = FragmentCreateUpdatePostBinding.inflate(inflater, container, false)
         isViewDestroyed = false
-
-        binding.locationButton.isEnabled = false // TODO: delete this
 
         return binding.root
     }
@@ -268,7 +262,7 @@ class CreateUpdatePostFragment : Fragment() {
         increaseApiCallCountForFetch()
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .fetchPostReq(FetchPostReqDto(null, null, null, createUpdatePostViewModel.postId))
+            .fetchPostReq(FetchPostReqDto(null, null, null, createUpdatePostViewModel.postId, null, null))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             // fetch post data (excluding files) and save to ViewModel
             val post = response.body()?.postList!![0]
@@ -685,7 +679,7 @@ class CreateUpdatePostFragment : Fragment() {
                 it.findViewHolderForLayoutPosition(i)?.itemView?.isClickable = true
             }
         }
-        //binding.locationButton.isEnabled = true // TODO: uncomment this
+        binding.locationButton.isEnabled = true
         binding.photoAttachmentButton.isEnabled = true
         binding.videoAttachmentButton.isEnabled = true
         binding.generalAttachmentButton.isEnabled = true
@@ -730,10 +724,10 @@ class CreateUpdatePostFragment : Fragment() {
         lockViews()
 
         // get location data(if enabled)
-        val latAndLong = getGeolocation()
+        val latAndLong = if (!createUpdatePostViewModel.isUsingLocation) mutableListOf(0.0, 0.0) else Util.getGeolocation(requireContext())
 
         // 위치 정보 사용에 동의했지만, 권한이 없는 경우
-        if(latAndLong[0] == (-1.0).toBigDecimal()){
+        if(latAndLong[0] == (-1.0)){
             Permission.requestNotGrantedPermissions(requireContext(), Permission.requiredPermissionsForLocation)
 
             // 권한 요청이 비동기적이기 때문에, 권한 요청 이후에 CreatePost 버튼을 다시 눌러야한다.
@@ -770,44 +764,14 @@ class CreateUpdatePostFragment : Fragment() {
         })
     }
 
-    @SuppressLint("MissingPermission")
-    private fun getGeolocation(): MutableList<BigDecimal> {
-        val latAndLong: MutableList<BigDecimal> = mutableListOf()
-
-        if(!createUpdatePostViewModel.isUsingLocation) {
-            latAndLong.add(0.0.toBigDecimal())
-            latAndLong.add(0.0.toBigDecimal())
-        }else{
-            if (Permission.isAllPermissionsGranted(requireContext(), Permission.requiredPermissionsForLocation)) {
-                val location = (requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager)
-                    .getLastKnownLocation(LocationManager.GPS_PROVIDER)
-
-                if(location != null){
-                    latAndLong.add(location.latitude!!.toBigDecimal())
-                    latAndLong.add(location.longitude!!.toBigDecimal())
-                }else{
-                    // 정보 로드 실패 예외처리
-                    latAndLong.add(0.0.toBigDecimal())
-                    latAndLong.add(0.0.toBigDecimal())
-                }
-            }else{
-                // 특수 처리를 위해 (-1, -1)을 넣음
-                latAndLong.add((-1.0).toBigDecimal())
-                latAndLong.add((-1.0).toBigDecimal())
-            }
-        }
-
-        return latAndLong
-    }
-
     private fun updatePost() {
         lockViews()
 
         // get location data(if enabled)
-        val latAndLong = getGeolocation()
+        val latAndLong = if (!createUpdatePostViewModel.isUsingLocation) mutableListOf(0.0, 0.0) else Util.getGeolocation(requireContext())
 
         // 위치 정보 사용에 동의했지만, 권한이 없는 경우
-        if(latAndLong[0] == (-1.0).toBigDecimal()){
+        if(latAndLong[0] == (-1.0)){
             Permission.requestNotGrantedPermissions(requireContext(), Permission.requiredPermissionsForLocation)
 
             // 권한 요청이 비동기적이기 때문에, 권한 요청 이후에 CreatePost 버튼을 다시 눌러야한다.
