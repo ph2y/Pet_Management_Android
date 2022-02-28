@@ -5,17 +5,17 @@ import androidx.databinding.ObservableField
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.sju18001.petmanagement.restapi.dao.Bookmark
-import com.sju18001.petmanagement.restapi.kakaoapi.Place
+import com.sju18001.petmanagement.restapi.dao.Place
 
 class MapViewModel : ViewModel() {
     var searchText: ObservableField<String> = ObservableField("")
     var placeCard: ObservableField<PlaceCard> = ObservableField(
         PlaceCard(
-            Place("0", "def", "def", "",
-                "", "0", "def", "def",
-                "0", "0", "", "0"),
-            false
+            Place(
+                -1, "def", "def", 0.0, 0.0,
+                "def", "010-0000-0000", 0.0, "def", "def"
+            ),
+            "0", false
         )
     )
 
@@ -24,6 +24,7 @@ class MapViewModel : ViewModel() {
     fun getIsBookmarked() = placeCard.get()!!.isBookmarked
     fun setIsBookmarked(flag: Boolean) {
         val place = placeCard.get()!!.place
-        placeCard.set(PlaceCard(place, flag))
+        val distance = placeCard.get()!!.distance
+        placeCard.set(PlaceCard(place, distance, flag))
     }
 }

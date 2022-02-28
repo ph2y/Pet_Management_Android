@@ -13,9 +13,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.databinding.BookmarkTreeItemBinding
 import com.sju18001.petmanagement.restapi.dao.Bookmark
+import com.sju18001.petmanagement.restapi.dao.Place
 
 interface BookmarkTreeAdapterInterface {
-    fun addBookmarkPOIItem(place: com.sju18001.petmanagement.restapi.dao.Place)
+    fun addBookmarkPOIItem(place: Place)
     fun closeDrawer()
 }
 

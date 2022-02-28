@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.*
 import android.graphics.Color
 import android.os.Bundle
+import android.se.omapi.Session
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -27,12 +28,13 @@ import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentMapBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.kakaoapi.KakaoApi
-import com.sju18001.petmanagement.restapi.kakaoapi.Place
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.dao.Bookmark
+import com.sju18001.petmanagement.restapi.dao.Place
 import com.sju18001.petmanagement.restapi.dto.CreateBookmarkReqDto
 import com.sju18001.petmanagement.restapi.dto.DeleteBookmarkReqDto
 import com.sju18001.petmanagement.restapi.dto.FetchBookmarkReqDto
+import com.sju18001.petmanagement.restapi.dto.FetchPlaceReqDto
 import com.sju18001.petmanagement.ui.map.review.ReviewActivity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
@@ -41,6 +43,7 @@ import kotlinx.coroutines.launch
 import net.daum.mf.map.api.*
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.math.BigDecimal
 import java.util.*
 
 class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.MapViewEventListener, MapView.POIItemEventListener {
@@ -54,8 +57,6 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
         private const val ANIMATION_DURATION: Long = 200
 
-        private const val SEARCH_METER_RADIUS: Int = 3000
-
         // search_shortcut 버튼의 쿼리 키워드
         const val CAFE_KEYWORD = "애견카페"
         const val GROOMING_KEYWORD = "애견미용"
@@ -68,7 +69,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     private val viewModel: MapViewModel by viewModels()
     private var isViewDestroyed = false
 
-    lateinit var bookmarkTreeAdapter: BookmarkTreeAdapter
+    private lateinit var bookmarkTreeAdapter: BookmarkTreeAdapter
 
     // 카카오맵 관련
     private var mapView: MapView? = null
@@ -179,7 +180,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
     private fun initializeBookmarkRecyclerView() {
         bookmarkTreeAdapter = BookmarkTreeAdapter(arrayListOf(), object: BookmarkTreeAdapterInterface{
-            override fun addBookmarkPOIItem(place: com.sju18001.petmanagement.restapi.dao.Place) {
+            override fun addBookmarkPOIItem(place: Place) {
                 val newMarker: MapPOIItem = MapPOIItem().apply{
                     itemName = place.name
                     tag = currentPlaces.count()
@@ -190,7 +191,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                     setCustomImageAnchor(0.5f, 0.5f)
                     customImageResourceId = R.drawable.marker_pet
                 }
-                // currentPlaces.add(place) TODO: Place 타입이 통일되면 추가할 것. 이로 인해 POI Item 클릭 시 버그가 발생함
+                currentPlaces.add(place)
                 
                 mapView!!.addPOIItem(newMarker) // TODO: currentPlaces를 통한 중복 체크(현재는 Place 타입 문제로 불가능함)
             }
@@ -335,38 +336,27 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     fun doSearch(keyword: String){
         if(mapView == null) return
 
-        searchKeyword(keyword, mapView!!)
+        val radius = SessionManager.fetchLoggedInAccount(requireContext())!!.mapSearchRadius
+        searchKeyword(keyword, radius.toBigDecimal(), mapView!!)
 
         setMapCenterPointToCurrentLocation()
-        val searchAreaCircle = addCircleCenteredAtCurrentLocation(mapView!!, SEARCH_METER_RADIUS)
+        val searchAreaCircle = addCircleCenteredAtCurrentLocation(mapView!!, radius.toInt())
         moveCameraOnCircle(mapView!!, searchAreaCircle!!, 50)
     }
 
-    private fun searchKeyword(keyword: String, mapView: MapView){
-        // TODO: 자체 Place 검색이 구현되면 그것으로 대체할 것
-        // Retrofit 구성
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        val api = retrofit.create(KakaoApi::class.java)
-
-        // GET 요청
+    private fun searchKeyword(keyword: String, radius: BigDecimal, mapView: MapView){
         try{
-            val call = api.getSearchKeyword(
-                API_KEY,
-                keyword,
-                currentMapPoint!!.mapPointGeoCoord.longitude.toString(),
-                currentMapPoint!!.mapPointGeoCoord.latitude.toString(),
-                SEARCH_METER_RADIUS
-            )
+            val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+                .fetchPlaceReq(FetchPlaceReqDto(
+                    null, keyword,
+                    currentMapPoint!!.mapPointGeoCoord.latitude.toBigDecimal(),
+                    currentMapPoint!!.mapPointGeoCoord.longitude.toBigDecimal(),
+                    radius
+                ))
             ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-                val body = response.body()
-                if(body != null){
-                    currentPlaces = arrayListOf()
-                    body.documents.map{ currentPlaces.add(it) }
-                    addPOIItems(currentPlaces, mapView)
-                }
+                currentPlaces = arrayListOf()
+                response.body()?.placeList?.map{ currentPlaces.add(it) }
+                addPOIItems(currentPlaces, mapView)
             }, {}, {})
         }catch(e: Exception){
             // currentMapPoint가 아직 초기화되지 않았을 경우
@@ -378,20 +368,21 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         mapView.removeAllPOIItems()
 
         for(i: Int in 0 until places.count()){
-            var iconId: Int = when(places[i].category_group_code){
-                "MT1", "CS2" -> R.drawable.marker_store
-                "PS3", "SC4", "AC5" -> R.drawable.marker_school
-                "PK6", "OL7" -> R.drawable.marker_car
-                "SW8" -> R.drawable.marker_train
-                "CE7" -> R.drawable.marker_cafe
-                "HP8", "PM9" -> R.drawable.marker_hospital
+            var iconId: Int = when(places[i].categoryCode){
+                "SHOP" -> R.drawable.marker_store
+                "HOSPITAL" -> R.drawable.marker_hospital
+                "HOTEL" -> R.drawable.marker_default
+                "CAFE" -> R.drawable.marker_cafe
+                "SALON" -> R.drawable.marker_default
+                "PARK" -> R.drawable.marker_default
+                "SHELTER" -> R.drawable.marker_default
                 else -> R.drawable.marker_default
             }
 
             val newMarker: MapPOIItem = MapPOIItem().apply{
-                itemName = places[i].place_name
+                itemName = places[i].name
                 tag = i
-                mapPoint = MapPoint.mapPointWithGeoCoord(places[i].y.toDouble(), places[i].x.toDouble())
+                mapPoint = MapPoint.mapPointWithGeoCoord(places[i].latitude, places[i].longitude)
 
                 markerType = MapPOIItem.MarkerType.CustomImage
                 isCustomImageAutoscale = false
@@ -400,6 +391,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             }
 
             mapView.addPOIItem(newMarker)
+            Log.e("ASD", "!")
         }
     }
 
@@ -542,9 +534,9 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     private fun updatePlaceCard(item: MapPOIItem) {
         currentPlaces?.get(item.tag)?.let { place ->
             viewModel.placeCard.set(
-                PlaceCard(place, false)
+                PlaceCard(place, "50", false) // TODO
             )
-            setPlaceCardRating(4.3f) // TODO: place에 rating이 추가되면 databinding으로 변경: 'place_rating' item
+            setPlaceCardRating(place.averageRating.toFloat())
 
             checkAndUpdateIsBookmarked()
         }
@@ -568,7 +560,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
     private fun checkAndUpdateIsBookmarked() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .fetchBookmarkReq(FetchBookmarkReqDto(null, null, 1)) // TODO
+            .fetchBookmarkReq(FetchBookmarkReqDto(null, null, viewModel.placeCard.get()!!.place.id))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(),{ response ->
             viewModel.setIsBookmarked(
                 response.body()!!.bookmarkedAccountIdList?.contains(SessionManager.fetchLoggedInAccount(requireContext())!!.id)
@@ -609,7 +601,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         }
     }
 
-    fun onPathfindingButtonClicked(placeId: String){
+    fun onPathfindingButtonClicked(placeId: Long){
         AlertDialog.Builder(context)
             .setTitle("길찾기")
             .setMessage("길찾기를 위해 카카오맵 웹페이지로 이동합니다.")
@@ -652,25 +644,24 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
     fun onShareButtonClicked(place: Place){
-        Util.shareText(requireActivity(), place.place_url)
+        // Util.shareText(requireActivity(), place.place_url) TODO: 공유 버튼 삭제
     }
 
     fun onBookmarkButtonClicked(place: Place){
         when(viewModel.getIsBookmarked()){
             false -> createBookmark(place)
-            true -> deleteBookmark(1) // TODO: 1 -> place.id
+            true -> deleteBookmark(place.id)
         }
 
         viewModel.setIsBookmarked(!viewModel.getIsBookmarked())
     }
 
     private fun createBookmark(place: Place) {
-        // TODO: 자체 Place로 바꿀 것
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .createBookmarkReq(CreateBookmarkReqDto(
-                1, // TODO: place.id로 바꿀 것
-                place.place_name,
-                place.category_group_name,
+                place.id,
+                place.name,
+                place.categoryCode,
                 getString(R.string.bookmark_default_folder) // 우선 기본 폴더에 등록한다.
             ))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
