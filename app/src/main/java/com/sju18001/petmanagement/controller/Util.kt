@@ -25,7 +25,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.google.gson.Gson
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.restapi.kakaoapi.Place
+import com.sju18001.petmanagement.restapi.dao.Place
 import com.sju18001.petmanagement.restapi.global.FileMetaData
 import okhttp3.ResponseBody
 import org.json.JSONObject
@@ -105,7 +105,7 @@ class Util {
             val intent = Intent(ContactsContract.Intents.Insert.ACTION).apply {
                 type = ContactsContract.RawContacts.CONTENT_TYPE
 
-                putExtra(ContactsContract.Intents.Insert.NAME, document.place_name)
+                putExtra(ContactsContract.Intents.Insert.NAME, document.name)
                 putExtra(ContactsContract.Intents.Insert.PHONE, document.phone)
             }
 
