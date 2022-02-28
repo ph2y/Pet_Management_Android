@@ -109,6 +109,11 @@ interface ServerApi {
     fun updatePetScheduleReq(@Body updatePetScheduleReqDto: UpdatePetScheduleReqDto): Call<UpdatePetScheduleResDto>
 
 
+    // Place API
+    @POST("api/place/fetch")
+    fun fetchPlaceReq(@Body fetchPlaceReqDto: FetchPlaceReqDto): Call<FetchPlaceResDto>
+
+
     // Bookmark API
     @POST("api/bookmark/create")
     fun createBookmarkReq(@Body createBookmarkReqDto: CreateBookmarkReqDto): Call<CreateBookmarkResDto>
