@@ -1,163 +1,177 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_review_parent_layout"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".ui.map.review.ReviewFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <RelativeLayout
-        android:id="@+id/layout_back_button"
+    <data>
+        <variable
+            name="fragment"
+            type="com.sju18001.petmanagement.ui.map.review.ReviewFragment"/>
+        <variable
+            name="viewModel"
+            type="com.sju18001.petmanagement.ui.map.review.ReviewViewModel"/>
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fragment_review_parent_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        tools:context=".ui.map.review.ReviewFragment">
 
-        <ImageButton
-            android:id="@+id/button_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/ic_baseline_arrow_back_36"
-            android:background="?selectableItemBackgroundBorderless"/>
-
-        <TextView
-            android:id="@+id/text_back_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/button_back"
-            android:layout_centerVertical="true"
-            android:layout_marginStart="12dp"
-            android:textSize="20sp"
-            android:textStyle="bold"
-            android:text="@string/review"/>
-    </RelativeLayout>
-
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nested_scroll_view"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:fillViewport="true"
-        app:layout_constraintTop_toBottomOf="@id/layout_back_button"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        >
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <RelativeLayout
+            android:id="@+id/layout_back_button"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:padding="16dp">
 
-            <LinearLayout
-                android:id="@+id/layout_rating"
-                android:layout_width="match_parent"
+            <ImageButton
+                android:id="@+id/button_back"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:gravity="center_horizontal"
-                app:layout_constraintTop_toTopOf="parent">
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_baseline_arrow_back_36"
+                android:onClick="@{() -> fragment.onBackButtonClicked()}"/>
+
+            <TextView
+                android:id="@+id/text_back_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toEndOf="@id/button_back"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="12dp"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:text="@string/review"/>
+        </RelativeLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nested_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:fillViewport="true"
+            app:layout_constraintTop_toBottomOf="@id/layout_back_button"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            >
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <LinearLayout
-                    android:id="@+id/layout_stars"
+                    android:id="@+id/layout_rating"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:orientation="vertical"
                     android:gravity="center_horizontal"
-                    >
-                    <ImageView
-                        android:id="@+id/image_star1"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_baseline_star_16"
-                        />
-                    <ImageView
-                        android:id="@+id/image_star2"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_baseline_star_16"
-                        />
-                    <ImageView
-                        android:id="@+id/image_star3"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_baseline_star_16"
-                        />
-                    <ImageView
-                        android:id="@+id/image_star4"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_baseline_star_16"
-                        />
-                    <ImageView
-                        android:id="@+id/image_star5"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@drawable/ic_baseline_star_16"
-                        />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <LinearLayout
+                        android:id="@+id/layout_stars"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        >
+                        <ImageView
+                            android:id="@+id/image_star1"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@{viewModel.rating >= 1 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
+                            />
+                        <ImageView
+                            android:id="@+id/image_star2"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@{viewModel.rating >= 2 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
+                            />
+                        <ImageView
+                            android:id="@+id/image_star3"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@{viewModel.rating >= 3 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
+                            />
+                        <ImageView
+                            android:id="@+id/image_star4"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@{viewModel.rating >= 4 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
+                            />
+                        <ImageView
+                            android:id="@+id/image_star5"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@{viewModel.rating >= 5 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
+                            />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content">
+                        <TextView
+                            android:id="@+id/text_rating"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{Double.toString(viewModel.rating)}"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="점("/>
+                        <TextView
+                            android:id="@+id/text_review_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@{Integer.toString(viewModel.reviewCount)}"/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="명)"/>
+                    </LinearLayout>
                 </LinearLayout>
 
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
-                    <TextView
-                        android:id="@+id/text_rating"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="4.3"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="점("/>
-                    <TextView
-                        android:id="@+id/text_review_count"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="19"/>
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="명)"/>
-                </LinearLayout>
-            </LinearLayout>
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view_review"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="36dp"
-                android:clipToPadding="false"
-                app:layout_constraintTop_toBottomOf="@id/layout_rating"/>
-
-            <FrameLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/layout_rating"
-                app:layout_constraintBottom_toBottomOf="parent"
-                >
-
-                <TextView
-                    android:id="@+id/empty_review_list_notification"
-                    android:layout_width="wrap_content"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view_review"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:text="@string/empty_review_list_notification"
-                    android:textAlignment="center"
-                    android:textColor="@color/gray"
-                    android:textSize="16sp"/>
-            </FrameLayout>
+                    android:paddingBottom="36dp"
+                    android:clipToPadding="false"
+                    app:layout_constraintTop_toBottomOf="@id/layout_rating"/>
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.core.widget.NestedScrollView>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:layout_constraintTop_toBottomOf="@id/layout_rating"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    >
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/create_review_fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_create_24"
-        android:layout_margin="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:backgroundTint="@color/pumpkin"
-        app:tint="@color/white"
-        />
+                    <TextView
+                        android:id="@+id/empty_review_list_notification"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="@string/empty_review_list_notification"
+                        android:textAlignment="center"
+                        android:textColor="@color/gray"
+                        android:textSize="16sp"/>
+                </FrameLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/create_review_fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_create_24"
+            android:layout_margin="16dp"
+            android:onClick="@{() -> fragment.onCreateReviewFabClicked()}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:backgroundTint="@color/pumpkin"
+            app:tint="@color/white"
+            />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

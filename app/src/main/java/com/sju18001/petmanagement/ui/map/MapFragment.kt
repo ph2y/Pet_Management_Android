@@ -391,7 +391,6 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             }
 
             mapView.addPOIItem(newMarker)
-            Log.e("ASD", "!")
         }
     }
 
@@ -580,13 +579,15 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         binding.searchTextInput!!.setText("")
     }
 
-    fun onPlaceCardClicked(placeId: Long) {
-        startReviewActivity(placeId)
+    fun onPlaceCardClicked(place: Place) {
+        startReviewActivity(place)
     }
 
-    private fun startReviewActivity(placeId: Long) {
+    private fun startReviewActivity(place: Place) {
         val reviewActivityIntent = Intent(context, ReviewActivity::class.java)
-        reviewActivityIntent.putExtra("placeId", placeId)
+        reviewActivityIntent.putExtra("placeId", place.id)
+        reviewActivityIntent.putExtra("rating", place.averageRating)
+        // TODO: reviewActivityIntent.putExtra("reviewCount", place.reviewCount)
 
         startActivity(reviewActivityIntent)
         requireActivity().overridePendingTransition(R.anim.enter_from_bottom, R.anim.exit_to_top)
