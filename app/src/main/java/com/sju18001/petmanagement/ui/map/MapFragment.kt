@@ -576,6 +576,19 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         requireActivity().overridePendingTransition(R.anim.enter_from_bottom, R.anim.exit_to_top)
     }
 
+    fun getCategoryNameFromCategoryCode(categoryCode: String): String {
+        return when(categoryCode){
+            "SHOP" -> "펫샵"
+            "HOSPITAL" -> "동물병원"
+            "HOTEL" -> "반려동물 동반 숙박시설"
+            "CAFE" -> "반려동물 동반 카페"
+            "SALON" -> "반려동물 미용실"
+            "PARK" -> "공원"
+            "SHELTER" -> "동물 보호소"
+            else -> ""
+        }
+    }
+
     fun getPlaceDistanceTextColor(distance: String): Int{
         return when (distance.toInt()){
             in 0..750 -> ContextCompat.getColor(requireContext(), R.color.emerald)
