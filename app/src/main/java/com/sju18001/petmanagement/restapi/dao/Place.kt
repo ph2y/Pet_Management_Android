@@ -9,6 +9,7 @@ data class Place(
     val description: String?,
     val phone: String,
     val averageRating: Double,
+    val reviewCount: Long,
     val operationDay: String?,
     val operationHour: String?
 )

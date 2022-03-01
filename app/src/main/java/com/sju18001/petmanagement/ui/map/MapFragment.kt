@@ -570,7 +570,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         val reviewActivityIntent = Intent(context, ReviewActivity::class.java)
         reviewActivityIntent.putExtra("placeId", place.id)
         reviewActivityIntent.putExtra("rating", place.averageRating)
-        // TODO: reviewActivityIntent.putExtra("reviewCount", place.reviewCount)
+        reviewActivityIntent.putExtra("reviewCount", place.reviewCount)
 
         startActivity(reviewActivityIntent)
         requireActivity().overridePendingTransition(R.anim.enter_from_bottom, R.anim.exit_to_top)

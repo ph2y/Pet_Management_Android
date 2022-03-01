@@ -40,5 +40,6 @@ data class DeleteReviewReqDto(
 )
 
 data class DeleteReviewResDto(
-    val _metadata: DtoMetadata
+    val _metadata: DtoMetadata,
+    val deletedReviewRating: Int
 )
