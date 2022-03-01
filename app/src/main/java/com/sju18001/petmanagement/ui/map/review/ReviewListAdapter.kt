@@ -112,4 +112,8 @@ class ReviewListAdapter(
     fun setItem(position: Int, review: Review) {
         dataSet[position] = review
     }
+
+    fun getItem(position: Int): Review {
+        return dataSet[position]
+    }
 }

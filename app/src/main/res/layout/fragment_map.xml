@@ -242,7 +242,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 />
 
-            <!-- TODO: onClick에서 1를 place id로 변경 after Place DAO update -->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/place_card"
                 android:layout_width="match_parent"
@@ -251,7 +250,7 @@
                 android:padding="16dp"
                 android:clipChildren="false"
                 android:clipToPadding="false"
-                android:onClick="@{() -> fragment.onPlaceCardClicked(viewModel.placeCard.place.id)}"
+                android:onClick="@{() -> fragment.onPlaceCardClicked(viewModel.placeCard.place)}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 >
                 <androidx.constraintlayout.widget.ConstraintLayout
@@ -357,11 +356,21 @@
                         android:src="@drawable/ic_baseline_star_16"
                         />
                     <TextView
-                        android:id="@+id/text_review_count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="12sp"
-                        android:text="(16)"/>
+                        android:text="("/>
+                    <!-- TODO: Place에 카운트 추가되면, 데이터 바인딩-->
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:text="50"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="12sp"
+                        android:text=")"/>
                 </LinearLayout>
 
                 <androidx.constraintlayout.widget.ConstraintLayout

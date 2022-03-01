@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -13,6 +14,7 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
@@ -36,11 +38,8 @@ class ReviewFragment : Fragment() {
 
     private lateinit var adapter: ReviewListAdapter
 
+    private val viewModel: ReviewViewModel by viewModels()
     private var isViewDestroyed = false
-
-    private var placeId: Long = -1
-    private var rating: Float = 3.7f // TODO
-    private var reviewCount: Int = 0
 
     /**
      * CreateUpdateReviewActivity에서 리뷰를 생성하거나 수정합니다. 아래의 변수는
@@ -53,6 +52,11 @@ class ReviewFragment : Fragment() {
                 val reviewId = it.getLongExtra("reviewId", -1)
                 if(reviewId != -1L){
                     fetchOneReviewAndInvoke(reviewId) { item ->
+                        val rating = viewModel.rating.get()!!
+                        val reviewCount = viewModel.reviewCount.get()!!
+                        viewModel.rating.set((rating*reviewCount + item.rating) / (reviewCount + 1))
+                        viewModel.reviewCount.set(reviewCount + 1)
+
                         adapter.addItem(item)
                         adapter.notifyItemInserted(adapter.itemCount)
 
@@ -72,6 +76,14 @@ class ReviewFragment : Fragment() {
 
                 if(reviewId != -1L && position != -1){
                     fetchOneReviewAndInvoke(reviewId) { item ->
+                        val rating = viewModel.rating.get()!!
+                        val reviewCount = viewModel.reviewCount.get()!!
+                        val prevRating = adapter.getItem(position).rating
+                        // Divide by zero 방지 ... 오류로 인해 reviewCount가 디폴트(0)일 때를 대비
+                        if(reviewCount != 0){
+                            viewModel.rating.set(rating + (item.rating - prevRating) / reviewCount)
+                        }
+
                         adapter.setItem(position, item)
                         adapter.notifyItemChanged(position)
                     }
@@ -93,23 +105,31 @@ class ReviewFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        placeId = requireActivity().intent.getLongExtra("placeId", -1)
+        viewModel.placeId.set(requireActivity().intent.getLongExtra("placeId", -1))
+        viewModel.rating.set(requireActivity().intent.getDoubleExtra("rating", 0.0))
+        // TODO: viewModel.reviewCount.set(requireActivity().intent.getIntExtra("reviewCount", 0))
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentReviewBinding.inflate(inflater, container, false)
+        setBinding(inflater, container)
         isViewDestroyed = false
 
         initializeAdapter()
         CustomProgressBar.addProgressBar(requireContext(), binding.fragmentReviewParentLayout, 80, R.color.white)
         resetAndUpdateReviewRecyclerView()
 
-        setListenerOnViews()
-
         return binding.root
+    }
+
+    private fun setBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        _binding = FragmentReviewBinding.inflate(inflater, container, false)
+
+        binding.lifecycleOwner = this
+        binding.fragment = this@ReviewFragment
+        binding.viewModel = viewModel
     }
 
     /**
@@ -226,6 +246,11 @@ class ReviewFragment : Fragment() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .deleteReviewReq(DeleteReviewReqDto(id))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            val rating = viewModel.rating.get()!!
+            val reviewCount = viewModel.reviewCount.get()!!
+            // TODO: viewModel.rating.set((rating*reviewCount - response.body().review.rating) / (reviewCount - 1))
+            viewModel.reviewCount.set(reviewCount - 1)
+
             adapter.removeItem(position)
             adapter.notifyItemRemoved(position)
             adapter.notifyItemRangeChanged(position, adapter.itemCount)
@@ -259,7 +284,7 @@ class ReviewFragment : Fragment() {
     private fun resetAndUpdateReviewRecyclerView() {
         resetReviewData()
         updateReviewRecyclerView(
-            FetchReviewReqDto(null, placeId, null)
+            FetchReviewReqDto(null, viewModel.placeId.get(), null)
         )
     }
 
@@ -282,43 +307,13 @@ class ReviewFragment : Fragment() {
                     adapter.notifyDataSetChanged()
 
                     setEmptyNotificationView(adapter.itemCount)
-
-                    // TODO: set rating
-                    reviewCount = it.size
                 }
 
-                setViewsAfterFetch()
+                CustomProgressBar.removeProgressBar(binding.fragmentReviewParentLayout)
             }
-        }, { setViewsAfterFetch() }, { setViewsAfterFetch() })
-    }
-
-    // Fetch한 뒤에 호출해야함에 유의하라.
-    private fun setViewsAfterFetch() {
-        Util.setRatingStars(getStarImages(), rating, requireContext())
-        binding.textRating.text = "$rating"
-        binding.textReviewCount.text = "$reviewCount"
-
-        CustomProgressBar.removeProgressBar(binding.fragmentReviewParentLayout)
-    }
-
-    private fun getStarImages(): ArrayList<ImageView> {
-        val starImages = arrayListOf<ImageView>()
-        for(i in 1..5){
-            // View id: image_star1 ~ image_star5
-            val id = resources.getIdentifier("image_star$i", "id", requireContext().packageName)
-            val elem: ImageView = binding.layoutStars.findViewById(id)
-            starImages.add(elem)
-        }
-        return starImages
-    }
-
-    private fun setListenerOnViews() {
-        binding.buttonBack.setOnClickListener {
-            activity?.finish()
-        }
-        binding.createReviewFab.setOnClickListener {
-            startCreateReviewActivity()
-        }
+        }, { CustomProgressBar.removeProgressBar(binding.fragmentReviewParentLayout) },
+            { CustomProgressBar.removeProgressBar(binding.fragmentReviewParentLayout) }
+        )
     }
 
     private fun startCreateReviewActivity() {
@@ -330,7 +325,7 @@ class ReviewFragment : Fragment() {
     private fun getCreateReviewActivityIntent(): Intent {
         val res = Intent(context, CreateUpdateReviewActivity::class.java)
         res.putExtra("fragmentType", CreateUpdateReviewActivity.CREATE_REVIEW)
-        res.putExtra("placeId", placeId)
+        res.putExtra("placeId", viewModel.placeId.get())
 
         return res
     }
@@ -341,5 +336,17 @@ class ReviewFragment : Fragment() {
 
         _binding = null
         isViewDestroyed = true
+    }
+
+
+    /**
+     * Databinding functions
+     */
+    fun onBackButtonClicked() {
+        activity?.finish()
+    }
+
+    fun onCreateReviewFabClicked() {
+        startCreateReviewActivity()
     }
 }
