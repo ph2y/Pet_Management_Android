@@ -322,38 +322,38 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
-                        android:text="4.3"
+                        android:text="@{Double.toString(viewModel.placeCard.place.averageRating)}"
                         android:textColor="@color/alizarin"/>
                     <ImageView
                         android:id="@+id/image_star1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="4dp"
-                        android:src="@drawable/ic_baseline_star_16"
+                        android:src="@{viewModel.placeCard.place.averageRating >= 1 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
                         />
                     <ImageView
                         android:id="@+id/image_star2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_baseline_star_16"
+                        android:src="@{viewModel.placeCard.place.averageRating >= 2 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
                         />
                     <ImageView
                         android:id="@+id/image_star3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_baseline_star_16"
+                        android:src="@{viewModel.placeCard.place.averageRating >= 3 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
                         />
                     <ImageView
                         android:id="@+id/image_star4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_baseline_star_16"
+                        android:src="@{viewModel.placeCard.place.averageRating >= 4 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
                         />
                     <ImageView
                         android:id="@+id/image_star5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@drawable/ic_baseline_star_16"
+                        android:src="@{viewModel.placeCard.place.averageRating >= 5 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
                         />
                     <TextView
                         android:layout_width="wrap_content"

@@ -535,26 +535,9 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             viewModel.placeCard.set(
                 PlaceCard(place, "50", false) // TODO
             )
-            setPlaceCardRating(place.averageRating.toFloat())
 
             checkAndUpdateIsBookmarked()
         }
-    }
-
-    private fun setPlaceCardRating(rating: Float) {
-        binding.textRating.text = rating.toString()
-        Util.setRatingStars(getStarImages(), rating, requireContext())
-    }
-
-    private fun getStarImages(): ArrayList<ImageView> {
-        val starImages = arrayListOf<ImageView>()
-        for(i in 1..5){
-            // View id: image_star1 ~ image_star5
-            val id = resources.getIdentifier("image_star$i", "id", requireContext().packageName)
-            val elem: ImageView = binding.placeRating.findViewById(id)
-            starImages.add(elem)
-        }
-        return starImages
     }
 
     private fun checkAndUpdateIsBookmarked() {
