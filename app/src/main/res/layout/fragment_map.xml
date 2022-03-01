@@ -288,7 +288,7 @@
                             android:layout_height="wrap_content"
                             android:textSize="14sp"
                             android:layout_marginStart="8dp"
-                            android:text="@{viewModel.placeCard.place.categoryCode}"
+                            android:text="@{fragment.getCategoryNameFromCategoryCode(viewModel.placeCard.place.categoryCode)}"
                             app:layout_constraintStart_toEndOf="@id/place_name"
                             app:layout_constraintBottom_toBottomOf="@id/place_name"
                             app:layout_constraintEnd_toEndOf="parent"
