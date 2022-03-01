@@ -13,7 +13,7 @@ class MapViewModel : ViewModel() {
         PlaceCard(
             Place(
                 -1, "def", "def", 0.0, 0.0,
-                "def", "010-0000-0000", 0.0, "def", "def"
+                "def", "010-0000-0000", 0.0, 0, "def", "def"
             ),
             "0", false
         )

@@ -52,10 +52,7 @@ class ReviewFragment : Fragment() {
                 val reviewId = it.getLongExtra("reviewId", -1)
                 if(reviewId != -1L){
                     fetchOneReviewAndInvoke(reviewId) { item ->
-                        val rating = viewModel.rating.get()!!
-                        val reviewCount = viewModel.reviewCount.get()!!
-                        viewModel.rating.set((rating*reviewCount + item.rating) / (reviewCount + 1))
-                        viewModel.reviewCount.set(reviewCount + 1)
+                        setRatingAndReviewCount(item.rating, 1)
 
                         adapter.addItem(item)
                         adapter.notifyItemInserted(adapter.itemCount)
@@ -64,6 +61,21 @@ class ReviewFragment : Fragment() {
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * rating 및 reviewCount가 변경될 때 이 함수를 통해, 평균 rating을 다시 계산하여
+     * 뷰모델의 rating, reviewCount를 업데이트합니다.
+     */
+    private fun setRatingAndReviewCount(ratingDiff: Int, reviewCountDiff: Int) {
+        val rating = viewModel.rating.get()!!
+        val reviewCount = viewModel.reviewCount.get()!!
+
+        // Divide by zero 방지
+        if(reviewCount + reviewCountDiff != 0L){
+            viewModel.rating.set((rating*reviewCount + ratingDiff) / (reviewCount + reviewCountDiff))
+            viewModel.reviewCount.set(reviewCount + reviewCountDiff)
         }
     }
 
@@ -76,13 +88,8 @@ class ReviewFragment : Fragment() {
 
                 if(reviewId != -1L && position != -1){
                     fetchOneReviewAndInvoke(reviewId) { item ->
-                        val rating = viewModel.rating.get()!!
-                        val reviewCount = viewModel.reviewCount.get()!!
                         val prevRating = adapter.getItem(position).rating
-                        // Divide by zero 방지 ... 오류로 인해 reviewCount가 디폴트(0)일 때를 대비
-                        if(reviewCount != 0){
-                            viewModel.rating.set(rating + (item.rating - prevRating) / reviewCount)
-                        }
+                        setRatingAndReviewCount(item.rating - prevRating, 0)
 
                         adapter.setItem(position, item)
                         adapter.notifyItemChanged(position)
@@ -107,7 +114,7 @@ class ReviewFragment : Fragment() {
         super.onCreate(savedInstanceState)
         viewModel.placeId.set(requireActivity().intent.getLongExtra("placeId", -1))
         viewModel.rating.set(requireActivity().intent.getDoubleExtra("rating", 0.0))
-        // TODO: viewModel.reviewCount.set(requireActivity().intent.getIntExtra("reviewCount", 0))
+        viewModel.reviewCount.set(requireActivity().intent.getLongExtra("reviewCount", 0))
     }
 
     override fun onCreateView(
@@ -245,11 +252,8 @@ class ReviewFragment : Fragment() {
     private fun deleteReview(id: Long, position: Int){
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .deleteReviewReq(DeleteReviewReqDto(id))
-        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
-            val rating = viewModel.rating.get()!!
-            val reviewCount = viewModel.reviewCount.get()!!
-            // TODO: viewModel.rating.set((rating*reviewCount - response.body().review.rating) / (reviewCount - 1))
-            viewModel.reviewCount.set(reviewCount - 1)
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            setRatingAndReviewCount(- response.body()!!.deletedReviewRating, -1)
 
             adapter.removeItem(position)
             adapter.notifyItemRemoved(position)

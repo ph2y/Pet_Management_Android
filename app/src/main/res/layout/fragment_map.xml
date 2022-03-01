@@ -360,12 +360,11 @@
                         android:layout_height="wrap_content"
                         android:textSize="12sp"
                         android:text="("/>
-                    <!-- TODO: Place에 카운트 추가되면, 데이터 바인딩-->
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="12sp"
-                        android:text="50"/>
+                        android:text="@{Long.toString(viewModel.placeCard.place.reviewCount)}"/>
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
