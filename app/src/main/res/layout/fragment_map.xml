@@ -382,18 +382,6 @@
                     android:layout_marginTop="8dp"
                     app:layout_constraintTop_toBottomOf="@id/place_rating">
                     <ImageButton
-                        android:id="@+id/pathfinding_button"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/ic_baseline_swap_calls_20"
-                        android:background="@drawable/border"
-                        android:onClick="@{() -> fragment.onPathfindingButtonClicked(viewModel.placeCard.place.id)}"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintLeft_toLeftOf="parent"
-                        app:layout_constraintRight_toLeftOf="@id/call_button"
-                        app:layout_constraintHorizontal_weight="1"
-                        />
-                    <ImageButton
                         android:id="@+id/call_button"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
@@ -402,20 +390,8 @@
                         android:visibility="@{viewModel.placeCard.place.phone.length() == 0? View.GONE:View.VISIBLE}"
                         android:onClick="@{() -> fragment.onCallButtonClicked(viewModel.placeCard.place)}"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintLeft_toRightOf="@+id/pathfinding_button"
-                        app:layout_constraintRight_toLeftOf="@+id/share_button"
-                        app:layout_constraintHorizontal_weight="1"
-                        />
-                    <ImageButton
-                        android:id="@+id/share_button"
-                        android:layout_width="0dp"
-                        android:layout_height="match_parent"
-                        android:src="@drawable/ic_baseline_share_20"
-                        android:background="@drawable/border"
-                        android:onClick="@{() -> fragment.onShareButtonClicked(viewModel.placeCard.place)}"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintLeft_toRightOf="@id/call_button"
-                        app:layout_constraintRight_toLeftOf="@id/bookmark_button"
+                        app:layout_constraintLeft_toLeftOf="parent"
+                        app:layout_constraintRight_toLeftOf="@+id/bookmark_button"
                         app:layout_constraintHorizontal_weight="1"
                         />
                     <ImageButton
@@ -426,7 +402,7 @@
                         android:background="@drawable/border"
                         android:onClick="@{() -> fragment.onBookmarkButtonClicked(viewModel.placeCard.place)}"
                         app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintLeft_toRightOf="@id/share_button"
+                        app:layout_constraintLeft_toRightOf="@id/call_button"
                         app:layout_constraintRight_toRightOf="parent"
                         app:layout_constraintHorizontal_weight="1"
                         />
