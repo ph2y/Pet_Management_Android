@@ -6,6 +6,7 @@ import android.content.*
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.Drawable
 import android.location.LocationManager
 import android.media.ExifInterface
 import android.net.Uri
@@ -492,20 +493,21 @@ class Util {
             return kotlin.math.abs(now.toEpochSecond() - time.toEpochSecond())
         }
 
-        fun setRatingStars(starImages: ArrayList<ImageView>, rating: Float, context: Context) {
+        fun setRatingStars(starImages: ArrayList<ImageView>, rating: Double, context: Context) {
             for(i in 0 until starImages.size){
-                val drawableId = getDrawableIdOfStarImage(rating, i)
-                val drawable = context.resources.getDrawable(drawableId, context.theme)
+                val drawable = getDrawableOfStarImage(rating, i, context)
                 starImages[i].setImageDrawable(drawable)
             }
         }
 
-        private fun getDrawableIdOfStarImage(rating: Float, index: Int): Int{
-            return when {
+        fun getDrawableOfStarImage(rating: Double, index: Int, context: Context): Drawable?{
+            val id = when {
                 rating > index + 0.75 -> R.drawable.ic_baseline_star_16
                 rating > index + 0.25 -> R.drawable.ic_baseline_star_half_16
                 else -> R.drawable.ic_baseline_star_border_16
             }
+
+            return context.resources.getDrawable(id, context.theme)
         }
 
         @SuppressLint("MissingPermission")

@@ -4,6 +4,7 @@ import android.animation.ValueAnimator
 import android.app.AlertDialog
 import android.content.*
 import android.graphics.Color
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.se.omapi.Session
 import android.util.Log
@@ -111,6 +112,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         binding.lifecycleOwner = this
         binding.fragment = this@MapFragment
         binding.viewModel = viewModel
+        binding.util = Util.Companion
     }
 
 
