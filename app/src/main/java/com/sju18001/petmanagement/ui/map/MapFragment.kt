@@ -605,19 +605,6 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         }
     }
 
-    fun onPathfindingButtonClicked(placeId: Long){
-        AlertDialog.Builder(context)
-            .setTitle("길찾기")
-            .setMessage("길찾기를 위해 카카오맵 웹페이지로 이동합니다.")
-            .setPositiveButton("확인") { _, _ ->
-                Util.openWebPage(requireActivity(), "https://map.kakao.com/link/to/$placeId")
-            }
-            .setNegativeButton("취소") { dialog, _ ->
-                dialog.cancel()
-            }
-            .create().show()
-    }
-
     fun onCallButtonClicked(place: Place){
         val buttonStrings: Array<CharSequence> = arrayOf("전화하기", "연락처 저장하기", "클립보드에 복사하기")
         AlertDialog.Builder(context)
@@ -645,10 +632,6 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                 dialog.cancel()
             }
             .create().show()
-    }
-
-    fun onShareButtonClicked(place: Place){
-        // Util.shareText(requireActivity(), place.place_url) TODO: 공유 버튼 삭제
     }
 
     fun onBookmarkButtonClicked(place: Place){
