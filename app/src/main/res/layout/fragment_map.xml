@@ -325,7 +325,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="14sp"
-                        android:text="@{Double.toString(viewModel.placeCard.place.averageRating)}"
+                        android:text="@{@string/rating_text(viewModel.placeCard.place.averageRating)}"
                         android:textColor="@color/alizarin"/>
                     <ImageView
                         android:id="@+id/image_star1"

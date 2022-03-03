@@ -117,7 +117,7 @@
                             android:id="@+id/text_rating"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@{Double.toString(viewModel.rating)}"/>
+                            android:text="@{@string/rating_text(viewModel.rating)}"/>
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
