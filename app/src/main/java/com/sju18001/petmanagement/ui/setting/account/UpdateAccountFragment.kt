@@ -16,7 +16,6 @@ import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.PatternRegex
@@ -130,25 +129,26 @@ class UpdateAccountFragment : Fragment() {
             dialog.findViewById<EditText>(R.id.new_password_input).addTextChangedListener(object: TextWatcher {
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     if(PatternRegex.checkPasswordRegex(s)) {
-                        settingViewModel.accountPwValid = true
-                        dialog.findViewById<TextView>(R.id.pw_message2).visibility = View.GONE
+                        settingViewModel.accountNewPwValid = true
+                        dialog.findViewById<TextView>(R.id.new_password_invalid_message).visibility = View.GONE
                     }
                     else {
-                        settingViewModel.accountPwValid = false
-                        dialog.findViewById<TextView>(R.id.pw_message2).visibility = View.VISIBLE
+                        settingViewModel.accountNewPwValid = false
+                        dialog.findViewById<TextView>(R.id.new_password_invalid_message).visibility = View.VISIBLE
                     }
                     if(s.toString() == dialog.findViewById<EditText>(R.id.new_password_check_input).text.toString()) {
-                        settingViewModel.accountPwCheckValid = true
-                        dialog.findViewById<TextView>(R.id.pw_check_message2).visibility = View.GONE
+                        settingViewModel.accountNewPwCheckValid = true
+                        dialog.findViewById<TextView>(R.id.new_password_check_invalid_message).visibility = View.GONE
                     }
                     else {
-                        settingViewModel.accountPwCheckValid = false
-                        dialog.findViewById<TextView>(R.id.pw_check_message2).visibility = View.VISIBLE
+                        settingViewModel.accountNewPwCheckValid = false
+                        dialog.findViewById<TextView>(R.id.new_password_check_invalid_message).visibility = View.VISIBLE
                     }
 
                     // check validation
                     dialog.findViewById<Button>(R.id.password_change_confirm_button).isEnabled =
-                        settingViewModel.accountPwValid && settingViewModel.accountPwCheckValid
+                        settingViewModel.accountNewPwValid && settingViewModel.accountNewPwCheckValid
+                                && settingViewModel.accountPwValid
                 }
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun afterTextChanged(s: Editable?) {}
@@ -157,17 +157,38 @@ class UpdateAccountFragment : Fragment() {
             dialog.findViewById<EditText>(R.id.new_password_check_input).addTextChangedListener(object: TextWatcher {
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     if(s.toString() == dialog.findViewById<EditText>(R.id.new_password_input).text.toString()) {
-                         settingViewModel.accountPwCheckValid = true
-                        dialog.findViewById<TextView>(R.id.pw_check_message2).visibility = View.GONE
+                         settingViewModel.accountNewPwCheckValid = true
+                        dialog.findViewById<TextView>(R.id.new_password_check_invalid_message).visibility = View.GONE
                     }
                     else {
-                        settingViewModel.accountPwCheckValid = false
-                        dialog.findViewById<TextView>(R.id.pw_check_message2).visibility = View.VISIBLE
+                        settingViewModel.accountNewPwCheckValid = false
+                        dialog.findViewById<TextView>(R.id.new_password_check_invalid_message).visibility = View.VISIBLE
                     }
 
                     // check validation
                     dialog.findViewById<Button>(R.id.password_change_confirm_button).isEnabled =
-                        settingViewModel.accountPwValid && settingViewModel.accountPwCheckValid
+                        settingViewModel.accountNewPwValid && settingViewModel.accountNewPwCheckValid
+                                && settingViewModel.accountPwValid
+                }
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun afterTextChanged(s: Editable?) {}
+            })
+
+            dialog.findViewById<EditText>(R.id.password_input).addTextChangedListener(object: TextWatcher {
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                    if(PatternRegex.checkPasswordRegex(s)) {
+                        settingViewModel.accountPwValid = true
+                        dialog.findViewById<TextView>(R.id.password_invalid_message).visibility = View.GONE
+                    }
+                    else {
+                        settingViewModel.accountPwValid = false
+                        dialog.findViewById<TextView>(R.id.password_invalid_message).visibility = View.VISIBLE
+                    }
+
+                    // check validation
+                    dialog.findViewById<Button>(R.id.password_change_confirm_button).isEnabled =
+                        settingViewModel.accountNewPwValid && settingViewModel.accountNewPwCheckValid
+                                && settingViewModel.accountPwValid
                 }
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun afterTextChanged(s: Editable?) {}
