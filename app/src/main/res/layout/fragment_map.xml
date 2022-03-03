@@ -11,6 +11,9 @@
         <variable
             name="viewModel"
             type="com.sju18001.petmanagement.ui.map.MapViewModel"/>
+        <variable
+            name="util"
+            type="com.sju18001.petmanagement.controller.Util.Companion"/>
     </data>
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -329,31 +332,31 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="4dp"
-                        android:src="@{viewModel.placeCard.place.averageRating >= 1 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
+                        android:src="@{util.getDrawableOfStarImage(viewModel.placeCard.place.averageRating, 0, fragment.requireContext())}"
                         />
                     <ImageView
                         android:id="@+id/image_star2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@{viewModel.placeCard.place.averageRating >= 2 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
+                        android:src="@{util.getDrawableOfStarImage(viewModel.placeCard.place.averageRating, 1, fragment.requireContext())}"
                         />
                     <ImageView
                         android:id="@+id/image_star3"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@{viewModel.placeCard.place.averageRating >= 3 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
+                        android:src="@{util.getDrawableOfStarImage(viewModel.placeCard.place.averageRating, 2, fragment.requireContext())}"
                         />
                     <ImageView
                         android:id="@+id/image_star4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@{viewModel.placeCard.place.averageRating >= 4 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
+                        android:src="@{util.getDrawableOfStarImage(viewModel.placeCard.place.averageRating, 3, fragment.requireContext())}"
                         />
                     <ImageView
                         android:id="@+id/image_star5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@{viewModel.placeCard.place.averageRating >= 5 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
+                        android:src="@{util.getDrawableOfStarImage(viewModel.placeCard.place.averageRating, 4, fragment.requireContext())}"
                         />
                     <TextView
                         android:layout_width="wrap_content"

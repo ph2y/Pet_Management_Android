@@ -10,6 +10,9 @@
         <variable
             name="viewModel"
             type="com.sju18001.petmanagement.ui.map.review.ReviewViewModel"/>
+        <variable
+            name="util"
+            type="com.sju18001.petmanagement.controller.Util.Companion"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -79,31 +82,31 @@
                             android:id="@+id/image_star1"
                             android:layout_width="32dp"
                             android:layout_height="32dp"
-                            android:src="@{viewModel.rating >= 1 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
+                            android:src="@{util.getDrawableOfStarImage(viewModel.rating, 0, fragment.requireContext())}"
                             />
                         <ImageView
                             android:id="@+id/image_star2"
                             android:layout_width="32dp"
                             android:layout_height="32dp"
-                            android:src="@{viewModel.rating >= 2 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
+                            android:src="@{util.getDrawableOfStarImage(viewModel.rating, 1, fragment.requireContext())}"
                             />
                         <ImageView
                             android:id="@+id/image_star3"
                             android:layout_width="32dp"
                             android:layout_height="32dp"
-                            android:src="@{viewModel.rating >= 3 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
+                            android:src="@{util.getDrawableOfStarImage(viewModel.rating, 2, fragment.requireContext())}"
                             />
                         <ImageView
                             android:id="@+id/image_star4"
                             android:layout_width="32dp"
                             android:layout_height="32dp"
-                            android:src="@{viewModel.rating >= 4 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
+                            android:src="@{util.getDrawableOfStarImage(viewModel.rating, 3, fragment.requireContext())}"
                             />
                         <ImageView
                             android:id="@+id/image_star5"
                             android:layout_width="32dp"
                             android:layout_height="32dp"
-                            android:src="@{viewModel.rating >= 5 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
+                            android:src="@{util.getDrawableOfStarImage(viewModel.rating, 4, fragment.requireContext())}"
                             />
                     </LinearLayout>
 

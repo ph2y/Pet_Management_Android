@@ -81,7 +81,7 @@ class ReviewListAdapter(
 
         setAccountPhoto(holder, data.author)
         Util.setViewMore(holder.contentsText, holder.viewMoreText, 3)
-        Util.setRatingStars(getStarImages(holder), data.rating.toFloat(), context)
+        Util.setRatingStars(getStarImages(holder), data.rating.toDouble(), context)
     }
 
     private fun setAccountPhoto(holder: ViewHolder, author: Account) {

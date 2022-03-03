@@ -10,6 +10,9 @@
         <variable
             name="viewModel"
             type="com.sju18001.petmanagement.ui.map.review.createUpdateReview.CreateUpdateReviewViewModel" />
+        <variable
+            name="util"
+            type="com.sju18001.petmanagement.controller.Util.Companion"/>
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -68,40 +71,40 @@
                     android:id="@+id/image_star1"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@{viewModel.rating >= 1 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
-                    android:onClick="@{() -> activity.onStarImageClicked(1)}"
+                    android:src="@{util.getDrawableOfStarImage(viewModel.rating, 0, activity.baseContext)}"
+                    android:onClick="@{() -> activity.onStarImageClicked(0)}"
                     android:clickable="@{!viewModel.isApiCalling}"
                     />
                 <ImageView
                     android:id="@+id/image_star2"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@{viewModel.rating >= 2 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
-                    android:onClick="@{() -> activity.onStarImageClicked(2)}"
+                    android:src="@{util.getDrawableOfStarImage(viewModel.rating, 1, activity.baseContext)}"
+                    android:onClick="@{() -> activity.onStarImageClicked(1)}"
                     android:clickable="@{!viewModel.isApiCalling}"
                     />
                 <ImageView
                     android:id="@+id/image_star3"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@{viewModel.rating >= 3 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
-                    android:onClick="@{() -> activity.onStarImageClicked(3)}"
+                    android:src="@{util.getDrawableOfStarImage(viewModel.rating, 2, activity.baseContext)}"
+                    android:onClick="@{() -> activity.onStarImageClicked(2)}"
                     android:clickable="@{!viewModel.isApiCalling}"
                     />
                 <ImageView
                     android:id="@+id/image_star4"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@{viewModel.rating >= 4 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
-                    android:onClick="@{() -> activity.onStarImageClicked(4)}"
+                    android:src="@{util.getDrawableOfStarImage(viewModel.rating, 3, activity.baseContext)}"
+                    android:onClick="@{() -> activity.onStarImageClicked(3)}"
                     android:clickable="@{!viewModel.isApiCalling}"
                     />
                 <ImageView
                     android:id="@+id/image_star5"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:src="@{viewModel.rating >= 5 ? @drawable/ic_baseline_star_16 : @drawable/ic_baseline_star_border_16}"
-                    android:onClick="@{() -> activity.onStarImageClicked(5)}"
+                    android:src="@{util.getDrawableOfStarImage(viewModel.rating, 4, activity.baseContext)}"
+                    android:onClick="@{() -> activity.onStarImageClicked(4)}"
                     android:clickable="@{!viewModel.isApiCalling}"
                     />
             </LinearLayout>

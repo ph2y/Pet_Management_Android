@@ -137,6 +137,7 @@ class ReviewFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.fragment = this@ReviewFragment
         binding.viewModel = viewModel
+        binding.util = Util.Companion
     }
 
     /**

@@ -13,6 +13,7 @@ import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.SessionManager
+import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.ActivityCreateUpdateReviewBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
@@ -46,6 +47,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
         binding.lifecycleOwner = this
         binding.activity = this@CreateUpdateReviewActivity
         binding.viewModel = viewModel
+        binding.util = Util.Companion
     }
 
     override fun onStart() {
@@ -125,7 +127,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     }
 
     fun onStarImageClicked(index: Int) {
-        viewModel.rating.set(index)
+        viewModel.rating.set(index + 1)
     }
 
     fun onConfirmButtonClicked() {
