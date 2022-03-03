@@ -33,6 +33,9 @@ import java.io.*
 import java.text.SimpleDateFormat
 import java.time.*
 import java.util.*
+import kotlin.math.acos
+import kotlin.math.cos
+import kotlin.math.sin
 
 
 class Util {
@@ -528,6 +531,24 @@ class Util {
             }
 
             return latAndLong
+        }
+
+        fun getDistanceUsingLatitudeAndLongitude(latitude1: Double, longitude1: Double, latitude2: Double, longitude2: Double): Double {
+            val theta = longitude1 - longitude2
+            var dist = sin(convertDegreeToRadian(latitude1)) * sin(convertDegreeToRadian(latitude2)) +
+                    cos(convertDegreeToRadian(latitude1)) * cos(convertDegreeToRadian(latitude2)) * cos(convertDegreeToRadian(theta))
+            dist = convertRadianToDegree(acos(dist))
+            dist *= 60 * 1.1515 * 1.609344 * 1000
+
+            return dist
+        }
+
+        private fun convertDegreeToRadian(degree: Double): Double {
+            return degree * Math.PI / 180.0
+        }
+
+        private fun convertRadianToDegree(radian: Double): Double {
+            return radian * 180.0 / Math.PI
         }
     }
 }
