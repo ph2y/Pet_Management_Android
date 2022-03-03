@@ -183,19 +183,28 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     private fun initializeBookmarkRecyclerView() {
         bookmarkTreeAdapter = BookmarkTreeAdapter(arrayListOf(), object: BookmarkTreeAdapterInterface{
             override fun addBookmarkPOIItem(place: Place) {
-                val newMarker: MapPOIItem = MapPOIItem().apply{
-                    itemName = place.name
-                    tag = currentPlaces.count()
-                    mapPoint = MapPoint.mapPointWithGeoCoord(place.latitude, place.longitude)
+                val poiItemForSamePlace = mapView!!.poiItems.find{ it.itemName == place.name}
+                if(poiItemForSamePlace != null){
+                    // poiItemForSamePlace의 멤버 변수를 set하여도 자동으로 적용되지 않으므로
+                    // 직접 remove & add를 하여 replace 해줍니다.
+                    mapView!!.removePOIItem(poiItemForSamePlace)
+                    poiItemForSamePlace.customImageResourceId = R.drawable.marker_pet
+                    mapView!!.addPOIItem(poiItemForSamePlace)
+                }else{
+                    val newMarker: MapPOIItem = MapPOIItem().apply{
+                        itemName = place.name
+                        tag = currentPlaces.count()
+                        mapPoint = MapPoint.mapPointWithGeoCoord(place.latitude, place.longitude)
 
-                    markerType = MapPOIItem.MarkerType.CustomImage
-                    isCustomImageAutoscale = false
-                    setCustomImageAnchor(0.5f, 0.5f)
-                    customImageResourceId = R.drawable.marker_pet
+                        markerType = MapPOIItem.MarkerType.CustomImage
+                        isCustomImageAutoscale = false
+                        setCustomImageAnchor(0.5f, 0.5f)
+                        customImageResourceId = R.drawable.marker_pet
+                    }
+
+                    currentPlaces.add(place)
+                    mapView!!.addPOIItem(newMarker)
                 }
-                currentPlaces.add(place)
-                
-                mapView!!.addPOIItem(newMarker) // TODO: currentPlaces를 통한 중복 체크(현재는 Place 타입 문제로 불가능함)
             }
 
             override fun closeDrawer() {
