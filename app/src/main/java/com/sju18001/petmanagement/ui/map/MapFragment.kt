@@ -532,8 +532,13 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
     private fun updatePlaceCard(item: MapPOIItem) {
         currentPlaces?.get(item.tag)?.let { place ->
+            val distance = Util.getDistanceUsingLatitudeAndLongitude(
+                currentMapPoint!!.mapPointGeoCoord.latitude, currentMapPoint!!.mapPointGeoCoord.longitude,
+                place.latitude, place.longitude
+            ).toInt()
+
             viewModel.placeCard.set(
-                PlaceCard(place, "50", false) // TODO
+                PlaceCard(place, "$distance", false)
             )
 
             checkAndUpdateIsBookmarked()
