@@ -331,7 +331,11 @@ class CommentFragment : Fragment() {
         
         // 댓글 / 답글 생성
         binding.buttonCreateComment.setOnClickListener {
-            createComment(CreateCommentReqDto(postId, commentViewModel.idForReply, binding.editTextComment.text.toString()))
+            if (binding.editTextComment.text.isNullOrBlank()) {
+                Toast.makeText(context, context?.getText(R.string.empty_comment_exception_message), Toast.LENGTH_SHORT).show()
+            } else {
+                createComment(CreateCommentReqDto(postId, commentViewModel.idForReply, binding.editTextComment.text.toString()))
+            }
         }
 
         // 키보드 동작
