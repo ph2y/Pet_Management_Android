@@ -91,14 +91,19 @@ class SettingViewModel(private val handle: SavedStateHandle) : ViewModel() {
             handle.set("mapSearchRadius", value)
             field = value
         }
+    var accountNewPwValid = handle.get<Boolean>("accountNewPwValid")?: false
+        set(value){
+            handle.set("accountNewPwValid", value)
+            field = value
+        }
+    var accountNewPwCheckValid = handle.get<Boolean>("accountNewPwCheckValid")?: false
+        set(value){
+            handle.set("accountNewPwCheckValid", value)
+            field = value
+        }
     var accountPwValid = handle.get<Boolean>("createAccountPwValid")?: false
         set(value){
             handle.set("createAccountPwValid", value)
-            field = value
-        }
-    var accountPwCheckValid = handle.get<Boolean>("createAccountPwCheckValid")?: false
-        set(value){
-            handle.set("createAccountPwCheckValid", value)
             field = value
         }
 
