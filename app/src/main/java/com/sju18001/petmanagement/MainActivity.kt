@@ -207,6 +207,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
+        // MapFragment에서 PlaceCard가 열려있을 때는 PlaceCard를 닫습니다.
+        if(activeFragmentIndex == 1){
+            if((activeFragment as MapFragment).isPlaceCardShowing){
+                (activeFragment as MapFragment).hidePlaceCard()
+                return
+            }
+        }
+
         val builder = AlertDialog.Builder(this)
         builder.setMessage(baseContext.getString(R.string.exit_dialog))
             .setPositiveButton(

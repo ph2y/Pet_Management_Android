@@ -87,6 +87,10 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     private var showingPlaceCardAnim: ValueAnimator? = null
     private var hidingPlaceCardAnim: ValueAnimator? = null
 
+    // MainActivity에서 PlaceCard가 열려있는지 확인할 필요가 있습니다.
+    // 애니메이션이 모두 끝나고 PlaceCard가 열려있는 상태일 때만 true를 가집니다.
+    var isPlaceCardShowing = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -480,18 +484,19 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         return navView.height == 0 && binding.placeCard.height > 0
     }
 
-    private fun hidePlaceCard(){
+    fun hidePlaceCard(){
+        isPlaceCardShowing = false
+
         try{
             if(isAnimationRunning()) return
 
+            hidingPlaceCardAnim!!.start()
             hidingPlaceCardAnim!!.doOnEnd { anim ->
                 showingNavViewAnim!!.start()
                 increasingCurrentLocationButtonMarginAnim!!.start()
 
                 anim.removeAllListeners()
             }
-
-            hidingPlaceCardAnim!!.start()
         }catch(e: Exception){
             Log.e("MapFragment", "Failed to show place card: " + e.message)
         }
@@ -515,26 +520,31 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         try{
             if(isAnimationRunning()) return
 
+            isPlaceCardShowing = false
+
             // 이미 다른 곳의 정보창이 열려있을 경우
             if(isPlaceCardOpened()){
+                hidingPlaceCardAnim!!.start()
                 hidingPlaceCardAnim!!.doOnEnd { anim ->
                     updatePlaceCard(item)
 
                     showingPlaceCardAnim!!.start()
                     anim.removeAllListeners()
                 }
-
-                hidingPlaceCardAnim!!.start()
             }else{
+                updatePlaceCard(item)
+
+                hidingNavViewAnim!!.start()
                 hidingNavViewAnim!!.doOnEnd { anim ->
                     showingPlaceCardAnim!!.start()
                     anim.removeAllListeners()
                 }
 
-                updatePlaceCard(item)
-
-                hidingNavViewAnim!!.start()
                 decreasingCurrentLocationButtonMarginAnim!!.start()
+            }
+
+            showingPlaceCardAnim!!.doOnEnd {
+                isPlaceCardShowing = true
             }
         }catch(e: Exception){
             Log.e("MapFragment", "Failed to show place card: " + e.message)
