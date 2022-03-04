@@ -42,6 +42,14 @@ class ReviewFragment : Fragment() {
     private var isViewDestroyed = false
 
     /**
+     * fetch review를 위한 변수입니다. topReviewId를 기준으로 페이징하여
+     * 순차적으로 fetch review 작업을 할 수 있습니다.
+     */
+    private var isLast = false
+    private var topReviewId: Long? = null
+    private var pageIndex: Int = 1
+
+    /**
      * CreateUpdateReviewActivity에서 리뷰를 생성하거나 수정합니다. 아래의 변수는
      * 위 행동을 한 뒤에, 다시 ReviewFragment로 돌아와서 수행할 코드를 지정해줍니다.
      */
@@ -54,8 +62,9 @@ class ReviewFragment : Fragment() {
                     fetchOneReviewAndInvoke(reviewId) { item ->
                         setRatingAndReviewCount(item.rating, 1)
 
-                        adapter.addItem(item)
-                        adapter.notifyItemInserted(adapter.itemCount)
+                        adapter.addItemToTop(item)
+                        adapter.notifyItemInserted(0)
+                        adapter.notifyItemRangeChanged(0, adapter.itemCount)
 
                         binding.recyclerViewReview.scrollToPosition(adapter.itemCount-1)
                     }
@@ -101,7 +110,7 @@ class ReviewFragment : Fragment() {
 
     private fun fetchOneReviewAndInvoke(reviewId: Long, callback: ((Review)->Unit)) {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .fetchReviewReq(FetchReviewReqDto(reviewId, null, null))
+            .fetchReviewReq(FetchReviewReqDto(reviewId, null, null, null, null))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             response.body()?.reviewList?.get(0)?.let{
                 callback.invoke(it)
@@ -181,10 +190,20 @@ class ReviewFragment : Fragment() {
         binding.recyclerViewReview?.let{
             it.adapter = adapter
             it.layoutManager = LinearLayoutManager(activity)
-
-            it.addOnScrollListener(object: RecyclerView.OnScrollListener() {
-                // TODO: page index 추가 이후에 작업
-            })
+        }
+        
+        // 스크롤하여 최하단에 위치할 시, review 추가 로드
+        binding.nestedScrollView?.let{
+            it.setOnScrollChangeListener { _, _, _, _, _ ->
+                if(!it.canScrollVertically(1) && adapter.itemCount != 0 && !isLast){
+                    updateReviewRecyclerView(
+                        FetchReviewReqDto(
+                            null, viewModel.placeId.get(), null, pageIndex, topReviewId
+                        )
+                    )
+                    pageIndex += 1
+                }
+            }
         }
 
         adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
@@ -289,12 +308,15 @@ class ReviewFragment : Fragment() {
     private fun resetAndUpdateReviewRecyclerView() {
         resetReviewData()
         updateReviewRecyclerView(
-            FetchReviewReqDto(null, viewModel.placeId.get(), null)
+            FetchReviewReqDto(null, viewModel.placeId.get(), null, null, null)
         )
     }
 
     private fun resetReviewData() {
+        topReviewId = null
+        pageIndex = 1
         adapter.resetItem()
+
         binding.recyclerViewReview.post{
             adapter.notifyDataSetChanged()
         }
@@ -304,9 +326,14 @@ class ReviewFragment : Fragment() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchReviewReq(body)
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            isLast = response.body()!!.isLast == true
+
             response.body()!!.reviewList?.let {
                 if(it.isNotEmpty()){
-                    // TODO: pagination
+                    // Set topReviewId
+                    if(topReviewId == null){
+                        topReviewId = it.first().id
+                    }
 
                     it.map { item -> adapter.addItem(item) }
                     adapter.notifyDataSetChanged()

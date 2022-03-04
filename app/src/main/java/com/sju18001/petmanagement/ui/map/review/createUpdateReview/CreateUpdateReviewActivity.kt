@@ -74,7 +74,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
         viewModel.isApiCalling.set(true)
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
-            .fetchReviewReq(FetchReviewReqDto(reviewId, null, null))
+            .fetchReviewReq(FetchReviewReqDto(reviewId, null, null, null, null))
         ServerUtil.enqueueApiCall(call, {isDestroyed}, baseContext, { response ->
             response.body()?.reviewList?.get(0)?.let {
                 viewModel.contents.set(it.contents)
