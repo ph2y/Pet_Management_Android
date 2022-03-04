@@ -4,16 +4,12 @@ import android.animation.ValueAnimator
 import android.app.AlertDialog
 import android.content.*
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.se.omapi.Session
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import androidx.appcompat.app.ActionBarDrawerToggle
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.animation.doOnEnd
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -28,9 +24,7 @@ import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentMapBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
-import com.sju18001.petmanagement.restapi.kakaoapi.KakaoApi
 import com.sju18001.petmanagement.restapi.ServerUtil
-import com.sju18001.petmanagement.restapi.dao.Bookmark
 import com.sju18001.petmanagement.restapi.dao.Place
 import com.sju18001.petmanagement.restapi.dto.CreateBookmarkReqDto
 import com.sju18001.petmanagement.restapi.dto.DeleteBookmarkReqDto
@@ -42,16 +36,11 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import net.daum.mf.map.api.*
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.math.BigDecimal
 import java.util.*
 
 class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.MapViewEventListener, MapView.POIItemEventListener {
     companion object {
-        private const val API_KEY = "KakaoAK fcb50b998a702691c31e6e2b3a4555be"
-        private const val BASE_URL = "https://dapi.kakao.com/"
-
         private const val CURRENT_LOCATION_BUTTON_MARGIN: Int = 16
         private const val NAV_VIEW_HEIGHT: Int = 56
         private const val PLACE_CARD_HEIGHT: Int = 138
