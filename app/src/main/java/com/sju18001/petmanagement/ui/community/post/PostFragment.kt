@@ -251,7 +251,7 @@ class PostFragment : Fragment() {
                         val latAndLong = Util.getGeolocation(requireContext())
                         updatePostRecyclerView(
                             FetchPostReqDto(
-                            pageIndex, topPostId, arguments?.getLong("petId"), null, latAndLong[0], latAndLong[1]
+                                pageIndex, topPostId, arguments?.getLong("petId"), null, latAndLong[0], latAndLong[1]
                             )
                         )
                         pageIndex += 1

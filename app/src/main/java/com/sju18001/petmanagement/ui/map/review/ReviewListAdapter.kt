@@ -101,6 +101,10 @@ class ReviewListAdapter(
         dataSet.add(review)
     }
 
+    fun addItemToTop(review: Review) {
+        dataSet.add(0, review)
+    }
+
     fun resetItem() {
         dataSet = arrayListOf()
     }
