@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
+import com.google.android.gms.ads.AdRequest
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.controller.Util
@@ -39,6 +40,8 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
         setBinding()
 
         supportActionBar?.hide()
+
+        binding.adView.loadAd(AdRequest.Builder().build())
     }
 
     private fun setBinding() {
