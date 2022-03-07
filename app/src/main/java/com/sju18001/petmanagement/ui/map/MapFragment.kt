@@ -17,6 +17,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.ads.AdRequest
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.Permission
@@ -67,6 +68,8 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     private var hidingNavViewAnim: ValueAnimator? = null
     private var increasingCurrentLocationButtonMarginAnim: ValueAnimator? = null
     private var decreasingCurrentLocationButtonMarginAnim: ValueAnimator? = null
+    private var increasingAdViewMarginAnim: ValueAnimator? = null
+    private var decreasingAdViewMarginAnim: ValueAnimator? = null
     private var showingPlaceCardAnim: ValueAnimator? = null
     private var hidingPlaceCardAnim: ValueAnimator? = null
 
@@ -91,6 +94,12 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         setupViews()
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.adView.loadAd(AdRequest.Builder().build())
     }
 
     private fun setBinding(inflater: LayoutInflater, container: ViewGroup?) {
@@ -254,7 +263,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         }
         hidingNavViewAnim!!.duration = ANIMATION_DURATION
 
-        increasingCurrentLocationButtonMarginAnim = ValueAnimator.ofInt(Util.convertDpToPixel(CURRENT_LOCATION_BUTTON_MARGIN), Util.convertDpToPixel(NAV_VIEW_HEIGHT + CURRENT_LOCATION_BUTTON_MARGIN))
+        increasingCurrentLocationButtonMarginAnim = ValueAnimator.ofInt(Util.convertDpToPixel(CURRENT_LOCATION_BUTTON_MARGIN), Util.convertDpToPixel(CURRENT_LOCATION_BUTTON_MARGIN))
         increasingCurrentLocationButtonMarginAnim!!.addUpdateListener { valueAnimator ->
             val value = valueAnimator.animatedValue as Int
             val params = binding.currentLocationButton.layoutParams as (ViewGroup.MarginLayoutParams)
@@ -264,7 +273,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         }
         increasingCurrentLocationButtonMarginAnim!!.duration = ANIMATION_DURATION
 
-        decreasingCurrentLocationButtonMarginAnim = ValueAnimator.ofInt(Util.convertDpToPixel(NAV_VIEW_HEIGHT + CURRENT_LOCATION_BUTTON_MARGIN), Util.convertDpToPixel(CURRENT_LOCATION_BUTTON_MARGIN))
+        decreasingCurrentLocationButtonMarginAnim = ValueAnimator.ofInt(Util.convertDpToPixel(CURRENT_LOCATION_BUTTON_MARGIN), Util.convertDpToPixel(CURRENT_LOCATION_BUTTON_MARGIN))
         decreasingCurrentLocationButtonMarginAnim!!.addUpdateListener { valueAnimator ->
             val value = valueAnimator.animatedValue as Int
             val params = binding.currentLocationButton.layoutParams as (ViewGroup.MarginLayoutParams)
@@ -273,6 +282,26 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             binding.currentLocationButton.requestLayout()
         }
         decreasingCurrentLocationButtonMarginAnim!!.duration = ANIMATION_DURATION
+
+        increasingAdViewMarginAnim = ValueAnimator.ofInt(0, Util.convertDpToPixel(NAV_VIEW_HEIGHT))
+        increasingAdViewMarginAnim!!.addUpdateListener { valueAnimator ->
+            val value = valueAnimator.animatedValue as Int
+            val params = binding.adView.layoutParams as (ViewGroup.MarginLayoutParams)
+
+            params.bottomMargin = value
+            binding.adView.requestLayout()
+        }
+        increasingAdViewMarginAnim!!.duration = ANIMATION_DURATION
+
+        decreasingAdViewMarginAnim = ValueAnimator.ofInt(Util.convertDpToPixel(NAV_VIEW_HEIGHT), 0)
+        decreasingAdViewMarginAnim!!.addUpdateListener { valueAnimator ->
+            val value = valueAnimator.animatedValue as Int
+            val params = binding.adView.layoutParams as (ViewGroup.MarginLayoutParams)
+
+            params.bottomMargin = value
+            binding.adView.requestLayout()
+        }
+        decreasingAdViewMarginAnim!!.duration = ANIMATION_DURATION
 
         showingPlaceCardAnim = ValueAnimator.ofInt(1, Util.convertDpToPixel(PLACE_CARD_HEIGHT))
         showingPlaceCardAnim!!.addUpdateListener { valueAnimator ->
@@ -298,6 +327,8 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                 hidingNavViewAnim!!.isRunning ||
                 increasingCurrentLocationButtonMarginAnim!!.isRunning ||
                 decreasingCurrentLocationButtonMarginAnim!!.isRunning ||
+                increasingAdViewMarginAnim!!.isRunning ||
+                decreasingAdViewMarginAnim!!.isRunning ||
                 showingPlaceCardAnim!!.isRunning ||
                 hidingPlaceCardAnim!!.isRunning
     }
@@ -308,16 +339,16 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
      */
     private fun setupViews() {
         Util.setupViewsForHideKeyboard(requireActivity(), binding.fragmentMapParentLayout)
-        addMarginBottomToCurrentLocationButton()
+        addMarginBottomToAdView()
         setEditorActionListenerToSearchTextInput()
     }
 
-    private fun addMarginBottomToCurrentLocationButton() {
-        binding.currentLocationButton.apply {
-            val currentLocationButtonParams = layoutParams as ViewGroup.MarginLayoutParams
-            currentLocationButtonParams.bottomMargin += Util.convertDpToPixel(NAV_VIEW_HEIGHT)
+    private fun addMarginBottomToAdView() {
+        binding.adView.apply {
+            val adViewParams = layoutParams as ViewGroup.MarginLayoutParams
+            adViewParams.bottomMargin += Util.convertDpToPixel(NAV_VIEW_HEIGHT)
 
-            layoutParams = currentLocationButtonParams
+            layoutParams = adViewParams
         }
     }
 
@@ -479,6 +510,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             hidingPlaceCardAnim!!.doOnEnd { anim ->
                 showingNavViewAnim!!.start()
                 increasingCurrentLocationButtonMarginAnim!!.start()
+                increasingAdViewMarginAnim!!.start()
 
                 anim.removeAllListeners()
             }
@@ -526,6 +558,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                 }
 
                 decreasingCurrentLocationButtonMarginAnim!!.start()
+                decreasingAdViewMarginAnim!!.start()
             }
 
             showingPlaceCardAnim!!.doOnEnd {
