@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.ads.AdRequest
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.CustomProgressBar
 import com.sju18001.petmanagement.controller.SessionManager
@@ -138,6 +139,12 @@ class ReviewFragment : Fragment() {
         resetAndUpdateReviewRecyclerView()
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.adView.loadAd(AdRequest.Builder().build())
     }
 
     private fun setBinding(inflater: LayoutInflater, container: ViewGroup?) {
