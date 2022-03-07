@@ -14,6 +14,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.CustomProgressBar
 import com.sju18001.petmanagement.controller.Util
@@ -90,6 +92,19 @@ class CommentFragment : Fragment() {
         setLoggedInAccountIdAndFetchAccountPhoto()
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.adView.loadAd(AdRequest.Builder().build())
+        binding.adView.adListener = object: AdListener() {
+            override fun onAdLoaded() {
+                // 새로고침 아이콘 제거
+                CustomProgressBar.removeProgressBar(binding.fragmentCommentParentLayout)
+                binding.layoutSwipeRefresh.isRefreshing = false
+            }
+        }
     }
 
     override fun onDestroyView() {
