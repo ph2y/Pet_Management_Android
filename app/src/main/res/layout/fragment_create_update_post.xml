@@ -265,6 +265,15 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:orientation="vertical">
 
+        <!-- TODO: change adUnitId (current: sample ad unit id) -->
+        <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
+            ads:adSize="BANNER"
+            android:id="@+id/ad_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <View
             android:id="@+id/dividerD"
             android:layout_width="match_parent"
