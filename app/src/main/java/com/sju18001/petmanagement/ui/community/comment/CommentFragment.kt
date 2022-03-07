@@ -100,7 +100,6 @@ class CommentFragment : Fragment() {
         binding.adView.loadAd(AdRequest.Builder().build())
         binding.adView.adListener = object: AdListener() {
             override fun onAdLoaded() {
-                // 새로고침 아이콘 제거
                 CustomProgressBar.removeProgressBar(binding.fragmentCommentParentLayout)
                 binding.layoutSwipeRefresh.isRefreshing = false
             }
