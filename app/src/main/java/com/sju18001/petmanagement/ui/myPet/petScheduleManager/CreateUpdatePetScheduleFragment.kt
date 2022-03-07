@@ -10,6 +10,7 @@ import android.widget.CheckBox
 import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.gms.ads.AdRequest
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentCreateUpdatePetScheduleBinding
@@ -114,6 +115,12 @@ class CreateUpdatePetScheduleFragment : Fragment() {
         Util.setupViewsForHideKeyboard(requireActivity(), binding.fragmentCreateUpdatePetScheduleParentLayout)
 
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding.adView.loadAd(AdRequest.Builder().build())
     }
 
     override fun onDestroy() {
