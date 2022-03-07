@@ -72,7 +72,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/back_button_layout"
-        android:layout_alignParentBottom="true"
+        android:layout_above="@id/ad_view"
         android:background="@drawable/pet_info_layout_background"
         android:fillViewport="true">
 
@@ -349,5 +349,15 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
+
+    <!-- TODO: change adUnitId (current: sample ad unit id) -->
+    <com.google.android.gms.ads.AdView
+        xmlns:ads="http://schemas.android.com/apk/res-auto"
+        ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
+        ads:adSize="BANNER"
+        android:id="@+id/ad_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"/>
 
 </RelativeLayout>
