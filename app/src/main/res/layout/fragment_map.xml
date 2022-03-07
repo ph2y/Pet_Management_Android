@@ -144,7 +144,7 @@
                             android:background="@drawable/search_shortcut_background"
                             android:elevation="2dp"
                             android:clickable="true"
-                            android:onClick="@{() -> fragment.doSearch(fragment.GROOMING_KEYWORD)}"
+                            android:onClick="@{() -> fragment.doSearch(fragment.SALON_KEYWORD)}"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintStart_toEndOf="@id/search_shortcut_cafe"
                             >
@@ -177,7 +177,7 @@
                             android:background="@drawable/search_shortcut_background"
                             android:elevation="2dp"
                             android:clickable="true"
-                            android:onClick="@{() -> fragment.doSearch(fragment.SUPPLY_KEYWORD)}"
+                            android:onClick="@{() -> fragment.doSearch(fragment.SHOP_KEYWORD)}"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintStart_toEndOf="@id/search_shortcut_grooming"
                             >
@@ -243,7 +243,7 @@
                             android:background="@drawable/search_shortcut_background"
                             android:elevation="2dp"
                             android:clickable="true"
-                            android:onClick="@{() -> fragment.doSearch(fragment.HOSPITAL_KEYWORD)}"
+                            android:onClick="@{() -> fragment.doSearch(fragment.PARK_KEYWORD)}"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintStart_toEndOf="@id/search_shortcut_hospital"
                             >
@@ -276,7 +276,7 @@
                             android:background="@drawable/search_shortcut_background"
                             android:elevation="2dp"
                             android:clickable="true"
-                            android:onClick="@{() -> fragment.doSearch(fragment.HOSPITAL_KEYWORD)}"
+                            android:onClick="@{() -> fragment.doSearch(fragment.HOTEL_KEYWORD)}"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintStart_toEndOf="@id/search_shortcut_park"
                             >
@@ -309,7 +309,7 @@
                             android:background="@drawable/search_shortcut_background"
                             android:elevation="2dp"
                             android:clickable="true"
-                            android:onClick="@{() -> fragment.doSearch(fragment.HOSPITAL_KEYWORD)}"
+                            android:onClick="@{() -> fragment.doSearch(fragment.SHELTER_KEYWORD)}"
                             app:layout_constraintTop_toTopOf="parent"
                             app:layout_constraintStart_toEndOf="@id/search_shortcut_hotel"
                             >
