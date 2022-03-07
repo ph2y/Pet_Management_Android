@@ -48,10 +48,13 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         private const val ANIMATION_DURATION: Long = 200
 
         // search_shortcut 버튼의 쿼리 키워드
-        const val CAFE_KEYWORD = "애견카페"
-        const val GROOMING_KEYWORD = "애견미용"
-        const val SUPPLY_KEYWORD = "애견용품"
-        const val HOSPITAL_KEYWORD = "동물병원"
+        const val CAFE_KEYWORD = "CAFE"
+        const val SALON_KEYWORD = "SALON"
+        const val SHOP_KEYWORD = "SHOP"
+        const val HOSPITAL_KEYWORD = "HOSPITAL"
+        const val PARK_KEYWORD = "PARK"
+        const val HOTEL_KEYWORD = "HOTEL"
+        const val SHELTER_KEYWORD = "SHELTER"
     }
 
     private var _binding: FragmentMapBinding? = null
