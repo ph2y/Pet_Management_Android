@@ -17,6 +17,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.FlexboxLayoutManager
+import com.google.android.gms.ads.AdRequest
 import com.google.gson.Gson
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.PatternRegex
@@ -83,7 +84,10 @@ class CreateUpdatePostFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         initializeRecyclerViews()
+
+        binding.adView.loadAd(AdRequest.Builder().build())
     }
 
     override fun onStart() {
