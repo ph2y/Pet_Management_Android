@@ -57,7 +57,7 @@
             android:layout_height="0dp"
             android:fillViewport="true"
             app:layout_constraintTop_toBottomOf="@id/layout_back_button"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/ad_view"
             app:layout_constraintStart_toStartOf="parent"
             >
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -170,11 +170,22 @@
             android:src="@drawable/ic_baseline_create_24"
             android:layout_margin="16dp"
             android:onClick="@{() -> fragment.onCreateReviewFabClicked()}"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/ad_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:backgroundTint="@color/pumpkin"
             app:tint="@color/white"
             />
+
+        <!-- TODO: change adUnitId (current: sample ad unit id) -->
+        <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
+            ads:adSize="BANNER"
+            android:id="@+id/ad_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            ads:layout_constraintStart_toStartOf="parent"
+            ads:layout_constraintBottom_toBottomOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
