@@ -13,6 +13,7 @@ import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.databinding.ActivityMainBinding
@@ -197,6 +198,8 @@ class MainActivity : AppCompatActivity() {
         }
 
         FcmUtil.getFirebaseMessagingToken { token -> sendRegistrationToServer(token) }
+
+        MobileAds.initialize(this) {}
     }
 
     override fun onDestroy() {
