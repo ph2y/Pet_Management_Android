@@ -13,6 +13,7 @@ import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
+import com.google.android.gms.ads.AdRequest
 import com.google.android.material.tabs.TabLayoutMediator
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.PatternRegex
@@ -123,6 +124,8 @@ class FollowerFollowingFragment : Fragment() {
 
         // for hiding keyboard
         Util.setupViewsForHideKeyboard(requireActivity(), binding.fragmentFollowerFollowingParentLayout)
+
+        binding.adView.loadAd(AdRequest.Builder().build())
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
