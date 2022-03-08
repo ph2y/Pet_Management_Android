@@ -347,8 +347,10 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         searchKeyword(keyword, radius.toBigDecimal(), mapView!!)
 
         setMapCenterPointToCurrentLocation()
-        val searchAreaCircle = addCircleCenteredAtCurrentLocation(mapView!!, radius.toInt())
-        moveCameraOnCircle(mapView!!, searchAreaCircle!!, 50)
+        if(currentMapPoint != null){
+            val searchAreaCircle = addCircleCenteredAtCurrentLocation(mapView!!, radius.toInt())
+            moveCameraOnCircle(mapView!!, searchAreaCircle!!, 50)
+        }
     }
 
     private fun searchKeyword(keyword: String, radius: BigDecimal, mapView: MapView){
