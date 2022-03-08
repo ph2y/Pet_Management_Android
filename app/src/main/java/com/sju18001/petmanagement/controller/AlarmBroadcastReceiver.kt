@@ -44,7 +44,7 @@ class AlarmBroadcastReceiver : BroadcastReceiver() {
                 
                 // 알림 빌드
                 val builder = NotificationCompat.Builder(context, CHANNEL_ID)
-                    .setSmallIcon(R.drawable.ic_baseline_pets_24)
+                    .setSmallIcon(R.drawable.ic_notification_icon)
                     .setContentTitle(intent?.getStringExtra("title"))
                     .setContentText(intent?.getStringExtra("text"))
                     .setContentIntent(notifyPendingIntent)

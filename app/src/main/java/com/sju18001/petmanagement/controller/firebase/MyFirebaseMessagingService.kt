@@ -66,7 +66,7 @@ class MyFirebaseMessagingService: FirebaseMessagingService() {
 
         // 알림 빌드
         val builder = NotificationCompat.Builder(applicationContext, AlarmBroadcastReceiver.CHANNEL_ID)
-            .setSmallIcon(R.drawable.ic_baseline_pets_24)
+            .setSmallIcon(R.drawable.ic_notification_icon)
             .setContentTitle(notification?.title)
             .setContentText(notification?.body)
             .setAutoCancel(true)
