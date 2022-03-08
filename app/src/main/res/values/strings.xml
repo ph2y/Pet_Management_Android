@@ -141,7 +141,7 @@
 
     <!-- Map Fragment -->
     <string name="cafe">카페</string>
-    <string name="grooming">미용</string>
+    <string name="salon">미용</string>
     <string name="shop">샵</string>
     <string name="hospital">병원</string>
     <string name="park">공원</string>
