@@ -254,7 +254,11 @@ class CreateUpdatePostFragment : Fragment() {
                 }.create().show()
         }
 
-        Util.setupViewsForHideKeyboard(requireActivity(), binding.fragmentCreateUpdatePostParentLayout)
+        Util.setupViewsForHideKeyboard(
+            requireActivity(),
+            binding.fragmentCreateUpdatePostParentLayout,
+            listOf(binding.footerLayout)
+        )
     }
 
     // 글, 펫 정보 fetch 관련 로직
