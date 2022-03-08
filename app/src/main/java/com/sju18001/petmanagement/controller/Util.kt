@@ -70,6 +70,26 @@ class Util {
             view.setSelection(view.text.toString().length)
         }
 
+        fun setupViewsForHideKeyboard(activity: Activity, view: View, exceptionViews: List<View>) {
+            if(view in exceptionViews) return
+
+            // Set up touch listener for non-text box views to hide keyboard
+            if(view !is EditText) {
+                view.setOnTouchListener { _, _ ->
+                    hideKeyboard(activity)
+                    false
+                }
+            }
+
+            // If a layout container, iterate over children and seed recursion
+            if (view is ViewGroup) {
+                for (i in 0 until view.childCount) {
+                    val innerView = view.getChildAt(i)
+                    setupViewsForHideKeyboard(activity, innerView, exceptionViews)
+                }
+            }
+        }
+
         fun setupViewsForHideKeyboard(activity: Activity, view: View) {
             // Set up touch listener for non-text box views to hide keyboard
             if(view !is EditText) {

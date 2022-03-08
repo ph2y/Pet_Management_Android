@@ -331,8 +331,11 @@ class CommentFragment : Fragment() {
             activity?.finish()
         }
 
-        // 편의 기능: 키보드 내리기
-        Util.setupViewsForHideKeyboard(requireActivity(), binding.fragmentCommentParentLayout)
+        Util.setupViewsForHideKeyboard(
+            requireActivity(),
+            binding.fragmentCommentParentLayout,
+            listOf(binding.layoutCommentInput)
+        )
         
         // 댓글 / 답글 생성
         binding.buttonCreateComment.setOnClickListener {
