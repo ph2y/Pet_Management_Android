@@ -48,6 +48,7 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
         val commentButton: ImageButton = view.findViewById(R.id.comment_button)
         val generalFilesButton: ImageButton = view.findViewById(R.id.general_files_button)
         val likeCountTextView: TextView = view.findViewById(R.id.like_count)
+        val timestampTextView: TextView = view.findViewById(R.id.text_timestamp)
     }
 
     override fun getItemCount(): Int = dataSet.size
@@ -129,6 +130,7 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
         holder.petNameTextView.text = post.pet.name
         holder.contentsTextView.text = post.contents
         holder.likeCountTextView.text = likedCount.toString()
+        holder.timestampTextView.text = Util.getTimestampForDisplay(post.timestamp) + " 전"
     }
 
     private fun setAccountPhoto(holder: ViewHolder, author: Account) {
