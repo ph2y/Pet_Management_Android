@@ -84,7 +84,10 @@ class ReviewFragment : Fragment() {
         val reviewCount = viewModel.reviewCount.get()!!
 
         // Divide by zero 방지
-        if(reviewCount + reviewCountDiff != 0L){
+        if(reviewCount + reviewCountDiff == 0L){
+            viewModel.rating.set(0.0)
+            viewModel.reviewCount.set(0)
+        }else{
             viewModel.rating.set((rating*reviewCount + ratingDiff) / (reviewCount + reviewCountDiff))
             viewModel.reviewCount.set(reviewCount + reviewCountDiff)
         }
