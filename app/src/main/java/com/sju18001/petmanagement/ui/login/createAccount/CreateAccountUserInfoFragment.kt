@@ -240,7 +240,7 @@ class CreateAccountUserInfoFragment : Fragment() {
                     startTimer(loginViewModel)
                 }
                 else {
-                    Util.showToastAndLogForFailedResponse(requireContext(), response.errorBody())
+                    Util.showToastAndLogForNotSuccessfulResponse(requireContext(), response.errorBody())
                 }
 
                 // set request code button to normal

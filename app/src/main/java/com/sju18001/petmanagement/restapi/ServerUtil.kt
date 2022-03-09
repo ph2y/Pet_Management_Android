@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.OpenableColumns
+import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
 import com.sju18001.petmanagement.controller.Util
@@ -36,7 +37,7 @@ class ServerUtil {
                         onSuccessful.invoke(response)
                     }else{
                         onNotSuccessful.invoke(response)
-                        Util.showToastAndLogForFailedResponse(context, response.errorBody())
+                        Util.showToastAndLogForNotSuccessfulResponse(context, response.errorBody())
                     }
                 }
 

@@ -297,11 +297,14 @@ class Util {
             return if (mediaAttachments != null) Gson().fromJson(mediaAttachments, Array<FileMetaData>::class.java) else arrayOf()
         }
 
-        fun showToastAndLogForFailedResponse(context: Context, errorBody: ResponseBody?) {
+        fun showToastAndLogForNotSuccessfulResponse(context: Context, errorBody: ResponseBody?) {
             if(errorBody == null) return
 
             getMessageFromErrorBody(errorBody)?.let{
-                showToastAndLog(context, it)
+                // NotSuccessful이어도 오류 취급을 하지 않는 예외가 있다.
+                if(!it.contains("error.review.myReviewOfPlace.notExists")){
+                    showToastAndLog(context, it)
+                }
             }
         }
 

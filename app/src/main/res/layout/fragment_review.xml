@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+        <import type="android.view.View"/>
         <variable
             name="fragment"
             type="com.sju18001.petmanagement.ui.map.review.ReviewFragment"/>
@@ -170,6 +171,7 @@
             android:src="@drawable/ic_baseline_create_24"
             android:layout_margin="16dp"
             android:onClick="@{() -> fragment.onCreateReviewFabClicked()}"
+            android:visibility="@{viewModel.myReviewId == -1? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@id/ad_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:backgroundTint="@color/pumpkin"

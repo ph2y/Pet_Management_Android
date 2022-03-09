@@ -62,6 +62,7 @@ class ReviewFragment : Fragment() {
                 if(reviewId != -1L){
                     fetchOneReviewAndInvoke(reviewId) { item ->
                         setRatingAndReviewCount(item.rating, 1)
+                        viewModel.myReviewId.set(item.id)
 
                         adapter.addItemToTop(item)
                         adapter.notifyItemInserted(0)
@@ -136,7 +137,7 @@ class ReviewFragment : Fragment() {
 
         initializeAdapter()
         CustomProgressBar.addProgressBar(requireContext(), binding.fragmentReviewParentLayout, 80, R.color.white)
-        resetAndUpdateReviewRecyclerView()
+        doInitialFetch()
 
         return binding.root
     }
@@ -281,6 +282,7 @@ class ReviewFragment : Fragment() {
             .deleteReviewReq(DeleteReviewReqDto(id))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             setRatingAndReviewCount(- response.body()!!.deletedReviewRating, -1)
+            viewModel.myReviewId.set(-1)
 
             adapter.removeItem(position)
             adapter.notifyItemRemoved(position)
@@ -312,21 +314,48 @@ class ReviewFragment : Fragment() {
     /**
      * 리싸이클러뷰 함수
      */
-    private fun resetAndUpdateReviewRecyclerView() {
+    private fun doInitialFetch() {
         resetReviewData()
-        updateReviewRecyclerView(
-            FetchReviewReqDto(null, viewModel.placeId.get(), null, null, null)
-        )
+        fetchMyReview{
+            updateReviewRecyclerView(FetchReviewReqDto(
+                null, viewModel.placeId.get(), null, null, null
+            ))
+        }
     }
 
     private fun resetReviewData() {
         topReviewId = null
         pageIndex = 1
         adapter.resetItem()
+        viewModel.myReviewId.set(-1)
 
         binding.recyclerViewReview.post{
             adapter.notifyDataSetChanged()
         }
+    }
+
+    private fun fetchMyReview(callback: () -> Unit) {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .fetchReviewReq(
+                FetchReviewReqDto(null, viewModel.placeId.get(), SessionManager.fetchLoggedInAccount(requireContext())!!.id, null, null)
+            )
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            response.body()!!.reviewList?.let {
+                if(it.isNotEmpty()){
+                    adapter.addItem(it[0])
+                    adapter.notifyDataSetChanged()
+
+                    viewModel.myReviewId.set(it[0].id)
+
+                    setEmptyNotificationView(adapter.itemCount)
+                }
+
+                callback.invoke()
+            }
+        }, {
+            callback.invoke()
+        }, {}
+        )
     }
 
     private fun updateReviewRecyclerView(body: FetchReviewReqDto) {
@@ -337,12 +366,14 @@ class ReviewFragment : Fragment() {
 
             response.body()!!.reviewList?.let {
                 if(it.isNotEmpty()){
-                    // Set topReviewId
                     if(topReviewId == null){
                         topReviewId = it.first().id
                     }
 
-                    it.map { item -> adapter.addItem(item) }
+                    it.map { item ->
+                        if(item.id != viewModel.myReviewId.get()) adapter.addItem(item)
+                    }
+
                     adapter.notifyDataSetChanged()
 
                     setEmptyNotificationView(adapter.itemCount)
