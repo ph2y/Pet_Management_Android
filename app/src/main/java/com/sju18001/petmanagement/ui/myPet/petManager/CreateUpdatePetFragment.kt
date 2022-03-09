@@ -280,7 +280,7 @@ class CreateUpdatePetFragment : Fragment() {
             myPetViewModel.petManagerApiIsLoading = false
             unlockViews()
 
-            Util.showToastAndLogForFailedResponse(requireContext(), response.errorBody())
+            Util.showToastAndLogForNotSuccessfulResponse(requireContext(), response.errorBody())
         }, {
             // set api state/button to normal
             myPetViewModel.petManagerApiIsLoading = false
@@ -366,7 +366,7 @@ class CreateUpdatePetFragment : Fragment() {
                             myPetViewModel.petManagerApiIsLoading = false
                             unlockViews()
 
-                            Util.showToastAndLogForFailedResponse(requireContext(), response.errorBody())
+                            Util.showToastAndLogForNotSuccessfulResponse(requireContext(), response.errorBody())
                         }
                     }
                 }

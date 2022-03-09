@@ -375,7 +375,7 @@ class UpdateAccountFragment : Fragment() {
                         if(errorMessage == "null"){
                             closeAfterSuccess()
                         }else{
-                            Util.showToastAndLogForFailedResponse(requireContext(), response.errorBody())
+                            Util.showToastAndLogForNotSuccessfulResponse(requireContext(), response.errorBody())
                         }
                     }
                 }
