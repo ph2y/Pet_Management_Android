@@ -84,7 +84,7 @@
                     android:layout_toEndOf="@id/radius_label"
                     android:layout_marginStart="8dp"
                     android:layout_centerVertical="true"
-                    android:valueFrom="5000"
+                    android:valueFrom="1000"
                     android:valueTo="500000"
                     android:stepSize="1000"
                     app:tickVisible="false"/>
