@@ -25,9 +25,7 @@ data class UpdatePostReqDto(
     val petId: Long,
     val contents: String?,
     val hashTags: List<String>,
-    val disclosure: String,
-    val geoTagLat: Double?,
-    val geoTagLong: Double?
+    val disclosure: String
 )
 
 data class UpdatePostResDto(

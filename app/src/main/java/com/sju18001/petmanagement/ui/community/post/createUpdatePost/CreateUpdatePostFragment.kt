@@ -793,9 +793,7 @@ class CreateUpdatePostFragment : Fragment() {
             createUpdatePostViewModel.selectedPetId!!,
             createUpdatePostViewModel.postEditText,
             createUpdatePostViewModel.hashtagList,
-            createUpdatePostViewModel.disclosure,
-            latAndLong[0],
-            latAndLong[1]
+            createUpdatePostViewModel.disclosure
         )
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
