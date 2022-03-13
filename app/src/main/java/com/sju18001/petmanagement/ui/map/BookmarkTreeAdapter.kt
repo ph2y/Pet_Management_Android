@@ -16,7 +16,7 @@ import com.sju18001.petmanagement.restapi.dao.Bookmark
 import com.sju18001.petmanagement.restapi.dao.Place
 
 interface BookmarkTreeAdapterInterface {
-    fun addBookmarkPOIItem(place: Place)
+    fun addBookmarkPOIItemAndMoveCamera(place: Place)
     fun closeDrawer()
 }
 
@@ -48,7 +48,7 @@ class BookmarkTreeAdapter(
             val position = holder.absoluteAdapterPosition
             if(dataSet[position].isBookmark){
                 bookmarkTreeAdapterInterface.closeDrawer()
-                bookmarkTreeAdapterInterface.addBookmarkPOIItem(dataSet[position].bookmark!!.place)
+                bookmarkTreeAdapterInterface.addBookmarkPOIItemAndMoveCamera(dataSet[position].bookmark!!.place)
             }
             else{
                 val bookmarkCount = folderToBookmarks[holder.nameText.text]!!.count()

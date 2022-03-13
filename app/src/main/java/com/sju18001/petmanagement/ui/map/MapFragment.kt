@@ -176,7 +176,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
     private fun initializeBookmarkRecyclerView() {
         bookmarkTreeAdapter = BookmarkTreeAdapter(arrayListOf(), object: BookmarkTreeAdapterInterface{
-            override fun addBookmarkPOIItem(place: Place) {
+            override fun addBookmarkPOIItemAndMoveCamera(place: Place) {
                 val poiItemForSamePlace = mapView!!.poiItems.find{ it.itemName == place.name}
                 if(poiItemForSamePlace != null){
                     // poiItemForSamePlace의 멤버 변수를 set하여도 자동으로 적용되지 않으므로
@@ -199,6 +199,10 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                     currentPlaces.add(place)
                     mapView!!.addPOIItem(newMarker)
                 }
+
+                mapView!!.moveCamera(CameraUpdateFactory.newMapPoint(
+                    MapPoint.mapPointWithGeoCoord(place.latitude, place.longitude)
+                ))
             }
 
             override fun closeDrawer() {
