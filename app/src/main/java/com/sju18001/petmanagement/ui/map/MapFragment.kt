@@ -60,6 +60,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     private var currentMapPoint: MapPoint? = null
     private var isLoadingCurrentMapPoint: Boolean = false
 
+    // 띄워져 있는 POIItem에 대한 Place를 저장함으로써 PlaceCard를 띄울 수 있습니다.
     private var currentPlaces: ArrayList<Place> = arrayListOf()
 
     // 애니메이션의 진행 여부를 파악하고자 멤버 변수로 둡니다.
@@ -337,41 +338,39 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         }
     }
 
-    fun doSearch(keyword: String){
+    fun doSearch(keyword: String) {
         if(mapView == null) return
 
-        val radius = SessionManager.fetchLoggedInAccount(requireContext())!!.mapSearchRadius
-        searchKeyword(keyword, radius.toBigDecimal(), mapView!!)
-
-        setMapCenterPointToCurrentLocation()
-        if(currentMapPoint != null){
-            val searchAreaCircle = addCircleCenteredAtCurrentLocation(mapView!!, radius.toInt())
-            moveCameraOnCircle(mapView!!, searchAreaCircle!!, 50)
-        }
+        // 화면이 세로로 길기 때문에 latitude를 기준으로 검색 반지름을 구한다.
+        val radius = getHeightOfMapPointBounds() / 2
+        fetchPlaceAndAddPOIItems(keyword, radius.toBigDecimal())
     }
 
-    private fun searchKeyword(keyword: String, radius: BigDecimal, mapView: MapView){
-        try{
-            val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-                .fetchPlaceReq(FetchPlaceReqDto(
-                    null, keyword,
-                    currentMapPoint!!.mapPointGeoCoord.latitude.toBigDecimal(),
-                    currentMapPoint!!.mapPointGeoCoord.longitude.toBigDecimal(),
-                    radius
-                ))
-            ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-                currentPlaces = arrayListOf()
-                response.body()?.placeList?.map{ currentPlaces.add(it) }
-                addPOIItems(currentPlaces, mapView)
-            }, {}, {})
-        }catch(e: Exception){
-            // currentMapPoint가 아직 초기화되지 않았을 경우
-            Log.e("MapFragment", e.message.toString())
-        }
+    private fun getHeightOfMapPointBounds(): Double {
+        return Util.getDistanceUsingLatitudeAndLongitude(
+            mapView!!.mapPointBounds.bottomLeft.mapPointGeoCoord.latitude, 0.0,
+            mapView!!.mapPointBounds.topRight.mapPointGeoCoord.latitude, 0.0
+        )
     }
 
-    private fun addPOIItems(places: List<Place>, mapView: MapView){
-        mapView.removeAllPOIItems()
+    private fun fetchPlaceAndAddPOIItems(keyword: String, radius: BigDecimal) {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .fetchPlaceReq(FetchPlaceReqDto(
+                null, keyword,
+                mapView!!.mapCenterPoint.mapPointGeoCoord.latitude.toBigDecimal(),
+                mapView!!.mapCenterPoint.mapPointGeoCoord.longitude.toBigDecimal(),
+                radius
+            ))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            currentPlaces = arrayListOf()
+            response.body()?.placeList?.map{ currentPlaces.add(it) }
+
+            addPOIItems(currentPlaces)
+        }, {}, {})
+    }
+
+    private fun addPOIItems(places: List<Place>){
+        mapView!!.removeAllPOIItems()
 
         for(i: Int in 0 until places.count()){
             var iconId: Int = when(places[i].categoryCode){
@@ -396,7 +395,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                 customImageResourceId = iconId
             }
 
-            mapView.addPOIItem(newMarker)
+            mapView!!.addPOIItem(newMarker)
         }
     }
 
@@ -406,7 +405,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
         try{
             searchAreaCircle = MapCircle(
-                currentMapPoint,
+                mapView.mapCenterPoint,
                 radius,
                 Color.argb(128, 255, 0, 0),
                 Color.argb(0, 0, 0, 0)
@@ -419,16 +418,6 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         }
 
         return searchAreaCircle
-    }
-
-    private fun moveCameraOnCircle(mapView: MapView, circle: MapCircle, padding: Int){
-        try{
-            val mapPointBoundsArray = arrayOf(circle.bound, circle.bound)
-            val mapPointBounds = MapPointBounds(mapPointBoundsArray)
-            mapView.moveCamera(CameraUpdateFactory.newMapPointBounds(mapPointBounds, padding))
-        }catch(e:Exception){
-            Log.i("MapFragment", e.message.toString())
-        }
     }
 
 
