@@ -176,6 +176,9 @@ interface ServerApi {
     @POST("api/post/file/delete")
     fun deletePostFileReq(@Body deletePostFileReqDto: DeletePostFileReqDto): Call<DeletePostFileResDto>
 
+    @POST("api/post/report")
+    fun reportPostReq(@Body reportPostReqDto: ReportPostReqDto): Call<ReportPostResDto>
+
     // Follow API
     @POST("api/community/follower/fetch")
     fun fetchFollowerReq(@Body body: RequestBody): Call<FetchFollowerResDto>

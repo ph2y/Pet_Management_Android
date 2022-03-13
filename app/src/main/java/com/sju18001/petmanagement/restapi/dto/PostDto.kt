@@ -93,3 +93,11 @@ data class FetchPostFileReqDto (
     val id: Long,
     val index: Int
 )
+
+data class ReportPostReqDto (
+    val id: Long
+)
+
+data class ReportPostResDto (
+    val _metadata: DtoMetadata
+)
