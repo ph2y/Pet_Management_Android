@@ -22,6 +22,7 @@ import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.FetchPetPhotoReqDto
 import com.sju18001.petmanagement.ui.myPet.MyPetActivity
+import com.sju18001.petmanagement.ui.myPet.MyPetActivityFragmentTypes
 import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.util.*
@@ -215,7 +216,7 @@ class PetListAdapter(
             petProfileIntent.putExtra("isRepresentativePet", isRepresentativePet)
 
             // open activity
-            petProfileIntent.putExtra("fragmentType", "pet_profile_pet_manager")
+            petProfileIntent.putExtra("fragmentType", MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER)
             holder.itemView.context.startActivity(petProfileIntent)
             (context as Activity).overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
         }

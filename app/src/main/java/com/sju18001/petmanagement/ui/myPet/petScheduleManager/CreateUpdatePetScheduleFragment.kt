@@ -18,6 +18,7 @@ import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dto.*
+import com.sju18001.petmanagement.ui.myPet.MyPetActivityFragmentTypes
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
 import java.time.LocalTime
 
@@ -60,7 +61,7 @@ class CreateUpdatePetScheduleFragment : Fragment() {
         binding.confirmButton.setOnClickListener {
             val intent = requireActivity().intent
 
-            if(intent.getStringExtra("fragmentType") == "create_pet_schedule"){
+            if(intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.CREATE_PET_SCHEDULE){
                 createPetSchedule()
             }else{
                 val enabled = intent.getBooleanExtra("enabled", false)
@@ -139,7 +140,7 @@ class CreateUpdatePetScheduleFragment : Fragment() {
         // 일정 데이터 불러오기
         val intent = requireActivity().intent
 
-        if(intent.getStringExtra("fragmentType") == "update_pet_schedule"){
+        if(intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.UPDATE_PET_SCHEDULE){
             binding.timePicker.hour = intent.getIntExtra("hour", 0)
             binding.timePicker.minute = intent.getIntExtra("minute", 0)
             binding.memoEditText.setText(intent.getStringExtra("memo"))
@@ -230,7 +231,7 @@ class CreateUpdatePetScheduleFragment : Fragment() {
 
     private fun setViewModelForUpdate(){
         val intent = requireActivity().intent
-        if(intent.getStringExtra("fragmentType") == "update_pet_schedule"){
+        if(intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.UPDATE_PET_SCHEDULE){
             // Initialize ViewModel for PetIdList
             intent.getStringExtra("petIdList")?.let{
                 val petIdListOfString = it.replace(" ", "").split(",")
