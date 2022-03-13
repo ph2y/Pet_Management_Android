@@ -118,7 +118,9 @@ class FollowerAdapter(val context: Context, private val followUnfollowButtonInte
             followUnfollowButtonInterface.updateFollowUnfollowButton()
         }, {
             holder.followUnfollowButton.isEnabled = true
-        }, {})
+        }, {
+            holder.followUnfollowButton.isEnabled = true
+        })
     }
 
     private fun deleteFollow(id: Long, holder: HistoryListViewHolder, position: Int) {

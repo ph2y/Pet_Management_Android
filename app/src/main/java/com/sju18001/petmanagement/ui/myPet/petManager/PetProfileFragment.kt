@@ -54,6 +54,8 @@ class PetProfileFragment : Fragment(){
 
     private var topFixedLayoutHeight = 0
 
+    private var isFollowing: Boolean = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -79,15 +81,10 @@ class PetProfileFragment : Fragment(){
             binding.buttonsLayout.visibility = View.VISIBLE
         }
         else {
-            binding.usernameAndPetsLayout.visibility = View.VISIBLE
+            binding.accountInfoLayout.visibility = View.VISIBLE
             binding.petInfoLayout.background = null
 
-            // for pet spinner
-            if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_COMMUNITY) {
-                setPetSpinner()
-            }
-
-            // for follow/unfollow button
+            setPetSpinner()
         }
 
         if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
@@ -139,7 +136,7 @@ class PetProfileFragment : Fragment(){
             }
         }
 
-        // for pet update and delete button
+        // for pet update button
         if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
             binding.updatePetButton.setOnClickListener {
                 // save pet data to ViewModel(for pet update)
@@ -150,6 +147,17 @@ class PetProfileFragment : Fragment(){
                     .replace(R.id.my_pet_activity_fragment_container, CreateUpdatePetFragment())
                     .addToBackStack(null)
                     .commit()
+            }
+        }
+
+        // for follow/unfollow button
+        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_COMMUNITY) {
+            binding.followUnfollowButton.setOnClickListener {
+                if (isFollowing) {
+                    deleteFollow()
+                } else {
+                    createFollow()
+                }
             }
         }
 
@@ -175,6 +183,12 @@ class PetProfileFragment : Fragment(){
         // set views with data from ViewModel
         setViewsWithPetData()
         setViewsWithAuthorData()
+
+        // set follow/unfollow button
+        // placed here (onResume) for consistency when returning to the same account's pet profile
+        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_COMMUNITY) {
+            setFollowUnfollowButton()
+        }
     }
 
     override fun onDestroyView() {
@@ -287,6 +301,93 @@ class PetProfileFragment : Fragment(){
                 }
             }
         }, {}, {})
+    }
+
+    private fun setFollowUnfollowButton() {
+        if (myPetViewModel.accountIdValue == SessionManager.fetchLoggedInAccount(requireContext())!!.id) {
+            return
+        }
+
+        myPetViewModel.petManagerApiIsLoading = true
+        binding.followUnfollowButton.isEnabled = false
+
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .fetchFollowerReq(ServerUtil.getEmptyBody())
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            for (follower in response.body()!!.followerList) {
+                if (follower.id == myPetViewModel.accountIdValue) {
+                    isFollowing = true
+
+                    binding.followUnfollowButton.setBackgroundColor(requireContext().getColor(R.color.border_line))
+                    binding.followUnfollowButton.setTextColor(requireContext().resources.getColor(R.color.black))
+                    binding.followUnfollowButton.text = requireContext().getText(R.string.unfollow_button)
+
+                    myPetViewModel.petManagerApiIsLoading = false
+                    binding.followUnfollowButton.isEnabled = true
+                    binding.followUnfollowButton.visibility = View.VISIBLE
+
+                    return@enqueueApiCall
+                }
+            }
+
+            isFollowing = false
+
+            binding.followUnfollowButton.setBackgroundColor(requireContext().getColor(R.color.carrot))
+            binding.followUnfollowButton.setTextColor(requireContext().resources.getColor(R.color.white))
+            binding.followUnfollowButton.text = requireContext().getText(R.string.follow_button)
+
+            myPetViewModel.petManagerApiIsLoading = false
+            binding.followUnfollowButton.isEnabled = true
+            binding.followUnfollowButton.visibility = View.VISIBLE
+        }, {
+            myPetViewModel.petManagerApiIsLoading = false
+            binding.followUnfollowButton.isEnabled = true
+        }, {
+            myPetViewModel.petManagerApiIsLoading = false
+            binding.followUnfollowButton.isEnabled = true
+        })
+    }
+
+    private fun createFollow() {
+        myPetViewModel.petManagerApiIsLoading = true
+        binding.followUnfollowButton.isEnabled = false
+
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .createFollowReq(CreateFollowReqDto(myPetViewModel.accountIdValue!!))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            isFollowing = true
+            setFollowUnfollowButton()
+
+            myPetViewModel.petManagerApiIsLoading = false
+            binding.followUnfollowButton.isEnabled = true
+        }, {
+            myPetViewModel.petManagerApiIsLoading = false
+            binding.followUnfollowButton.isEnabled = true
+        }, {
+            myPetViewModel.petManagerApiIsLoading = false
+            binding.followUnfollowButton.isEnabled = true
+        })
+    }
+
+    private fun deleteFollow() {
+        myPetViewModel.petManagerApiIsLoading = true
+        binding.followUnfollowButton.isEnabled = false
+
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .deleteFollowReq(DeleteFollowReqDto(myPetViewModel.accountIdValue!!))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            isFollowing = false
+            setFollowUnfollowButton()
+
+            myPetViewModel.petManagerApiIsLoading = false
+            binding.followUnfollowButton.isEnabled = true
+        }, {
+            myPetViewModel.petManagerApiIsLoading = false
+            binding.followUnfollowButton.isEnabled = true
+        }, {
+            myPetViewModel.petManagerApiIsLoading = false
+            binding.followUnfollowButton.isEnabled = true
+        })
     }
 
     private fun saveAuthorDataForAuthorProfile() {
@@ -511,7 +612,7 @@ class PetProfileFragment : Fragment(){
 
             binding.topFixedLayout.visibility = View.VISIBLE
             if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_COMMUNITY) {
-                binding.usernameAndPetsLayout.visibility = View.VISIBLE
+                binding.accountInfoLayout.visibility = View.VISIBLE
             }
             if(myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER){
                 binding.buttonsLayout.visibility = View.VISIBLE
@@ -541,7 +642,7 @@ class PetProfileFragment : Fragment(){
             binding.petPhoto.rotation = myPetViewModel.petPhotoRotationProfile?: 0f
 
             binding.topFixedLayout.visibility = View.GONE
-            binding.usernameAndPetsLayout.visibility = View.GONE
+            binding.accountInfoLayout.visibility = View.GONE
             binding.buttonsLayout.visibility = View.GONE
 
             if (myPetViewModel.isRepresentativePetProfile){
