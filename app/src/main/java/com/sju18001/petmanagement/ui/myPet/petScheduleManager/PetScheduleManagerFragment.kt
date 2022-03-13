@@ -25,6 +25,7 @@ import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.PetSchedule
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.myPet.MyPetActivity
+import com.sju18001.petmanagement.ui.myPet.MyPetActivityFragmentTypes
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
 
 class PetScheduleManagerFragment : Fragment() {
@@ -90,7 +91,7 @@ class PetScheduleManagerFragment : Fragment() {
             override fun startCreateUpdatePetScheduleFragmentForUpdate(data: PetSchedule) {
                 val myPetActivityIntent = Intent(context, MyPetActivity::class.java)
                 myPetActivityIntent
-                    .putExtra("fragmentType", "update_pet_schedule")
+                    .putExtra("fragmentType", MyPetActivityFragmentTypes.UPDATE_PET_SCHEDULE)
                     .putExtra("id", data.id)
                     .putExtra("petIdList", data.petIdList)
                     .putExtra("time", data.time)
@@ -213,7 +214,7 @@ class PetScheduleManagerFragment : Fragment() {
 
     private fun startCreatePetSchedule(){
         val myPetActivityIntent = Intent(context, MyPetActivity::class.java)
-        myPetActivityIntent.putExtra("fragmentType", "create_pet_schedule")
+        myPetActivityIntent.putExtra("fragmentType", MyPetActivityFragmentTypes.CREATE_PET_SCHEDULE)
 
         startActivity(myPetActivityIntent)
         requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)

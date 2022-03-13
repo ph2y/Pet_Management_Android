@@ -31,6 +31,7 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.restapi.global.FileType
+import com.sju18001.petmanagement.ui.myPet.MyPetActivityFragmentTypes
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -80,10 +81,10 @@ class CreateUpdatePetFragment : Fragment() {
         super.onStart()
 
         // for title
-        if(requireActivity().intent.getStringExtra("fragmentType") == "pet_profile_pet_manager") {
+        if(requireActivity().intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
             binding.backButtonTitle.text = context?.getText(R.string.update_pet_title)
         }
-        else if(requireActivity().intent.getStringExtra("fragmentType") == "create_pet"){
+        else if(requireActivity().intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.CREATE_PET){
             binding.deletePetLayout.visibility = View.GONE
         }
 
@@ -192,7 +193,7 @@ class CreateUpdatePetFragment : Fragment() {
 
         // for confirm button
         binding.confirmButton.setOnClickListener {
-            if(requireActivity().intent.getStringExtra("fragmentType") == "pet_profile_pet_manager") {
+            if(requireActivity().intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
                 updatePet()
             }
             else {
@@ -202,7 +203,7 @@ class CreateUpdatePetFragment : Fragment() {
 
         // for back button
         binding.backButton.setOnClickListener {
-            if(requireActivity().intent.getStringExtra("fragmentType") == "pet_profile_pet_manager") {
+            if(requireActivity().intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
                 fragmentManager?.popBackStack()
             }
             else {
@@ -481,7 +482,7 @@ class CreateUpdatePetFragment : Fragment() {
             Glide.with(requireContext()).load(BitmapFactory.decodeFile(myPetViewModel.petPhotoPathValue)).into(binding.petPhotoInput)
         }
         // if photo not selected, and is in update mode -> set photo
-        else if(requireActivity().intent.getStringExtra("fragmentType") == "pet_profile_pet_manager") {
+        else if(requireActivity().intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
             if(myPetViewModel.petPhotoByteArray != null) {
                 val bitmap = Util.getBitmapFromByteArray(myPetViewModel.petPhotoByteArray!!)
                 Glide.with(requireContext()).load(bitmap).into(binding.petPhotoInput)
@@ -528,7 +529,7 @@ class CreateUpdatePetFragment : Fragment() {
         unlockViews()
 
         // show message + return to previous activity/fragment
-        if(requireActivity().intent.getStringExtra("fragmentType") == "pet_profile_pet_manager") {
+        if(requireActivity().intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
             Toast.makeText(context, context?.getText(R.string.update_pet_successful), Toast.LENGTH_LONG).show()
             savePetDataForPetProfile()
             fragmentManager?.popBackStack()

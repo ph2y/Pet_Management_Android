@@ -33,6 +33,7 @@ import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.community.post.PostFragment
+import com.sju18001.petmanagement.ui.myPet.MyPetActivityFragmentTypes
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
 
 class PetProfileFragment : Fragment(){
@@ -71,7 +72,7 @@ class PetProfileFragment : Fragment(){
         if(!myPetViewModel.loadedPetFromIntent) { savePetDataForPetProfile() }
 
         // show certain views depending on the fragment type
-        if(myPetViewModel.fragmentType == "pet_profile_pet_manager") {
+        if(myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
             if (!myPetViewModel.isRepresentativePetProfile) {
                 binding.setRepresentativeButton.visibility = View.VISIBLE
             }
@@ -82,12 +83,14 @@ class PetProfileFragment : Fragment(){
             binding.petInfoLayout.background = null
 
             // for pet spinner
-            if (myPetViewModel.fragmentType == "pet_profile_community") {
+            if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_COMMUNITY) {
                 setPetSpinner()
             }
+
+            // for follow/unfollow button
         }
 
-        if (myPetViewModel.fragmentType == "pet_profile_pet_manager") {
+        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
             // Fragment 추가
             if(childFragmentManager.findFragmentById(R.id.post_fragment_container) == null){
                 val fragment = PostFragment.newInstance(requireActivity().intent.getLongExtra("petId", -1))
@@ -118,7 +121,7 @@ class PetProfileFragment : Fragment(){
         super.onStart()
 
         // for set representative button
-        if (myPetViewModel.fragmentType == "pet_profile_pet_manager") {
+        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
             binding.setRepresentativeButton.setOnClickListener {
                 val builder = AlertDialog.Builder(activity)
                 builder.setMessage(myPetViewModel.petNameValueProfile + context?.getString(R.string.set_representative_message))
@@ -137,7 +140,7 @@ class PetProfileFragment : Fragment(){
         }
 
         // for pet update and delete button
-        if (myPetViewModel.fragmentType == "pet_profile_pet_manager") {
+        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
             binding.updatePetButton.setOnClickListener {
                 // save pet data to ViewModel(for pet update)
                 savePetDataForPetUpdate()
@@ -309,7 +312,7 @@ class PetProfileFragment : Fragment(){
     private fun savePetDataForPetProfile() {
         myPetViewModel.loadedPetFromIntent = true
         myPetViewModel.petIdValue = requireActivity().intent.getLongExtra("petId", -1)
-        if (myPetViewModel.fragmentType == "pet_profile_pet_manager") {
+        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
             myPetViewModel.petPhotoByteArrayProfile = Util.getByteArrayFromSharedPreferences(requireContext(),
                 requireContext().getString(R.string.pref_name_byte_arrays),
                 requireContext().getString(R.string.data_name_my_pet_selected_pet_photo))
@@ -337,7 +340,7 @@ class PetProfileFragment : Fragment(){
         myPetViewModel.petGenderValueProfile = requireActivity().intent.getStringExtra("petGender").toString()
         myPetViewModel.petAgeValueProfile = requireActivity().intent.getStringExtra("petAge").toString()
         myPetViewModel.petMessageValueProfile = requireActivity().intent.getStringExtra("petMessage").toString()
-        if (myPetViewModel.fragmentType == "pet_profile_pet_manager") {
+        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
             myPetViewModel.isRepresentativePetProfile = requireActivity().intent.getBooleanExtra("isRepresentativePet", false)
         }
         else {
@@ -507,10 +510,10 @@ class PetProfileFragment : Fragment(){
             binding.petPhoto.rotation = myPetViewModel.petPhotoRotationProfile?: 0f
 
             binding.topFixedLayout.visibility = View.VISIBLE
-            if (myPetViewModel.fragmentType == "pet_profile_community") {
+            if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_COMMUNITY) {
                 binding.usernameAndPetsLayout.visibility = View.VISIBLE
             }
-            if(myPetViewModel.fragmentType == "pet_profile_pet_manager"){
+            if(myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER){
                 binding.buttonsLayout.visibility = View.VISIBLE
             }
 

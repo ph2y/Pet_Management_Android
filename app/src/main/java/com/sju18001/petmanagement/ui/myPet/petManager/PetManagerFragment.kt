@@ -20,6 +20,7 @@ import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.FetchPetReqDto
 import com.sju18001.petmanagement.ui.myPet.MyPetActivity
+import com.sju18001.petmanagement.ui.myPet.MyPetActivityFragmentTypes
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification.Companion.cancelAll
@@ -62,7 +63,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
         // Initialize RecyclerView
         adapter = PetListAdapter(this, requireActivity(), {
             val myPetActivityIntent = Intent(context, MyPetActivity::class.java)
-            myPetActivityIntent.putExtra("fragmentType", "create_pet")
+            myPetActivityIntent.putExtra("fragmentType", MyPetActivityFragmentTypes.CREATE_PET)
             startActivity(myPetActivityIntent)
             requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
         }, {

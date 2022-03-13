@@ -10,6 +10,14 @@ import com.sju18001.petmanagement.ui.myPet.petScheduleManager.CreateUpdatePetSch
 import com.sju18001.petmanagement.ui.myPet.petManager.CreateUpdatePetFragment
 import com.sju18001.petmanagement.ui.myPet.petManager.PetProfileFragment
 
+object MyPetActivityFragmentTypes {
+    const val CREATE_PET = "create_pet"
+    const val PET_PROFILE_PET_MANAGER = "pet_profile_pet_manager"
+    const val PET_PROFILE_COMMUNITY = "pet_profile_community"
+    const val CREATE_PET_SCHEDULE = "create_pet_schedule"
+    const val UPDATE_PET_SCHEDULE = "update_pet_schedule"
+}
+
 class MyPetActivity : AppCompatActivity() {
 
     // variable for view binding
@@ -34,9 +42,9 @@ class MyPetActivity : AppCompatActivity() {
 
         if(supportFragmentManager.findFragmentById(R.id.my_pet_activity_fragment_container) == null) {
             val fragment = when(fragmentType){
-                "create_pet" -> CreateUpdatePetFragment()
-                "pet_profile_pet_manager" -> PetProfileFragment()
-                "pet_profile_community" -> PetProfileFragment()
+                MyPetActivityFragmentTypes.CREATE_PET -> CreateUpdatePetFragment()
+                MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER -> PetProfileFragment()
+                MyPetActivityFragmentTypes.PET_PROFILE_COMMUNITY -> PetProfileFragment()
                 else -> CreateUpdatePetScheduleFragment()
             }
             supportFragmentManager
