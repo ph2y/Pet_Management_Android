@@ -62,14 +62,16 @@
             android:id="@+id/account_info_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
             android:visibility="gone"
             android:background="@drawable/border"
             app:layout_constraintTop_toBottomOf="@id/back_button_layout">
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:id="@+id/account_photo"
-                android:layout_width="34dp"
-                android:layout_height="34dp"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
                 android:layout_centerVertical="true"
                 android:src="@drawable/ic_baseline_account_circle_24"
                 app:civ_border_color="@color/carrot"
@@ -81,13 +83,17 @@
                 android:layout_height="wrap_content"
                 android:layout_toEndOf="@id/account_photo"
                 android:layout_toStartOf="@id/follow_unfollow_button"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="4dp"
                 android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/account_nickname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"/>
+                    android:paddingStart="6dp"
+                    android:paddingTop="12dp"
+                    android:textSize="18sp"/>
 
                 <Spinner
                     android:id="@+id/pet_name_spinner"
@@ -101,6 +107,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
                 android:visibility="gone"/>
 
         </RelativeLayout>
