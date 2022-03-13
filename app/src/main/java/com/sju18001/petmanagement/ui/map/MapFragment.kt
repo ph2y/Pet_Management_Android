@@ -378,14 +378,13 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
         for(i: Int in 0 until places.count()){
             var iconId: Int = when(places[i].categoryCode){
-                "SHOP" -> R.drawable.marker_store
-                "HOSPITAL" -> R.drawable.marker_hospital
-                "HOTEL" -> R.drawable.marker_default
-                "CAFE" -> R.drawable.marker_cafe
-                "SALON" -> R.drawable.marker_default
-                "PARK" -> R.drawable.marker_default
-                "SHELTER" -> R.drawable.marker_default
-                else -> R.drawable.marker_default
+                "SHOP" -> R.drawable.outline_shopping_basket_36dp
+                "HOSPITAL" -> R.drawable.outline_local_hospital_36dp
+                "HOTEL" -> R.drawable.outline_holiday_village_36dp
+                "CAFE" -> R.drawable.outline_local_cafe_36dp
+                "SALON" -> R.drawable.outline_content_cut_36dp
+                "PARK" -> R.drawable.outline_nature_36dp
+                else -> R.drawable.outline_house_36dp // SHELTER
             }
 
             val newMarker: MapPOIItem = MapPOIItem().apply{
