@@ -15,6 +15,11 @@ class MyPetViewModel(private val handle: SavedStateHandle) : ViewModel() {
             handle.set("fragmentType", value)
             field = value
         }
+    var petManagerApiIsLoading = handle.get<Boolean>("petManagerApiIsLoading")?: false
+        set(value) {
+            handle.set("petManagerApiIsLoading", value)
+            field = value
+        }
 
     // variables for author profile
     var loadedAuthorFromIntent = handle.get<Boolean>("loadedAuthorFromIntent")?: false
@@ -195,11 +200,6 @@ class MyPetViewModel(private val handle: SavedStateHandle) : ViewModel() {
     var petBirthIsYearOnlyValue = handle.get<Boolean>("petBirthIsYearOnlyValue")?: false
         set(value){
             handle.set("petBirthIsYearOnlyValue", value)
-            field = value
-        }
-    var petManagerApiIsLoading = handle.get<Boolean>("petManagerApiIsLoading")?: false
-        set(value) {
-            handle.set("petManagerApiIsLoading", value)
             field = value
         }
     var isDeletePhoto = handle.get<Boolean>("isDeletePhoto")?: false
