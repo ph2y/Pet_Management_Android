@@ -194,7 +194,7 @@ class PostFragment : Fragment() {
                 if(loggedInAccount.id == post.author.id){
                     showPostDialogForAuthor(post, position)
                 }else{
-                    showPostDialogForNonAuthor()
+                    showPostDialogForNonAuthor(post.id)
                 }
             }
 
@@ -493,16 +493,24 @@ class PostFragment : Fragment() {
         }, {}, {})
     }
 
-    private fun showPostDialogForNonAuthor(){
+    private fun showPostDialogForNonAuthor(postId: Long){
         val builder = AlertDialog.Builder(requireActivity())
         builder.setItems(arrayOf("신고"), DialogInterface.OnClickListener{ _, which ->
             when(which){
                 0 -> {
-                    // TODO: 기능 추가
+                    reportPost(postId)
                 }
             }
         })
             .create().show()
+    }
+
+    private fun reportPost(id: Long){
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .reportPostReq(ReportPostReqDto(id))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            Toast.makeText(context, getString(R.string.report_post_successful), Toast.LENGTH_LONG).show()
+        }, {}, {})
     }
 
 
