@@ -271,7 +271,7 @@ class PetProfileFragment : Fragment(){
             val spinnerArray: ArrayList<String> = ArrayList()
             for (pet in apiResponse) {
                 if (pet.id == myPetViewModel.accountRepresentativePetId) {
-                    spinnerArray.add(pet.name + " *")
+                    spinnerArray.add("[★] " + pet.name)
                 }
                 else {
                     spinnerArray.add(pet.name)
@@ -280,7 +280,7 @@ class PetProfileFragment : Fragment(){
 
             // set spinner adapter
             val spinnerArrayAdapter: ArrayAdapter<String> =
-                ArrayAdapter<String>(requireContext(), android.R.layout.simple_spinner_dropdown_item, spinnerArray)
+                ArrayAdapter<String>(requireContext(), R.layout.pet_name_spinner_item, spinnerArray)
             binding.petNameSpinner.adapter = spinnerArrayAdapter
 
             // set spinner listener
@@ -482,8 +482,7 @@ class PetProfileFragment : Fragment(){
 
     private fun setViewsWithAuthorData() {
         setPhotoViews()
-        val authorNickNameLabel = myPetViewModel.accountNicknameValue + "님의"
-        binding.accountNickname.text = authorNickNameLabel
+        binding.accountNickname.text = myPetViewModel.accountNicknameValue
     }
 
     private fun savePetDataForPetUpdate() {
