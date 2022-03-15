@@ -128,6 +128,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         try{
             mapView!!.currentLocationTrackingMode = MapView.CurrentLocationTrackingMode.TrackingModeOnWithoutHeadingWithoutMapMoving
             setMapCenterPointToCurrentLocation()
+            searchKeyword("", SessionManager.fetchLoggedInAccount(requireContext())!!.mapSearchRadius.toBigDecimal(), mapView!!)
         }catch(e: Exception){
             Toast.makeText(requireContext(), getString(R.string.map_permission_error_message), Toast.LENGTH_LONG).show()
             mapView = null // nullify함으로써 mapView 관련 작업이 수행되는 것을 방지한다.

@@ -140,6 +140,7 @@
     <string name="empty_pet_schedule_list_notification">아직 일정이 추가되지 않았어요.\n반려동물을 위한 일정을 추가해보세요!</string>
 
     <!-- Map Fragment -->
+    <string name="all">전체</string>
     <string name="cafe">카페</string>
     <string name="salon">미용</string>
     <string name="shop">샵</string>
