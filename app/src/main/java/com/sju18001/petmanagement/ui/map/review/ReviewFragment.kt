@@ -27,9 +27,7 @@ import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dao.Review
-import com.sju18001.petmanagement.restapi.dto.DeleteReviewReqDto
-import com.sju18001.petmanagement.restapi.dto.FetchAccountPhotoReqDto
-import com.sju18001.petmanagement.restapi.dto.FetchReviewReqDto
+import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.community.CommunityUtil
 import com.sju18001.petmanagement.ui.map.review.createUpdateReview.CreateUpdateReviewActivity
 
@@ -189,7 +187,7 @@ class ReviewFragment : Fragment() {
                 if(loggedInAccount.id == review.author.id){
                     showReviewDialogForAuthor(review, position)
                 }else{
-                    showReviewDialogForNonAuthor()
+                    showReviewDialogForNonAuthor(review.id)
                 }
             }
 
@@ -295,16 +293,24 @@ class ReviewFragment : Fragment() {
         }, {}, {})
     }
 
-    private fun showReviewDialogForNonAuthor(){
+    private fun showReviewDialogForNonAuthor(commentId: Long){
         val builder = AlertDialog.Builder(requireActivity())
         builder.setItems(arrayOf("신고"), DialogInterface.OnClickListener{ _, which ->
             when(which){
                 0 -> {
-                    // TODO
+                    reportReview(commentId)
                 }
             }
         })
             .create().show()
+    }
+
+    private fun reportReview(id: Long){
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .reportReviewReq(ReportReviewReqDto(id))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            Toast.makeText(context, getString(R.string.report_review_successful), Toast.LENGTH_LONG).show()
+        }, {}, {})
     }
 
     private fun setEmptyNotificationView(itemCount: Int?) {
