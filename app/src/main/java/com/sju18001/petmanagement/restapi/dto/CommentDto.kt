@@ -46,3 +46,11 @@ data class UpdateCommentReqDto(
 data class UpdateCommentResDto(
     val _metadata: DtoMetadata
 )
+
+data class ReportCommentReqDto (
+    val id: Long
+)
+
+data class ReportCommentResDto (
+    val _metadata: DtoMetadata
+)

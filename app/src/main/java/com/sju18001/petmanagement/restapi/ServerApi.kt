@@ -138,6 +138,9 @@ interface ServerApi {
     @POST("api/review/delete")
     fun deleteReviewReq(@Body deleteReviewReqDto: DeleteReviewReqDto): Call<DeleteReviewResDto>
 
+    @POST("api/review/report")
+    fun reportReviewReq(@Body reportReviewReqDto: ReportReviewReqDto): Call<ReportReviewResDto>
+
 
     // Post API
     @POST("api/post/create")
@@ -206,6 +209,8 @@ interface ServerApi {
     @POST("api/comment/delete")
     fun deleteCommentReq(@Body deleteCommentReqDto: DeleteCommentReqDto): Call<DeleteCommentResDto>
 
+    @POST("api/comment/report")
+    fun reportCommentReq(@Body reportCommentReqDto: ReportCommentReqDto): Call<ReportCommentResDto>
 
     // Like API
     @POST("api/like/create")

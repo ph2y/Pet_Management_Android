@@ -96,7 +96,7 @@ class CommentFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.adView.loadAd(AdRequest.Builder().build())
+        //binding.adView.loadAd(AdRequest.Builder().build())
     }
 
     override fun onDestroyView() {
@@ -127,8 +127,12 @@ class CommentFragment : Fragment() {
             }
 
             override fun onLongClickComment(authorId: Long, commentId: Long, commentContents: String, position: Int){
+                // 자기 자신이 쓴 글인가?
                 if(loggedInAccount.id == authorId){
-                    showCommentDialog(commentId, commentContents, position)
+                    showCommentDialogForAuthor(commentId, commentContents, position)
+                }
+                else {
+                    showCommentDialogForNonAuthor(commentId)
                 }
             }
 
@@ -232,7 +236,7 @@ class CommentFragment : Fragment() {
         }
     }
 
-    private fun showCommentDialog(id: Long, contents: String, position: Int){
+    private fun showCommentDialogForAuthor(id: Long, contents: String, position: Int){
         val builder = AlertDialog.Builder(requireActivity())
         builder.setItems(arrayOf("수정", "삭제"), DialogInterface.OnClickListener{ _, which ->
             when(which){
@@ -272,6 +276,26 @@ class CommentFragment : Fragment() {
             adapter.removeItem(position)
             adapter.notifyItemRemoved(position)
             adapter.notifyItemRangeChanged(position, adapter.itemCount)
+        }, {}, {})
+    }
+
+    private fun showCommentDialogForNonAuthor(commentId: Long){
+        val builder = AlertDialog.Builder(requireActivity())
+        builder.setItems(arrayOf("신고"), DialogInterface.OnClickListener{ _, which ->
+            when(which){
+                0 -> {
+                    reportComment(commentId)
+                }
+            }
+        })
+            .create().show()
+    }
+
+    private fun reportComment(id: Long){
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .reportCommentReq(ReportCommentReqDto(id))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            Toast.makeText(context, getString(R.string.report_comment_successful), Toast.LENGTH_LONG).show()
         }, {}, {})
     }
 

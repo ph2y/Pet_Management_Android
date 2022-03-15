@@ -48,3 +48,11 @@ data class DeleteReviewResDto(
     val _metadata: DtoMetadata,
     val deletedReviewRating: Int
 )
+
+data class ReportReviewReqDto (
+    val id: Long
+)
+
+data class ReportReviewResDto (
+    val _metadata: DtoMetadata
+)
