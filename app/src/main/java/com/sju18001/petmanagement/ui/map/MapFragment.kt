@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.ads.AdRequest
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sju18001.petmanagement.R
+import com.sju18001.petmanagement.controller.CustomProgressBar
 import com.sju18001.petmanagement.controller.Permission
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.controller.Util
@@ -152,7 +153,6 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                     }
 
                     mapView!!.setMapCenterPoint(currentMapPoint, true)
-                    // 현 위치를 처음 얻은 후, 해당 위치 주변의 모든 장소 불러오기
                     searchKeyword("", SessionManager.fetchLoggedInAccount(requireContext())!!.mapSearchRadius.toBigDecimal(), mapView!!)
                 }
             }
