@@ -8,7 +8,10 @@ import android.provider.OpenableColumns
 import android.util.Log
 import android.webkit.MimeTypeMap
 import androidx.core.content.FileProvider
+import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.controller.Util
+import com.sju18001.petmanagement.restapi.fcm.FcmUtil
+import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification
 import okhttp3.MediaType
 import okhttp3.RequestBody
 import retrofit2.Call
@@ -133,6 +136,18 @@ class ServerUtil {
                     inputStream.close()
                 }
             }
+        }
+
+        fun doLogout(context: Context) {
+            // pet_management.account의 fcm registration token을 지우는 게 아니라, fcm 서버에서의 token을 지웁니다.
+            // 이는 로그인 실패 시 pet_management로 api call을 보낼 수 없기 때문입니다. 따라서 자발적으로 로그아웃할 경우와
+            // 로그인을 실패하여 로그아웃될 경우를 모두 커버할 수 있게끔, fcm 서버의 token을 제거하는 것입니다.
+            FcmUtil.deleteFirebaseMessagingToken()
+
+            PetScheduleNotification.cancelAll(context)
+
+            SessionManager.removeUserToken(context)
+            SessionManager.removeLoggedInAccount(context)
         }
     }
 }

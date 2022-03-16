@@ -222,7 +222,7 @@ class UpdateAccountFragment : Fragment() {
                 .setPositiveButton(
                     R.string.confirm
                 ) { _, _ ->
-                    logout()
+                    logoutAndStartLoginActivity()
                 }
                 .setNegativeButton(
                     R.string.cancel
@@ -420,21 +420,13 @@ class UpdateAccountFragment : Fragment() {
         activity?.finish()
     }
 
-    private fun logout() {
-        // 현재 계정에 등록된 FCM Registration Token 제거 (null)
-        deleteFcmRegistrationToken()
-
-        PetScheduleNotification.cancelAll(requireContext())
-        
-        // remove user token in SessionManager
-        SessionManager.removeUserToken(requireContext())
-        SessionManager.removeLoggedInAccount(requireContext())
+    private fun logoutAndStartLoginActivity() {
+        ServerUtil.doLogout(requireContext())
 
         // go back to login activity
         val intent = Intent(context, LoginActivity::class.java)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK)
-
         startActivity(intent)
     }
 
@@ -444,16 +436,9 @@ class UpdateAccountFragment : Fragment() {
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             if(response.body()?._metadata?.status == true) {
                 Toast.makeText(context, context?.getText(R.string.account_delete_success), Toast.LENGTH_LONG).show()
-                logout()
+                logoutAndStartLoginActivity()
             }
         }, {}, {})
-    }
-
-    private fun deleteFcmRegistrationToken() {
-        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!).deleteFcmRegistrationTokenReq(
-            ServerUtil.getEmptyBody()
-        )
-        ServerUtil.enqueueApiCall(call, { isViewDestroyed }, requireContext(), {}, {}, {})
     }
 
     private fun saveAccountDataForAccountProfile() {
