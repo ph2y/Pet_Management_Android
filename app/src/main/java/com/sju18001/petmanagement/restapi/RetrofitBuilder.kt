@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 class RetrofitBuilder {
     companion object{
         const val BASE_URL = "http://220.85.251.6:9000"
-        //const val BASE_URL = "http://10.0.2.2:8080"
+        // const val BASE_URL = "http://10.0.2.2:8080"
 
         fun getServerApiWithToken(token: String): ServerApi{
             // 인터셉터 초기화

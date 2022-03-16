@@ -5,21 +5,9 @@
         android:title="@string/notification_preferences"
         app:iconSpaceReserved="false">
         <SwitchPreference
-            android:defaultValue="false"
-            android:key="feed_notification_preference"
-            android:title="@string/feed_notification"
-            app:allowDividerAbove="true"
-            app:iconSpaceReserved="false"/>
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="info_notification_preference"
-            android:title="@string/info_notification"
-            app:allowDividerAbove="true"
-            app:iconSpaceReserved="false"/>
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="ad_notification_preference"
-            android:title="@string/ad_notification"
+            android:defaultValue="true"
+            android:key="notification_preference"
+            android:title="@string/community_notification_preferences"
             app:allowDividerAbove="true"
             app:iconSpaceReserved="false"/>
     </PreferenceCategory>

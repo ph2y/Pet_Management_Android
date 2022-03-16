@@ -159,7 +159,6 @@
                             app:layout_constraintTop_toTopOf="parent" />
                     </androidx.constraintlayout.widget.ConstraintLayout>
 
-                    <!-- TODO: make this visible (after implementing this feature) -->
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/notification_lookup"
                         android:layout_width="match_parent"
@@ -167,7 +166,6 @@
                         android:background="@drawable/border_bottom_ghost_white2_2"
                         android:paddingStart="12dp"
                         android:paddingEnd="12dp"
-                        android:visibility="gone"
                         app:layout_constraintBottom_toTopOf="@id/theme_lookup"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@id/radius_lookup">

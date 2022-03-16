@@ -107,7 +107,7 @@ class SettingViewModel(private val handle: SavedStateHandle) : ViewModel() {
             field = value
         }
 
-    // ViewModel for radius preference fragment
+    // ViewModel for radius preferences fragment
     private val isViewModelInitializedForRadius: MutableLiveData<Boolean> by lazy {
         MutableLiveData<Boolean>(false)
     }
@@ -129,12 +129,12 @@ class SettingViewModel(private val handle: SavedStateHandle) : ViewModel() {
         isViewModelInitializedForRadius.value = true
     }
 
-    fun updateAccountWithNewRadius(context: Context, isViewDestroyed: Boolean, mapSearchRadius: Double) {
+    fun updateAccountWithNewRadius(context: Context, isViewDestroyed: Boolean, newRadius: Double) {
         val loggedInAccount = SessionManager.fetchLoggedInAccount(context)!!
         val updateAccountReqDto = UpdateAccountReqDto(
             loggedInAccount.email, loggedInAccount.phone, loggedInAccount.nickname, loggedInAccount.marketing,
             loggedInAccount.userMessage, loggedInAccount.representativePetId, loggedInAccount.notification,
-            mapSearchRadius
+            newRadius
         )
 
         isApiLoading.value = true
@@ -142,8 +142,8 @@ class SettingViewModel(private val handle: SavedStateHandle) : ViewModel() {
             .updateAccountReq(updateAccountReqDto)
         ServerUtil.enqueueApiCall(call, { isViewDestroyed }, context, { response ->
             if (response.body()?._metadata?.status == true) {
-                updateLoggedInAccount(context, loggedInAccount, mapSearchRadius)
-                radiusSlider.value = mapSearchRadius
+                updateLoggedInAccountWithNewRadius(context, loggedInAccount, newRadius)
+                radiusSlider.value = newRadius
                 isApiLoading.value = false
 
                 Toast.makeText(context, R.string.radius_update_success_message, Toast.LENGTH_SHORT).show()
@@ -151,12 +151,44 @@ class SettingViewModel(private val handle: SavedStateHandle) : ViewModel() {
         }, { isApiLoading.value = false }, { isApiLoading.value = false })
     }
 
-    private fun updateLoggedInAccount(context: Context, prevAccount: Account, mapSearchRadius: Double) {
+    private fun updateLoggedInAccountWithNewRadius(context: Context, prevAccount: Account, newRadius: Double) {
         val updatedAccount = Account(
             prevAccount.id, prevAccount.username, prevAccount.email, prevAccount.phone, prevAccount.password,
             prevAccount.marketing, prevAccount.nickname, prevAccount.photoUrl, prevAccount.userMessage,
             prevAccount.representativePetId, prevAccount.fcmRegistrationToken, prevAccount.notification,
-            mapSearchRadius
+            newRadius
+        )
+
+        SessionManager.saveLoggedInAccount(context, updatedAccount)
+    }
+
+
+    // For notification preferences fragment
+    fun updateAccountWithNewNotification(context: Context, isViewDestroyed: Boolean, newNotification: Boolean) {
+        val loggedInAccount = SessionManager.fetchLoggedInAccount(context)!!
+        val updateAccountReqDto = UpdateAccountReqDto(
+            loggedInAccount.email, loggedInAccount.phone, loggedInAccount.nickname, loggedInAccount.marketing,
+            loggedInAccount.userMessage, loggedInAccount.representativePetId, newNotification,
+            loggedInAccount.mapSearchRadius
+        )
+
+        isApiLoading.value = true
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(context)!!)
+            .updateAccountReq(updateAccountReqDto)
+        ServerUtil.enqueueApiCall(call, { isViewDestroyed }, context, { response ->
+            updateLoggedInAccountWithNewNotification(context, loggedInAccount, newNotification)
+            isApiLoading.value = false
+
+            Toast.makeText(context, R.string.notification_update_success_message, Toast.LENGTH_SHORT).show()
+        }, { isApiLoading.value = false }, { isApiLoading.value = false })
+    }
+
+    private fun updateLoggedInAccountWithNewNotification(context: Context, prevAccount: Account, newNotification: Boolean) {
+        val updatedAccount = Account(
+            prevAccount.id, prevAccount.username, prevAccount.email, prevAccount.phone, prevAccount.password,
+            prevAccount.marketing, prevAccount.nickname, prevAccount.photoUrl, prevAccount.userMessage,
+            prevAccount.representativePetId, prevAccount.fcmRegistrationToken, newNotification,
+            prevAccount.mapSearchRadius
         )
 
         SessionManager.saveLoggedInAccount(context, updatedAccount)
