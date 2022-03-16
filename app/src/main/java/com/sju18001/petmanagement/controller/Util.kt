@@ -26,8 +26,11 @@ import android.widget.TextView
 import android.widget.Toast
 import com.google.gson.Gson
 import com.sju18001.petmanagement.R
+import com.sju18001.petmanagement.restapi.RetrofitBuilder
+import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.dao.Place
 import com.sju18001.petmanagement.restapi.global.FileMetaData
+import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification
 import okhttp3.ResponseBody
 import org.json.JSONObject
 import java.io.*

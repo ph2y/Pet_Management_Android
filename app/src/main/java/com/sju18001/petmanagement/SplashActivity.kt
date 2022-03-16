@@ -3,6 +3,7 @@ package com.sju18001.petmanagement
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
@@ -10,6 +11,7 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.ui.login.LoginActivity
+import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification
 
 class SplashActivity: AppCompatActivity() {
     private var isViewDestroyed = false
@@ -48,17 +50,19 @@ class SplashActivity: AppCompatActivity() {
                     startActivity(intent)
                     finish()
                 }
-            }, { startLoginActivityAndFinish() }, { startLoginActivityAndFinish() })
+            }, { logoutAndStartLoginActivity() }, { logoutAndStartLoginActivity() })
         }
-        else { // token is empty -> LoginActivity
-            startLoginActivityAndFinish()
+        else { // token is empty
+            logoutAndStartLoginActivity()
         }
     }
 
-    private fun startLoginActivityAndFinish() {
-        val intent = Intent(this@SplashActivity, LoginActivity::class.java)
+    private fun logoutAndStartLoginActivity() {
+        ServerUtil.doLogout(applicationContext)
 
+        val intent = Intent(this@SplashActivity, LoginActivity::class.java)
         startActivity(intent)
+
         finish()
     }
 }
