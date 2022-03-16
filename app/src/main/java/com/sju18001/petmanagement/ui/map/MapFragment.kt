@@ -153,7 +153,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                     }
 
                     mapView!!.setMapCenterPoint(currentMapPoint, true)
-                    searchKeyword("", SessionManager.fetchLoggedInAccount(requireContext())!!.mapSearchRadius.toBigDecimal(), mapView!!)
+                    doSearch("")
                 }
             }
         }
