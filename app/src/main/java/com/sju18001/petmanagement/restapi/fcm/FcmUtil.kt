@@ -3,12 +3,6 @@ package com.sju18001.petmanagement.restapi.fcm
 import android.util.Log
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.messaging.FirebaseMessaging
-import com.sju18001.petmanagement.restapi.dao.FcmMessage
-import com.sju18001.petmanagement.restapi.dao.Notification
-import okhttp3.ResponseBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class FcmUtil {
     companion object {
