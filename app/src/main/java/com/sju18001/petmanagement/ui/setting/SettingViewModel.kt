@@ -146,7 +146,7 @@ class SettingViewModel(private val handle: SavedStateHandle) : ViewModel() {
                 radiusSlider.value = newRadius
                 isApiLoading.value = false
 
-                Toast.makeText(context, R.string.radius_update_success_message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, R.string.update_success_message, Toast.LENGTH_SHORT).show()
             }
         }, { isApiLoading.value = false }, { isApiLoading.value = false })
     }
@@ -179,7 +179,7 @@ class SettingViewModel(private val handle: SavedStateHandle) : ViewModel() {
             updateLoggedInAccountWithNewNotification(context, loggedInAccount, newNotification)
             isApiLoading.value = false
 
-            Toast.makeText(context, R.string.notification_update_success_message, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.update_success_message, Toast.LENGTH_SHORT).show()
         }, { isApiLoading.value = false }, { isApiLoading.value = false })
     }
 
