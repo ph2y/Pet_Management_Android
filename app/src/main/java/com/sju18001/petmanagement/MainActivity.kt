@@ -69,6 +69,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         val actionBar: ActionBar? = supportActionBar
+        actionBar?.elevation = 0f
         val navView: BottomNavigationView = binding.navView
 
         // get current selected item + set title
