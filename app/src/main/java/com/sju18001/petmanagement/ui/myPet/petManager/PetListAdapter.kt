@@ -2,6 +2,7 @@ package com.sju18001.petmanagement.ui.myPet.petManager
 
 import android.animation.ValueAnimator
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -13,6 +14,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.Util
@@ -27,11 +29,20 @@ import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.util.*
 
+interface PetListAdapterInterface {
+    fun onClickCreateButton()
+    fun restoreScroll()
+    fun onClickPetCard(
+        holder: PetListAdapter.HistoryListViewHolder,
+        resultList: List<Pet>,
+        position: Int
+    )
+}
+
 class PetListAdapter(
         private val startDragListener: OnStartDragListener,
         private val context: Context,
-        private val onClickCreateButton: ()->Unit,
-        private val restoreScroll: ()->Unit
+        private val petListAdapterInterface: PetListAdapterInterface
     ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), PetListDragAdapter.Listener {
 
@@ -76,7 +87,6 @@ class PetListAdapter(
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(getItemViewType(position)){
             R.layout.pet_list_item -> {
@@ -165,7 +175,7 @@ class PetListAdapter(
         clickable = true
 
         // 드래그가 끝난 뒤, 스크롤을 PagerSnapHelper에 맞춰서 복구
-        restoreScroll.invoke()
+        petListAdapterInterface.restoreScroll()
     }
 
     private fun setListenerOnView(holder: HistoryListViewHolder) {
@@ -179,52 +189,14 @@ class PetListAdapter(
         // click -> open pet profile
         holder.itemView.setOnClickListener {
             if(!clickable) return@setOnClickListener
-
-            val currentItem = resultList[holder.absoluteAdapterPosition]
-
-            // if pet photo not yet fetched
-            if (currentItem.photoUrl != null && holder.petPhoto.drawable == null) {
-                return@setOnClickListener
-            }
-
-            // set pet values to Intent
-            val petProfileIntent = Intent(holder.itemView.context, MyPetActivity::class.java)
-            if(currentItem.photoUrl != null) {
-                val bitmap = (holder.petPhoto.drawable as BitmapDrawable).bitmap
-                val stream = ByteArrayOutputStream()
-                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
-                val photoByteArray = stream.toByteArray()
-                Util.saveByteArrayToSharedPreferences(context, context.getString(R.string.pref_name_byte_arrays),
-                    context.getString(R.string.data_name_my_pet_selected_pet_photo), photoByteArray)
-            }
-            else {
-                Util.saveByteArrayToSharedPreferences(context, context.getString(R.string.pref_name_byte_arrays),
-                    context.getString(R.string.data_name_my_pet_selected_pet_photo), null)
-            }
-            petProfileIntent.putExtra("petId", currentItem.id)
-            petProfileIntent.putExtra("petName", currentItem.name)
-            petProfileIntent.putExtra("petBirth",
-                if(currentItem.yearOnly!!) currentItem.birth!!.substring(0, 4)
-                else currentItem.birth
-            )
-            petProfileIntent.putExtra("petSpecies", currentItem.species)
-            petProfileIntent.putExtra("petBreed", currentItem.breed)
-            petProfileIntent.putExtra("petGender", Util.getGenderSymbol(currentItem.gender, context))
-            petProfileIntent.putExtra("petAge", Util.getAgeFromBirth(currentItem.birth))
-            petProfileIntent.putExtra("petMessage", currentItem.message)
-            val isRepresentativePet = currentItem.id == SessionManager.fetchLoggedInAccount(context)?.representativePetId?: 0
-            petProfileIntent.putExtra("isRepresentativePet", isRepresentativePet)
-
-            // open activity
-            petProfileIntent.putExtra("fragmentType", MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER)
-            holder.itemView.context.startActivity(petProfileIntent)
-            (context as Activity).overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
+            if(holder.absoluteAdapterPosition == -1) return@setOnClickListener
+            petListAdapterInterface.onClickPetCard(holder, resultList, holder.absoluteAdapterPosition)
         }
     }
 
     private fun setListenerOnView(holder: CreatePetButtonViewHolder) {
         holder.createPetButton.setOnClickListener {
-            onClickCreateButton.invoke()
+            petListAdapterInterface.onClickCreateButton()
         }
     }
 

@@ -154,7 +154,7 @@ class PostFragment : Fragment() {
         adapter = PostListAdapter(arrayListOf(), arrayListOf(), arrayListOf())
 
         // 인터페이스 구현
-        adapter.communityPostListAdapterInterface = object: PostListAdapterInterface {
+        adapter.postListAdapterInterface = object: PostListAdapterInterface {
             override fun startCommentActivity(postId: Long) {
                 val commentActivityIntent = Intent(context, CommentActivity::class.java)
                 commentActivityIntent.putExtra("postId", postId)

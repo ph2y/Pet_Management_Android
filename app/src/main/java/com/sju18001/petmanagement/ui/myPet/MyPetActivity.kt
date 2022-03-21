@@ -2,6 +2,7 @@ package com.sju18001.petmanagement.ui.myPet
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import com.sju18001.petmanagement.R
@@ -58,6 +59,16 @@ class MyPetActivity : AppCompatActivity() {
         super.onSaveInstanceState(outState)
         outState.clear()
     }
+
+    /* TODO
+    override fun onBackPressed() {
+        val fragmentType = intent.getStringExtra("fragmentType")
+        if(fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER){
+            supportFinishAfterTransition()
+        }else{
+            super.onBackPressed()
+        }
+    }*/
 
     override fun finish() {
         super.finish()

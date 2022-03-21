@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -51,8 +52,6 @@ class PetProfileFragment : Fragment(){
 
     // true: 기본 상태, false: 특정 뷰들이 GONE인 상태
     private var isViewDetailed: Boolean = true
-
-    private var topFixedLayoutHeight = 0
 
     private var isFollowing: Boolean = false
 
@@ -99,11 +98,8 @@ class PetProfileFragment : Fragment(){
 
             // Set views
             binding.postFragmentContainer.layoutParams.height = Util.getScreenHeightInPixel(requireActivity())
-            binding.topFixedLayout.doOnLayout {
-                topFixedLayoutHeight = it.measuredHeight
-                binding.buttonsLayout.doOnPreDraw {
-                    setViewsForDetail(true)
-                }
+            binding.buttonsLayout.doOnPreDraw {
+                setViewsForDetail(true)
             }
 
             binding.postFragmentContainer.post{
@@ -163,6 +159,7 @@ class PetProfileFragment : Fragment(){
 
         // for back button
         binding.backButton.setOnClickListener {
+            // TODO activity?.supportFinishAfterTransition()
             activity?.finish()
         }
 
@@ -241,12 +238,9 @@ class PetProfileFragment : Fragment(){
 
         // Set views
         binding.postFragmentContainer.layoutParams.height = Util.getScreenHeightInPixel(requireActivity())
-        binding.topFixedLayout.doOnLayout {
-            topFixedLayoutHeight = it.measuredHeight
-            binding.petMessage.doOnPreDraw { binding.buttonsLayout.doOnPreDraw {
-                setViewsForDetail(true)
-            }}
-        }
+        binding.petMessage.doOnPreDraw { binding.buttonsLayout.doOnPreDraw {
+            setViewsForDetail(true)
+        }}
 
         binding.postFragmentContainer.post{
             addListenerOnRecyclerView()
@@ -553,7 +547,6 @@ class PetProfileFragment : Fragment(){
         })
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("ClickableViewAccessibility")
     private fun addListenerOnRecyclerView(){
         val recyclerView = binding.postFragmentContainer.findViewById<RecyclerView>(R.id.recycler_view_post)
@@ -627,7 +620,6 @@ class PetProfileFragment : Fragment(){
             }
 
             binding.petProfileMainScrollView.scrollTo(0, 0)
-            (binding.petProfileMainScrollView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = topFixedLayoutHeight
         }else{
             // pet_info_layout 애니메이션
             TransitionManager.beginDelayedTransition(
@@ -652,8 +644,6 @@ class PetProfileFragment : Fragment(){
             }else{
                 binding.representativePetIcon.visibility = View.INVISIBLE
             }
-
-            (binding.petProfileMainScrollView.layoutParams as ViewGroup.MarginLayoutParams).topMargin = 0
         }
     }
 }
