@@ -118,7 +118,8 @@
     <androidx.core.widget.NestedScrollView
         android:id="@+id/pet_profile_main_scroll_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/top_fixed_layout"
         android:fillViewport="true"
         >
 
@@ -155,8 +156,8 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
-                        app:civ_border_width="2dp"
-                        app:civ_border_color="@color/carrot"/>
+                        app:civ_border_color="@color/beige"
+                        app:civ_border_width="4dp"/>
 
                     <ImageView
                         android:id="@+id/representative_pet_icon"

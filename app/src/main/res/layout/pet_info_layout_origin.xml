@@ -22,8 +22,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:civ_border_width="1dp"
-        app:civ_border_color="@color/carrot"/>
+        app:civ_border_color="@color/beige"
+        app:civ_border_width="4dp"/>
 
     <ImageView
         android:id="@+id/representative_pet_icon"
@@ -40,7 +40,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
-        android:maxLines="2"
+        android:maxLines="1"
         android:text="랄로"
         android:ellipsize="end"
         android:textSize="32sp"

@@ -1,9 +1,14 @@
 package com.sju18001.petmanagement.ui.myPet.petManager
 
+import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.graphics.Bitmap
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
+import android.util.Pair
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -24,6 +29,7 @@ import com.sju18001.petmanagement.ui.myPet.MyPetActivityFragmentTypes
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification.Companion.cancelAll
+import java.io.ByteArrayOutputStream
 import java.lang.reflect.Type
 
 class PetManagerFragment : Fragment(), OnStartDragListener {
@@ -61,15 +67,75 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
 
 
         // Initialize RecyclerView
-        adapter = PetListAdapter(this, requireActivity(), {
-            val myPetActivityIntent = Intent(context, MyPetActivity::class.java)
-            myPetActivityIntent.putExtra("fragmentType", MyPetActivityFragmentTypes.CREATE_PET)
-            startActivity(myPetActivityIntent)
-            requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
-        }, {
-            snapHelper.findSnapView(layoutManager)?.let {
-                val position = layoutManager.getPosition(it)
-                binding.myPetListRecyclerView.smoothScrollToPosition(position)
+        adapter = PetListAdapter(this, requireActivity(), object: PetListAdapterInterface{
+            override fun onClickCreateButton() {
+                val myPetActivityIntent = Intent(context, MyPetActivity::class.java)
+                myPetActivityIntent.putExtra("fragmentType", MyPetActivityFragmentTypes.CREATE_PET)
+                startActivity(myPetActivityIntent)
+            }
+
+            override fun restoreScroll() {
+                snapHelper.findSnapView(layoutManager)?.let {
+                    val position = layoutManager.getPosition(it)
+                    binding.myPetListRecyclerView.smoothScrollToPosition(position)
+                }
+            }
+
+            override fun onClickPetCard(
+                holder: PetListAdapter.HistoryListViewHolder,
+                dataSet: List<Pet>,
+                position: Int
+            ) {
+                val currentItem = dataSet[position]
+
+                // if pet photo not yet fetched
+                if (currentItem.photoUrl != null && holder.petPhoto.drawable == null) {
+                    return
+                }
+
+                // set pet values to Intent
+                val petProfileIntent = Intent(holder.itemView.context, MyPetActivity::class.java)
+                if(currentItem.photoUrl != null) {
+                    val bitmap = (holder.petPhoto.drawable as BitmapDrawable).bitmap
+                    val stream = ByteArrayOutputStream()
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                    val photoByteArray = stream.toByteArray()
+                    Util.saveByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
+                        requireContext().getString(R.string.data_name_my_pet_selected_pet_photo), photoByteArray)
+                }
+                else {
+                    Util.saveByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
+                        requireContext().getString(R.string.data_name_my_pet_selected_pet_photo), null)
+                }
+                petProfileIntent.putExtra("petId", currentItem.id)
+                petProfileIntent.putExtra("petName", currentItem.name)
+                petProfileIntent.putExtra("petBirth",
+                    if(currentItem.yearOnly!!) currentItem.birth!!.substring(0, 4)
+                    else currentItem.birth
+                )
+                petProfileIntent.putExtra("petSpecies", currentItem.species)
+                petProfileIntent.putExtra("petBreed", currentItem.breed)
+                petProfileIntent.putExtra("petGender", Util.getGenderSymbol(currentItem.gender, requireContext()))
+                petProfileIntent.putExtra("petAge", Util.getAgeFromBirth(currentItem.birth))
+                petProfileIntent.putExtra("petMessage", currentItem.message)
+                val isRepresentativePet = currentItem.id == SessionManager.fetchLoggedInAccount(requireContext())?.representativePetId?: 0
+                petProfileIntent.putExtra("isRepresentativePet", isRepresentativePet)
+
+                petProfileIntent.putExtra("fragmentType", MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER)
+
+                // open activity
+                /* TODO
+                val options = if(holder.representativePetIcon.visibility == View.VISIBLE){
+                    ActivityOptions.makeSceneTransitionAnimation(requireActivity(),
+                        Pair.create(layoutManager.findViewByPosition(position)?.findViewById(R.id.representative_pet_icon), "representative_pet_icon"),
+                        Pair.create(layoutManager.findViewByPosition(position)?.findViewById(R.id.pet_photo), "pet_photo")
+                    )
+                }else{
+                    ActivityOptions.makeSceneTransitionAnimation(requireActivity(), Pair.create(layoutManager.findViewByPosition(position)?.findViewById(R.id.pet_photo), "pet_photo"))
+                }
+                holder.itemView.context.startActivity(petProfileIntent, options.toBundle())*/
+                holder.itemView.context.startActivity(petProfileIntent)
+                requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
             }
         })
         binding.myPetListRecyclerView.adapter = adapter

@@ -28,7 +28,7 @@ interface PostListAdapterInterface {
 }
 
 class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCounts: ArrayList<Long>, private var isPostLiked: ArrayList<Boolean>) : RecyclerView.Adapter<PostListAdapter.ViewHolder>() {
-    lateinit var communityPostListAdapterInterface: PostListAdapterInterface
+    lateinit var postListAdapterInterface: PostListAdapterInterface
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
         val accountPhotoImage: ImageView = view.findViewById(R.id.account_photo)
@@ -77,34 +77,34 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
         // 댓글 버튼
         holder.commentButton.setOnClickListener {
             val item = dataSet[holder.absoluteAdapterPosition]
-            communityPostListAdapterInterface.startCommentActivity(item.id)
+            postListAdapterInterface.startCommentActivity(item.id)
         }
 
         // 좋아요 버튼
         holder.createLikeButton.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             val item = dataSet[position]
-            communityPostListAdapterInterface.createLike(item.id, holder, position)
+            postListAdapterInterface.createLike(item.id, holder, position)
         }
 
         // 좋아요 취소 버튼
         holder.deleteLikeButton.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             val item = dataSet[position]
-            communityPostListAdapterInterface.deleteLike(item.id, holder, position)
+            postListAdapterInterface.deleteLike(item.id, holder, position)
         }
 
         // general files button
         holder.generalFilesButton.setOnClickListener {
             val item = dataSet[holder.absoluteAdapterPosition]
-            communityPostListAdapterInterface.startGeneralFilesActivity(item.id, item.fileAttachments!!)
+            postListAdapterInterface.startGeneralFilesActivity(item.id, item.fileAttachments!!)
         }
 
         // ... 버튼
         holder.dialogButton.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             val item = dataSet[position]
-            communityPostListAdapterInterface.onClickPostFunctionButton(item, position)
+            postListAdapterInterface.onClickPostFunctionButton(item, position)
         }
     }
 
@@ -135,9 +135,9 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
 
     private fun setAccountPhoto(holder: ViewHolder, author: Account) {
         if(!author.photoUrl.isNullOrEmpty()){
-            communityPostListAdapterInterface.setAccountPhoto(author.id, holder)
+            postListAdapterInterface.setAccountPhoto(author.id, holder)
         }else{
-            communityPostListAdapterInterface.setAccountDefaultPhoto(holder)
+            postListAdapterInterface.setAccountDefaultPhoto(holder)
         }
     }
 
@@ -166,13 +166,13 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
             holder.dummyLayout.visibility = View.VISIBLE
 
             holder.viewPager.visibility = View.VISIBLE
-            holder.viewPager.adapter = PostMediaAdapter(communityPostListAdapterInterface, post.id, mediaAttachments, holder)
+            holder.viewPager.adapter = PostMediaAdapter(postListAdapterInterface, post.id, mediaAttachments, holder)
             holder.viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
         }else{
             holder.dummyLayout.visibility = View.GONE
 
             holder.viewPager.visibility = View.GONE
-            holder.viewPager.adapter = PostMediaAdapter(communityPostListAdapterInterface, 0, arrayOf(), holder)
+            holder.viewPager.adapter = PostMediaAdapter(postListAdapterInterface, 0, arrayOf(), holder)
         }
     }
 
@@ -182,7 +182,7 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
                 visibility = View.VISIBLE
                 adapter = PostTagListAdapter(ArrayList(serializedHashTags.split(',')))
 
-                layoutManager = LinearLayoutManager(communityPostListAdapterInterface.getContext())
+                layoutManager = LinearLayoutManager(postListAdapterInterface.getContext())
                 (layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.HORIZONTAL
             }
         }else{
