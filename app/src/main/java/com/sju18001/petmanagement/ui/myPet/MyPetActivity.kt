@@ -60,16 +60,6 @@ class MyPetActivity : AppCompatActivity() {
         outState.clear()
     }
 
-    /* TODO
-    override fun onBackPressed() {
-        val fragmentType = intent.getStringExtra("fragmentType")
-        if(fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER){
-            supportFinishAfterTransition()
-        }else{
-            super.onBackPressed()
-        }
-    }*/
-
     override fun finish() {
         super.finish()
         overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
