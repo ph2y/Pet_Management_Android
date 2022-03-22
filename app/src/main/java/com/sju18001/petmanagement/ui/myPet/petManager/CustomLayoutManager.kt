@@ -60,6 +60,8 @@ class CustomLayoutManager constructor(
         val centerPos = getCenterPosition() ?: return
         for(pos in centerPos-1..centerPos+1){
             val item = findViewByPosition(pos) ?: continue
+            if(item.tag == "DRAGGED") continue
+
             layoutItem(item)
         }
     }
