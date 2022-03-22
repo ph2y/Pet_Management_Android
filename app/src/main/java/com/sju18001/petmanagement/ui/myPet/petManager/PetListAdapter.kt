@@ -154,6 +154,7 @@ class PetListAdapter(
 
             itemViewHolder.itemView.scaleX = value
             itemViewHolder.itemView.scaleY = value
+            itemViewHolder.itemView.tag = "DRAGGED"
         }
         anim.duration = 100
         anim.start()
@@ -168,6 +169,7 @@ class PetListAdapter(
 
             itemViewHolder.itemView.scaleX = value
             itemViewHolder.itemView.scaleY = value
+            itemViewHolder.itemView.tag = ""
         }
         anim.duration = 100
         anim.start()
