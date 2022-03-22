@@ -159,7 +159,6 @@ class PetProfileFragment : Fragment(){
 
         // for back button
         binding.backButton.setOnClickListener {
-            // TODO activity?.supportFinishAfterTransition()
             activity?.finish()
         }
 

@@ -5,16 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/fragment_pet_pet_manager_parent_layout"
+    android:clipChildren="false"
     tools:context=".ui.myPet.petManager.PetManagerFragment">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fillViewport="true">
+        android:fillViewport="true"
+        android:clipChildren="false">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:clipChildren="false">
 
             <TextView
                 android:id="@+id/empty_pet_list_notification"
@@ -37,7 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:clipToPadding="false"
-                android:foregroundGravity="center_horizontal"
+                android:foregroundGravity="center"
                 android:paddingLeft="@dimen/my_pet_list_recycler_view_padding"
                 android:paddingTop="10dp"
                 android:paddingRight="@dimen/my_pet_list_recycler_view_padding"

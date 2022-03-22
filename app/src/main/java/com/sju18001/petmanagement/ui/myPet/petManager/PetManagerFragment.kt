@@ -6,9 +6,11 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.graphics.Bitmap
+import android.graphics.Rect
 import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.util.Pair
+import android.util.SparseArray
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -31,6 +33,7 @@ import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotific
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification.Companion.cancelAll
 import java.io.ByteArrayOutputStream
 import java.lang.reflect.Type
+import kotlin.math.max
 
 class PetManagerFragment : Fragment(), OnStartDragListener {
     // variable for ViewModel
@@ -46,7 +49,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
     lateinit var touchHelper: ItemTouchHelper
 
     private lateinit var snapHelper: SnapHelper
-    private lateinit var layoutManager: LinearLayoutManager
+    private lateinit var layoutManager: CustomLayoutManager
 
     private var isViewDestroyed = false
 
@@ -124,30 +127,21 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
                 petProfileIntent.putExtra("fragmentType", MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER)
 
                 // open activity
-                /* TODO
-                val options = if(holder.representativePetIcon.visibility == View.VISIBLE){
-                    ActivityOptions.makeSceneTransitionAnimation(requireActivity(),
-                        Pair.create(layoutManager.findViewByPosition(position)?.findViewById(R.id.representative_pet_icon), "representative_pet_icon"),
-                        Pair.create(layoutManager.findViewByPosition(position)?.findViewById(R.id.pet_photo), "pet_photo")
-                    )
-                }else{
-                    ActivityOptions.makeSceneTransitionAnimation(requireActivity(), Pair.create(layoutManager.findViewByPosition(position)?.findViewById(R.id.pet_photo), "pet_photo"))
-                }
-                holder.itemView.context.startActivity(petProfileIntent, options.toBundle())*/
                 holder.itemView.context.startActivity(petProfileIntent)
                 requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
             }
         })
         binding.myPetListRecyclerView.adapter = adapter
 
-        // Initialize LayoutManager
-        layoutManager = LinearLayoutManager(activity)
-        layoutManager.orientation = LinearLayoutManager.HORIZONTAL
-        binding.myPetListRecyclerView.layoutManager = layoutManager
-
         // Initialize PagerSnapHelper
         snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(binding.myPetListRecyclerView)
+
+        // Initialize LayoutManager
+        layoutManager = CustomLayoutManager.Builder(requireContext(), snapHelper)
+            .build()
+        layoutManager.orientation = LinearLayoutManager.HORIZONTAL
+        binding.myPetListRecyclerView.layoutManager = layoutManager
 
 
         // set adapter item change observer

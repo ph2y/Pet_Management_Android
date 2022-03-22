@@ -24,7 +24,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:civ_border_width="1dp"
-        app:civ_border_color="@color/beige"/>
+        app:civ_border_color="@color/carrot"/>
 
     <ImageView
         android:id="@+id/representative_pet_icon"
