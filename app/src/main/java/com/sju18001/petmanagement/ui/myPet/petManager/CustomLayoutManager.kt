@@ -14,7 +14,7 @@ class CustomLayoutManager constructor(
     snapHelper: SnapHelper,
     mode: Mode,
     minScale: Float,
-    xOffset: Float
+    yOffset: Float
 ): LinearLayoutManager(context) {
     private val snapHelper = snapHelper
     
@@ -24,8 +24,8 @@ class CustomLayoutManager constructor(
     /** 아이템이 작아지는 한도(예를 들어, 0.5f이면 최대 절반만큼 작아집니다.) */
     private val minScale = minScale
 
-    /** x값이 변하는 정도 */
-    private val xOffset = xOffset
+    /** y값이 변하는 정도 */
+    private val yOffset = yOffset
 
     override fun generateDefaultLayoutParams(): RecyclerView.LayoutParams {
         return RecyclerView.LayoutParams(
@@ -75,7 +75,7 @@ class CustomLayoutManager constructor(
         val itemCenterX = item.x + item.width/2
 
         when(mode){
-            Mode.X_MODE -> {
+            Mode.Y_MODE -> {
                 item.y = computeY(itemCenterX)
             }
             Mode.SCALE_MODE -> {
@@ -88,9 +88,9 @@ class CustomLayoutManager constructor(
 
     private fun computeY(itemCenterX: Float): Float {
         return if(itemCenterX < width/2) {
-            min(1f, itemCenterX / (width/2)) * xOffset - xOffset
+            min(1f, itemCenterX / (width/2)) * yOffset - yOffset
         }else{
-            min(1f, (width - itemCenterX) / (width/2)) * xOffset - xOffset
+            min(1f, (width - itemCenterX) / (width/2)) * yOffset - yOffset
         }
     }
 
@@ -104,15 +104,15 @@ class CustomLayoutManager constructor(
 
 
     enum class Mode {
-        SCALE_MODE, X_MODE
+        SCALE_MODE, Y_MODE
     }
 
     class Builder constructor(context: Context, snapHelper: SnapHelper){
         private val context = context
         private val snapHelper = snapHelper
-        private var mode = Mode.X_MODE
+        private var mode = Mode.Y_MODE
         private var minScale = 0.75f
-        private var xOffset = -75f
+        private var yOffset = -75f
 
         fun setMode(mode: Mode): Builder {
             this.mode = mode
@@ -124,13 +124,13 @@ class CustomLayoutManager constructor(
             return this
         }
 
-        fun setXOffset(xOffset: Float): Builder {
-            this.xOffset = xOffset
+        fun setYOffset(yOffset: Float): Builder {
+            this.yOffset = yOffset
             return this
         }
 
         fun build(): CustomLayoutManager {
-            return CustomLayoutManager(context, snapHelper, mode, minScale, xOffset)
+            return CustomLayoutManager(context, snapHelper, mode, minScale, yOffset)
         }
     }
 }
