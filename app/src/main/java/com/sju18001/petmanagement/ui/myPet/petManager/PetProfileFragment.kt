@@ -2,12 +2,10 @@ package com.sju18001.petmanagement.ui.myPet.petManager
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.os.Build
 import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -16,9 +14,7 @@ import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.ImageView
-import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.view.doOnLayout
 import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -97,7 +93,6 @@ class PetProfileFragment : Fragment(){
             }
 
             // Set views
-            binding.postFragmentContainer.layoutParams.height = Util.getScreenHeightInPixel(requireActivity())
             binding.buttonsLayout.doOnPreDraw {
                 setViewsForDetail(true)
             }
@@ -236,7 +231,6 @@ class PetProfileFragment : Fragment(){
             .commit()
 
         // Set views
-        binding.postFragmentContainer.layoutParams.height = Util.getScreenHeightInPixel(requireActivity())
         binding.petMessage.doOnPreDraw { binding.buttonsLayout.doOnPreDraw {
             setViewsForDetail(true)
         }}
@@ -570,6 +564,10 @@ class PetProfileFragment : Fragment(){
                     else if(y > event.y){
                         setViewsForDetail(false)
                     }
+                    // 스크롤 업 && 최상단에 위치
+                    else if (y < event.y && !recyclerView.canScrollVertically(-1)) {
+                        setViewsForDetail(true)
+                    }
                     true
                 }
             }
@@ -580,7 +578,7 @@ class PetProfileFragment : Fragment(){
 
         // 최상단에 위치할 시 VISIBLE
         recyclerView.setOnScrollChangeListener { _, _, _, _, _ ->
-            if(!recyclerView.canScrollVertically(-1)){
+            if(!recyclerView.canScrollVertically(-1) && recyclerView.scrollState != RecyclerView.SCROLL_STATE_IDLE){
                 setViewsForDetail(true)
             }
         }
@@ -617,8 +615,6 @@ class PetProfileFragment : Fragment(){
             }else{
                 binding.representativePetIcon.visibility = View.INVISIBLE
             }
-
-            binding.petProfileMainScrollView.scrollTo(0, 0)
         }else{
             // pet_info_layout 애니메이션
             TransitionManager.beginDelayedTransition(
