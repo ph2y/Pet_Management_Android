@@ -48,7 +48,7 @@ class PetProfileFragment : Fragment(){
     private val TRANSITION_DURATION = 300L
 
     // true: 기본 상태, false: 특정 뷰들이 GONE인 상태
-    private var isViewDetailed: Boolean = true
+    private var isViewDetailed: Boolean? = null
 
     private var isFollowing: Boolean = false
 
@@ -69,21 +69,13 @@ class PetProfileFragment : Fragment(){
         if(!myPetViewModel.loadedAuthorFromIntent) { saveAuthorDataForAuthorProfile() }
         if(!myPetViewModel.loadedPetFromIntent) { savePetDataForPetProfile() }
 
-        // show certain views depending on the fragment type
-        if(myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
+        // Pet manager / Community에 따라 초기 뷰 세팅을 달리 함
+        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
             if (!myPetViewModel.isRepresentativePetProfile) {
                 binding.setRepresentativeButton.visibility = View.VISIBLE
             }
             binding.buttonsLayout.visibility = View.VISIBLE
-        }
-        else {
-            binding.accountInfoLayout.visibility = View.VISIBLE
-            binding.petInfoLayout.background = null
 
-            setPetSpinner()
-        }
-
-        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
             // Fragment 추가
             if(childFragmentManager.findFragmentById(R.id.post_fragment_container) == null){
                 val fragment = PostFragment.newInstance(requireActivity().intent.getLongExtra("petId", -1))
@@ -93,14 +85,18 @@ class PetProfileFragment : Fragment(){
                     .commit()
             }
 
-            // Set views
-            binding.buttonsLayout.doOnPreDraw {
-                setViewsForDetail(true)
-            }
-
             binding.postFragmentContainer.post{
                 addListenerOnRecyclerView()
             }
+        }else{
+            binding.accountInfoLayout.visibility = View.VISIBLE
+            binding.petInfoLayout.background = null
+
+            setPetSpinner()
+        }
+
+        binding.buttonsLayout.doOnPreDraw {
+            setViewsForDetail(isOrientationPortrait())
         }
 
         return view
@@ -160,7 +156,7 @@ class PetProfileFragment : Fragment(){
 
         // for history text
         binding.textHistory.setOnClickListener {
-            setViewsForDetail(!isViewDetailed)
+            setViewsForDetail(isViewDetailed == false)
         }
 
         // for pet information layout
@@ -559,7 +555,7 @@ class PetProfileFragment : Fragment(){
                 MotionEvent.ACTION_UP -> {
                     // 클릭 시(== 터치 이동 반경이 짧을 때)
                     if(kotlin.math.abs(x - event.x) < 10 && kotlin.math.abs(y - event.y) < 10){
-                        setViewsForDetail(!isViewDetailed)
+                        setViewsForDetail(isViewDetailed == false)
                     }
                     // 스크롤 다운
                     else if(y > event.y){
@@ -585,62 +581,77 @@ class PetProfileFragment : Fragment(){
         }
     }
 
-    private fun setViewsForDetail(flag: Boolean){
+    private fun setViewsForDetail(flag: Boolean) {
+        if(flag == isViewDetailed) return // 중복된 작업을 피하기 위함
+
         isViewDetailed = flag
-
-        // Landscape(가로 모드)일 때는 세로 폭이 좁기 때문에 detailed view를 지원하지 않음
-        if(isViewDetailed && requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT){
-            // pet_info_layout 애니메이션
-            TransitionManager.beginDelayedTransition(
-                binding.petInfoLayout,
-                AutoTransition().setDuration(TRANSITION_DURATION).setInterpolator(AccelerateDecelerateInterpolator())
-            )
-            ConstraintSet().apply{
-                clone(context, R.layout.pet_info_layout_origin)
-            }.applyTo(binding.petInfoLayout)
-
-            binding.petPhoto.rotation = myPetViewModel.petPhotoRotationProfile?: 0f
-
-            binding.topFixedLayout.visibility = View.VISIBLE
-            if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_COMMUNITY) {
-                binding.accountInfoLayout.visibility = View.VISIBLE
-            }
-            if(myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER){
-                binding.buttonsLayout.visibility = View.VISIBLE
-            }
-
-            if (myPetViewModel.isRepresentativePetProfile){
-                binding.representativePetIcon.setImageResource(R.drawable.crown)
-                binding.representativePetIcon.scaleType = ImageView.ScaleType.FIT_XY
-
-                binding.representativePetIcon.visibility = View.VISIBLE
-            }else{
-                binding.representativePetIcon.visibility = View.INVISIBLE
-            }
+        if(flag){
+            setViewsDetailed()
         }else{
-            // pet_info_layout 애니메이션
-            TransitionManager.beginDelayedTransition(
-                binding.petInfoLayout,
-                ChangeBounds().setDuration(TRANSITION_DURATION).setInterpolator(AccelerateDecelerateInterpolator())
-            )
-            ConstraintSet().apply{
-                clone(context, R.layout.pet_info_layout_alter)
-            }.applyTo(binding.petInfoLayout)
+            setViewsNotDetailed()
+        }
+    }
 
-            binding.petPhoto.rotation = myPetViewModel.petPhotoRotationProfile?: 0f
+    private fun setViewsDetailed() {
+        // Landscape(가로 모드)일 때는 Detailed view를 사용하지 않습니다.
+        if(!isOrientationPortrait()) return
 
-            binding.topFixedLayout.visibility = View.GONE
-            binding.accountInfoLayout.visibility = View.GONE
-            binding.buttonsLayout.visibility = View.GONE
+        // pet_info_layout 애니메이션
+        TransitionManager.beginDelayedTransition(
+            binding.petInfoLayout,
+            AutoTransition().setDuration(TRANSITION_DURATION).setInterpolator(AccelerateDecelerateInterpolator())
+        )
+        ConstraintSet().apply{
+            clone(context, R.layout.pet_info_layout_origin)
+        }.applyTo(binding.petInfoLayout)
 
-            if (myPetViewModel.isRepresentativePetProfile){
-                binding.representativePetIcon.setImageResource(R.drawable.crown)
-                binding.representativePetIcon.scaleType = ImageView.ScaleType.FIT_XY
+        binding.petPhoto.rotation = myPetViewModel.petPhotoRotationProfile?: 0f
 
-                binding.representativePetIcon.visibility = View.VISIBLE
-            }else{
-                binding.representativePetIcon.visibility = View.INVISIBLE
-            }
+        binding.topFixedLayout.visibility = View.VISIBLE
+        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_COMMUNITY) {
+            binding.accountInfoLayout.visibility = View.VISIBLE
+        }
+        if(myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER){
+            binding.buttonsLayout.visibility = View.VISIBLE
+        }
+
+        if (myPetViewModel.isRepresentativePetProfile){
+            binding.representativePetIcon.setImageResource(R.drawable.crown)
+            binding.representativePetIcon.scaleType = ImageView.ScaleType.FIT_XY
+
+            binding.representativePetIcon.visibility = View.VISIBLE
+        }else{
+            binding.representativePetIcon.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun isOrientationPortrait(): Boolean{
+        return requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+    }
+
+    private fun setViewsNotDetailed() {
+        // pet_info_layout 애니메이션
+        TransitionManager.beginDelayedTransition(
+            binding.petInfoLayout,
+            ChangeBounds().setDuration(TRANSITION_DURATION).setInterpolator(AccelerateDecelerateInterpolator())
+        )
+        ConstraintSet().apply{
+            clone(context, R.layout.pet_info_layout_alter)
+        }.applyTo(binding.petInfoLayout)
+
+        binding.petPhoto.rotation = myPetViewModel.petPhotoRotationProfile?: 0f
+
+        binding.topFixedLayout.visibility = View.GONE
+        binding.accountInfoLayout.visibility = View.GONE
+        binding.buttonsLayout.visibility = View.GONE
+
+        if (myPetViewModel.isRepresentativePetProfile){
+            binding.representativePetIcon.setImageResource(R.drawable.crown)
+            binding.representativePetIcon.scaleType = ImageView.ScaleType.FIT_XY
+
+            binding.representativePetIcon.visibility = View.VISIBLE
+        }else{
+            binding.representativePetIcon.visibility = View.INVISIBLE
         }
     }
 }
