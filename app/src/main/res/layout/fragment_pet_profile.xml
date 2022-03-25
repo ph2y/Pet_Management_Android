@@ -10,7 +10,8 @@
         android:id="@+id/top_fixed_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/pet_profile_main_scroll_view">
 
         <RelativeLayout
             android:id="@+id/back_button_layout"
@@ -115,13 +116,12 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.core.widget.NestedScrollView
+    <LinearLayout
         android:id="@+id/pet_profile_main_scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/top_fixed_layout"
-        android:fillViewport="true"
-        >
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <LinearLayout
             android:descendantFocusability="blocksDescendants"
@@ -206,8 +206,7 @@
                         android:textSize="16sp"
                         android:textStyle="bold"
                         app:layout_constraintTop_toBottomOf="@id/pet_name"
-                        app:layout_constraintStart_toStartOf="parent"
-                        />
+                        app:layout_constraintStart_toStartOf="parent"/>
 
                     <LinearLayout
                         android:id="@+id/breed_and_gender_and_birth_layout"
@@ -247,6 +246,7 @@
                             android:text="21-09-13"
                             android:textSize="16dp"/>
                     </LinearLayout>
+
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <LinearLayout
@@ -255,7 +255,8 @@
                     android:layout_height="wrap_content"
                     android:paddingBottom="16dp"
                     android:visibility="gone"
-                    app:layout_constraintTop_toBottomOf="@id/pet_info_layout">
+                    app:layout_constraintTop_toBottomOf="@id/pet_info_layout"
+                    app:layout_constraintBottom_toTopOf="@id/text_history">
 
                     <TextView
                         android:id="@+id/update_pet_button"
@@ -271,13 +272,25 @@
 
                 </LinearLayout>
 
+                <TextView
+                    android:id="@+id/text_history"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="16dp"
+                    android:text="History"
+                    android:textSize="24dp"
+                    android:background="@drawable/border"
+                    app:layout_constraintTop_toBottomOf="@id/buttons_layout"
+                    app:layout_constraintBottom_toTopOf="@id/post_fragment_container"/>
+
                 <LinearLayout
                     android:id="@+id/post_data_loading_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/buttons_layout"
+                    app:layout_constraintTop_toBottomOf="@id/text_history"
                     app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     android:orientation="vertical"
                     android:visibility="gone">
 
@@ -295,27 +308,17 @@
 
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/text_history"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp"
-                    android:text="History"
-                    android:textSize="24dp"
-                    android:background="@drawable/border"
-                    app:layout_constraintTop_toBottomOf="@id/buttons_layout"
-                    app:layout_constraintBottom_toTopOf="@id/post_fragment_container"/>
                 <FrameLayout
                     android:id="@+id/post_fragment_container"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     app:layout_constraintTop_toBottomOf="@id/text_history"
-                    />
+                    app:layout_constraintBottom_toBottomOf="parent"/>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
+    </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
