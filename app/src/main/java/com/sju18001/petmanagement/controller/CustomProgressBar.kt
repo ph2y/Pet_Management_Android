@@ -48,12 +48,14 @@ class CustomProgressBar {
         }
 
         public fun removeProgressBar(view: View){
-            val viewGroup = (view as ViewGroup)
+            view.post{
+                val viewGroup = (view as ViewGroup)
 
-            for(i in 0 until viewGroup.childCount){
-                val child = viewGroup.getChildAt(i)
-                if(child.tag == "CustomProgressBar"){
-                    viewGroup.removeView(child)
+                for(i in 0 until viewGroup.childCount){
+                    val child = viewGroup.getChildAt(i)
+                    if(child.tag == "CustomProgressBar"){
+                        viewGroup.removeView(child)
+                    }
                 }
             }
         }

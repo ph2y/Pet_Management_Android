@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -139,12 +140,9 @@ class PostFragment : Fragment() {
         isViewDestroyed = false
 
         initializeAdapter()
-        CustomProgressBar.addProgressBar(requireContext(), binding.fragmentPostParentLayout, 80, R.color.white)
-        resetAndUpdatePostRecyclerView()
 
         return binding.root
     }
-
     
     /**
      * 리싸이클러뷰 초기화 함수
@@ -363,10 +361,7 @@ class PostFragment : Fragment() {
         pageIndex = 1
         adapter.resetItem()
 
-        // 데이터셋 변경 알림
-        binding.recyclerViewPost.post{
-            adapter.notifyDataSetChanged()
-        }
+        adapter.notifyDataSetChanged()
     }
 
     private fun getPetIdFromArguments(): Long? {
@@ -569,6 +564,9 @@ class PostFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+
+        CustomProgressBar.addProgressBar(requireContext(), binding.fragmentPostParentLayout, 80, R.color.white)
+        resetAndUpdatePostRecyclerView()
 
         binding.layoutSwipeRefresh.setOnRefreshListener {
             resetAndUpdatePostRecyclerView()
