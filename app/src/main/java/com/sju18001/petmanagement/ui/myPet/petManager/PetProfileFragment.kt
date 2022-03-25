@@ -88,15 +88,15 @@ class PetProfileFragment : Fragment(){
             binding.postFragmentContainer.post{
                 addListenerOnRecyclerView()
             }
+
+            binding.buttonsLayout.doOnPreDraw {
+                setViewsForDetail(isOrientationPortrait())
+            }
         }else{
             binding.accountInfoLayout.visibility = View.VISIBLE
             binding.petInfoLayout.background = null
 
             setPetSpinner()
-        }
-
-        binding.buttonsLayout.doOnPreDraw {
-            setViewsForDetail(isOrientationPortrait())
         }
 
         return view
@@ -229,7 +229,7 @@ class PetProfileFragment : Fragment(){
 
         // Set views
         binding.petMessage.doOnPreDraw { binding.buttonsLayout.doOnPreDraw {
-            setViewsForDetail(true)
+            setViewsForDetail(isOrientationPortrait())
         }}
 
         binding.postFragmentContainer.post{
