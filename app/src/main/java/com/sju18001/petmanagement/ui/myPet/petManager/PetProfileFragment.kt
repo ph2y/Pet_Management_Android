@@ -2,6 +2,7 @@ package com.sju18001.petmanagement.ui.myPet.petManager
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.res.Configuration
 import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.ChangeBounds
@@ -587,7 +588,8 @@ class PetProfileFragment : Fragment(){
     private fun setViewsForDetail(flag: Boolean){
         isViewDetailed = flag
 
-        if(isViewDetailed){
+        // Landscape(가로 모드)일 때는 세로 폭이 좁기 때문에 detailed view를 지원하지 않음
+        if(isViewDetailed && requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT){
             // pet_info_layout 애니메이션
             TransitionManager.beginDelayedTransition(
                 binding.petInfoLayout,
