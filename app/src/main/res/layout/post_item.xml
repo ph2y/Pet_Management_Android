@@ -198,7 +198,7 @@
                 app:layout_constraintStart_toEndOf="@id/delete_like_button"
                 />
             <ImageButton
-                android:id="@+id/general_files_button"
+                android:id="@+id/general_file_button"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_marginEnd="4dp"

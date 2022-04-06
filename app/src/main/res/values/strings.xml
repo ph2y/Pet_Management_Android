@@ -302,7 +302,7 @@
     <string name="no_more_reply">모든 답글을 불러왔습니다.</string>
     <string name="empty_comment_list_notification">아직 댓글이 없어요.\n새 댓글을 추가해보세요!</string>
     <string name="empty_pet_list_for_account_message"> 님의 등록된 펫이 없어요!</string>
-    <string name="general_files_dialog_title">일반 첨부파일</string>
+    <string name="general_file_dialog_title">일반 첨부파일</string>
     <string name="download_complete_message">다운로드를 완료했어요!</string>
     <string name="pet_list_empty_for_post_exception_message">펫 추가 후 글을 작성할 수 있어요!</string>
     <string name="empty_comment_exception_message">댓글 내용을 입력하세요.</string>

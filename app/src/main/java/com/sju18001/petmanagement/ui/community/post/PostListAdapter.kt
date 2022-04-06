@@ -23,7 +23,7 @@ interface PostListAdapterInterface {
     fun setAccountPhoto(id: Long, holder: PostListAdapter.ViewHolder)
     fun setAccountDefaultPhoto(holder: PostListAdapter.ViewHolder)
     fun setPostMedia(holder: PostMediaAdapter.ViewPagerHolder, postId: Long, index: Int, url: String, dummyImageView: ConstraintLayout)
-    fun startGeneralFilesActivity(postId: Long, fileAttachments: String)
+    fun startGeneralFileActivity(postId: Long, fileAttachments: String)
     fun getContext(): Context
 }
 
@@ -46,7 +46,7 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
         val createLikeButton: ImageButton = view.findViewById(R.id.create_like_button)
         val deleteLikeButton: ImageButton = view.findViewById(R.id.delete_like_button)
         val commentButton: ImageButton = view.findViewById(R.id.comment_button)
-        val generalFilesButton: ImageButton = view.findViewById(R.id.general_files_button)
+        val generalFileButton: ImageButton = view.findViewById(R.id.general_file_button)
         val likeCountTextView: TextView = view.findViewById(R.id.like_count)
         val timestampTextView: TextView = view.findViewById(R.id.text_timestamp)
     }
@@ -95,9 +95,9 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
         }
 
         // general files button
-        holder.generalFilesButton.setOnClickListener {
+        holder.generalFileButton.setOnClickListener {
             val item = dataSet[holder.absoluteAdapterPosition]
-            postListAdapterInterface.startGeneralFilesActivity(item.id, item.fileAttachments!!)
+            postListAdapterInterface.startGeneralFileActivity(item.id, item.fileAttachments!!)
         }
 
         // ... 버튼
@@ -118,7 +118,7 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
     private fun updateViews(holder: ViewHolder, post: Post, likedCount: Long, position: Int){
         setTextViews(holder, post, likedCount)
         setAccountPhoto(holder, post.author)
-        setGeneralFilesButton(holder, post.fileAttachments)
+        setGeneralFileButton(holder, post.fileAttachments)
         setLikeButton(holder, position)
         setViewPager(holder, post)
         setTag(holder, post.serializedHashTags)
@@ -141,8 +141,8 @@ class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCou
         }
     }
 
-    private fun setGeneralFilesButton(holder: ViewHolder, fileAttachments: String?) {
-        holder.generalFilesButton.visibility =
+    private fun setGeneralFileButton(holder: ViewHolder, fileAttachments: String?) {
+        holder.generalFileButton.visibility =
             if(fileAttachments.isNullOrEmpty()) View.GONE
             else View.VISIBLE
     }

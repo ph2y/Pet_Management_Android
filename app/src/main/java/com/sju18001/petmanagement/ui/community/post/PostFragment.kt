@@ -29,7 +29,7 @@ import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.restapi.global.FileType
 import com.sju18001.petmanagement.ui.community.comment.CommentActivity
 import com.sju18001.petmanagement.ui.community.post.createUpdatePost.CreateUpdatePostActivity
-import com.sju18001.petmanagement.ui.community.post.generalFiles.GeneralFilesActivity
+import com.sju18001.petmanagement.ui.community.post.generalFile.GeneralFileActivity
 import java.net.URLEncoder
 
 class PostFragment : Fragment() {
@@ -222,11 +222,11 @@ class PostFragment : Fragment() {
                 }
             }
 
-            override fun startGeneralFilesActivity(postId: Long, fileAttachments: String) {
-                val generalFilesActivityIntent = Intent(context, GeneralFilesActivity::class.java)
-                generalFilesActivityIntent.putExtra("postId", postId)
-                generalFilesActivityIntent.putExtra("fileAttachments", fileAttachments)
-                startActivity(generalFilesActivityIntent)
+            override fun startGeneralFileActivity(postId: Long, fileAttachments: String) {
+                val generalFileActivityIntent = Intent(context, GeneralFileActivity::class.java)
+                generalFileActivityIntent.putExtra("postId", postId)
+                generalFileActivityIntent.putExtra("fileAttachments", fileAttachments)
+                startActivity(generalFileActivityIntent)
             }
 
             override fun getContext(): Context {
@@ -456,7 +456,7 @@ class PostFragment : Fragment() {
             Util.getArrayFromMediaAttachments(post.videoAttachments).size
         )
         res.putExtra(
-            "originalGeneralFilesCount",
+            "originalGeneralFileCount",
             Util.getArrayFromMediaAttachments(post.fileAttachments).size
         )
 

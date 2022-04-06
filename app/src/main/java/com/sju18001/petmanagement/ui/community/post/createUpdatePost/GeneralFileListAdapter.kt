@@ -19,13 +19,13 @@ class GeneralFileListAdapter(private val createUpdatePostViewModel: CreateUpdate
     private var resultList = mutableListOf<String>()
 
     class HistoryListViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val fileName: TextView = view.findViewById(R.id.general_files_name)
+        val fileName: TextView = view.findViewById(R.id.general_file_name)
         val deleteButton: ImageView = view.findViewById(R.id.delete_button)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryListViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.uploaded_general_files_list_item, parent, false)
+            .inflate(R.layout.uploaded_general_file_list_item, parent, false)
 
         val holder = HistoryListViewHolder(view)
         setListenerOnView(holder)
