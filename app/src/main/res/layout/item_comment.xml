@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/layout_comment"
+    android:id="@+id/constraintlayout_comment"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="10dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/image_profile"
+        android:id="@+id/circleimageview_comment_profile"
         android:layout_width="36dp"
         android:layout_height="36dp"
         android:src="@drawable/marker_pet"
@@ -24,17 +25,17 @@
         android:layout_marginLeft="10dp"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/image_profile"
+        app:layout_constraintStart_toEndOf="@id/circleimageview_comment_profile"
         app:layout_constraintEnd_toEndOf="parent"
         >
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_contents"
+            android:id="@+id/constraintlayout_comment_contents"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent">
             <TextView
-                android:id="@+id/text_nickname"
+                android:id="@+id/textview_comment_nickname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="zimmerman"
@@ -44,7 +45,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 />
             <TextView
-                android:id="@+id/text_contents"
+                android:id="@+id/textview_comment_contents"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="hi"
@@ -56,13 +57,13 @@
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_util"
+            android:id="@+id/constraintlayout_comment_footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/layout_contents"
+            app:layout_constraintTop_toBottomOf="@id/constraintlayout_comment_contents"
             app:layout_constraintStart_toStartOf="parent">
             <TextView
-                android:id="@+id/text_timestamp"
+                android:id="@+id/textview_comment_timestamp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="36분"
@@ -70,22 +71,22 @@
                 app:layout_constraintStart_toStartOf="parent"
                 />
             <TextView
-                android:id="@+id/text_reply"
+                android:id="@+id/textview_comment_reply"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/reply_button"
                 android:layout_marginLeft="15dp"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/text_timestamp"
+                app:layout_constraintStart_toEndOf="@id/textview_comment_timestamp"
                 />
         </androidx.constraintlayout.widget.ConstraintLayout>
         <TextView
-            android:id="@+id/text_load_reply"
+            android:id="@+id/textview_comment_loadreply"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/load_reply_title"
             android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/layout_util"
-            app:layout_constraintStart_toStartOf="@id/layout_util"/>
+            app:layout_constraintTop_toBottomOf="@id/constraintlayout_comment_footer"
+            app:layout_constraintStart_toStartOf="@id/constraintlayout_comment_footer"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

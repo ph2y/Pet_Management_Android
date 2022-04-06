@@ -1,7 +1,6 @@
 package com.sju18001.petmanagement.ui.community.comment
 
 import android.app.Activity
-import android.os.Build
 import android.text.Spannable
 import android.text.SpannableString
 import android.text.style.LeadingMarginSpan
@@ -10,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
@@ -36,18 +34,18 @@ class CommentListAdapter(
     lateinit var commentListAdapterInterface: CommentListAdapterInterface
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
-        val commentLayout: ConstraintLayout = view.findViewById(R.id.layout_comment)
-        val profileImage: ImageView = view.findViewById(R.id.image_profile)
-        val nicknameTextView: TextView = view.findViewById(R.id.text_nickname)
-        val contentsTextView: TextView = view.findViewById(R.id.text_contents)
-        val timestampTextView: TextView = view.findViewById(R.id.text_timestamp)
-        val replyTextView: TextView = view.findViewById(R.id.text_reply)
-        val loadReplyTextView: TextView = view.findViewById(R.id.text_load_reply)
+        val constraintLayout: ConstraintLayout = view.findViewById(R.id.constraintlayout_comment)
+        val profileCircleImageView: ImageView = view.findViewById(R.id.circleimageview_comment_profile)
+        val nicknameTextView: TextView = view.findViewById(R.id.textview_comment_nickname)
+        val contentsTextView: TextView = view.findViewById(R.id.textview_comment_contents)
+        val timestampTextView: TextView = view.findViewById(R.id.textview_comment_timestamp)
+        val replyTextView: TextView = view.findViewById(R.id.textview_comment_reply)
+        val loadReplyTextView: TextView = view.findViewById(R.id.textview_comment_loadreply)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.comment_item, parent, false)
+            .inflate(R.layout.item_comment, parent, false)
 
         val holder = ViewHolder(view)
         setListenerOnView(holder)
@@ -57,7 +55,7 @@ class CommentListAdapter(
 
     private fun setListenerOnView(holder: ViewHolder) {
         // start pet profile
-        holder.profileImage.setOnClickListener {
+        holder.profileCircleImageView.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             commentListAdapterInterface.startPetProfile(dataSet[position].author)
         }
@@ -73,7 +71,7 @@ class CommentListAdapter(
             }
         }
 
-        holder.commentLayout.setOnLongClickListener { _ ->
+        holder.constraintLayout.setOnLongClickListener { _ ->
             val position = holder.absoluteAdapterPosition
             commentListAdapterInterface.onLongClickComment(dataSet[position].author.id, dataSet[position].id, dataSet[position].contents, position)
             true
@@ -139,9 +137,9 @@ class CommentListAdapter(
         val isReply = dataSet[position].parentCommentId != null
         
         // 답글일 시 Margin 추가
-        val layoutParams = holder.commentLayout.layoutParams as ViewGroup.MarginLayoutParams
+        val layoutParams = holder.constraintLayout.layoutParams as ViewGroup.MarginLayoutParams
         layoutParams.leftMargin = if(isReply) 96 else 0
-        holder.commentLayout.layoutParams = layoutParams
+        holder.constraintLayout.layoutParams = layoutParams
 
         // 답글일 시 답글 달기 제거
         holder.replyTextView.visibility = if(isReply) View.GONE else View.VISIBLE
