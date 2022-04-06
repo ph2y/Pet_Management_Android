@@ -21,7 +21,7 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.dto.UpdateFcmRegistrationTokenReqDto
 import com.sju18001.petmanagement.restapi.fcm.FcmUtil
 import com.sju18001.petmanagement.ui.community.CommunityFragment
-import com.sju18001.petmanagement.ui.community.followerFollowing.FollowerFollowingActivity
+import com.sju18001.petmanagement.ui.community.follow.FollowActivity
 import com.sju18001.petmanagement.ui.map.MapFragment
 import com.sju18001.petmanagement.ui.setting.SettingFragment
 import com.sju18001.petmanagement.ui.myPet.MyPetFragment
@@ -245,7 +245,7 @@ class MainActivity : AppCompatActivity() {
             0 -> { return false }
             1 -> { return false }
             2 -> {
-                menuInflater.inflate(R.menu.follower_following_menu, menu)
+                menuInflater.inflate(R.menu.follow_menu, menu)
                 return true
             }
             3 -> { return false }
@@ -259,7 +259,7 @@ class MainActivity : AppCompatActivity() {
             1 -> { return false }
             2 -> {
                 // start follower following activity
-                startActivity(Intent(this, FollowerFollowingActivity::class.java))
+                startActivity(Intent(this, FollowActivity::class.java))
                 overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
 
                 return super.onOptionsItemSelected(item)

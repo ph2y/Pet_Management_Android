@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.ui.welcomePage
+package com.sju18001.petmanagement.ui.welcome
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,17 +9,17 @@ import android.view.ViewGroup
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import com.sju18001.petmanagement.MainActivity
-import com.sju18001.petmanagement.databinding.FragmentWelcomePageBinding
+import com.sju18001.petmanagement.databinding.FragmentWelcomeBinding
 
-class WelcomePageFragment : Fragment() {
-    private var _binding: FragmentWelcomePageBinding? = null
+class WelcomeFragment : Fragment() {
+    private var _binding: FragmentWelcomeBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentWelcomePageBinding.inflate(inflater, container, false)
+        _binding = FragmentWelcomeBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -28,7 +28,7 @@ class WelcomePageFragment : Fragment() {
 
         val tabLayout = binding.tabLayout
         val viewPager = binding.viewPager
-        viewPager.adapter = WelcomePageCollectionAdapter(this)
+        viewPager.adapter = WelcomeCollectionAdapter(this)
 
         TabLayoutMediator(tabLayout, viewPager){ tab, position ->
             tab.view.isClickable = false
@@ -52,11 +52,11 @@ class WelcomePageFragment : Fragment() {
         _binding = null
     }
 
-    class WelcomePageCollectionAdapter(fragment: Fragment): FragmentStateAdapter(fragment){
+    class WelcomeCollectionAdapter(fragment: Fragment): FragmentStateAdapter(fragment){
         override fun getItemCount(): Int = 1
 
         override fun createFragment(position: Int): Fragment {
-            return WelcomePageProfileFragment()
+            return WelcomeProfileFragment()
         }
     }
 }

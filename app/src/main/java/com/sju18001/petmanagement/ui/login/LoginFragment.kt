@@ -25,7 +25,7 @@ import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.login.createAccount.CreateAccountFragment
 import com.sju18001.petmanagement.ui.login.recovery.RecoveryFragment
-import com.sju18001.petmanagement.ui.welcomePage.WelcomePageActivity
+import com.sju18001.petmanagement.ui.welcome.WelcomeActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -193,7 +193,7 @@ class LoginFragment : Fragment() {
                             ServerUtil.enqueueApiCall(updateAccountCall, {isViewDestroyed}, requireContext(), {}, {}, {})
 
                             // 웰컴 페이지 호출
-                            val intent = Intent(context, WelcomePageActivity::class.java)
+                            val intent = Intent(context, WelcomeActivity::class.java)
                             SessionManager.saveUserToken(requireContext(), token)
                             response.body()?.run{
                                 // nickname에 username을 넣은 것에 유의할 것

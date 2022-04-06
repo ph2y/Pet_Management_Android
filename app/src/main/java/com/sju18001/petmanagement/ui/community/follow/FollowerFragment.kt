@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.ui.community.followerFollowing
+package com.sju18001.petmanagement.ui.community.follow
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -19,7 +19,7 @@ import com.sju18001.petmanagement.controller.SessionManager
 class FollowerFragment : Fragment() {
 
     // for shared ViewModel
-    private lateinit var followerFollowingViewModel: FollowerFollowingViewModel
+    private lateinit var followViewModel: FollowViewModel
 
     // variables for view binding
     private var _binding: FragmentFollowerBinding? = null
@@ -28,7 +28,7 @@ class FollowerFragment : Fragment() {
     // variables for RecyclerView
     private lateinit var followerAdapter: FollowerAdapter
     private var followingIdList: MutableList<Long> = mutableListOf()
-    private var followerList: MutableList<FollowerFollowingListItem> = mutableListOf()
+    private var followerList: MutableList<FollowListItem> = mutableListOf()
 
     private var isViewDestroyed = false
 
@@ -46,7 +46,7 @@ class FollowerFragment : Fragment() {
         // initialize RecyclerView
         followerAdapter = FollowerAdapter(requireContext(), object: FollowUnfollowButtonInterface {
             override fun updateFollowUnfollowButton() {
-                (parentFragment as FollowerFollowingFragment).updateFollowerIdList()
+                (parentFragment as FollowFragment).updateFollowerIdList()
             }
         })
         binding.followerRecyclerView.setHasFixedSize(true)
@@ -77,9 +77,9 @@ class FollowerFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         // initialize ViewModel
-        followerFollowingViewModel = ViewModelProvider(requireActivity(),
+        followViewModel = ViewModelProvider(requireActivity(),
             SavedStateViewModelFactory(requireActivity().application, requireActivity())
-        ).get(FollowerFollowingViewModel::class.java)
+        ).get(FollowViewModel::class.java)
     }
 
     override fun onResume() {
@@ -128,7 +128,7 @@ class FollowerFragment : Fragment() {
                 val isFollowing = it.id in followingIdList
                 val representativePetId = it.representativePetId
 
-                val item = FollowerFollowingListItem()
+                val item = FollowListItem()
                 item.setValues(hasPhoto, null, id, username, nickname!!, isFollowing, representativePetId)
                 followerList.add(item)
             }
@@ -136,7 +136,7 @@ class FollowerFragment : Fragment() {
             // set follower count
             val followerText = requireContext().getText(R.string.follower_fragment_title).toString() +
                     ' ' + followerList.size.toString()
-            followerFollowingViewModel.setFollowerTitle(followerText)
+            followViewModel.setFollowerTitle(followerText)
 
             // set RecyclerView
             followerAdapter.setResult(followerList)

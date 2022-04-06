@@ -39,7 +39,7 @@ class SettingActivity : AppCompatActivity() {
         // get fragment type and show it(for first launch)
         val fragmentType = intent.getStringExtra("fragmentType")
 
-        if(supportFragmentManager.findFragmentById(R.id.setting_activity_fragment_container) == null) {
+        if(supportFragmentManager.findFragmentById(R.id.constraintlayout_setting_fragmentcontainer) == null) {
             val fragment = when(fragmentType){
                 "update_account" -> {
                     actionBar?.setTitle(R.string.account)
@@ -73,7 +73,7 @@ class SettingActivity : AppCompatActivity() {
             }
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.setting_activity_fragment_container, fragment)
+                .add(R.id.constraintlayout_setting_fragmentcontainer, fragment)
                 .commit()
         }
     }

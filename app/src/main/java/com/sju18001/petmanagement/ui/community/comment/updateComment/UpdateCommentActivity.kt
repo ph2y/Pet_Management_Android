@@ -4,25 +4,25 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.databinding.ActivityUpdateCommentBinding
+import com.sju18001.petmanagement.databinding.ActivityUpdatecommentBinding
 
 
 class UpdateCommentActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityUpdateCommentBinding
+    private lateinit var binding: ActivityUpdatecommentBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityUpdateCommentBinding.inflate(layoutInflater)
+        binding = ActivityUpdatecommentBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         supportActionBar?.hide()
 
         // 프래그먼트 실행
-        if(supportFragmentManager.findFragmentById(R.id.update_comment_activity_fragment_container) == null){
+        if(supportFragmentManager.findFragmentById(R.id.constraintlayout_updatecomment_fragmentcontainer) == null){
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.update_comment_activity_fragment_container, UpdateCommentFragment())
+                .add(R.id.constraintlayout_updatecomment_fragmentcontainer, UpdateCommentFragment())
                 .commit()
         }
     }

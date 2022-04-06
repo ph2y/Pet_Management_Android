@@ -124,7 +124,7 @@
     <string name="gender">성별</string>
     <string name="pet_list_empty_for_schedule_exception_message">펫 추가 후 일정을 추가할 수 있어요!</string>
 
-    <!-- WelcomePage Fragment -->
+    <!-- Welcome Fragment -->
     <string name="skip_button">SKIP</string>
     <string name="welcome_page1_description_title">프로필을 등록하세요.</string>
     <string name="welcome_page1_description_content">자신만의 프로필을 꾸며보세요!</string>
@@ -308,7 +308,7 @@
     <string name="empty_comment_exception_message">댓글 내용을 입력하세요.</string>
 
     <!-- Follower/Following Fragment -->
-    <string name="follower_following_menu_title">팔로워/팔로잉</string>
+    <string name="follow_menu_title">팔로워/팔로잉</string>
     <string name="follower_fragment_title">팔로워</string>
     <string name="following_fragment_title">팔로잉</string>
     <string name="follow_button">팔로우</string>
