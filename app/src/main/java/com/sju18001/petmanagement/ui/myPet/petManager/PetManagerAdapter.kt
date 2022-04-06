@@ -18,37 +18,37 @@ import com.sju18001.petmanagement.restapi.dto.FetchPetPhotoReqDto
 import java.time.LocalDate
 import java.util.*
 
-interface PetListAdapterInterface {
+interface PetManagerAdapterInterface {
     fun onClickCreateButton()
     fun restoreScroll()
     fun onClickPetCard(
-        holder: PetListAdapter.HistoryListViewHolder,
+        holder: PetManagerAdapter.HistoryListViewHolder,
         resultList: List<Pet>,
         position: Int
     )
 }
 
-class PetListAdapter(
+class PetManagerAdapter(
         private val startDragListener: OnStartDragListener,
         private val context: Context,
-        private val petListAdapterInterface: PetListAdapterInterface
+        private val petManagerAdapterInterface: PetManagerAdapterInterface
     ) :
-    RecyclerView.Adapter<RecyclerView.ViewHolder>(), PetListDragAdapter.Listener {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>(), PetManagerDragAdapter.Listener {
 
     private var resultList = emptyList<Pet>()
 
     private var clickable: Boolean = true
 
     class HistoryListViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val petPhoto: ImageView = itemView.findViewById(R.id.pet_photo)
-        val representativePetIcon: ImageView = itemView.findViewById(R.id.representative_pet_icon)
-        val petName: TextView = itemView.findViewById(R.id.pet_name)
-        val petBreed: TextView = itemView.findViewById(R.id.pet_breed)
-        val petAge: TextView = itemView.findViewById(R.id.pet_age)
-        val petBirthLayout: LinearLayout = itemView.findViewById(R.id.layout_pet_birth)
-        val petBirth: TextView = itemView.findViewById(R.id.pet_birth)
-        val petGender: TextView = itemView.findViewById(R.id.pet_gender)
-        val petMessage: TextView = itemView.findViewById(R.id.pet_message)
+        val petPhoto: ImageView = itemView.findViewById(R.id.circleimageview_petmanager_petphoto)
+        val representativeIcon: ImageView = itemView.findViewById(R.id.imageview_petmanager_representativeicon)
+        val petName: TextView = itemView.findViewById(R.id.textview_petmanager_petname)
+        val petBreed: TextView = itemView.findViewById(R.id.textview_petmanager_petbreed)
+        val petAge: TextView = itemView.findViewById(R.id.textview_petmanager_petage)
+        val petBirthLayout: LinearLayout = itemView.findViewById(R.id.linearlayout_petmanager_petbirth)
+        val petBirth: TextView = itemView.findViewById(R.id.textview_petmanager_petbirth)
+        val petGender: TextView = itemView.findViewById(R.id.textview_petmanager_petgender)
+        val petMessage: TextView = itemView.findViewById(R.id.textview_petmanager_petmessage)
     }
 
     class CreatePetButtonViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -57,8 +57,8 @@ class PetListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when(viewType){
-            R.layout.pet_list_item -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.pet_list_item, parent, false)
+            R.layout.item_petmanager -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_petmanager, parent, false)
 
                 val holder = HistoryListViewHolder(view)
                 setListenerOnView(holder)
@@ -78,7 +78,7 @@ class PetListAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(getItemViewType(position)){
-            R.layout.pet_list_item -> {
+            R.layout.item_petmanager -> {
                 holder as HistoryListViewHolder
 
                 val currentItem = resultList[position]
@@ -86,11 +86,11 @@ class PetListAdapter(
                 // Set representative pet icon
                 val isRepresentativePet = currentItem.id == SessionManager.fetchLoggedInAccount(context)?.representativePetId?: 0
                 if (isRepresentativePet) {
-                    holder.representativePetIcon.setImageResource(R.drawable.crown)
-                    holder.representativePetIcon.scaleType = ImageView.ScaleType.FIT_XY
-                    holder.representativePetIcon.visibility = View.VISIBLE
+                    holder.representativeIcon.setImageResource(R.drawable.crown)
+                    holder.representativeIcon.scaleType = ImageView.ScaleType.FIT_XY
+                    holder.representativeIcon.visibility = View.VISIBLE
                 } else{
-                    holder.representativePetIcon.visibility = View.INVISIBLE
+                    holder.representativeIcon.visibility = View.INVISIBLE
                 }
 
                 // Set pet photo
@@ -112,7 +112,7 @@ class PetListAdapter(
         return if(position == resultList.size) {
             R.layout.item_createpetbutton
         } else {
-            R.layout.pet_list_item
+            R.layout.item_petmanager
         }
     }
 
@@ -166,7 +166,7 @@ class PetListAdapter(
         clickable = true
 
         // 드래그가 끝난 뒤, 스크롤을 PagerSnapHelper에 맞춰서 복구
-        petListAdapterInterface.restoreScroll()
+        petManagerAdapterInterface.restoreScroll()
     }
 
     private fun setListenerOnView(holder: HistoryListViewHolder) {
@@ -181,13 +181,13 @@ class PetListAdapter(
         holder.itemView.setOnClickListener {
             if(!clickable) return@setOnClickListener
             if(holder.absoluteAdapterPosition == -1) return@setOnClickListener
-            petListAdapterInterface.onClickPetCard(holder, resultList, holder.absoluteAdapterPosition)
+            petManagerAdapterInterface.onClickPetCard(holder, resultList, holder.absoluteAdapterPosition)
         }
     }
 
     private fun setListenerOnView(holder: CreatePetButtonViewHolder) {
         holder.iconImageView.setOnClickListener {
-            petListAdapterInterface.onClickCreateButton()
+            petManagerAdapterInterface.onClickCreateButton()
         }
     }
 

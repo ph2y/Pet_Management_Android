@@ -19,11 +19,11 @@ class CreateUpdatePostPetSelectorAdapter(private val createUpdatePostViewModel: 
     private var dataSet = mutableListOf<CreateUpdatePostPetSelectorItem>()
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val linearLayout: LinearLayout = view.findViewById(R.id.linearlayout_createupdatepostpetselector)
-        val representativeIconImageView: ImageView = view.findViewById(R.id.imageview_createupdatepostpetselector_representativeicon)
-        val photoCircleImageView: CircleImageView = view.findViewById(R.id.circleimageview_createupdatepostpetselector_photo)
-        val selectionIconCircleImageView: CircleImageView = view.findViewById(R.id.circleimageview_createupdatepostpetselector_selectionicon)
-        val nameTextView: TextView = view.findViewById(R.id.textview_createupdatepostpetselector_name)
+        val layout: LinearLayout = view.findViewById(R.id.linearlayout_createupdatepostpetselector)
+        val representativeIcon: ImageView = view.findViewById(R.id.imageview_createupdatepostpetselector_representativeicon)
+        val petPhoto: CircleImageView = view.findViewById(R.id.circleimageview_createupdatepostpetselector_petphoto)
+        val selectionIcon: CircleImageView = view.findViewById(R.id.circleimageview_createupdatepostpetselector_selectionicon)
+        val petName: TextView = view.findViewById(R.id.textview_createupdatepostpetselector_petname)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -39,33 +39,33 @@ class CreateUpdatePostPetSelectorAdapter(private val createUpdatePostViewModel: 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // set item views
         if (dataSet[position].petPhotoUrl != null) {
-            Glide.with(context).load(dataSet[position].petPhoto).into(holder.photoCircleImageView)
+            Glide.with(context).load(dataSet[position].petPhoto).into(holder.petPhoto)
         } else {
             Glide.with(context)
-                .load(context.getDrawable(R.drawable.ic_baseline_pets_60_with_padding)).into(holder.photoCircleImageView)
+                .load(context.getDrawable(R.drawable.ic_baseline_pets_60_with_padding)).into(holder.petPhoto)
         }
 
         if (dataSet[position].isRepresentativePet) {
-            holder.representativeIconImageView.visibility = View.VISIBLE
+            holder.representativeIcon.visibility = View.VISIBLE
         } else {
-            holder.representativeIconImageView.visibility = View.INVISIBLE
+            holder.representativeIcon.visibility = View.INVISIBLE
         }
 
         if (dataSet[position].isSelected) {
-            holder.linearLayout.alpha = 1f
-            holder.selectionIconCircleImageView.visibility = View.VISIBLE
+            holder.layout.alpha = 1f
+            holder.selectionIcon.visibility = View.VISIBLE
         } else {
-            holder.linearLayout.alpha = .5f
-            holder.selectionIconCircleImageView.visibility = View.INVISIBLE
+            holder.layout.alpha = .5f
+            holder.selectionIcon.visibility = View.INVISIBLE
         }
 
-        holder.nameTextView.text = dataSet[position].petName
+        holder.petName.text = dataSet[position].petName
     }
 
     override fun getItemCount(): Int = dataSet.size
 
     private fun setListenerOnView(holder: ViewHolder) {
-        holder.linearLayout.setOnClickListener {
+        holder.layout.setOnClickListener {
             val position = holder.absoluteAdapterPosition
 
             val previousSelectedIndex: Int = createUpdatePostViewModel.selectedPetIndex

@@ -137,11 +137,11 @@ class CommentFragment : Fragment() {
             }
 
             override fun setAccountPhoto(id: Long, holder: CommentListAdapter.ViewHolder) {
-                setAccountPhotoToImageView(id, holder.profileCircleImageView)
+                setAccountPhotoToImageView(id, holder.accountPhoto)
             }
 
             override fun setAccountDefaultPhoto(holder: CommentListAdapter.ViewHolder) {
-                holder.profileCircleImageView.setImageDrawable(requireContext().getDrawable(R.drawable.ic_baseline_account_circle_24))
+                holder.accountPhoto.setImageDrawable(requireContext().getDrawable(R.drawable.ic_baseline_account_circle_24))
             }
 
             override fun fetchReplyComment(pageIndex: Int, topReplyId: Long?, parentCommentId: Long, position: Int){

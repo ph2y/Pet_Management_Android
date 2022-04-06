@@ -31,8 +31,8 @@ class FollowingAdapter(val context: Context, private val followViewModel: Follow
 
     class HistoryListViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val cardView: View = view.findViewById(R.id.cardview_follow)
-        val accountPhotoCircleImageView: CircleImageView = view.findViewById(R.id.circleimageview_follow_accountphoto)
-        val accountNicknameTextView: TextView = view.findViewById(R.id.textview_follow_accountnickname)
+        val accountPhoto: CircleImageView = view.findViewById(R.id.circleimageview_follow_accountphoto)
+        val accountNickname: TextView = view.findViewById(R.id.textview_follow_accountnickname)
         val button: Button = view.findViewById(R.id.button_follow)
     }
 
@@ -54,16 +54,16 @@ class FollowingAdapter(val context: Context, private val followViewModel: Follow
                 setAccountPhoto(resultList[position].getId(), holder, position)
             }
             else {
-                holder.accountPhotoCircleImageView.setImageBitmap(resultList[position].getPhoto())
+                holder.accountPhoto.setImageBitmap(resultList[position].getPhoto())
             }
         }
         else {
-            holder.accountPhotoCircleImageView.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_account_circle_24))
+            holder.accountPhoto.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_account_circle_24))
         }
 
         // set account nickname
         val nicknameText = resultList[position].getNickname() + '님'
-        holder.accountNicknameTextView.text = nicknameText
+        holder.accountNickname.text = nicknameText
 
         // for follow/unfollow button
         holder.button.setBackgroundColor(context.getColor(R.color.border_line))
@@ -140,7 +140,7 @@ class FollowingAdapter(val context: Context, private val followViewModel: Follow
 
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, context, { response ->
             val photoBitmap = Util.getBitmapFromInputStream(response.body()!!.byteStream())
-            holder.accountPhotoCircleImageView.setImageBitmap(photoBitmap)
+            holder.accountPhoto.setImageBitmap(photoBitmap)
 
             val currentItem = resultList[position]
             currentItem.setValues(

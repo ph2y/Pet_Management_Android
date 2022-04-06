@@ -34,13 +34,13 @@ class CommentListAdapter(
     lateinit var commentListAdapterInterface: CommentListAdapterInterface
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
-        val constraintLayout: ConstraintLayout = view.findViewById(R.id.constraintlayout_comment)
-        val profileCircleImageView: ImageView = view.findViewById(R.id.circleimageview_comment_profile)
-        val nicknameTextView: TextView = view.findViewById(R.id.textview_comment_nickname)
-        val contentsTextView: TextView = view.findViewById(R.id.textview_comment_contents)
-        val timestampTextView: TextView = view.findViewById(R.id.textview_comment_timestamp)
-        val replyTextView: TextView = view.findViewById(R.id.textview_comment_reply)
-        val loadReplyTextView: TextView = view.findViewById(R.id.textview_comment_loadreply)
+        val layout: ConstraintLayout = view.findViewById(R.id.constraintlayout_comment)
+        val accountPhoto: ImageView = view.findViewById(R.id.circleimageview_comment_accountphoto)
+        val nickname: TextView = view.findViewById(R.id.textview_comment_nickname)
+        val contents: TextView = view.findViewById(R.id.textview_comment_contents)
+        val timestamp: TextView = view.findViewById(R.id.textview_comment_timestamp)
+        val reply: TextView = view.findViewById(R.id.textview_comment_reply)
+        val loadReply: TextView = view.findViewById(R.id.textview_comment_loadreply)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -55,35 +55,35 @@ class CommentListAdapter(
 
     private fun setListenerOnView(holder: ViewHolder) {
         // start pet profile
-        holder.profileCircleImageView.setOnClickListener {
+        holder.accountPhoto.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             commentListAdapterInterface.startPetProfile(dataSet[position].author)
         }
-        holder.nicknameTextView.setOnClickListener {
+        holder.nickname.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             commentListAdapterInterface.startPetProfile(dataSet[position].author)
         }
 
-        holder.replyTextView.setOnClickListener {
+        holder.reply.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             dataSet[position].author.nickname?.let {
                 commentListAdapterInterface.onClickReply(dataSet[position].id, it)
             }
         }
 
-        holder.constraintLayout.setOnLongClickListener { _ ->
+        holder.layout.setOnLongClickListener { _ ->
             val position = holder.absoluteAdapterPosition
             commentListAdapterInterface.onLongClickComment(dataSet[position].author.id, dataSet[position].id, dataSet[position].contents, position)
             true
         }
 
-        holder.loadReplyTextView.setOnClickListener {
+        holder.loadReply.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             commentListAdapterInterface.fetchReplyComment(pageIndices[position], null, dataSet[position].id, position)
             pageIndices[position] += 1
 
             // 답글 불러오기 -> 이전 답글 불러오기
-            holder.loadReplyTextView.text = commentListAdapterInterface.getActivity().getString(R.string.load_prev_reply_title)
+            holder.loadReply.text = commentListAdapterInterface.getActivity().getString(R.string.load_prev_reply_title)
         }
     }
 
@@ -92,15 +92,15 @@ class CommentListAdapter(
         updateViewHolderByDataSet(holder, dataSet[position], position)
         
         // 댓글 내용에 indent 추가
-        setSpanToContent(holder.nicknameTextView, holder.contentsTextView)
+        setSpanToContent(holder.nickname, holder.contents)
     }
 
     override fun getItemCount(): Int = dataSet.size
 
-    private fun updateViewHolderByDataSet(holder: CommentListAdapter.ViewHolder, data: Comment, position: Int){
-        holder.nicknameTextView.text = data.author.nickname
-        holder.contentsTextView.text = data.contents
-        holder.timestampTextView.text = Util.getTimestampForDisplay(data.timestamp)
+    private fun updateViewHolderByDataSet(holder: ViewHolder, data: Comment, position: Int){
+        holder.nickname.text = data.author.nickname
+        holder.contents.text = data.contents
+        holder.timestamp.text = Util.getTimestampForDisplay(data.timestamp)
 
         // Set photo
         if(!data.author.photoUrl.isNullOrEmpty()){
@@ -111,9 +111,9 @@ class CommentListAdapter(
 
         // 답글 불러오기 버튼 세팅
         if(topReplyIdList[position] == (-1).toLong()){
-            holder.loadReplyTextView.visibility = View.GONE
+            holder.loadReply.visibility = View.GONE
         }else{
-            holder.loadReplyTextView.visibility = View.VISIBLE
+            holder.loadReply.visibility = View.VISIBLE
         }
 
         // Comment, Reply를 구분하여 이에 따라 뷰 세팅
@@ -137,12 +137,12 @@ class CommentListAdapter(
         val isReply = dataSet[position].parentCommentId != null
         
         // 답글일 시 Margin 추가
-        val layoutParams = holder.constraintLayout.layoutParams as ViewGroup.MarginLayoutParams
+        val layoutParams = holder.layout.layoutParams as ViewGroup.MarginLayoutParams
         layoutParams.leftMargin = if(isReply) 96 else 0
-        holder.constraintLayout.layoutParams = layoutParams
+        holder.layout.layoutParams = layoutParams
 
         // 답글일 시 답글 달기 제거
-        holder.replyTextView.visibility = if(isReply) View.GONE else View.VISIBLE
+        holder.reply.visibility = if(isReply) View.GONE else View.VISIBLE
     }
 
     fun addItem(item: Comment){
