@@ -4,13 +4,13 @@ import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 
-class PetListDragAdapter(
-    private val adapter: PetListAdapter
+class PetManagerDragAdapter(
+    private val adapter: PetManagerAdapter
 ) : ItemTouchHelper.Callback() {
     public interface Listener {
         fun onRowMoved(fromPosition: Int, toPosition: Int)
-        fun onRowSelected(itemViewHolder: PetListAdapter.HistoryListViewHolder)
-        fun onRowClear(itemViewHolder: PetListAdapter.HistoryListViewHolder)
+        fun onRowSelected(itemViewHolder: PetManagerAdapter.HistoryListViewHolder)
+        fun onRowClear(itemViewHolder: PetManagerAdapter.HistoryListViewHolder)
     }
 
     private val SCROLL_SENSITIVITY = 20
@@ -33,7 +33,7 @@ class PetListDragAdapter(
 
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
         if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
-            if (viewHolder is PetListAdapter.HistoryListViewHolder) {
+            if (viewHolder is PetManagerAdapter.HistoryListViewHolder) {
                 adapter.onRowSelected(viewHolder)
             }
         }
@@ -41,7 +41,7 @@ class PetListDragAdapter(
     }
     override fun clearView(recyclerView: RecyclerView, viewHolder: RecyclerView.ViewHolder) {
         super.clearView(recyclerView, viewHolder)
-        if (viewHolder is PetListAdapter.HistoryListViewHolder) {
+        if (viewHolder is PetManagerAdapter.HistoryListViewHolder) {
             adapter.onRowClear(viewHolder)
         }
     }

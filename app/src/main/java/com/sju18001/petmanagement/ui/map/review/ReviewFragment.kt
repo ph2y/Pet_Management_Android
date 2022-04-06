@@ -170,12 +170,12 @@ class ReviewFragment : Fragment() {
                     .fetchAccountPhotoReq(FetchAccountPhotoReqDto(id))
                 ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
                     val photoBitmap = Util.getBitmapFromInputStream(response.body()!!.byteStream())
-                    holder.profileImage.setImageBitmap(photoBitmap)
+                    holder.accountPhoto.setImageBitmap(photoBitmap)
                 }, {}, {})
             }
 
             override fun setAccountDefaultPhoto(holder: ReviewListAdapter.ViewHolder) {
-                holder.profileImage.setImageDrawable(requireContext().getDrawable(R.drawable.ic_baseline_account_circle_24))
+                holder.accountPhoto.setImageDrawable(requireContext().getDrawable(R.drawable.ic_baseline_account_circle_24))
             }
 
             override fun onClickReviewFunctionButton(review: Review, position: Int) {

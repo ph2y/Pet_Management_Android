@@ -27,7 +27,7 @@ class ReviewListAdapter(
     lateinit var reviewListAdapterInterface: ReviewListAdapterInterface
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
-        val profileImage: ImageView = view.findViewById(R.id.image_profile)
+        val accountPhoto: ImageView = view.findViewById(R.id.circleimageview_review_accountphoto)
         val nicknameText: TextView = view.findViewById(R.id.text_nickname)
         val starImage1: ImageView = view.findViewById(R.id.image_star1)
         val starImage2: ImageView = view.findViewById(R.id.image_star2)
@@ -51,7 +51,7 @@ class ReviewListAdapter(
     }
 
     private fun setListenerOnView(holder:ViewHolder) {
-        holder.profileImage.setOnClickListener {
+        holder.accountPhoto.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             reviewListAdapterInterface.startPetProfile(dataSet[position].author)
         }

@@ -94,7 +94,7 @@
             android:id="@+id/textview_petprofile_petgender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/pet_breed"
+            android:layout_toEndOf="@id/textview_petprofile_petbreed"
             android:text="@string/pet_gender_male_symbol"
             android:textSize="16sp"/>
 
@@ -102,7 +102,7 @@
             android:id="@+id/textview_petprofile_genderandbirthseparator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/pet_gender"
+            android:layout_toEndOf="@id/textview_petprofile_petgender"
             android:text=", "
             android:textSize="16sp"/>
 
