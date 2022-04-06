@@ -29,7 +29,6 @@ import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.restapi.global.FileType
 import com.sju18001.petmanagement.ui.login.LoginActivity
-import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification
 import com.sju18001.petmanagement.ui.setting.SettingViewModel
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -130,30 +129,30 @@ class UpdateAccountFragment : Fragment() {
         binding.passwordChangeButton.setOnClickListener {
             val dialog = Dialog(requireActivity())
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setContentView(R.layout.change_password_dialog)
+            dialog.setContentView(R.layout.dialog_changepassword)
             dialog.show()
 
-            dialog.findViewById<EditText>(R.id.new_password_input).addTextChangedListener(object: TextWatcher {
+            dialog.findViewById<EditText>(R.id.edittext_changepassword_newpassword).addTextChangedListener(object: TextWatcher {
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     if(PatternRegex.checkPasswordRegex(s)) {
                         settingViewModel.accountNewPwValid = true
-                        dialog.findViewById<TextView>(R.id.new_password_invalid_message).visibility = View.GONE
+                        dialog.findViewById<TextView>(R.id.textview_changepassword_invalidnewpassword).visibility = View.GONE
                     }
                     else {
                         settingViewModel.accountNewPwValid = false
-                        dialog.findViewById<TextView>(R.id.new_password_invalid_message).visibility = View.VISIBLE
+                        dialog.findViewById<TextView>(R.id.textview_changepassword_invalidnewpassword).visibility = View.VISIBLE
                     }
-                    if(s.toString() == dialog.findViewById<EditText>(R.id.new_password_check_input).text.toString()) {
+                    if(s.toString() == dialog.findViewById<EditText>(R.id.edittext_changepassword_reconfirm).text.toString()) {
                         settingViewModel.accountNewPwCheckValid = true
-                        dialog.findViewById<TextView>(R.id.new_password_check_invalid_message).visibility = View.GONE
+                        dialog.findViewById<TextView>(R.id.textview_changepassword_invalidreconfirm).visibility = View.GONE
                     }
                     else {
                         settingViewModel.accountNewPwCheckValid = false
-                        dialog.findViewById<TextView>(R.id.new_password_check_invalid_message).visibility = View.VISIBLE
+                        dialog.findViewById<TextView>(R.id.textview_changepassword_invalidreconfirm).visibility = View.VISIBLE
                     }
 
                     // check validation
-                    dialog.findViewById<Button>(R.id.password_change_confirm_button).isEnabled =
+                    dialog.findViewById<Button>(R.id.button_changepassword_confirm).isEnabled =
                         settingViewModel.accountNewPwValid && settingViewModel.accountNewPwCheckValid
                                 && settingViewModel.accountPwValid
                 }
@@ -161,19 +160,19 @@ class UpdateAccountFragment : Fragment() {
                 override fun afterTextChanged(s: Editable?) {}
             })
 
-            dialog.findViewById<EditText>(R.id.new_password_check_input).addTextChangedListener(object: TextWatcher {
+            dialog.findViewById<EditText>(R.id.edittext_changepassword_reconfirm).addTextChangedListener(object: TextWatcher {
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                    if(s.toString() == dialog.findViewById<EditText>(R.id.new_password_input).text.toString()) {
+                    if(s.toString() == dialog.findViewById<EditText>(R.id.edittext_changepassword_newpassword).text.toString()) {
                          settingViewModel.accountNewPwCheckValid = true
-                        dialog.findViewById<TextView>(R.id.new_password_check_invalid_message).visibility = View.GONE
+                        dialog.findViewById<TextView>(R.id.textview_changepassword_invalidreconfirm).visibility = View.GONE
                     }
                     else {
                         settingViewModel.accountNewPwCheckValid = false
-                        dialog.findViewById<TextView>(R.id.new_password_check_invalid_message).visibility = View.VISIBLE
+                        dialog.findViewById<TextView>(R.id.textview_changepassword_invalidreconfirm).visibility = View.VISIBLE
                     }
 
                     // check validation
-                    dialog.findViewById<Button>(R.id.password_change_confirm_button).isEnabled =
+                    dialog.findViewById<Button>(R.id.button_changepassword_confirm).isEnabled =
                         settingViewModel.accountNewPwValid && settingViewModel.accountNewPwCheckValid
                                 && settingViewModel.accountPwValid
                 }
@@ -181,19 +180,19 @@ class UpdateAccountFragment : Fragment() {
                 override fun afterTextChanged(s: Editable?) {}
             })
 
-            dialog.findViewById<EditText>(R.id.password_input).addTextChangedListener(object: TextWatcher {
+            dialog.findViewById<EditText>(R.id.edittext_changepassword_oldpassword).addTextChangedListener(object: TextWatcher {
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                     if(PatternRegex.checkPasswordRegex(s)) {
                         settingViewModel.accountPwValid = true
-                        dialog.findViewById<TextView>(R.id.password_invalid_message).visibility = View.GONE
+                        dialog.findViewById<TextView>(R.id.textview_changepassword_invalidoldpassword).visibility = View.GONE
                     }
                     else {
                         settingViewModel.accountPwValid = false
-                        dialog.findViewById<TextView>(R.id.password_invalid_message).visibility = View.VISIBLE
+                        dialog.findViewById<TextView>(R.id.textview_changepassword_invalidoldpassword).visibility = View.VISIBLE
                     }
 
                     // check validation
-                    dialog.findViewById<Button>(R.id.password_change_confirm_button).isEnabled =
+                    dialog.findViewById<Button>(R.id.button_changepassword_confirm).isEnabled =
                         settingViewModel.accountNewPwValid && settingViewModel.accountNewPwCheckValid
                                 && settingViewModel.accountPwValid
                 }
@@ -201,19 +200,19 @@ class UpdateAccountFragment : Fragment() {
                 override fun afterTextChanged(s: Editable?) {}
             })
 
-            dialog.findViewById<Button>(R.id.password_change_confirm_button).setOnClickListener {
-                val newPassword = dialog.findViewById<EditText>(R.id.new_password_input).text.toString()
-                val password = dialog.findViewById<EditText>(R.id.password_input).text.toString()
+            dialog.findViewById<Button>(R.id.button_changepassword_confirm).setOnClickListener {
+                val newPassword = dialog.findViewById<EditText>(R.id.edittext_changepassword_newpassword).text.toString()
+                val password = dialog.findViewById<EditText>(R.id.edittext_changepassword_oldpassword).text.toString()
 
                 updateAccountPassword(newPassword, password)
                 dialog.dismiss()
 
             }
-            dialog.findViewById<Button>(R.id.password_change_cancel_button).setOnClickListener {
+            dialog.findViewById<Button>(R.id.button_changepassword_cancel).setOnClickListener {
                 dialog.dismiss()
             }
 
-            Util.setupViewsForHideKeyboard(requireActivity(), dialog.findViewById(R.id.password_change_parent_layout))
+            Util.setupViewsForHideKeyboard(requireActivity(), dialog.findViewById(R.id.linearlayout_changepassword))
         }
 
         binding.logoutButton.setOnClickListener {
