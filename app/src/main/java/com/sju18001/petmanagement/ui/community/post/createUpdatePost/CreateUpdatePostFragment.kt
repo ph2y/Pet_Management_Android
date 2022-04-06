@@ -57,10 +57,10 @@ class CreateUpdatePostFragment : Fragment() {
     private var isViewDestroyed = false
 
     // variables for RecyclerView
-    private lateinit var postPetSelectorAdapter: PostPetSelectorAdapter
+    private lateinit var postPetSelectorAdapter: CreateUpdatePostPetSelectorAdapter
     private lateinit var mediaAdapter: MediaListAdapter
     private lateinit var generalFileAdapter: GeneralFileListAdapter
-    private lateinit var hashtagAdapter: HashtagListAdapter
+    private lateinit var hashtagAdapter: CreateUpdatePostHashtagAdapter
 
     /*
      * onStart에서, 펫 정보 또는 글 정보(update_post fragment)를 로드합니다.
@@ -426,9 +426,9 @@ class CreateUpdatePostFragment : Fragment() {
             .fetchPetReq(FetchPetReqDto(null , null))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             // fetch pet info (unsorted)
-            val unsortedPetList: MutableList<PostPetSelectorItem> = mutableListOf()
+            val unsortedPetList: MutableList<CreateUpdatePostPetSelectorItem> = mutableListOf()
             response.body()?.petList?.map {
-                val item = PostPetSelectorItem(
+                val item = CreateUpdatePostPetSelectorItem(
                     it.id, it.photoUrl, null, it.name,
                     it.id == SessionManager.fetchLoggedInAccount(requireContext())?.representativePetId,
                     it.id == createUpdatePostViewModel.selectedPetId
@@ -443,7 +443,7 @@ class CreateUpdatePostFragment : Fragment() {
         }, { decreaseApiCallCountForFetch() }, { decreaseApiCallCountForFetch() })
     }
 
-    private fun reorderPetList(apiResponse: MutableList<PostPetSelectorItem>) {
+    private fun reorderPetList(apiResponse: MutableList<CreateUpdatePostPetSelectorItem>) {
         // get saved pet list order
         val petListOrder = PetManagerFragment()
             .getPetListOrder(requireContext().getString(R.string.data_name_pet_list_id_order), requireContext())
@@ -547,7 +547,7 @@ class CreateUpdatePostFragment : Fragment() {
         }
 
         // initialize RecyclerView (for pet)
-        postPetSelectorAdapter = PostPetSelectorAdapter(createUpdatePostViewModel, requireContext(), confirmButtonAndUsageInterface)
+        postPetSelectorAdapter = CreateUpdatePostPetSelectorAdapter(createUpdatePostViewModel, requireContext(), confirmButtonAndUsageInterface)
         binding.recyclerviewCreateupdatepostPostpetselector.adapter = postPetSelectorAdapter
         binding.recyclerviewCreateupdatepostPostpetselector.layoutManager = LinearLayoutManager(activity)
         (binding.recyclerviewCreateupdatepostPostpetselector.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.HORIZONTAL
@@ -568,7 +568,7 @@ class CreateUpdatePostFragment : Fragment() {
         generalFileAdapter.setResult(createUpdatePostViewModel.generalFileNameList)
 
         // initialize RecyclerView (for hashtags)
-        hashtagAdapter = HashtagListAdapter(createUpdatePostViewModel, binding)
+        hashtagAdapter = CreateUpdatePostHashtagAdapter(createUpdatePostViewModel, binding)
         binding.hashtagRecyclerView.adapter = hashtagAdapter
         binding.hashtagRecyclerView.layoutManager = FlexboxLayoutManager(activity)
         (binding.hashtagRecyclerView.layoutManager as FlexboxLayoutManager).flexWrap = FlexWrap.WRAP
