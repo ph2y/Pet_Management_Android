@@ -29,11 +29,11 @@ class LoginActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         // show login fragment
-        if(supportFragmentManager.findFragmentById(R.id.login_activity_fragment_container) == null) {
+        if(supportFragmentManager.findFragmentById(R.id.framelayout_login_fragmentcontainer) == null) {
             val fragment = LoginFragment()
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.login_activity_fragment_container, fragment)
+                .add(R.id.framelayout_login_fragmentcontainer, fragment)
                 .commit()
         }
     }

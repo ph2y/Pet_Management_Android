@@ -117,7 +117,7 @@ class LoginFragment : Fragment() {
             val createAccountFragment = CreateAccountFragment()
             activity?.supportFragmentManager?.beginTransaction()!!
                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
-                .replace(R.id.login_activity_fragment_container, createAccountFragment)
+                .replace(R.id.framelayout_login_fragmentcontainer, createAccountFragment)
                 .addToBackStack(null)
                 .commit()
         }
@@ -127,7 +127,7 @@ class LoginFragment : Fragment() {
             val recoveryFragment = RecoveryFragment()
             activity?.supportFragmentManager?.beginTransaction()!!
                 .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
-                .replace(R.id.login_activity_fragment_container, recoveryFragment)
+                .replace(R.id.framelayout_login_fragmentcontainer, recoveryFragment)
                 .addToBackStack(null)
                 .commit()
         }

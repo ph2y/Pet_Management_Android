@@ -6,7 +6,7 @@ import android.util.Log
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.databinding.ActivityMyPetBinding
+import com.sju18001.petmanagement.databinding.ActivityMypetBinding
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.CreateUpdatePetScheduleFragment
 import com.sju18001.petmanagement.ui.myPet.petManager.CreateUpdatePetFragment
 import com.sju18001.petmanagement.ui.myPet.petManager.PetProfileFragment
@@ -22,7 +22,7 @@ object MyPetActivityFragmentTypes {
 class MyPetActivity : AppCompatActivity() {
 
     // variable for view binding
-    private lateinit var binding: ActivityMyPetBinding
+    private lateinit var binding: ActivityMypetBinding
 
     // variable for ViewModel
     private val myPetViewModel: MyPetViewModel by lazy{
@@ -33,7 +33,7 @@ class MyPetActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // view binding
-        binding = ActivityMyPetBinding.inflate(layoutInflater)
+        binding = ActivityMypetBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         supportActionBar?.hide()
@@ -41,7 +41,7 @@ class MyPetActivity : AppCompatActivity() {
         // get fragment type and show it(for first launch)
         val fragmentType = intent.getStringExtra("fragmentType")
 
-        if(supportFragmentManager.findFragmentById(R.id.my_pet_activity_fragment_container) == null) {
+        if(supportFragmentManager.findFragmentById(R.id.framelayout_mypet_fragmentcontainer) == null) {
             val fragment = when(fragmentType){
                 MyPetActivityFragmentTypes.CREATE_PET -> CreateUpdatePetFragment()
                 MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER -> PetProfileFragment()
@@ -50,7 +50,7 @@ class MyPetActivity : AppCompatActivity() {
             }
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.my_pet_activity_fragment_container, fragment)
+                .add(R.id.framelayout_mypet_fragmentcontainer, fragment)
                 .commit()
         }
     }
