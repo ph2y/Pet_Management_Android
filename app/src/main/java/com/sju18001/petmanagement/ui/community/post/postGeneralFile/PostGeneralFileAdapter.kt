@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.ui.community.post.generalFile
+package com.sju18001.petmanagement.ui.community.post.postGeneralFile
 
 import android.app.Activity
 import android.content.Intent
@@ -17,23 +17,23 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dto.FetchPostFileReqDto
 
-class GeneralFileAdapter(private val activity: Activity, private val generalFileViewModel: GeneralFileViewModel,
-                         private val GENERAL_FILE_ACTIVITY_DIRECTORY: String):
-    RecyclerView.Adapter<GeneralFileAdapter.HistoryListViewHolder>() {
+class PostGeneralFileAdapter(private val activity: Activity, private val generalFileViewModel: PostGeneralFileViewModel,
+                             private val GENERAL_FILE_ACTIVITY_DIRECTORY: String):
+    RecyclerView.Adapter<PostGeneralFileAdapter.HistoryListViewHolder>() {
 
-    private var resultList = mutableListOf<GeneralFileListItem>()
+    private var resultList = mutableListOf<PostGeneralFileItem>()
 
     private var isViewDestroyed = false
 
     class HistoryListViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val generalFileName: TextView = view.findViewById(R.id.general_file_name)
-        val downloadButton: ImageButton = view.findViewById(R.id.download_button)
-        val downloadProgressBar: ProgressBar = view.findViewById(R.id.download_progress_bar)
+        val name: TextView = view.findViewById(R.id.textview_postgeneralfile_name)
+        val downloadButton: ImageButton = view.findViewById(R.id.imagebutton_postgeneralfile_download)
+        val downloadProgressBar: ProgressBar = view.findViewById(R.id.progressbar_postgeneralfile_download)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryListViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.post_general_file_item, parent, false)
+            .inflate(R.layout.item_postgeneralfile, parent, false)
 
         val holder = HistoryListViewHolder(view)
         setListenerOnView(holder)
@@ -42,20 +42,20 @@ class GeneralFileAdapter(private val activity: Activity, private val generalFile
     }
 
     override fun onBindViewHolder(holder: HistoryListViewHolder, position: Int) {
-        holder.generalFileName.text = resultList[position].name
+        holder.name.text = resultList[position].name
     }
 
     private fun setListenerOnView(holder: HistoryListViewHolder) {
-        holder.generalFileName.setOnClickListener {
+        holder.name.setOnClickListener {
             val position = holder.absoluteAdapterPosition
 
             // set button to downloading
-            holder.generalFileName.isClickable = false
+            holder.name.isClickable = false
             holder.downloadButton.visibility = View.INVISIBLE
             holder.downloadProgressBar.visibility = View.VISIBLE
 
             fetchGeneralFile(resultList[position].postId, resultList[position].fileId, resultList[position].name, true) {
-                holder.generalFileName.isClickable = true
+                holder.name.isClickable = true
                 holder.downloadButton.visibility = View.VISIBLE
                 holder.downloadProgressBar.visibility = View.INVISIBLE
             }
@@ -119,7 +119,7 @@ class GeneralFileAdapter(private val activity: Activity, private val generalFile
 
     override fun getItemCount() = resultList.size
 
-    public fun setResult(result: MutableList<GeneralFileListItem>){
+    public fun setResult(result: MutableList<PostGeneralFileItem>){
         this.resultList = result
         notifyDataSetChanged()
     }

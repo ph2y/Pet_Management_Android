@@ -11,21 +11,21 @@ import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.databinding.FragmentCreateUpdatePostBinding
 import java.io.File
 
-class GeneralFileListAdapter(private val createUpdatePostViewModel: CreateUpdatePostViewModel,
-                             private val context: Context, private val binding: FragmentCreateUpdatePostBinding,
-                             private val confirmButtonAndUsageInterface: ConfirmButtonAndUsageInterface) :
-    RecyclerView.Adapter<GeneralFileListAdapter.HistoryListViewHolder>() {
+class CreateUpdatePostGeneralFileAdapter(private val createUpdatePostViewModel: CreateUpdatePostViewModel,
+                                         private val context: Context, private val binding: FragmentCreateUpdatePostBinding,
+                                         private val confirmButtonAndUsageInterface: ConfirmButtonAndUsageInterface) :
+    RecyclerView.Adapter<CreateUpdatePostGeneralFileAdapter.HistoryListViewHolder>() {
 
     private var resultList = mutableListOf<String>()
 
     class HistoryListViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val fileName: TextView = view.findViewById(R.id.general_file_name)
-        val deleteButton: ImageView = view.findViewById(R.id.delete_button)
+        val name: TextView = view.findViewById(R.id.textview_createupdatepostgeneralfile_name)
+        val deleteButton: ImageView = view.findViewById(R.id.imageview_createupdatepostgeneralfile_deletebutton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryListViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.uploaded_general_file_list_item, parent, false)
+            .inflate(R.layout.item_createupdatepostgeneralfile, parent, false)
 
         val holder = HistoryListViewHolder(view)
         setListenerOnView(holder)
@@ -34,7 +34,7 @@ class GeneralFileListAdapter(private val createUpdatePostViewModel: CreateUpdate
     }
 
     override fun onBindViewHolder(holder: HistoryListViewHolder, position: Int) {
-        holder.fileName.text = resultList[position]
+        holder.name.text = resultList[position]
     }
 
     override fun getItemCount() = resultList.size

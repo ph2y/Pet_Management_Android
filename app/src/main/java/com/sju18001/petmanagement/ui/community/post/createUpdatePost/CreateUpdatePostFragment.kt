@@ -59,7 +59,7 @@ class CreateUpdatePostFragment : Fragment() {
     // variables for RecyclerView
     private lateinit var postPetSelectorAdapter: CreateUpdatePostPetSelectorAdapter
     private lateinit var mediaAdapter: MediaListAdapter
-    private lateinit var generalFileAdapter: GeneralFileListAdapter
+    private lateinit var generalFileAdapter: CreateUpdatePostGeneralFileAdapter
     private lateinit var hashtagAdapter: CreateUpdatePostHashtagAdapter
 
     /*
@@ -561,7 +561,7 @@ class CreateUpdatePostFragment : Fragment() {
         mediaAdapter.setResult(createUpdatePostViewModel.mediaList)
 
         // initialize RecyclerView (for general files)
-        generalFileAdapter = GeneralFileListAdapter(createUpdatePostViewModel, requireContext(), binding, confirmButtonAndUsageInterface)
+        generalFileAdapter = CreateUpdatePostGeneralFileAdapter(createUpdatePostViewModel, requireContext(), binding, confirmButtonAndUsageInterface)
         binding.generalRecyclerView.adapter = generalFileAdapter
         binding.generalRecyclerView.layoutManager = LinearLayoutManager(activity)
         (binding.generalRecyclerView.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.VERTICAL

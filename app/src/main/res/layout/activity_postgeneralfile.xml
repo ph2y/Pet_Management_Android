@@ -4,7 +4,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    tools:context=".ui.community.post.generalFile.GeneralFileActivity">
+    tools:context=".ui.community.post.postGeneralFile.PostGeneralFileActivity">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -19,7 +19,7 @@
             android:textSize="18sp" />
 
         <ImageButton
-            android:id="@+id/imagebutton_generalfile_close"
+            android:id="@+id/imagebutton_postgeneralfile_close"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
@@ -30,7 +30,7 @@
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview_generalfile"
+        android:id="@+id/recyclerview_postgeneralfile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clipToPadding="false"/>

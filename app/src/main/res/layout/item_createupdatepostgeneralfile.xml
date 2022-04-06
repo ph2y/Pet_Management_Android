@@ -6,7 +6,7 @@
     android:paddingEnd="16dp">
 
     <TextView
-        android:id="@+id/general_file_name"
+        android:id="@+id/textview_createupdatepostgeneralfile_name"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
@@ -15,11 +15,11 @@
         android:ellipsize="end"/>
 
     <ImageView
-        android:id="@+id/delete_button"
+        android:id="@+id/imageview_createupdatepostgeneralfile_deletebutton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/general_file_name"
+        android:layout_toEndOf="@id/textview_createupdatepostgeneralfile_name"
         android:layout_marginStart="2dp"
         android:src="@drawable/ic_baseline_close_24"/>
 
