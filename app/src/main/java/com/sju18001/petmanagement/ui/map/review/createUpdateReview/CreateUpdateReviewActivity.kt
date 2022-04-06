@@ -5,26 +5,19 @@ import android.app.AlertDialog
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import com.google.android.gms.ads.AdRequest
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.controller.Util
-import com.sju18001.petmanagement.databinding.ActivityCreateUpdateReviewBinding
+import com.sju18001.petmanagement.databinding.ActivityCreateupdatereviewBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.dto.CreateReviewReqDto
 import com.sju18001.petmanagement.restapi.dto.FetchReviewReqDto
-import com.sju18001.petmanagement.restapi.dto.FetchReviewResDto
 import com.sju18001.petmanagement.restapi.dto.UpdateReviewReqDto
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class CreateUpdateReviewActivity : AppCompatActivity() {
     companion object {
@@ -32,7 +25,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
         const val UPDATE_REVIEW = 1
     }
 
-    private lateinit var binding: ActivityCreateUpdateReviewBinding
+    private lateinit var binding: ActivityCreateupdatereviewBinding
     private val viewModel: CreateUpdateReviewViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -45,7 +38,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     }
 
     private fun setBinding() {
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_create_update_review)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_createupdatereview)
 
         binding.lifecycleOwner = this
         binding.activity = this@CreateUpdateReviewActivity

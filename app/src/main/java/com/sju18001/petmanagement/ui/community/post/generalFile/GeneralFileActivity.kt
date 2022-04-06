@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.ui.community.post.generalFiles
+package com.sju18001.petmanagement.ui.community.post.generalFile
 
 import android.app.Activity
 import android.content.Intent
@@ -12,26 +12,26 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.gson.Gson
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.Util
-import com.sju18001.petmanagement.databinding.ActivityGeneralFilesBinding
+import com.sju18001.petmanagement.databinding.ActivityGeneralfileBinding
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.global.FileMetaData
 
-class GeneralFilesActivity : AppCompatActivity() {
+class GeneralFileActivity : AppCompatActivity() {
 
     // const
-    private var GENERAL_FILES_ACTIVITY_DIRECTORY: String = "general_files_activity"
+    private var GENERAL_FILE_ACTIVITY_DIRECTORY: String = "general_file_activity"
 
     // variable for view binding
-    private lateinit var binding: ActivityGeneralFilesBinding
+    private lateinit var binding: ActivityGeneralfileBinding
 
     // variable for ViewModel
-    private val generalFilesViewModel: GeneralFilesViewModel by lazy {
-        ViewModelProvider(this, SavedStateViewModelFactory(application, this)).get(GeneralFilesViewModel::class.java)
+    private val generalFileViewModel: GeneralFileViewModel by lazy {
+        ViewModelProvider(this, SavedStateViewModelFactory(application, this)).get(GeneralFileViewModel::class.java)
     }
 
     // variables for RecyclerView
-    private lateinit var generalFilesAdapter: GeneralFilesAdapter
-    private var generalFilesList: MutableList<GeneralFilesListItem> = mutableListOf()
+    private lateinit var generalFileAdapter: GeneralFileAdapter
+    private var generalFileList: MutableList<GeneralFileListItem> = mutableListOf()
 
     private var isViewDestroyed = false
 
@@ -42,7 +42,7 @@ class GeneralFilesActivity : AppCompatActivity() {
         supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
 
         // view binding
-        binding = ActivityGeneralFilesBinding.inflate(layoutInflater)
+        binding = ActivityGeneralfileBinding.inflate(layoutInflater)
         isViewDestroyed = false
 
         setContentView(binding.root)
@@ -52,21 +52,20 @@ class GeneralFilesActivity : AppCompatActivity() {
         super.onStart()
 
         // initialize RecyclerView
-        generalFilesAdapter = GeneralFilesAdapter(this, generalFilesViewModel, GENERAL_FILES_ACTIVITY_DIRECTORY)
-        binding.generalFilesRecyclerView.adapter = generalFilesAdapter
-        binding.generalFilesRecyclerView.layoutManager = LinearLayoutManager(this)
+        generalFileAdapter = GeneralFileAdapter(this, generalFileViewModel, GENERAL_FILE_ACTIVITY_DIRECTORY)
+        binding.recyclerviewGeneralfile.adapter = generalFileAdapter
+        binding.recyclerviewGeneralfile.layoutManager = LinearLayoutManager(this)
 
         // set RecyclerView values
-        generalFilesList = mutableListOf()
+        generalFileList = mutableListOf()
         val postId = this.intent.getLongExtra("postId", -1)
-        val postGeneralFiles = Gson().fromJson(this.intent.getStringExtra("fileAttachments"), Array<FileMetaData>::class.java)
-        for (i in postGeneralFiles.indices) {
-            generalFilesList.add(GeneralFilesListItem(postId, postGeneralFiles[i].name.split("post_${postId}_").last(), i))
+        val postGeneralFile = Gson().fromJson(this.intent.getStringExtra("fileAttachments"), Array<FileMetaData>::class.java)
+        for (i in postGeneralFile.indices) {
+            generalFileList.add(GeneralFileListItem(postId, postGeneralFile[i].name.split("post_${postId}_").last(), i))
         }
-        generalFilesAdapter.setResult(generalFilesList)
+        generalFileAdapter.setResult(generalFileList)
 
-        // for close button
-        binding.closeButton.setOnClickListener { finish() }
+        binding.imagebuttonGeneralfileClose.setOnClickListener { finish() }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -75,12 +74,12 @@ class GeneralFilesActivity : AppCompatActivity() {
         if (requestCode == ServerUtil.WRITE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             data?.data?.also { uri ->
                 // save Uri + write
-                generalFilesViewModel.userSelectedUri = uri
+                generalFileViewModel.userSelectedUri = uri
                 ServerUtil.writeFileToUri(this,
-                    generalFilesViewModel.downloadedFilePath!!, generalFilesViewModel.userSelectedUri!!)
+                    generalFileViewModel.downloadedFilePath!!, generalFileViewModel.userSelectedUri!!)
 
                 // reset download button
-                generalFilesAdapter.setResult(generalFilesList)
+                generalFileAdapter.setResult(generalFileList)
 
                 Toast.makeText(this, this.getText(R.string.download_complete_message), Toast.LENGTH_SHORT).show()
             }
@@ -90,11 +89,11 @@ class GeneralFilesActivity : AppCompatActivity() {
     override fun onDestroy() {
         super.onDestroy()
 
-        generalFilesAdapter.onDestroy()
+        generalFileAdapter.onDestroy()
         isViewDestroyed = true
 
         if(isFinishing) {
-            Util.deleteCopiedFiles(this, GENERAL_FILES_ACTIVITY_DIRECTORY)
+            Util.deleteCopiedFiles(this, GENERAL_FILE_ACTIVITY_DIRECTORY)
         }
     }
 }

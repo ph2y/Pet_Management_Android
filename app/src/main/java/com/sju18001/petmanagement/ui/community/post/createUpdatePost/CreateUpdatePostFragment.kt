@@ -59,7 +59,7 @@ class CreateUpdatePostFragment : Fragment() {
     // variables for RecyclerView
     private lateinit var petAdapter: PetListAdapter
     private lateinit var mediaAdapter: MediaListAdapter
-    private lateinit var generalFilesAdapter: GeneralFileListAdapter
+    private lateinit var generalFileAdapter: GeneralFileListAdapter
     private lateinit var hashtagAdapter: HashtagListAdapter
 
     /*
@@ -411,7 +411,7 @@ class CreateUpdatePostFragment : Fragment() {
                 // if all is done fetching -> set RecyclerView + set usage + show main ScrollView
                 if("" !in createUpdatePostViewModel.generalFilePathList) {
                     // update RecyclerView and general usage
-                    generalFilesAdapter.setResult(createUpdatePostViewModel.generalFileNameList)
+                    generalFileAdapter.setResult(createUpdatePostViewModel.generalFileNameList)
                     updateGeneralUsage()
                 }
                 decreaseApiCallCountForFetch()
@@ -561,11 +561,11 @@ class CreateUpdatePostFragment : Fragment() {
         mediaAdapter.setResult(createUpdatePostViewModel.mediaList)
 
         // initialize RecyclerView (for general files)
-        generalFilesAdapter = GeneralFileListAdapter(createUpdatePostViewModel, requireContext(), binding, confirmButtonAndUsageInterface)
-        binding.generalRecyclerView.adapter = generalFilesAdapter
+        generalFileAdapter = GeneralFileListAdapter(createUpdatePostViewModel, requireContext(), binding, confirmButtonAndUsageInterface)
+        binding.generalRecyclerView.adapter = generalFileAdapter
         binding.generalRecyclerView.layoutManager = LinearLayoutManager(activity)
         (binding.generalRecyclerView.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.VERTICAL
-        generalFilesAdapter.setResult(createUpdatePostViewModel.generalFileNameList)
+        generalFileAdapter.setResult(createUpdatePostViewModel.generalFileNameList)
 
         // initialize RecyclerView (for hashtags)
         hashtagAdapter = HashtagListAdapter(createUpdatePostViewModel, binding)
@@ -663,7 +663,7 @@ class CreateUpdatePostFragment : Fragment() {
             }
         }
         binding.generalRecyclerView.let {
-            for(i in 0..generalFilesAdapter.itemCount) {
+            for(i in 0..generalFileAdapter.itemCount) {
                 it.findViewHolderForLayoutPosition(i)?.itemView?.findViewById<ImageView>(R.id.delete_button)?.visibility = View.GONE
             }
         }
@@ -701,7 +701,7 @@ class CreateUpdatePostFragment : Fragment() {
             }
         }
         binding.generalRecyclerView.let {
-            for(i in 0..generalFilesAdapter.itemCount) {
+            for(i in 0..generalFileAdapter.itemCount) {
                 it.findViewHolderForLayoutPosition(i)?.itemView?.findViewById<ImageView>(R.id.delete_button)?.visibility = View.VISIBLE
             }
         }
@@ -764,7 +764,7 @@ class CreateUpdatePostFragment : Fragment() {
             requireActivity().intent.putExtra("postId", response.body()!!.id)
             updatePostPhoto(response.body()!!.id)
             updatePostVideo(response.body()!!.id)
-            updatePostGeneralFiles(response.body()!!.id)
+            updatePostGeneralFile(response.body()!!.id)
         }, {
             unlockViews()
         }, {
@@ -842,7 +842,7 @@ class CreateUpdatePostFragment : Fragment() {
             // update general files
             if(createUpdatePostViewModel.generalFilePathList.size == 0) {
                 // 기존에 General Files가 0개였다면 FileType.GENERAL_FILE에 대해 DeletePostFile를 호출하지 않는다
-                if(requireActivity().intent.getIntExtra("originalGeneralFilesCount", 0) > 0){
+                if(requireActivity().intent.getIntExtra("originalGeneralFileCount", 0) > 0){
                     createUpdatePostViewModel.updatedPostGeneralFileData = true
                     deletePostFile(createUpdatePostViewModel.postId!!, FileType.GENERAL_FILE)
                 }else{
@@ -856,7 +856,7 @@ class CreateUpdatePostFragment : Fragment() {
                 }
             } else {
                 createUpdatePostViewModel.deletedPostGeneralFileData = true
-                updatePostGeneralFiles(createUpdatePostViewModel.postId!!)
+                updatePostGeneralFile(createUpdatePostViewModel.postId!!)
             }
         }, {
             unlockViews()
@@ -963,7 +963,7 @@ class CreateUpdatePostFragment : Fragment() {
         }
     }
 
-    private fun updatePostGeneralFiles(id: Long) {
+    private fun updatePostGeneralFile(id: Long) {
         // exception (no general files)
         if (createUpdatePostViewModel.generalFilePathList.size == 0) {
             createUpdatePostViewModel.updatedPostGeneralFileData = true
@@ -1227,7 +1227,7 @@ class CreateUpdatePostFragment : Fragment() {
                     verifyAndEnableConfirmButton()
 
                     // update RecyclerView
-                    generalFilesAdapter.notifyItemInserted(createUpdatePostViewModel.generalFileNameList.size)
+                    generalFileAdapter.notifyItemInserted(createUpdatePostViewModel.generalFileNameList.size)
                     binding.generalRecyclerView.smoothScrollToPosition(createUpdatePostViewModel.generalFileNameList.size - 1)
 
                     updateGeneralUsage()

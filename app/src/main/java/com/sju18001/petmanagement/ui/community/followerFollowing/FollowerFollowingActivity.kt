@@ -5,27 +5,27 @@ import android.os.Bundle
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.databinding.ActivityFollowerFollowingBinding
+import com.sju18001.petmanagement.databinding.ActivityFollowBinding
 
 class FollowerFollowingActivity : AppCompatActivity() {
 
     // variable for view binding
-    private lateinit var binding: ActivityFollowerFollowingBinding
+    private lateinit var binding: ActivityFollowBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // view binding
-        binding = ActivityFollowerFollowingBinding.inflate(layoutInflater)
+        binding = ActivityFollowBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         supportActionBar?.hide()
 
         // open fragment
-        if(supportFragmentManager.findFragmentById(R.id.follower_following_activity_fragment_container) == null) {
+        if(supportFragmentManager.findFragmentById(R.id.framelayout_follow_fragmentcontainer) == null) {
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.follower_following_activity_fragment_container, FollowerFollowingFragment())
+                .add(R.id.framelayout_follow_fragmentcontainer, FollowerFollowingFragment())
                 .commit()
         }
     }

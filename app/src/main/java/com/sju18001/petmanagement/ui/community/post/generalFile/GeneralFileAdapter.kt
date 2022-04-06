@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.ui.community.post.generalFiles
+package com.sju18001.petmanagement.ui.community.post.generalFile
 
 import android.app.Activity
 import android.content.Intent
@@ -17,11 +17,11 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dto.FetchPostFileReqDto
 
-class GeneralFilesAdapter(private val activity: Activity, private val generalFilesViewModel: GeneralFilesViewModel,
-                          private val GENERAL_FILES_ACTIVITY_DIRECTORY: String):
-    RecyclerView.Adapter<GeneralFilesAdapter.HistoryListViewHolder>() {
+class GeneralFileAdapter(private val activity: Activity, private val generalFileViewModel: GeneralFileViewModel,
+                         private val GENERAL_FILE_ACTIVITY_DIRECTORY: String):
+    RecyclerView.Adapter<GeneralFileAdapter.HistoryListViewHolder>() {
 
-    private var resultList = mutableListOf<GeneralFilesListItem>()
+    private var resultList = mutableListOf<GeneralFileListItem>()
 
     private var isViewDestroyed = false
 
@@ -86,9 +86,9 @@ class GeneralFilesAdapter(private val activity: Activity, private val generalFil
                 executeByteArrayAsFile(extension, response.body()!!.byteStream().readBytes())
             }else{
                 // download file + save downloaded path -> write file
-                generalFilesViewModel.downloadedFilePath = ServerUtil
+                generalFileViewModel.downloadedFilePath = ServerUtil
                     .createCopyAndReturnRealPathServer(activity, response.body()!!.byteStream().readBytes(),
-                        extension, GENERAL_FILES_ACTIVITY_DIRECTORY)
+                        extension, GENERAL_FILE_ACTIVITY_DIRECTORY)
 
                 // get Uri from user + write file
                 ServerUtil.getUriFromUser(activity, fileName)
@@ -101,7 +101,7 @@ class GeneralFilesAdapter(private val activity: Activity, private val generalFil
     private fun executeByteArrayAsFile(extension: String, byteArray: ByteArray) {
         val mimeTypeMap = MimeTypeMap.getSingleton()
         val mimeType = mimeTypeMap.getMimeTypeFromExtension(extension)
-        val contentUri = ServerUtil.createCopyAndReturnContentUri(activity, byteArray, extension, GENERAL_FILES_ACTIVITY_DIRECTORY)
+        val contentUri = ServerUtil.createCopyAndReturnContentUri(activity, byteArray, extension, GENERAL_FILE_ACTIVITY_DIRECTORY)
 
         val intent = Intent()
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -119,7 +119,7 @@ class GeneralFilesAdapter(private val activity: Activity, private val generalFil
 
     override fun getItemCount() = resultList.size
 
-    public fun setResult(result: MutableList<GeneralFilesListItem>){
+    public fun setResult(result: MutableList<GeneralFileListItem>){
         this.resultList = result
         notifyDataSetChanged()
     }

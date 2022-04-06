@@ -6,12 +6,12 @@ import android.os.Bundle
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.databinding.ActivityCreateUpdatePostBinding
+import com.sju18001.petmanagement.databinding.ActivityCreateupdatepostBinding
 
 class CreateUpdatePostActivity : AppCompatActivity() {
 
     // variable for view binding
-    private lateinit var binding: ActivityCreateUpdatePostBinding
+    private lateinit var binding: ActivityCreateupdatepostBinding
 
     // variable for ViewModel
     private val createUpdatePostViewModel: CreateUpdatePostViewModel by lazy{
@@ -22,17 +22,17 @@ class CreateUpdatePostActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         // view binding
-        binding = ActivityCreateUpdatePostBinding.inflate(layoutInflater)
+        binding = ActivityCreateupdatepostBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         // hide action bar
         supportActionBar?.hide()
 
         // show fragment
-        if(supportFragmentManager.findFragmentById(R.id.create_update_post_activity_fragment_container) == null) {
+        if(supportFragmentManager.findFragmentById(R.id.framelayout_createupdatepost_fragmentcontainer) == null) {
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.create_update_post_activity_fragment_container, CreateUpdatePostFragment())
+                .add(R.id.framelayout_createupdatepost_fragmentcontainer, CreateUpdatePostFragment())
                 .commit()
         }
     }

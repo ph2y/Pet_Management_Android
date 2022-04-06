@@ -39,7 +39,7 @@
         </receiver>
 
         <activity
-            android:name=".ui.community.post.generalFiles.GeneralFilesActivity"
+            android:name=".ui.community.post.generalFile.GeneralFileActivity"
             android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
         <activity android:name=".ui.community.followerFollowing.FollowerFollowingActivity" />
         <activity android:name=".ui.community.comment.updateComment.UpdateCommentActivity" />
