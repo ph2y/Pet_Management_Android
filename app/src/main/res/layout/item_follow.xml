@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/main_layout"
+    android:id="@+id/cardview_follow"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
@@ -13,18 +13,18 @@
         android:padding="12dp">
 
         <LinearLayout
-            android:id="@+id/account_info_layout"
+            android:id="@+id/linearlayout_follow_accountinfo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/follow_unfollow_button"
+            app:layout_constraintEnd_toStartOf="@id/button_follow"
             app:layout_constraintBottom_toBottomOf="parent"
             android:layout_marginEnd="12dp"
             android:orientation="horizontal">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/account_photo"
+                android:id="@+id/circleimageview_follow_accountphoto"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 app:civ_border_width="1dp"
@@ -32,7 +32,7 @@
                 android:src="@drawable/ic_baseline_account_circle_24"/>
 
             <TextView
-                android:id="@+id/account_nickname"
+                android:id="@+id/textview_follow_accountnickname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -44,10 +44,10 @@
         </LinearLayout>
 
         <Button
-            android:id="@+id/follow_unfollow_button"
+            android:id="@+id/button_follow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/account_info_layout"
+            app:layout_constraintStart_toEndOf="@id/linearlayout_follow_accountinfo"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

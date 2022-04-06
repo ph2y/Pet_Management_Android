@@ -19,7 +19,7 @@ import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.community.CommunityUtil
 import de.hdodenhof.circleimageview.CircleImageView
 
-class FollowerAdapter(val context: Context, private val followUnfollowButtonInterface: FollowUnfollowButtonInterface):
+class FollowerAdapter(val context: Context, private val buttonInterface: FollowUnfollowButtonInterface):
     RecyclerView.Adapter<FollowerAdapter.HistoryListViewHolder>() {
 
     private var resultList = mutableListOf<FollowListItem>()
@@ -27,15 +27,15 @@ class FollowerAdapter(val context: Context, private val followUnfollowButtonInte
     private var isViewDestroyed = false
 
     class HistoryListViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val mainLayout: View = view.findViewById(R.id.main_layout)
-        val accountPhoto: CircleImageView = view.findViewById(R.id.account_photo)
-        val accountNickname: TextView = view.findViewById(R.id.account_nickname)
-        val followUnfollowButton: Button = view.findViewById(R.id.follow_unfollow_button)
+        val cardView: View = view.findViewById(R.id.cardview_follow)
+        val accountPhotoCircleImageView: CircleImageView = view.findViewById(R.id.circleimageview_follow_accountphoto)
+        val accountNicknameTextView: TextView = view.findViewById(R.id.textview_follow_accountnickname)
+        val button: Button = view.findViewById(R.id.button_follow)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FollowerAdapter.HistoryListViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.follow_list_item, parent, false)
+            .inflate(R.layout.item_follow, parent, false)
 
         val holder = FollowerAdapter.HistoryListViewHolder(view)
         setListenerOnView(holder)
@@ -51,33 +51,33 @@ class FollowerAdapter(val context: Context, private val followUnfollowButtonInte
                 setAccountPhoto(resultList[position].getId(), holder, position)
             }
             else {
-                holder.accountPhoto.setImageBitmap(resultList[position].getPhoto())
+                holder.accountPhotoCircleImageView.setImageBitmap(resultList[position].getPhoto())
             }
         }
         else {
-            holder.accountPhoto.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_account_circle_24))
+            holder.accountPhotoCircleImageView.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_account_circle_24))
         }
 
         // set account nickname
         val nicknameText = resultList[position].getNickname() + '님'
-        holder.accountNickname.text = nicknameText
+        holder.accountNicknameTextView.text = nicknameText
 
         // for follow/unfollow button
         if(resultList[position].getIsFollowing()) {
-            holder.followUnfollowButton.setBackgroundColor(context.getColor(R.color.border_line))
-            holder.followUnfollowButton.setTextColor(context.resources.getColor(R.color.black))
-            holder.followUnfollowButton.text = context.getText(R.string.unfollow_button)
+            holder.button.setBackgroundColor(context.getColor(R.color.border_line))
+            holder.button.setTextColor(context.resources.getColor(R.color.black))
+            holder.button.text = context.getText(R.string.unfollow_button)
         }
         else {
-            holder.followUnfollowButton.setBackgroundColor(context.getColor(R.color.carrot))
-            holder.followUnfollowButton.setTextColor(context.resources.getColor(R.color.white))
-            holder.followUnfollowButton.text = context.getText(R.string.follow_button)
+            holder.button.setBackgroundColor(context.getColor(R.color.carrot))
+            holder.button.setTextColor(context.resources.getColor(R.color.white))
+            holder.button.text = context.getText(R.string.follow_button)
         }
     }
 
     private fun setListenerOnView(holder: FollowerAdapter.HistoryListViewHolder){
         // start pet profile
-        holder.mainLayout.setOnClickListener {
+        holder.cardView.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             CommunityUtil.fetchRepresentativePetAndStartPetProfile(context, Account(
                 resultList[position].getId(), resultList[position].getUsername(), "", "", null,
@@ -85,11 +85,11 @@ class FollowerAdapter(val context: Context, private val followUnfollowButtonInte
                 "", resultList[position].getRepresentativePetId(), null, null, 0.0), isViewDestroyed)
         }
 
-        holder.followUnfollowButton.setOnClickListener {
+        holder.button.setOnClickListener {
             val position = holder.absoluteAdapterPosition
 
             // set button to loading
-            holder.followUnfollowButton.isEnabled = false
+            holder.button.isEnabled = false
 
             // API call
             if(resultList[position].getIsFollowing()) {
@@ -113,13 +113,13 @@ class FollowerAdapter(val context: Context, private val followUnfollowButtonInte
             )
             notifyItemChanged(position)
 
-            holder.followUnfollowButton.isEnabled = true
+            holder.button.isEnabled = true
 
-            followUnfollowButtonInterface.updateFollowUnfollowButton()
+            buttonInterface.updateFollowUnfollowButton()
         }, {
-            holder.followUnfollowButton.isEnabled = true
+            holder.button.isEnabled = true
         }, {
-            holder.followUnfollowButton.isEnabled = true
+            holder.button.isEnabled = true
         })
     }
 
@@ -135,13 +135,13 @@ class FollowerAdapter(val context: Context, private val followUnfollowButtonInte
             )
             notifyItemChanged(position)
 
-            holder.followUnfollowButton.isEnabled = true
+            holder.button.isEnabled = true
 
-            followUnfollowButtonInterface.updateFollowUnfollowButton()
+            buttonInterface.updateFollowUnfollowButton()
         }, {
-            holder.followUnfollowButton.isEnabled = true
+            holder.button.isEnabled = true
         }, {
-            holder.followUnfollowButton.isEnabled = true
+            holder.button.isEnabled = true
         })
     }
 
@@ -150,7 +150,7 @@ class FollowerAdapter(val context: Context, private val followUnfollowButtonInte
             .fetchAccountPhotoReq(FetchAccountPhotoReqDto(id))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, context, { response ->
             val photoBitmap = Util.getBitmapFromInputStream(response.body()!!.byteStream())
-            holder.accountPhoto.setImageBitmap(photoBitmap)
+            holder.accountPhotoCircleImageView.setImageBitmap(photoBitmap)
 
             val currentItem = resultList[position]
             currentItem.setValues(

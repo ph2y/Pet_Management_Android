@@ -20,7 +20,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.gms.ads.AdRequest
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.controller.CustomProgressBar
 import com.sju18001.petmanagement.controller.Permission
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.controller.Util
@@ -123,7 +122,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         mapView!!.setPOIItemEventListener(this)
 
         mapView!!.setCustomCurrentLocationMarkerTrackingImage(R.drawable.marker_current_location, MapPOIItem.ImageOffset(16, 16))
-        mapView!!.setCalloutBalloonAdapter(CustomCalloutBalloonAdapter(inflater))
+        mapView!!.setCalloutBalloonAdapter(CalloutBalloonAdapter(inflater))
 
         // 위치 권한이 없을 때, 아래에서 에러가 발생함
         try{
