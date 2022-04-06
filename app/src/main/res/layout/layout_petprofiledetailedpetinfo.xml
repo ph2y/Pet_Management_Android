@@ -1,5 +1,5 @@
 <androidx.constraintlayout.widget.ConstraintLayout  xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/pet_info_layout"
+    android:id="@+id/constraintlayout_petprofile_petinfo"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="20dp"
@@ -15,7 +15,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/pet_photo"
+        android:id="@+id/circleimageview_petprofile_petphoto"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:src="@drawable/ic_baseline_account_circle_24"
@@ -26,17 +26,17 @@
         app:civ_border_width="4dp"/>
 
     <ImageView
-        android:id="@+id/representative_pet_icon"
+        android:id="@+id/imageview_petprofile_representativeicon"
         android:layout_width="37dp"
         android:layout_height="30dp"
         android:layout_marginBottom="136dp"
         android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="@id/pet_photo"
-        app:layout_constraintStart_toStartOf="@id/pet_photo"
-        app:layout_constraintEnd_toEndOf="@id/pet_photo"/>
+        app:layout_constraintBottom_toBottomOf="@id/circleimageview_petprofile_petphoto"
+        app:layout_constraintStart_toStartOf="@id/circleimageview_petprofile_petphoto"
+        app:layout_constraintEnd_toEndOf="@id/circleimageview_petprofile_petphoto"/>
 
     <TextView
-        android:id="@+id/pet_name"
+        android:id="@+id/textview_petprofile_petname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
@@ -45,23 +45,23 @@
         android:ellipsize="end"
         android:textSize="32sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/pet_photo"
+        app:layout_constraintTop_toBottomOf="@id/circleimageview_petprofile_petphoto"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <TextView
-        android:id="@+id/pet_age"
+        android:id="@+id/textview_petprofile_petage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginBottom="4dp"
-        app:layout_constraintStart_toEndOf="@id/pet_name"
-        app:layout_constraintBottom_toBottomOf="@id/pet_name"
+        app:layout_constraintStart_toEndOf="@id/textview_petprofile_petname"
+        app:layout_constraintBottom_toBottomOf="@id/textview_petprofile_petname"
         android:text="2살"
         android:textSize="16sp"/>
 
     <TextView
-        android:id="@+id/pet_message"
+        android:id="@+id/textview_petprofile_petmessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="14dp"
@@ -71,27 +71,27 @@
         android:gravity="center"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/pet_name"
+        app:layout_constraintTop_toBottomOf="@id/textview_petprofile_petname"
         app:layout_constraintStart_toStartOf="parent"
         />
 
     <LinearLayout
-        android:id="@+id/breed_and_gender_and_birth_layout"
+        android:id="@+id/linearlayout_petprofile_petinfofooter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/pet_message"
+        app:layout_constraintTop_toBottomOf="@id/textview_petprofile_petmessage"
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
-            android:id="@+id/pet_breed"
+            android:id="@+id/textview_petprofile_petbreed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="포메라니안"
             android:textSize="16sp"/>
 
         <TextView
-            android:id="@+id/pet_gender"
+            android:id="@+id/textview_petprofile_petgender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/pet_breed"
@@ -99,7 +99,7 @@
             android:textSize="16sp"/>
 
         <TextView
-            android:id="@+id/text_between_gender_and_age"
+            android:id="@+id/textview_petprofile_genderandbirthseparator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@id/pet_gender"
@@ -107,7 +107,7 @@
             android:textSize="16sp"/>
 
         <TextView
-            android:id="@+id/pet_birth"
+            android:id="@+id/textview_petprofile_petbirth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="21-09-13"
