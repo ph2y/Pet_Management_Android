@@ -12,23 +12,23 @@ import com.bumptech.glide.Glide
 import com.sju18001.petmanagement.R
 import de.hdodenhof.circleimageview.CircleImageView
 
-class PostPetSelectorAdapter(private val createUpdatePostViewModel: CreateUpdatePostViewModel, private val context: Context,
+class CreateUpdatePostPetSelectorAdapter(private val createUpdatePostViewModel: CreateUpdatePostViewModel, private val context: Context,
                      private val confirmButtonAndUsageInterface: ConfirmButtonAndUsageInterface):
-    RecyclerView.Adapter<PostPetSelectorAdapter.ViewHolder>() {
+    RecyclerView.Adapter<CreateUpdatePostPetSelectorAdapter.ViewHolder>() {
 
-    private var dataSet = mutableListOf<PetListItem>()
+    private var dataSet = mutableListOf<CreateUpdatePostPetSelectorItem>()
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val linearLayout: LinearLayout = view.findViewById(R.id.linearlayout_postpetselector)
-        val representativeIconImageView: ImageView = view.findViewById(R.id.imageview_postpetselector_representativeicon)
-        val photoCircleImageView: CircleImageView = view.findViewById(R.id.circleimageview_postpetselector_photo)
-        val selectionIconCircleImageView: CircleImageView = view.findViewById(R.id.circleimageview_postpetselector_selectionicon)
-        val nameTextView: TextView = view.findViewById(R.id.textview_postpetselector_name)
+        val linearLayout: LinearLayout = view.findViewById(R.id.linearlayout_createupdatepostpetselector)
+        val representativeIconImageView: ImageView = view.findViewById(R.id.imageview_createupdatepostpetselector_representativeicon)
+        val photoCircleImageView: CircleImageView = view.findViewById(R.id.circleimageview_createupdatepostpetselector_photo)
+        val selectionIconCircleImageView: CircleImageView = view.findViewById(R.id.circleimageview_createupdatepostpetselector_selectionicon)
+        val nameTextView: TextView = view.findViewById(R.id.textview_createupdatepostpetselector_name)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_postpetselector, parent, false)
+            .inflate(R.layout.item_createupdatepostpetselector, parent, false)
 
         val holder = ViewHolder(view)
         setListenerOnView(holder)
@@ -91,7 +91,7 @@ class PostPetSelectorAdapter(private val createUpdatePostViewModel: CreateUpdate
         }
     }
 
-    fun updateDataSet(newDataSet: MutableList<PetListItem>) {
+    fun updateDataSet(newDataSet: MutableList<CreateUpdatePostPetSelectorItem>) {
         dataSet = newDataSet
         notifyDataSetChanged()
     }

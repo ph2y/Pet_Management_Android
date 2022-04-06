@@ -9,9 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.databinding.FragmentCreateUpdatePostBinding
 
-class HashtagListAdapter(private val createUpdatePostViewModel: CreateUpdatePostViewModel,
-                         private val binding: FragmentCreateUpdatePostBinding) :
-    RecyclerView.Adapter<HashtagListAdapter.HistoryListViewHolder>() {
+class CreateUpdatePostHashtagAdapter(private val createUpdatePostViewModel: CreateUpdatePostViewModel,
+                                     private val binding: FragmentCreateUpdatePostBinding) :
+    RecyclerView.Adapter<CreateUpdatePostHashtagAdapter.HistoryListViewHolder>() {
 
     private var resultList = mutableListOf<String>()
 
@@ -20,17 +20,17 @@ class HashtagListAdapter(private val createUpdatePostViewModel: CreateUpdatePost
         val deleteButton: ImageView = view.findViewById(R.id.delete_button)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HashtagListAdapter.HistoryListViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryListViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.created_hashtags_item_list, parent, false)
+            .inflate(R.layout.item_createupdateposthashtag, parent, false)
 
-        val holder = HashtagListAdapter.HistoryListViewHolder(view)
+        val holder = HistoryListViewHolder(view)
         setListenerOnView(holder)
 
         return holder
     }
 
-    override fun onBindViewHolder(holder: HashtagListAdapter.HistoryListViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: HistoryListViewHolder, position: Int) {
         // set TextView
         val hashtag = '#' + resultList[position]
         holder.hashtag.text = hashtag
@@ -38,7 +38,7 @@ class HashtagListAdapter(private val createUpdatePostViewModel: CreateUpdatePost
 
     override fun getItemCount() = resultList.size
 
-    private fun setListenerOnView(holder: HashtagListAdapter.HistoryListViewHolder) {
+    private fun setListenerOnView(holder: HistoryListViewHolder) {
         holder.deleteButton.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             deleteItem(position)

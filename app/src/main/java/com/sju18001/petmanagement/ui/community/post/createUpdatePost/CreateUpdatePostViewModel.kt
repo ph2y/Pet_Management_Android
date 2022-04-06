@@ -12,7 +12,7 @@ class CreateUpdatePostViewModel(private val handle: SavedStateHandle) : ViewMode
         }
 
     // for pet
-    var petList = handle.get<MutableList<PostPetSelectorItem>>("petList")?: mutableListOf()
+    var petList = handle.get<MutableList<CreateUpdatePostPetSelectorItem>>("petList")?: mutableListOf()
         set(value) {
             handle.set("petList", value)
             field = value
