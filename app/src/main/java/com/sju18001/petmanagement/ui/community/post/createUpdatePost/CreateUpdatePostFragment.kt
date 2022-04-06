@@ -57,7 +57,7 @@ class CreateUpdatePostFragment : Fragment() {
     private var isViewDestroyed = false
 
     // variables for RecyclerView
-    private lateinit var petAdapter: PetListAdapter
+    private lateinit var postPetSelectorAdapter: PostPetSelectorAdapter
     private lateinit var mediaAdapter: MediaListAdapter
     private lateinit var generalFileAdapter: GeneralFileListAdapter
     private lateinit var hashtagAdapter: HashtagListAdapter
@@ -426,9 +426,9 @@ class CreateUpdatePostFragment : Fragment() {
             .fetchPetReq(FetchPetReqDto(null , null))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             // fetch pet info (unsorted)
-            val unsortedPetList: MutableList<PetListItem> = mutableListOf()
+            val unsortedPetList: MutableList<PostPetSelectorItem> = mutableListOf()
             response.body()?.petList?.map {
-                val item = PetListItem(
+                val item = PostPetSelectorItem(
                     it.id, it.photoUrl, null, it.name,
                     it.id == SessionManager.fetchLoggedInAccount(requireContext())?.representativePetId,
                     it.id == createUpdatePostViewModel.selectedPetId
@@ -443,7 +443,7 @@ class CreateUpdatePostFragment : Fragment() {
         }, { decreaseApiCallCountForFetch() }, { decreaseApiCallCountForFetch() })
     }
 
-    private fun reorderPetList(apiResponse: MutableList<PetListItem>) {
+    private fun reorderPetList(apiResponse: MutableList<PostPetSelectorItem>) {
         // get saved pet list order
         val petListOrder = PetManagerFragment()
             .getPetListOrder(requireContext().getString(R.string.data_name_pet_list_id_order), requireContext())
@@ -500,7 +500,7 @@ class CreateUpdatePostFragment : Fragment() {
         // fetch가 모두 끝났을 때
         if(apiCallCountForFetch == 0){
             createUpdatePostViewModel.isFetched = true
-            petAdapter.updateDataSet(createUpdatePostViewModel.petList)
+            postPetSelectorAdapter.updateDataSet(createUpdatePostViewModel.petList)
 
             hideLoadingScreen()
             restoreState()
@@ -547,11 +547,11 @@ class CreateUpdatePostFragment : Fragment() {
         }
 
         // initialize RecyclerView (for pet)
-        petAdapter = PetListAdapter(createUpdatePostViewModel, requireContext(), confirmButtonAndUsageInterface)
-        binding.petRecyclerView.adapter = petAdapter
-        binding.petRecyclerView.layoutManager = LinearLayoutManager(activity)
-        (binding.petRecyclerView.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.HORIZONTAL
-        petAdapter.updateDataSet(createUpdatePostViewModel.petList)
+        postPetSelectorAdapter = PostPetSelectorAdapter(createUpdatePostViewModel, requireContext(), confirmButtonAndUsageInterface)
+        binding.recyclerviewCreateupdatepostPostpetselector.adapter = postPetSelectorAdapter
+        binding.recyclerviewCreateupdatepostPostpetselector.layoutManager = LinearLayoutManager(activity)
+        (binding.recyclerviewCreateupdatepostPostpetselector.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.HORIZONTAL
+        postPetSelectorAdapter.updateDataSet(createUpdatePostViewModel.petList)
 
         // initialize RecyclerView (for media)
         mediaAdapter = MediaListAdapter(createUpdatePostViewModel, requireContext(), binding, confirmButtonAndUsageInterface)
@@ -644,8 +644,8 @@ class CreateUpdatePostFragment : Fragment() {
         binding.postButton.text = ""
         binding.createUpdatePostProgressBar.visibility = View.VISIBLE
 
-        binding.petRecyclerView.let {
-            for(i in 0..petAdapter.itemCount) {
+        binding.recyclerviewCreateupdatepostPostpetselector.let {
+            for(i in 0..postPetSelectorAdapter.itemCount) {
                 it.findViewHolderForLayoutPosition(i)?.itemView?.isClickable = false
             }
         }
@@ -682,8 +682,8 @@ class CreateUpdatePostFragment : Fragment() {
         binding.postButton.text = requireContext().getText(R.string.confirm)
         binding.createUpdatePostProgressBar.visibility = View.GONE
 
-        binding.petRecyclerView.let {
-            for(i in 0..petAdapter.itemCount) {
+        binding.recyclerviewCreateupdatepostPostpetselector.let {
+            for(i in 0..postPetSelectorAdapter.itemCount) {
                 it.findViewHolderForLayoutPosition(i)?.itemView?.isClickable = true
             }
         }

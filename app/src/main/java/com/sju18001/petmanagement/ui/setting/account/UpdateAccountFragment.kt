@@ -129,7 +129,7 @@ class UpdateAccountFragment : Fragment() {
         binding.passwordChangeButton.setOnClickListener {
             val dialog = Dialog(requireActivity())
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
-            dialog.setContentView(R.layout.dialog_changepassword)
+            dialog.setContentView(R.layout.layout_changepassword)
             dialog.show()
 
             dialog.findViewById<EditText>(R.id.edittext_changepassword_newpassword).addTextChangedListener(object: TextWatcher {
