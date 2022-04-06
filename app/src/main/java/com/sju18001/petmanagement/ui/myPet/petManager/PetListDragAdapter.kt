@@ -1,7 +1,5 @@
 package com.sju18001.petmanagement.ui.myPet.petManager
 
-import android.content.Context
-import android.util.Log
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
@@ -71,8 +69,8 @@ class PetListDragAdapter(
         current: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        return if(current.itemViewType == R.layout.create_pet_button ||
-            target.itemViewType == R.layout.create_pet_button) false
+        return if(current.itemViewType == R.layout.item_createpetbutton ||
+            target.itemViewType == R.layout.item_createpetbutton) false
         else super.canDropOver(recyclerView, current, target)
     }
 

@@ -1,20 +1,12 @@
 package com.sju18001.petmanagement.ui.myPet.petManager
 
 import android.animation.ValueAnimator
-import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.os.Build
 import android.view.*
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.RequiresApi
-import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.Util
@@ -23,9 +15,6 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.FetchPetPhotoReqDto
-import com.sju18001.petmanagement.ui.myPet.MyPetActivity
-import com.sju18001.petmanagement.ui.myPet.MyPetActivityFragmentTypes
-import java.io.ByteArrayOutputStream
 import java.time.LocalDate
 import java.util.*
 
@@ -63,7 +52,7 @@ class PetListAdapter(
     }
 
     class CreatePetButtonViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val createPetButton: ImageView = view.findViewById(R.id.button_create_pet)
+        val iconImageView: ImageView = view.findViewById(R.id.imageview_createpetbutton_icon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
@@ -77,7 +66,7 @@ class PetListAdapter(
                 holder
             }
             else -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.create_pet_button, parent, false)
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_createpetbutton, parent, false)
 
                 val holder = CreatePetButtonViewHolder(view)
                 setListenerOnView(holder)
@@ -121,7 +110,7 @@ class PetListAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return if(position == resultList.size) {
-            R.layout.create_pet_button
+            R.layout.item_createpetbutton
         } else {
             R.layout.pet_list_item
         }
@@ -197,7 +186,7 @@ class PetListAdapter(
     }
 
     private fun setListenerOnView(holder: CreatePetButtonViewHolder) {
-        holder.createPetButton.setOnClickListener {
+        holder.iconImageView.setOnClickListener {
             petListAdapterInterface.onClickCreateButton()
         }
     }

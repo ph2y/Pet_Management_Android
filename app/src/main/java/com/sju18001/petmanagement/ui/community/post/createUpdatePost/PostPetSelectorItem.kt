@@ -2,7 +2,7 @@ package com.sju18001.petmanagement.ui.community.post.createUpdatePost
 
 import android.graphics.Bitmap
 
-data class PetListItem (
+data class PostPetSelectorItem (
     val petId: Long,
     val petPhotoUrl: String?,
     var petPhoto: Bitmap?,
