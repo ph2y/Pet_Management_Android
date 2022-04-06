@@ -94,7 +94,7 @@ class PetProfileFragment : Fragment(){
             }
         }else{
             binding.accountInfoLayout.visibility = View.VISIBLE
-            binding.petInfoLayout.background = null
+            binding.constraintlayoutPetprofilePetinfo.background = null
 
             setPetSpinner()
         }
@@ -160,7 +160,7 @@ class PetProfileFragment : Fragment(){
         }
 
         // for pet information layout
-        binding.petInfoLayout.setOnClickListener {
+        binding.constraintlayoutPetprofilePetinfo.setOnClickListener {
             setViewsForDetail(true)
         }
     }
@@ -228,7 +228,7 @@ class PetProfileFragment : Fragment(){
             .commit()
 
         // Set views
-        binding.petMessage.doOnPreDraw { binding.buttonsLayout.doOnPreDraw {
+        binding.textviewPetprofilePetmessage.doOnPreDraw { binding.buttonsLayout.doOnPreDraw {
             setViewsForDetail(isOrientationPortrait())
         }}
 
@@ -438,10 +438,10 @@ class PetProfileFragment : Fragment(){
     private fun setPhotoViews() {
         if(myPetViewModel.petPhotoByteArrayProfile != null) {
             val bitmap = Util.getBitmapFromByteArray(myPetViewModel.petPhotoByteArrayProfile!!)
-            Glide.with(requireContext()).load(bitmap).into(binding.petPhoto)
+            Glide.with(requireContext()).load(bitmap).into(binding.circleimageviewPetprofilePetphoto)
         }
         else {
-            binding.petPhoto.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_pets_60_with_padding))
+            binding.circleimageviewPetprofilePetphoto.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_pets_60_with_padding))
         }
 
         if(myPetViewModel.accountPhotoByteArray != null) {
@@ -455,13 +455,13 @@ class PetProfileFragment : Fragment(){
 
     private fun setViewsWithPetData() {
         setPhotoViews()
-        binding.petName.text = myPetViewModel.petNameValueProfile
-        binding.petBirth.text = if(myPetViewModel.petBirthValueProfile.length == 4) myPetViewModel.petBirthValueProfile + "년생" else myPetViewModel.petBirthValueProfile.substring(2).replace('-', '.')
-        binding.petBreed.text = myPetViewModel.petBreedValueProfile
-        binding.petGender.text = myPetViewModel.petGenderValueProfile
-        binding.petAge.text = myPetViewModel.petAgeValueProfile + "살"
+        binding.textviewPetprofilePetname.text = myPetViewModel.petNameValueProfile
+        binding.textviewPetprofilePetbirth.text = if(myPetViewModel.petBirthValueProfile.length == 4) myPetViewModel.petBirthValueProfile + "년생" else myPetViewModel.petBirthValueProfile.substring(2).replace('-', '.')
+        binding.textviewPetprofilePetbreed.text = myPetViewModel.petBreedValueProfile
+        binding.textviewPetprofileGenderandbirthseparator.text = myPetViewModel.petGenderValueProfile
+        binding.textviewPetprofilePetage.text = myPetViewModel.petAgeValueProfile + "살"
         val message = if(myPetViewModel.petMessageValueProfile.isNullOrEmpty()) getString(R.string.filled_heart) else myPetViewModel.petMessageValueProfile
-        binding.petMessage.text = "\" $message \""
+        binding.textviewPetprofilePetmessage.text = "\" $message \""
     }
 
     private fun setViewsWithAuthorData() {
@@ -521,9 +521,9 @@ class PetProfileFragment : Fragment(){
                 myPetViewModel.isRepresentativePetProfile = true
                 binding.setRepresentativeButton.visibility = View.GONE
 
-                binding.representativePetIcon.visibility = View.VISIBLE
-                binding.representativePetIcon.setImageResource(R.drawable.crown)
-                binding.representativePetIcon.scaleType = ImageView.ScaleType.FIT_XY
+                binding.imageviewPetprofileRepresentativeicon.visibility = View.VISIBLE
+                binding.imageviewPetprofileRepresentativeicon.setImageResource(R.drawable.crown)
+                binding.imageviewPetprofileRepresentativeicon.scaleType = ImageView.ScaleType.FIT_XY
 
                 // set api state/button to normal
                 myPetViewModel.petManagerApiIsLoading = false
@@ -598,14 +598,14 @@ class PetProfileFragment : Fragment(){
 
         // pet_info_layout 애니메이션
         TransitionManager.beginDelayedTransition(
-            binding.petInfoLayout,
+            binding.constraintlayoutPetprofilePetinfo,
             AutoTransition().setDuration(TRANSITION_DURATION).setInterpolator(AccelerateDecelerateInterpolator())
         )
         ConstraintSet().apply{
-            clone(context, R.layout.pet_info_layout_origin)
-        }.applyTo(binding.petInfoLayout)
+            clone(context, R.layout.layout_petprofiledetailedpetinfo)
+        }.applyTo(binding.constraintlayoutPetprofilePetinfo)
 
-        binding.petPhoto.rotation = myPetViewModel.petPhotoRotationProfile?: 0f
+        binding.circleimageviewPetprofilePetphoto.rotation = myPetViewModel.petPhotoRotationProfile?: 0f
 
         binding.topFixedLayout.visibility = View.VISIBLE
         if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_COMMUNITY) {
@@ -616,12 +616,12 @@ class PetProfileFragment : Fragment(){
         }
 
         if (myPetViewModel.isRepresentativePetProfile){
-            binding.representativePetIcon.setImageResource(R.drawable.crown)
-            binding.representativePetIcon.scaleType = ImageView.ScaleType.FIT_XY
+            binding.imageviewPetprofileRepresentativeicon.setImageResource(R.drawable.crown)
+            binding.imageviewPetprofileRepresentativeicon.scaleType = ImageView.ScaleType.FIT_XY
 
-            binding.representativePetIcon.visibility = View.VISIBLE
+            binding.imageviewPetprofileRepresentativeicon.visibility = View.VISIBLE
         }else{
-            binding.representativePetIcon.visibility = View.INVISIBLE
+            binding.imageviewPetprofileRepresentativeicon.visibility = View.INVISIBLE
         }
     }
 
@@ -632,26 +632,26 @@ class PetProfileFragment : Fragment(){
     private fun setViewsNotDetailed() {
         // pet_info_layout 애니메이션
         TransitionManager.beginDelayedTransition(
-            binding.petInfoLayout,
+            binding.constraintlayoutPetprofilePetinfo,
             ChangeBounds().setDuration(TRANSITION_DURATION).setInterpolator(AccelerateDecelerateInterpolator())
         )
         ConstraintSet().apply{
-            clone(context, R.layout.pet_info_layout_alter)
-        }.applyTo(binding.petInfoLayout)
+            clone(context, R.layout.layout_petprofilepetinfo)
+        }.applyTo(binding.constraintlayoutPetprofilePetinfo)
 
-        binding.petPhoto.rotation = myPetViewModel.petPhotoRotationProfile?: 0f
+        binding.circleimageviewPetprofilePetphoto.rotation = myPetViewModel.petPhotoRotationProfile?: 0f
 
         binding.topFixedLayout.visibility = View.GONE
         binding.accountInfoLayout.visibility = View.GONE
         binding.buttonsLayout.visibility = View.GONE
 
         if (myPetViewModel.isRepresentativePetProfile){
-            binding.representativePetIcon.setImageResource(R.drawable.crown)
-            binding.representativePetIcon.scaleType = ImageView.ScaleType.FIT_XY
+            binding.imageviewPetprofileRepresentativeicon.setImageResource(R.drawable.crown)
+            binding.imageviewPetprofileRepresentativeicon.scaleType = ImageView.ScaleType.FIT_XY
 
-            binding.representativePetIcon.visibility = View.VISIBLE
+            binding.imageviewPetprofileRepresentativeicon.visibility = View.VISIBLE
         }else{
-            binding.representativePetIcon.visibility = View.INVISIBLE
+            binding.imageviewPetprofileRepresentativeicon.visibility = View.INVISIBLE
         }
     }
 }
