@@ -132,7 +132,7 @@ class PetProfileFragment : Fragment(){
 
                 // open update pet fragment
                 activity?.supportFragmentManager?.beginTransaction()!!
-                    .replace(R.id.my_pet_activity_fragment_container, CreateUpdatePetFragment())
+                    .replace(R.id.framelayout_mypet_fragmentcontainer, CreateUpdatePetFragment())
                     .addToBackStack(null)
                     .commit()
             }

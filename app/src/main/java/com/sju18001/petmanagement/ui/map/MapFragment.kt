@@ -250,7 +250,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         showingNavViewAnim = ValueAnimator.ofInt(0, Util.convertDpToPixel(NAV_VIEW_HEIGHT))
         showingNavViewAnim!!.addUpdateListener { valueAnimator ->
             val value = valueAnimator.animatedValue as Int
-            val navView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
+            val navView = requireActivity().findViewById<BottomNavigationView>(R.id.bottomnavigationview_main)
 
             navView.layoutParams.height = value
             navView.requestLayout()
@@ -260,7 +260,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         hidingNavViewAnim = ValueAnimator.ofInt(Util.convertDpToPixel(NAV_VIEW_HEIGHT), 0)
         hidingNavViewAnim!!.addUpdateListener { valueAnimator ->
             val value = valueAnimator.animatedValue as Int
-            val navView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
+            val navView = requireActivity().findViewById<BottomNavigationView>(R.id.bottomnavigationview_main)
 
             navView.layoutParams.height = value
             navView.requestLayout()
@@ -465,7 +465,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
     private fun isPlaceCardOpened(): Boolean {
-        val navView = requireActivity().findViewById<BottomNavigationView>(R.id.nav_view)
+        val navView = requireActivity().findViewById<BottomNavigationView>(R.id.bottomnavigationview_main)
         return navView.height == 0 && binding.placeCard.height > 0
     }
 

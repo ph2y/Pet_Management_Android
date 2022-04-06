@@ -70,7 +70,7 @@ class MainActivity : AppCompatActivity() {
 
         val actionBar: ActionBar? = supportActionBar
         actionBar?.elevation = 0f
-        val navView: BottomNavigationView = binding.navView
+        val navView: BottomNavigationView = binding.bottomnavigationviewMain
 
         // get current selected item + set title
         when(savedInstanceState?.getInt("active_fragment_index")) {
@@ -321,7 +321,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun addFragmentWhenFragmentIsNull(fragment: Fragment, tag: String) {
         if(fragmentManager.findFragmentByTag(tag) == null){
-            fragmentManager.beginTransaction().add(R.id.nav_host_fragment_activity_main, fragment, tag).commitNow()
+            fragmentManager.beginTransaction().add(R.id.framelayout_main_navigationhost, fragment, tag).commitNow()
         }
     }
 

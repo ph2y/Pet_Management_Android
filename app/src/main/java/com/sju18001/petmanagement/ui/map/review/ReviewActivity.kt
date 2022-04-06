@@ -16,10 +16,10 @@ class ReviewActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         // 프래그먼트 실행
-        if(supportFragmentManager.findFragmentById(R.id.review_activity_fragment_container) == null){
+        if(supportFragmentManager.findFragmentById(R.id.constraintlayout_review_fragmentcontainer) == null){
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.review_activity_fragment_container, ReviewFragment())
+                .add(R.id.constraintlayout_review_fragmentcontainer, ReviewFragment())
                 .commit()
         }
     }
