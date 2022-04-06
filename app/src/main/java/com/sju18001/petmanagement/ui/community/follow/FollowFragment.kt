@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.ui.community.followerFollowing
+package com.sju18001.petmanagement.ui.community.follow
 
 import android.os.Bundle
 import android.text.Editable
@@ -17,7 +17,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.material.tabs.TabLayoutMediator
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.PatternRegex
-import com.sju18001.petmanagement.databinding.FragmentFollowerFollowingBinding
+import com.sju18001.petmanagement.databinding.FragmentFollowBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
@@ -26,13 +26,13 @@ import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.community.CommunityUtil
 
-class FollowerFollowingFragment : Fragment() {
+class FollowFragment : Fragment() {
 
     // for shared ViewModel
-    private lateinit var followerFollowingViewModel: FollowerFollowingViewModel
+    private lateinit var followViewModel: FollowViewModel
 
     // variables for view binding
-    private var _binding: FragmentFollowerFollowingBinding? = null
+    private var _binding: FragmentFollowBinding? = null
     private val binding get() = _binding!!
 
     private var isViewDestroyed = false
@@ -43,7 +43,7 @@ class FollowerFollowingFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // view binding
-        _binding = FragmentFollowerFollowingBinding.inflate(inflater, container, false)
+        _binding = FragmentFollowBinding.inflate(inflater, container, false)
         isViewDestroyed = false
         
         return binding.root
@@ -59,7 +59,7 @@ class FollowerFollowingFragment : Fragment() {
         // initialize ViewPager2
         val tabLayout = binding.tabLayout
         val viewPager = binding.viewPager.also{
-            it.adapter = FollowerFollowingCollectionAdapter(this)
+            it.adapter = FollowCollectionAdapter(this)
             it.currentItem = requireActivity().intent.getIntExtra("pageIndex", 0)
             it.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
                 override fun onPageSelected(position: Int) {
@@ -80,9 +80,9 @@ class FollowerFollowingFragment : Fragment() {
         }
         binding.searchEditText.addTextChangedListener(object: TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                followerFollowingViewModel.searchEditText = s.toString()
+                followViewModel.searchEditText = s.toString()
 
-                if (followerFollowingViewModel.searchEditText.isEmpty()) {
+                if (followViewModel.searchEditText.isEmpty()) {
                     binding.searchClearButton.visibility = View.INVISIBLE
                 } else {
                     binding.searchClearButton.visibility = View.VISIBLE
@@ -100,11 +100,11 @@ class FollowerFollowingFragment : Fragment() {
         // for follow unfollow button (search)
         binding.followUnfollowButton.setOnClickListener {
             // set API/button state to loading
-            followerFollowingViewModel.apiIsLoading = true
+            followViewModel.apiIsLoading = true
             setButtonState()
 
             // API call
-            if(followerFollowingViewModel.accountId !in followerFollowingViewModel.followerIdList!!) {
+            if(followViewModel.accountId !in followViewModel.followerIdList!!) {
                 createFollow()
             }
             else {
@@ -115,15 +115,15 @@ class FollowerFollowingFragment : Fragment() {
         // for starting pet profile
         binding.accountInfoCardView.setOnClickListener {
             CommunityUtil.fetchRepresentativePetAndStartPetProfile(requireContext(), Account(
-                followerFollowingViewModel.accountId!!, followerFollowingViewModel.accountUsername!!,
-                "", "", "", null, followerFollowingViewModel.accountNickname,
-                followerFollowingViewModel.accountPhotoUrl, "", followerFollowingViewModel.accountRepresentativePetId,
+                followViewModel.accountId!!, followViewModel.accountUsername!!,
+                "", "", "", null, followViewModel.accountNickname,
+                followViewModel.accountPhotoUrl, "", followViewModel.accountRepresentativePetId,
                 null, null, 0.0), isViewDestroyed
             )
         }
 
         // for hiding keyboard
-        Util.setupViewsForHideKeyboard(requireActivity(), binding.fragmentFollowerFollowingParentLayout)
+        Util.setupViewsForHideKeyboard(requireActivity(), binding.fragmentFollowParentLayout)
 
         binding.adView.loadAd(AdRequest.Builder().build())
     }
@@ -132,17 +132,17 @@ class FollowerFollowingFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
 
         // initialize ViewModel
-        followerFollowingViewModel = ViewModelProvider(requireActivity(),
+        followViewModel = ViewModelProvider(requireActivity(),
             SavedStateViewModelFactory(requireActivity().application, requireActivity()))
-            .get(FollowerFollowingViewModel::class.java)
+            .get(FollowViewModel::class.java)
 
         // observe live data and set title when change
-        followerFollowingViewModel.getFollowerTitle().observe(viewLifecycleOwner, object: Observer<String> {
+        followViewModel.getFollowerTitle().observe(viewLifecycleOwner, object: Observer<String> {
             override fun onChanged(followerTitle: String?) {
                 binding.tabLayout.getTabAt(0)!!.text = followerTitle
             }
         })
-        followerFollowingViewModel.getFollowingTitle().observe(viewLifecycleOwner, object: Observer<String> {
+        followViewModel.getFollowingTitle().observe(viewLifecycleOwner, object: Observer<String> {
             override fun onChanged(followingTitle: String?) {
                 binding.tabLayout.getTabAt(1)!!.text = followingTitle
             }
@@ -162,14 +162,14 @@ class FollowerFollowingFragment : Fragment() {
         setFollowingCount()
 
         // initialize follower id list
-        if(followerFollowingViewModel.followerIdList == null) {
+        if(followViewModel.followerIdList == null) {
             updateFollowerIdList()
         }
 
         restoreState()
     }
 
-    class FollowerFollowingCollectionAdapter(fragment: Fragment): FragmentStateAdapter(fragment){
+    class FollowCollectionAdapter(fragment: Fragment): FragmentStateAdapter(fragment){
         override fun getItemCount(): Int = 2
 
         override fun createFragment(position: Int): Fragment {
@@ -190,7 +190,7 @@ class FollowerFollowingFragment : Fragment() {
             // set follower count
             val followerText = requireContext().getText(R.string.follower_fragment_title).toString() +
                     ' ' + followerCount.toString()
-            followerFollowingViewModel.setFollowerTitle(followerText)
+            followViewModel.setFollowerTitle(followerText)
         }, {}, {})
     }
 
@@ -204,20 +204,20 @@ class FollowerFollowingFragment : Fragment() {
             // set following count
             val followingText = requireContext().getText(R.string.following_fragment_title).toString() +
                     ' ' + followingCount.toString()
-            followerFollowingViewModel.setFollowingTitle(followingText)
+            followViewModel.setFollowingTitle(followingText)
         }, {}, {})
     }
 
     private fun checkPatternNicknameAndSearchAccount(){
-        if(!PatternRegex.checkNicknameRegex(followerFollowingViewModel.searchEditText)) {
+        if(!PatternRegex.checkNicknameRegex(followViewModel.searchEditText)) {
             Toast.makeText(requireContext(), getString(R.string.nickname_regex_exception_message), Toast.LENGTH_LONG).show()
         }
         else {
             // set api state/button to loading
-            followerFollowingViewModel.apiIsLoading = true
+            followViewModel.apiIsLoading = true
             lockViews()
 
-            searchAccount(followerFollowingViewModel.searchEditText)
+            searchAccount(followViewModel.searchEditText)
         }
     }
 
@@ -226,17 +226,17 @@ class FollowerFollowingFragment : Fragment() {
             .fetchAccountByNicknameReq(FetchAccountReqDto(null, null, nickname))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             // set api state/button to normal
-            followerFollowingViewModel.apiIsLoading = false
+            followViewModel.apiIsLoading = false
             unlockViews()
 
             setAccountInfoViews(response.body()!!)
         }, {
             // set api state/button to normal
-            followerFollowingViewModel.apiIsLoading = false
+            followViewModel.apiIsLoading = false
             unlockViews()
         }, {
             // set api state/button to normal
-            followerFollowingViewModel.apiIsLoading = false
+            followViewModel.apiIsLoading = false
             unlockViews()
         })
     }
@@ -249,24 +249,24 @@ class FollowerFollowingFragment : Fragment() {
 
         // if url is not null -> fetch photo and set it
         if(fetchAccountResDto.photoUrl != null) {
-            followerFollowingViewModel.accountPhotoUrl = fetchAccountResDto.photoUrl
+            followViewModel.accountPhotoUrl = fetchAccountResDto.photoUrl
             fetchAccountPhoto(fetchAccountResDto.id)
         }
         // else -> reset photo related values
         else {
-            followerFollowingViewModel.accountPhotoUrl = null
-            followerFollowingViewModel.accountPhotoByteArray = null
+            followViewModel.accountPhotoUrl = null
+            followViewModel.accountPhotoByteArray = null
             setAccountPhoto()
         }
 
         // save necessary account information
-        followerFollowingViewModel.accountId = fetchAccountResDto.id
-        followerFollowingViewModel.accountUsername = fetchAccountResDto.username
-        followerFollowingViewModel.accountNickname = fetchAccountResDto.nickname
-        followerFollowingViewModel.accountRepresentativePetId = fetchAccountResDto.representativePetId
+        followViewModel.accountId = fetchAccountResDto.id
+        followViewModel.accountUsername = fetchAccountResDto.username
+        followViewModel.accountNickname = fetchAccountResDto.nickname
+        followViewModel.accountRepresentativePetId = fetchAccountResDto.representativePetId
 
         // set nickname
-        val nicknameText = followerFollowingViewModel.accountNickname + '님'
+        val nicknameText = followViewModel.accountNickname + '님'
         binding.accountNickname.text = nicknameText
 
         setButtonState()
@@ -277,15 +277,15 @@ class FollowerFollowingFragment : Fragment() {
             .fetchAccountPhotoReq(FetchAccountPhotoReqDto(id))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             // save photo as byte array
-            followerFollowingViewModel.accountPhotoByteArray = response.body()!!.byteStream().readBytes()
+            followViewModel.accountPhotoByteArray = response.body()!!.byteStream().readBytes()
 
             setAccountPhoto()
         }, {}, {})
     }
 
     private fun setAccountPhoto() {
-        if(followerFollowingViewModel.accountPhotoUrl != null) {
-            val bitmap = Util.getBitmapFromByteArray(followerFollowingViewModel.accountPhotoByteArray!!)
+        if(followViewModel.accountPhotoUrl != null) {
+            val bitmap = Util.getBitmapFromByteArray(followViewModel.accountPhotoByteArray!!)
             binding.accountPhoto.setImageBitmap(bitmap)
         }
         else {
@@ -295,10 +295,10 @@ class FollowerFollowingFragment : Fragment() {
 
     private fun setButtonState() {
         // exception
-        if(followerFollowingViewModel.accountId == null) { return }
+        if(followViewModel.accountId == null) { return }
 
         // for follow/unfollow button
-        if (followerFollowingViewModel.accountId in followerFollowingViewModel.followerIdList!!) {
+        if (followViewModel.accountId in followViewModel.followerIdList!!) {
             binding.followUnfollowButton.setBackgroundColor(requireContext().getColor(R.color.border_line))
             binding.followUnfollowButton.setTextColor(requireContext().resources.getColor(R.color.black))
             binding.followUnfollowButton.text = getText(R.string.unfollow_button)
@@ -309,52 +309,52 @@ class FollowerFollowingFragment : Fragment() {
         }
 
         // if API is loading -> set button to loading, else -> set button to normal
-        binding.followUnfollowButton.isEnabled = !followerFollowingViewModel.apiIsLoading
+        binding.followUnfollowButton.isEnabled = !followViewModel.apiIsLoading
     }
 
     private fun createFollow() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .createFollowReq(CreateFollowReqDto(followerFollowingViewModel.accountId!!))
+            .createFollowReq(CreateFollowReqDto(followViewModel.accountId!!))
 
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
             updateFollowerIdList()
 
-            followerFollowingViewModel.apiIsLoading = false
+            followViewModel.apiIsLoading = false
 
             updateViewPager()
         }, {
             // set api state/button to normal
-            followerFollowingViewModel.apiIsLoading = false
+            followViewModel.apiIsLoading = false
             setButtonState()
         }, {})
     }
 
     private fun deleteFollow() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .deleteFollowReq(DeleteFollowReqDto(followerFollowingViewModel.accountId!!))
+            .deleteFollowReq(DeleteFollowReqDto(followViewModel.accountId!!))
 
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
             updateFollowerIdList()
 
-            followerFollowingViewModel.apiIsLoading = false
+            followViewModel.apiIsLoading = false
 
             updateViewPager()
         }, {
             // set api state/button to normal
-            followerFollowingViewModel.apiIsLoading = false
+            followViewModel.apiIsLoading = false
             setButtonState()
         }, {})
     }
 
     fun updateFollowerIdList() {
         // reset list
-        followerFollowingViewModel.followerIdList = mutableListOf()
+        followViewModel.followerIdList = mutableListOf()
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchFollowerReq(ServerUtil.getEmptyBody())
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             response.body()!!.followerList.map {
-                followerFollowingViewModel.followerIdList!!.add(it.id)
+                followViewModel.followerIdList!!.add(it.id)
             }
 
             // update button state
@@ -381,20 +381,20 @@ class FollowerFollowingFragment : Fragment() {
 
     private fun restoreState() {
         // restore EditText
-        binding.searchEditText.setText(followerFollowingViewModel.searchEditText)
+        binding.searchEditText.setText(followViewModel.searchEditText)
 
         // restore account info layout
-        if(followerFollowingViewModel.accountId != null) {
+        if(followViewModel.accountId != null) {
             binding.accountInfoCardView.visibility = View.VISIBLE
 
             // account photo
-            if(followerFollowingViewModel.accountPhotoUrl != null) {
-                val bitmap = Util.getBitmapFromByteArray(followerFollowingViewModel.accountPhotoByteArray!!)
+            if(followViewModel.accountPhotoUrl != null) {
+                val bitmap = Util.getBitmapFromByteArray(followViewModel.accountPhotoByteArray!!)
                 binding.accountPhoto.setImageBitmap(bitmap)
             }
 
             // account nickname
-            val nicknameText = followerFollowingViewModel.accountNickname + '님'
+            val nicknameText = followViewModel.accountNickname + '님'
             binding.accountNickname.text = nicknameText
 
             // follow unfollow button

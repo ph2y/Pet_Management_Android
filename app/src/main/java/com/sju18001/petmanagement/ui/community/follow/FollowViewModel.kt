@@ -1,11 +1,11 @@
-package com.sju18001.petmanagement.ui.community.followerFollowing
+package com.sju18001.petmanagement.ui.community.follow
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 
-class FollowerFollowingViewModel(private val handle: SavedStateHandle) : ViewModel() {
+class FollowViewModel(private val handle: SavedStateHandle) : ViewModel() {
     private val followerTitle: MutableLiveData<String> = MutableLiveData()
     private val followingTitle: MutableLiveData<String> = MutableLiveData()
 

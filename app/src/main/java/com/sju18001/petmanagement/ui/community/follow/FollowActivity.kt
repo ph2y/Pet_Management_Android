@@ -1,13 +1,11 @@
-package com.sju18001.petmanagement.ui.community.followerFollowing
+package com.sju18001.petmanagement.ui.community.follow
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.lifecycle.SavedStateViewModelFactory
-import androidx.lifecycle.ViewModelProvider
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.databinding.ActivityFollowBinding
 
-class FollowerFollowingActivity : AppCompatActivity() {
+class FollowActivity : AppCompatActivity() {
 
     // variable for view binding
     private lateinit var binding: ActivityFollowBinding
@@ -25,7 +23,7 @@ class FollowerFollowingActivity : AppCompatActivity() {
         if(supportFragmentManager.findFragmentById(R.id.framelayout_follow_fragmentcontainer) == null) {
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.framelayout_follow_fragmentcontainer, FollowerFollowingFragment())
+                .add(R.id.framelayout_follow_fragmentcontainer, FollowFragment())
                 .commit()
         }
     }

@@ -1,8 +1,8 @@
-package com.sju18001.petmanagement.ui.community.followerFollowing
+package com.sju18001.petmanagement.ui.community.follow
 
 import android.graphics.Bitmap
 
-class FollowerFollowingListItem {
+class FollowListItem {
 
     // item elements
     private var mHasPhoto: Boolean? = null

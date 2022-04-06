@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.ui.welcomePage
+package com.sju18001.petmanagement.ui.welcome
 
 import android.content.Intent
 import android.os.Bundle
@@ -9,7 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import com.sju18001.petmanagement.MainActivity
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.databinding.FragmentWelcomePageProfileBinding
+import com.sju18001.petmanagement.databinding.FragmentWelcomeProfileBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
@@ -17,8 +17,8 @@ import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.FetchAccountPhotoReqDto
 import com.sju18001.petmanagement.ui.setting.SettingActivity
 
-class WelcomePageProfileFragment : Fragment() {
-    private var _binding: FragmentWelcomePageProfileBinding? = null
+class WelcomeProfileFragment : Fragment() {
+    private var _binding: FragmentWelcomeProfileBinding? = null
     private val binding get() = _binding!!
 
     private var isViewDestroyed = false
@@ -29,7 +29,7 @@ class WelcomePageProfileFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentWelcomePageProfileBinding.inflate(layoutInflater)
+        _binding = FragmentWelcomeProfileBinding.inflate(layoutInflater)
         isViewDestroyed = false
 
         return binding.root
