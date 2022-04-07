@@ -12,15 +12,14 @@ import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.FetchPetReqDto
-import com.sju18001.petmanagement.ui.myPet.MyPetActivity
-import com.sju18001.petmanagement.ui.myPet.MyPetActivityFragmentTypes
+import com.sju18001.petmanagement.ui.myPet.PetProfileActivity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
 class CommunityUtil {
     companion object{
         fun startPetProfileFragmentFromCommunity(context: Context, pet: Pet, author: Account) {
-            val petProfileIntent = Intent(context, MyPetActivity::class.java)
+            val petProfileIntent = Intent(context, PetProfileActivity::class.java)
 
             petProfileIntent.putExtra("accountId", author.id)
             petProfileIntent.putExtra("accountUsername", author.username)
@@ -44,7 +43,7 @@ class CommunityUtil {
             petProfileIntent.putExtra("petAge", Util.getAgeFromBirth(pet.birth))
             petProfileIntent.putExtra("petMessage", pet.message)
 
-            petProfileIntent.putExtra("fragmentType", MyPetActivityFragmentTypes.PET_PROFILE_COMMUNITY)
+            petProfileIntent.putExtra("fragmentType", PetProfileActivity.FragmentType.PET_PROFILE_FROM_COMMUNITY.ordinal)
             context.startActivity(petProfileIntent)
             (context as Activity).overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
         }

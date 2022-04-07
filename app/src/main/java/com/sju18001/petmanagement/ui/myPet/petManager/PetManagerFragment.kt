@@ -21,9 +21,8 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.FetchPetReqDto
-import com.sju18001.petmanagement.ui.myPet.MyPetActivity
-import com.sju18001.petmanagement.ui.myPet.MyPetActivityFragmentTypes
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
+import com.sju18001.petmanagement.ui.myPet.PetProfileActivity
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification.Companion.cancelAll
 import java.io.ByteArrayOutputStream
@@ -62,13 +61,12 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
 
         val root: View = binding.root
 
-
         // Initialize RecyclerView
         adapter = PetManagerAdapter(this, requireActivity(), object: PetManagerAdapterInterface{
             override fun onClickCreateButton() {
-                val myPetActivityIntent = Intent(context, MyPetActivity::class.java)
-                myPetActivityIntent.putExtra("fragmentType", MyPetActivityFragmentTypes.CREATE_PET)
-                startActivity(myPetActivityIntent)
+                val petProfileActivityIntent = Intent(context, PetProfileActivity::class.java)
+                petProfileActivityIntent.putExtra("fragmentType", PetProfileActivity.FragmentType.CREATE_PET.ordinal)
+                startActivity(petProfileActivityIntent)
             }
 
             override fun restoreScroll() {
@@ -91,7 +89,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
                 }
 
                 // set pet values to Intent
-                val petProfileIntent = Intent(holder.itemView.context, MyPetActivity::class.java)
+                val petProfileIntent = Intent(holder.itemView.context, PetProfileActivity::class.java)
                 if(currentItem.photoUrl != null) {
                     val bitmap = (holder.petPhoto.drawable as BitmapDrawable).bitmap
                     val stream = ByteArrayOutputStream()
@@ -118,7 +116,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
                 val isRepresentativePet = currentItem.id == SessionManager.fetchLoggedInAccount(requireContext())?.representativePetId?: 0
                 petProfileIntent.putExtra("isRepresentativePet", isRepresentativePet)
 
-                petProfileIntent.putExtra("fragmentType", MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER)
+                petProfileIntent.putExtra("fragmentType", PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal)
 
                 // open activity
                 holder.itemView.context.startActivity(petProfileIntent)

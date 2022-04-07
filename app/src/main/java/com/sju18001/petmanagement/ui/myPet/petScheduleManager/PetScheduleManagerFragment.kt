@@ -24,9 +24,8 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.PetSchedule
 import com.sju18001.petmanagement.restapi.dto.*
-import com.sju18001.petmanagement.ui.myPet.MyPetActivity
-import com.sju18001.petmanagement.ui.myPet.MyPetActivityFragmentTypes
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
+import com.sju18001.petmanagement.ui.myPet.petScheduleManager.createUpdatePetSchedule.CreateUpdatePetScheduleActivity
 
 class PetScheduleManagerFragment : Fragment() {
     private var _binding: FragmentPetScheduleManagerBinding? = null
@@ -89,15 +88,15 @@ class PetScheduleManagerFragment : Fragment() {
         adapter.petScheduleListAdapterInterface = object: PetScheduleListAdapterInterface {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun startCreateUpdatePetScheduleFragmentForUpdate(data: PetSchedule) {
-                val myPetActivityIntent = Intent(context, MyPetActivity::class.java)
-                myPetActivityIntent
-                    .putExtra("fragmentType", MyPetActivityFragmentTypes.UPDATE_PET_SCHEDULE)
+                val createUpdatePetScheduleActivityIntent = Intent(context, CreateUpdatePetScheduleActivity::class.java)
+                createUpdatePetScheduleActivityIntent
+                    .putExtra("fragmentType", CreateUpdatePetScheduleActivity.FragmentType.UPDATE_PET_SCHEDULE.ordinal)
                     .putExtra("id", data.id)
                     .putExtra("petIdList", data.petIdList)
                     .putExtra("time", data.time)
                     .putExtra("memo", data.memo)
                     .putExtra("enabled", data.enabled)
-                startActivity(myPetActivityIntent)
+                startActivity(createUpdatePetScheduleActivityIntent)
                 requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
             }
 
@@ -213,10 +212,10 @@ class PetScheduleManagerFragment : Fragment() {
     }
 
     private fun startCreatePetSchedule(){
-        val myPetActivityIntent = Intent(context, MyPetActivity::class.java)
-        myPetActivityIntent.putExtra("fragmentType", MyPetActivityFragmentTypes.CREATE_PET_SCHEDULE)
+        val createUpdatePetScheduleActivityIntent = Intent(context, CreateUpdatePetScheduleActivity::class.java)
+        createUpdatePetScheduleActivityIntent.putExtra("fragmentType", CreateUpdatePetScheduleActivity.FragmentType.CREATE_PET_SCHEDULE.ordinal)
 
-        startActivity(myPetActivityIntent)
+        startActivity(createUpdatePetScheduleActivityIntent)
         requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
     }
 }
