@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.ui.myPet.petManager
+package com.sju18001.petmanagement.ui.myPet.petManager.petProfile
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
@@ -31,8 +31,8 @@ import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.community.post.PostFragment
-import com.sju18001.petmanagement.ui.myPet.MyPetActivityFragmentTypes
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
+import com.sju18001.petmanagement.ui.myPet.PetProfileActivity
 
 class PetProfileFragment : Fragment(){
     // variables for view binding
@@ -63,14 +63,14 @@ class PetProfileFragment : Fragment(){
         val view = binding.root
 
         // get fragment type
-        myPetViewModel.fragmentType = requireActivity().intent.getStringExtra("fragmentType")
+        myPetViewModel.fragmentType = requireActivity().intent.getIntExtra("fragmentType", 0)
 
         // save data to ViewModel if not already loaded
         if(!myPetViewModel.loadedAuthorFromIntent) { saveAuthorDataForAuthorProfile() }
         if(!myPetViewModel.loadedPetFromIntent) { savePetDataForPetProfile() }
 
         // Pet manager / Community에 따라 초기 뷰 세팅을 달리 함
-        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
+        if (myPetViewModel.fragmentType == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
             if (!myPetViewModel.isRepresentativePetProfile) {
                 binding.setRepresentativeButton.visibility = View.VISIBLE
             }
@@ -106,7 +106,7 @@ class PetProfileFragment : Fragment(){
         super.onStart()
 
         // for set representative button
-        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
+        if (myPetViewModel.fragmentType == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
             binding.setRepresentativeButton.setOnClickListener {
                 val builder = AlertDialog.Builder(activity)
                 builder.setMessage(myPetViewModel.petNameValueProfile + context?.getString(R.string.set_representative_message))
@@ -125,21 +125,21 @@ class PetProfileFragment : Fragment(){
         }
 
         // for pet update button
-        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
+        if (myPetViewModel.fragmentType == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
             binding.updatePetButton.setOnClickListener {
                 // save pet data to ViewModel(for pet update)
                 savePetDataForPetUpdate()
 
                 // open update pet fragment
                 activity?.supportFragmentManager?.beginTransaction()!!
-                    .replace(R.id.framelayout_mypet_fragmentcontainer, CreateUpdatePetFragment())
+                    .replace(R.id.framelayout_petprofile_fragmentcontainer, CreateUpdatePetFragment())
                     .addToBackStack(null)
                     .commit()
             }
         }
 
         // for follow/unfollow button
-        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_COMMUNITY) {
+        if (myPetViewModel.fragmentType == PetProfileActivity.FragmentType.PET_PROFILE_FROM_COMMUNITY.ordinal) {
             binding.followUnfollowButton.setOnClickListener {
                 if (isFollowing) {
                     deleteFollow()
@@ -174,7 +174,7 @@ class PetProfileFragment : Fragment(){
 
         // set follow/unfollow button
         // placed here (onResume) for consistency when returning to the same account's pet profile
-        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_COMMUNITY) {
+        if (myPetViewModel.fragmentType == PetProfileActivity.FragmentType.PET_PROFILE_FROM_COMMUNITY.ordinal) {
             setFollowUnfollowButton()
         }
     }
@@ -397,7 +397,7 @@ class PetProfileFragment : Fragment(){
     private fun savePetDataForPetProfile() {
         myPetViewModel.loadedPetFromIntent = true
         myPetViewModel.petIdValue = requireActivity().intent.getLongExtra("petId", -1)
-        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
+        if (myPetViewModel.fragmentType == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
             myPetViewModel.petPhotoByteArrayProfile = Util.getByteArrayFromSharedPreferences(requireContext(),
                 requireContext().getString(R.string.pref_name_byte_arrays),
                 requireContext().getString(R.string.data_name_my_pet_selected_pet_photo))
@@ -425,7 +425,7 @@ class PetProfileFragment : Fragment(){
         myPetViewModel.petGenderValueProfile = requireActivity().intent.getStringExtra("petGender").toString()
         myPetViewModel.petAgeValueProfile = requireActivity().intent.getStringExtra("petAge").toString()
         myPetViewModel.petMessageValueProfile = requireActivity().intent.getStringExtra("petMessage").toString()
-        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
+        if (myPetViewModel.fragmentType == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
             myPetViewModel.isRepresentativePetProfile = requireActivity().intent.getBooleanExtra("isRepresentativePet", false)
         }
         else {
@@ -544,7 +544,7 @@ class PetProfileFragment : Fragment(){
         // 터치를 시작할 때의 좌표를 기록함
         var x = 0f
         var y = 0f
-        
+
         recyclerView.setOnTouchListener { v, event ->
             when (event.action){
                 MotionEvent.ACTION_DOWN -> {
@@ -608,10 +608,10 @@ class PetProfileFragment : Fragment(){
         binding.circleimageviewPetprofilePetphoto.rotation = myPetViewModel.petPhotoRotationProfile?: 0f
 
         binding.topFixedLayout.visibility = View.VISIBLE
-        if (myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_COMMUNITY) {
+        if (myPetViewModel.fragmentType == PetProfileActivity.FragmentType.PET_PROFILE_FROM_COMMUNITY.ordinal) {
             binding.accountInfoLayout.visibility = View.VISIBLE
         }
-        if(myPetViewModel.fragmentType == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER){
+        if(myPetViewModel.fragmentType == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal){
             binding.buttonsLayout.visibility = View.VISIBLE
         }
 

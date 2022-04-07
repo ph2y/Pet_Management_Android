@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.ui.myPet.petScheduleManager
+package com.sju18001.petmanagement.ui.myPet.petScheduleManager.createUpdatePetSchedule
 
 import android.os.Build
 import android.os.Bundle
@@ -18,8 +18,11 @@ import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dto.*
-import com.sju18001.petmanagement.ui.myPet.MyPetActivityFragmentTypes
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
+import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetNameListAdapter
+import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetNameListAdapterInterface
+import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetNameListItem
+import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification
 import java.time.LocalTime
 
 class CreateUpdatePetScheduleFragment : Fragment() {
@@ -61,7 +64,7 @@ class CreateUpdatePetScheduleFragment : Fragment() {
         binding.confirmButton.setOnClickListener {
             val intent = requireActivity().intent
 
-            if(intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.CREATE_PET_SCHEDULE){
+            if(intent.getIntExtra("fragmentType", 0) == CreateUpdatePetScheduleActivity.FragmentType.CREATE_PET_SCHEDULE.ordinal){
                 createPetSchedule()
             }else{
                 val enabled = intent.getBooleanExtra("enabled", false)
@@ -75,7 +78,8 @@ class CreateUpdatePetScheduleFragment : Fragment() {
                     PetScheduleNotification.setAlarmManagerRepeating(
                         requireContext(),
                         intent.getLongExtra("id", -1),
-                        LocalTime.of(binding.timePicker.hour, binding.timePicker.minute).toString()+":00",
+                        LocalTime.of(binding.timePicker.hour, binding.timePicker.minute)
+                            .toString() + ":00",
                         Util.getPetNamesFromPetIdList(petNameForId, getCheckedPetIdList()),
                         binding.memoEditText.text.toString()
                     )
@@ -86,7 +90,7 @@ class CreateUpdatePetScheduleFragment : Fragment() {
 
         // 리싸이클러뷰
         adapter = PetNameListAdapter(arrayListOf())
-        adapter.petNameListAdapterInterface = object: PetNameListAdapterInterface{
+        adapter.petNameListAdapterInterface = object: PetNameListAdapterInterface {
             override fun setCheckBoxForViewModel(checkBox: CheckBox, position: Int){
                 myPetViewModel.isPetChecked?.let{
                     if(it.size >= position + 1){
@@ -140,7 +144,7 @@ class CreateUpdatePetScheduleFragment : Fragment() {
         // 일정 데이터 불러오기
         val intent = requireActivity().intent
 
-        if(intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.UPDATE_PET_SCHEDULE){
+        if(intent.getIntExtra("fragmentType", 0) == CreateUpdatePetScheduleActivity.FragmentType.UPDATE_PET_SCHEDULE.ordinal){
             binding.timePicker.hour = intent.getIntExtra("hour", 0)
             binding.timePicker.minute = intent.getIntExtra("minute", 0)
             binding.memoEditText.setText(intent.getStringExtra("memo"))
@@ -231,7 +235,7 @@ class CreateUpdatePetScheduleFragment : Fragment() {
 
     private fun setViewModelForUpdate(){
         val intent = requireActivity().intent
-        if(intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.UPDATE_PET_SCHEDULE){
+        if(intent.getIntExtra("fragmentType", 0) == CreateUpdatePetScheduleActivity.FragmentType.UPDATE_PET_SCHEDULE.ordinal){
             // Initialize ViewModel for PetIdList
             intent.getStringExtra("petIdList")?.let{
                 val petIdListOfString = it.replace(" ", "").split(",")

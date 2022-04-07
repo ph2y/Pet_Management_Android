@@ -10,7 +10,7 @@ class MyPetViewModel(private val handle: SavedStateHandle) : ViewModel() {
             handle.set("lastScrolledIndex", value)
             field = value
         }
-    var fragmentType = handle.get<String>("fragmentType")
+    var fragmentType = handle.get<Int>("fragmentType")
         set(value){
             handle.set("fragmentType", value)
             field = value

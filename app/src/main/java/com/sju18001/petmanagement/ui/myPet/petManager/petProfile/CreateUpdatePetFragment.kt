@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.ui.myPet.petManager
+package com.sju18001.petmanagement.ui.myPet.petManager.petProfile
 
 import android.app.AlertDialog
 import android.app.Dialog
@@ -31,8 +31,8 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.restapi.global.FileType
-import com.sju18001.petmanagement.ui.myPet.MyPetActivityFragmentTypes
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
+import com.sju18001.petmanagement.ui.myPet.PetProfileActivity
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -76,15 +76,15 @@ class CreateUpdatePetFragment : Fragment() {
         binding.adView.loadAd(AdRequest.Builder().build())
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onStart() {
         super.onStart()
 
         // for title
-        if(requireActivity().intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
+        val fragmentType = requireActivity().intent.getIntExtra("fragmentType", 0)
+        if(fragmentType == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
             binding.backButtonTitle.text = context?.getText(R.string.update_pet_title)
         }
-        else if(requireActivity().intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.CREATE_PET){
+        else if(fragmentType == PetProfileActivity.FragmentType.CREATE_PET.ordinal){
             binding.deletePetLayout.visibility = View.GONE
         }
 
@@ -193,7 +193,7 @@ class CreateUpdatePetFragment : Fragment() {
 
         // for confirm button
         binding.confirmButton.setOnClickListener {
-            if(requireActivity().intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
+            if(fragmentType == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
                 updatePet()
             }
             else {
@@ -203,7 +203,7 @@ class CreateUpdatePetFragment : Fragment() {
 
         // for back button
         binding.backButton.setOnClickListener {
-            if(requireActivity().intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
+            if(fragmentType == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
                 fragmentManager?.popBackStack()
             }
             else {
@@ -482,7 +482,7 @@ class CreateUpdatePetFragment : Fragment() {
             Glide.with(requireContext()).load(BitmapFactory.decodeFile(myPetViewModel.petPhotoPathValue)).into(binding.petPhotoInput)
         }
         // if photo not selected, and is in update mode -> set photo
-        else if(requireActivity().intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
+        else if(requireActivity().intent.getIntExtra("fragmentType", 0) == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
             if(myPetViewModel.petPhotoByteArray != null) {
                 val bitmap = Util.getBitmapFromByteArray(myPetViewModel.petPhotoByteArray!!)
                 Glide.with(requireContext()).load(bitmap).into(binding.petPhotoInput)
@@ -522,14 +522,13 @@ class CreateUpdatePetFragment : Fragment() {
     }
 
     // close fragment/activity after create/update success
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun closeAfterSuccess() {
         // set api state/button to normal
         myPetViewModel.petManagerApiIsLoading = false
         unlockViews()
 
         // show message + return to previous activity/fragment
-        if(requireActivity().intent.getStringExtra("fragmentType") == MyPetActivityFragmentTypes.PET_PROFILE_PET_MANAGER) {
+        if(requireActivity().intent.getIntExtra("fragmentType", 0) == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
             Toast.makeText(context, context?.getText(R.string.update_pet_successful), Toast.LENGTH_LONG).show()
             savePetDataForPetProfile()
             fragmentManager?.popBackStack()
