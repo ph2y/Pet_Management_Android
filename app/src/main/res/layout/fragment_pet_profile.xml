@@ -42,7 +42,9 @@
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:src="@drawable/ic_baseline_arrow_back_36_white"
-                    android:background="?selectableItemBackgroundBorderless"/>
+                    android:background="?selectableItemBackgroundBorderless"
+                    android:onClick="@{() -> fragment.onClickBackButton()}"
+                    />
 
                 <TextView
                     android:id="@+id/back_button_title"
@@ -108,6 +110,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="20sp"
+                        android:text="@{viewModel.accountNickname}"
                         android:layout_marginLeft="4dp"
                         android:layout_marginBottom="-4dp"/>
 
@@ -126,7 +129,12 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    android:enabled="@{!viewModel.isApiLoading}"
+                    android:backgroundTint="@{viewModel.isFollowing? @color/border_line: @color/carrot}"
+                    android:textColor="@{viewModel.isFollowing? @color/black: @color/white}"
+                    android:text="@{viewModel.isFollowing? @string/unfollow_button: @string/follow_button}"
+                    android:onClick="@{() -> fragment.onClickFollowUnFollowButton()}"/>
 
             </RelativeLayout>
 
@@ -172,6 +180,7 @@
                     android:layout_marginBottom="136dp"
                     android:scaleType="fitXY"
                     android:src="@drawable/crown"
+                    android:visibility="@{ viewModel.isPetRepresentative? View.VISIBLE: View.INVISIBLE }"
                     app:layout_constraintBottom_toBottomOf="@id/circleimageview_petprofile_petphoto"
                     app:layout_constraintStart_toStartOf="@id/circleimageview_petprofile_petphoto"
                     app:layout_constraintEnd_toEndOf="@id/circleimageview_petprofile_petphoto"/>
@@ -182,7 +191,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:maxLines="1"
-                    android:text="랄로"
+                    android:text="@{viewModel.petName}"
                     android:ellipsize="end"
                     android:textSize="32sp"
                     android:textStyle="bold"
@@ -198,7 +207,7 @@
                     android:layout_marginBottom="4dp"
                     app:layout_constraintStart_toEndOf="@id/textview_petprofile_petname"
                     app:layout_constraintBottom_toBottomOf="@id/textview_petprofile_petname"
-                    android:text="2살"
+                    android:text="@{fragment.getPetAgeString()}"
                     android:textSize="16sp"/>
 
                 <TextView
@@ -212,6 +221,7 @@
                     android:gravity="center"
                     android:textSize="16sp"
                     android:textStyle="bold"
+                    android:text="@{fragment.getPetMessageString()}"
                     app:layout_constraintTop_toBottomOf="@id/textview_petprofile_petname"
                     app:layout_constraintStart_toStartOf="parent"/>
 
@@ -227,7 +237,7 @@
                         android:id="@+id/textview_petprofile_petbreed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="포메라니안"
+                        android:text="@{viewModel.petBreed}"
                         android:textSize="16dp"/>
 
                     <TextView
@@ -235,7 +245,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_toEndOf="@id/textview_petprofile_petbreed"
-                        android:text="@string/pet_gender_male_symbol"
+                        android:text="@{fragment.getPetGenderString()}"
                         android:textSize="16dp"/>
 
                     <TextView
@@ -250,7 +260,7 @@
                         android:id="@+id/textview_petprofile_petbirth"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="21-09-13"
+                        android:text="@{fragment.getBirthString()}"
                         android:textSize="16dp"/>
                 </LinearLayout>
 
@@ -275,7 +285,9 @@
                     android:background="@drawable/button_with_radius_pumpkin"
                     android:textSize="18sp"
                     android:textColor="@color/white"
-                    android:text="@string/update_pet_button"/>
+                    android:text="@string/update_pet_button"
+                    android:onClick="@{() -> fragment.onClickUpdatePetButton()}"
+                    />
 
             </LinearLayout>
 
@@ -287,6 +299,7 @@
                 android:text="History"
                 android:textSize="24dp"
                 android:background="@drawable/border"
+                android:onClick="@{() -> fragment.onClickHistoryText()}"
                 app:layout_constraintTop_toBottomOf="@id/buttons_layout"
                 app:layout_constraintBottom_toTopOf="@id/post_fragment_container"/>
 
