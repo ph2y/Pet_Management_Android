@@ -21,9 +21,11 @@ import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.google.android.gms.ads.AdRequest
 import com.sju18001.petmanagement.R
+import com.sju18001.petmanagement.controller.FormattedDate
 import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentCreateUpdatePetBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
@@ -31,8 +33,6 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.restapi.global.FileType
-import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
-import com.sju18001.petmanagement.ui.myPet.PetProfileActivity
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -41,22 +41,22 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.text.SimpleDateFormat
 import java.time.LocalDate
 import java.util.*
 
 class CreateUpdatePetFragment : Fragment() {
-
-    // constant variables
-    private val PICK_PHOTO = 0
-    private var CREATE_UPDATE_PET_DIRECTORY: String = "create_update_pet"
+    companion object {
+        const val PICK_PHOTO = 0
+        const val CREATE_UPDATE_PET_DIRECTORY: String = "create_update_pet"
+    }
 
     // variables for view binding
     private var _binding: FragmentCreateUpdatePetBinding? = null
     private val binding get() = _binding!!
 
     // variable for ViewModel
-    val myPetViewModel: MyPetViewModel by activityViewModels()
-
+    private val viewModel: CreateUpdatePetViewModel by viewModels()
     private var isViewDestroyed = false
 
     override fun onCreateView(
@@ -64,10 +64,38 @@ class CreateUpdatePetFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentCreateUpdatePetBinding.inflate(inflater, container, false)
+        setBinding(inflater, container)
+        setViewModel()
         isViewDestroyed = false
 
+        if(!viewModel.isViewModelInitializedByBundle) {
+            initializeViewModelByBundle()
+        }
+
         return binding.root
+    }
+
+    private fun setBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        _binding = FragmentCreateUpdatePetBinding.inflate(inflater, container, false)
+
+        binding.lifecycleOwner = this
+        binding.fragment = this@CreateUpdatePetFragment
+        binding.viewModel = viewModel
+    }
+
+    private fun setViewModel() {
+        viewModel.petId = requireActivity().intent.getLongExtra("petId", -1)
+    }
+
+    private fun initializeViewModelByBundle() {
+        viewModel.petPhotoByteArray = arguments?.getByteArray("petPhotoByteArray")
+        arguments?.getString("petMessage")?.let{ viewModel.petMessage = it }
+        arguments?.getString("petName")?.let{ viewModel.petName = it }
+        viewModel.petGender = arguments?.getBoolean("petGender") == true
+        arguments?.getString("petSpecies")?.let{ viewModel.petSpecies = it }
+        arguments?.getString("petBreed")?.let{ viewModel.petBreed = it }
+        viewModel.yearOnly = arguments?.getBoolean("yearOnly") == true
+        arguments?.getString("petBirth")?.let{ viewModel.petBirth = it }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -91,17 +119,15 @@ class CreateUpdatePetFragment : Fragment() {
         // for DatePicker
         val calendar = Calendar.getInstance()
         calendar.timeInMillis = System.currentTimeMillis()
-        if(myPetViewModel.petBirthYearValue == null) { myPetViewModel.petBirthYearValue = calendar.get(Calendar.YEAR) }
-        if(myPetViewModel.petBirthMonthValue == null) { myPetViewModel.petBirthMonthValue = calendar.get(Calendar.MONTH) }
-        if(myPetViewModel.petBirthDateValue == null) { myPetViewModel.petBirthDateValue = calendar.get(Calendar.DAY_OF_MONTH) }
+        if(viewModel.petBirth == null) {
+            viewModel.petBirth = SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance())
+        }
         binding.petBirthInput.init(
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH),
         ) { _, year, monthOfYear, dayOfMonth ->
-            myPetViewModel.petBirthYearValue = year
-            myPetViewModel.petBirthMonthValue = monthOfYear + 1
-            myPetViewModel.petBirthDateValue = dayOfMonth
+            viewModel.petBirth = FormattedDate(year, monthOfYear, dayOfMonth).getFormattedString()
         }
 
         restoreState()
@@ -127,29 +153,29 @@ class CreateUpdatePetFragment : Fragment() {
                 dialog.dismiss()
 
                 binding.petPhotoInput.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_pets_60_with_padding))
-                myPetViewModel.petPhotoRotation = 0f
-                binding.petPhotoInput.rotation = myPetViewModel.petPhotoRotation!!
+                viewModel.petPhotoRotation = 0f
+                binding.petPhotoInput.rotation = viewModel.petPhotoRotation!!
 
-                myPetViewModel.petPhotoByteArray = null
-                if (myPetViewModel.petPhotoPathValue != "") {
-                    File(myPetViewModel.petPhotoPathValue).delete()
-                    myPetViewModel.petPhotoPathValue = ""
+                viewModel.petPhotoByteArray = null
+                if (viewModel.petPhotoPath != "") {
+                    File(viewModel.petPhotoPath).delete()
+                    viewModel.petPhotoPath = ""
                 }
-                myPetViewModel.isDeletePhoto = true
+                viewModel.isDeletePhoto = true
             }
         }
 
         // for EditText text change listeners
         binding.petMessageInput.addTextChangedListener(object: TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                myPetViewModel.petMessageValue = s.toString()
+                viewModel.petMessage = s.toString()
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
             override fun afterTextChanged(s: Editable?) {}
         })
         binding.petNameInput.addTextChangedListener(object: TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                myPetViewModel.petNameValue = s.toString()
+                viewModel.petName = s.toString()
                 checkIsValid()
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -157,7 +183,7 @@ class CreateUpdatePetFragment : Fragment() {
         })
         binding.petSpeciesInput.addTextChangedListener(object: TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                myPetViewModel.petSpeciesValue = s.toString()
+                viewModel.petSpecies = s.toString()
                 checkIsValid()
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -165,7 +191,7 @@ class CreateUpdatePetFragment : Fragment() {
         })
         binding.petBreedInput.addTextChangedListener(object: TextWatcher {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                myPetViewModel.petBreedValue = s.toString()
+                viewModel.petBreed = s.toString()
                 checkIsValid()
             }
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
@@ -175,20 +201,20 @@ class CreateUpdatePetFragment : Fragment() {
         // for gender RadioButtons
         binding.genderFemale.setOnClickListener{
             if(binding.genderFemale.isChecked) {
-                myPetViewModel.petGenderValue = true
+                viewModel.petGender = true
                 checkIsValid()
             }
         }
         binding.genderMale.setOnClickListener{
             if(binding.genderMale.isChecked) {
-                myPetViewModel.petGenderValue = false
+                viewModel.petGender = false
                 checkIsValid()
             }
         }
 
         // for year only CheckBox
         binding.yearOnlyCheckbox.setOnClickListener{
-            myPetViewModel.petBirthIsYearOnlyValue = binding.yearOnlyCheckbox.isChecked
+            viewModel.yearOnly = binding.yearOnlyCheckbox.isChecked
         }
 
         // for confirm button
@@ -233,40 +259,30 @@ class CreateUpdatePetFragment : Fragment() {
 
     // trim text values
     private fun trimTextValues() {
-        myPetViewModel.petMessageValue = myPetViewModel.petMessageValue.trim()
-        myPetViewModel.petNameValue = myPetViewModel.petNameValue.trim()
-        myPetViewModel.petSpeciesValue = myPetViewModel.petSpeciesValue.trim()
-        myPetViewModel.petBreedValue = myPetViewModel.petBreedValue.trim()
+        viewModel.petMessage = viewModel.petMessage?.trim()
+        viewModel.petName = viewModel.petName?.trim()
+        viewModel.petSpecies = viewModel.petSpecies?.trim()
+        viewModel.petBreed = viewModel.petBreed?.trim()
 
-        binding.petMessageInput.setText(myPetViewModel.petMessageValue)
-        binding.petNameInput.setText(myPetViewModel.petNameValue)
-        binding.petSpeciesInput.setText(myPetViewModel.petSpeciesValue)
-        binding.petBreedInput.setText(myPetViewModel.petBreedValue)
+        binding.petMessageInput.setText(viewModel.petMessage)
+        binding.petNameInput.setText(viewModel.petName)
+        binding.petSpeciesInput.setText(viewModel.petSpecies)
+        binding.petBreedInput.setText(viewModel.petBreed)
     }
 
     // create pet
     private fun createPet() {
         // set api state/button to loading
-        myPetViewModel.petManagerApiIsLoading = true
+        viewModel.isApiLoading = true
         lockViews()
 
-        // trim text values
         trimTextValues()
 
-        // for birth value
-        val petBirthStringValue: String = if (!binding.yearOnlyCheckbox.isChecked){
-            "${binding.petBirthInput.year}-${(binding.petBirthInput.month + 1).toString().padStart(2, '0')}" +
-                    "-${binding.petBirthInput.dayOfMonth.toString().padStart(2, '0')}"
-        } else {
-            "${binding.petBirthInput.year}-01-01"
-        }
-
-        // create DTO
         val createPetRequestDto = CreatePetReqDto(
             binding.petNameInput.text.toString(),
             binding.petSpeciesInput.text.toString(),
             binding.petBreedInput.text.toString(),
-            petBirthStringValue,
+            FormattedDate(binding.petBirthInput.year, binding.petBirthInput.month, binding.petBirthInput.dayOfMonth).getFormattedString(),
             binding.yearOnlyCheckbox.isChecked,
             binding.genderFemale.isChecked,
             binding.petMessageInput.text.toString()
@@ -278,37 +294,36 @@ class CreateUpdatePetFragment : Fragment() {
             getIdAndUpdatePhoto()
         }, { response ->
             // set api state/button to normal
-            myPetViewModel.petManagerApiIsLoading = false
+            viewModel.isApiLoading = false
             unlockViews()
 
             Util.showToastAndLogForNotSuccessfulResponse(requireContext(), response.errorBody())
         }, {
             // set api state/button to normal
-            myPetViewModel.petManagerApiIsLoading = false
+            viewModel.isApiLoading = false
             unlockViews()
         })
     }
 
-    // update pet
-    @RequiresApi(Build.VERSION_CODES.O)
+
     private fun updatePet() {
         // set api state/button to loading
-        myPetViewModel.petManagerApiIsLoading = true
+        viewModel.isApiLoading = true
         lockViews()
 
         trimTextValues()
 
         // for birth value
-        val petBirthStringValue: String = if (!binding.yearOnlyCheckbox.isChecked){
-            "${binding.petBirthInput.year}-${(binding.petBirthInput.month + 1).toString().padStart(2, '0')}" +
-                    "-${binding.petBirthInput.dayOfMonth.toString().padStart(2, '0')}"
+        val petBirthStringValue: String = if (!binding.yearOnlyCheckbox.isChecked) {
+            FormattedDate(binding.petBirthInput.year, binding.petBirthInput.month+1, binding.petBirthInput.dayOfMonth)
+                .getFormattedString()
         } else {
             "${binding.petBirthInput.year}-01-01"
         }
 
         // create DTO
         val updatePetReqDto = UpdatePetReqDto(
-            myPetViewModel.petIdValue!!,
+            viewModel.petId!!,
             binding.petNameInput.text.toString(),
             binding.petSpeciesInput.text.toString(),
             binding.petBreedInput.text.toString(),
@@ -321,14 +336,14 @@ class CreateUpdatePetFragment : Fragment() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .updatePetReq(updatePetReqDto)
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
-            updatePetPhoto(myPetViewModel.petIdValue!!, myPetViewModel.petPhotoPathValue)
+            updatePetPhoto(viewModel.petId!!, viewModel.petPhotoPath)
         }, {
             // set api state/button to normal
-            myPetViewModel.petManagerApiIsLoading = false
+            viewModel.isApiLoading = false
             unlockViews()
         }, {
             // set api state/button to normal
-            myPetViewModel.petManagerApiIsLoading = false
+            viewModel.isApiLoading = false
             unlockViews()
         })
     }
@@ -337,13 +352,13 @@ class CreateUpdatePetFragment : Fragment() {
     @RequiresApi(Build.VERSION_CODES.O)
     private fun updatePetPhoto(id: Long, path: String) {
         // exception
-        if (!myPetViewModel.isDeletePhoto && path == "") {
+        if (!viewModel.isDeletePhoto && path == "") {
             closeAfterSuccess()
             return
         }
 
         // delete photo
-        if(myPetViewModel.isDeletePhoto) {
+        if(viewModel.isDeletePhoto) {
             val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
                 .deletePetPhotoReq(DeletePetPhotoReqDto(id))
             call.enqueue(object: Callback<DeletePetPhotoResDto> {
@@ -364,7 +379,7 @@ class CreateUpdatePetFragment : Fragment() {
                             closeAfterSuccess()
                         } else {
                             // set api state/button to normal
-                            myPetViewModel.petManagerApiIsLoading = false
+                            viewModel.isApiLoading = false
                             unlockViews()
 
                             Util.showToastAndLogForNotSuccessfulResponse(requireContext(), response.errorBody())
@@ -376,7 +391,7 @@ class CreateUpdatePetFragment : Fragment() {
                     if(isViewDestroyed) return
 
                     // set api state/button to normal
-                    myPetViewModel.petManagerApiIsLoading = false
+                    viewModel.isApiLoading = false
                     unlockViews()
 
                     Util.showToastAndLog(requireContext(), t.message.toString())
@@ -394,10 +409,10 @@ class CreateUpdatePetFragment : Fragment() {
                 closeAfterSuccess()
             }, {
                 // set api state/button to normal
-                myPetViewModel.petManagerApiIsLoading = false
+                viewModel.isApiLoading = false
                 unlockViews()
             }, {
-                myPetViewModel.petManagerApiIsLoading = false
+                viewModel.isApiLoading = false
                 unlockViews()
             })
         }
@@ -413,13 +428,13 @@ class CreateUpdatePetFragment : Fragment() {
                 petIdList.add(it.id)
             }
 
-            updatePetPhoto(petIdList[petIdList.size - 1], myPetViewModel.petPhotoPathValue)
+            updatePetPhoto(petIdList[petIdList.size - 1], viewModel.petPhotoPath)
         }, {
             // set api state/button to normal
-            myPetViewModel.petManagerApiIsLoading = false
+            viewModel.isApiLoading = false
             unlockViews()
         }, {
-            myPetViewModel.petManagerApiIsLoading = false
+            viewModel.isApiLoading = false
             unlockViews()
         })
     }
@@ -462,13 +477,13 @@ class CreateUpdatePetFragment : Fragment() {
 
     private fun checkIsValid() {
         // if valid -> enable confirm button
-        binding.confirmButton.isEnabled = myPetViewModel.petNameValue != "" && myPetViewModel.petGenderValue != null &&
-                myPetViewModel.petSpeciesValue != "" && myPetViewModel.petBreedValue != ""
+        binding.confirmButton.isEnabled = viewModel.petName != "" && viewModel.petGender != null &&
+                viewModel.petSpecies != "" && viewModel.petBreed != ""
     }
 
     private fun checkIsLoading() {
         // if loading -> set button to loading
-        if(myPetViewModel.petManagerApiIsLoading) {
+        if(viewModel.isApiLoading) {
             lockViews()
         }
         else {
@@ -478,13 +493,13 @@ class CreateUpdatePetFragment : Fragment() {
 
     private fun restoreState() {
         // set selected photo(if any)
-        if(myPetViewModel.petPhotoPathValue != "") {
-            Glide.with(requireContext()).load(BitmapFactory.decodeFile(myPetViewModel.petPhotoPathValue)).into(binding.petPhotoInput)
+        if(viewModel.petPhotoPath != "") {
+            Glide.with(requireContext()).load(BitmapFactory.decodeFile(viewModel.petPhotoPath)).into(binding.petPhotoInput)
         }
         // if photo not selected, and is in update mode -> set photo
         else if(requireActivity().intent.getIntExtra("fragmentType", 0) == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
-            if(myPetViewModel.petPhotoByteArray != null) {
-                val bitmap = Util.getBitmapFromByteArray(myPetViewModel.petPhotoByteArray!!)
+            if(viewModel.petPhotoByteArray != null) {
+                val bitmap = Util.getBitmapFromByteArray(viewModel.petPhotoByteArray!!)
                 Glide.with(requireContext()).load(bitmap).into(binding.petPhotoInput)
             }
             else {
@@ -495,12 +510,12 @@ class CreateUpdatePetFragment : Fragment() {
         else {
             binding.petPhotoInput.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_pets_60_with_padding))
         }
-        binding.petPhotoInput.rotation = myPetViewModel.petPhotoRotation?: 0f
+        binding.petPhotoInput.rotation = viewModel.petPhotoRotation
 
-        binding.petNameInput.setText(myPetViewModel.petNameValue)
-        binding.petMessageInput.setText(myPetViewModel.petMessageValue)
-        if(myPetViewModel.petGenderValue != null) {
-            if(myPetViewModel.petGenderValue == true) {
+        binding.petNameInput.setText(viewModel.petName)
+        binding.petMessageInput.setText(viewModel.petMessage)
+        if(viewModel.petGender != null) {
+            if(viewModel.petGender!!) {
                 binding.genderFemale.isChecked = true
                 binding.genderMale.isChecked = false
             }
@@ -509,13 +524,16 @@ class CreateUpdatePetFragment : Fragment() {
                 binding.genderMale.isChecked = true
             }
         }
-        binding.petSpeciesInput.setText(myPetViewModel.petSpeciesValue)
-        binding.petBreedInput.setText(myPetViewModel.petBreedValue)
-        if(myPetViewModel.petBirthYearValue != null) {
-            binding.petBirthInput.updateDate(myPetViewModel.petBirthYearValue!!,
-                myPetViewModel.petBirthMonthValue!! - 1, myPetViewModel.petBirthDateValue!!)
+        binding.petSpeciesInput.setText(viewModel.petSpecies)
+        binding.petBreedInput.setText(viewModel.petBreed)
+
+        val formattedDate = FormattedDate(viewModel.petBirth)
+        if(viewModel.petBirth != null) {
+            binding.petBirthInput.updateDate(
+                formattedDate.getYear(), formattedDate.getMonth()-1, formattedDate.getDay()
+            )
         }
-        binding.yearOnlyCheckbox.isChecked = myPetViewModel.petBirthIsYearOnlyValue
+        binding.yearOnlyCheckbox.isChecked = viewModel.yearOnly
 
         checkIsValid()
         checkIsLoading()
@@ -524,14 +542,14 @@ class CreateUpdatePetFragment : Fragment() {
     // close fragment/activity after create/update success
     private fun closeAfterSuccess() {
         // set api state/button to normal
-        myPetViewModel.petManagerApiIsLoading = false
+        viewModel.isApiLoading = false
         unlockViews()
 
         // show message + return to previous activity/fragment
         if(requireActivity().intent.getIntExtra("fragmentType", 0) == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
             Toast.makeText(context, context?.getText(R.string.update_pet_successful), Toast.LENGTH_LONG).show()
             savePetDataForPetProfile()
-            fragmentManager?.popBackStack()
+            requireActivity().supportFragmentManager.popBackStack()
         }
         else {
             Toast.makeText(context, context?.getText(R.string.create_pet_successful), Toast.LENGTH_LONG).show()
@@ -539,8 +557,6 @@ class CreateUpdatePetFragment : Fragment() {
         }
     }
 
-    // save pet data to ViewModel(for pet profile)
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun savePetDataForPetProfile() {
         // 사진이 기본 이미지일 때 예외 처리
         try{
@@ -548,42 +564,47 @@ class CreateUpdatePetFragment : Fragment() {
             val stream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
             val photoByteArray = stream.toByteArray()
-            myPetViewModel.petPhotoByteArrayProfile = photoByteArray
-        }catch(e: Exception){
-            myPetViewModel.petPhotoByteArrayProfile = null
-        }
-        myPetViewModel.petPhotoRotationProfile = myPetViewModel.petPhotoRotation
 
-        myPetViewModel.petNameValueProfile = binding.petNameInput.text.toString()
-        myPetViewModel.petBirthValueProfile = if (!binding.yearOnlyCheckbox.isChecked){
-            "${binding.petBirthInput.year}-${(binding.petBirthInput.month + 1).toString().padStart(2, '0')}" +
-                    "-${binding.petBirthInput.dayOfMonth.toString().padStart(2, '0')}"
-        } else {
-            "${binding.petBirthInput.year}"
+            Util.saveByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
+            requireContext().getString(R.string.data_name_my_pet_selected_pet_photo), photoByteArray)
+        }catch(e: Exception){
+            Util.saveByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
+                requireContext().getString(R.string.data_name_my_pet_selected_pet_photo), null)
         }
-        myPetViewModel.petSpeciesValueProfile = binding.petSpeciesInput.text.toString()
-        myPetViewModel.petBreedValueProfile = binding.petBreedInput.text.toString()
-        myPetViewModel.petGenderValueProfile = if(binding.genderFemale.isChecked) { "♀" } else { "♂" }
-        myPetViewModel.petAgeValueProfile = (LocalDate.now().year - binding.petBirthInput.year).toString()
-        myPetViewModel.petMessageValueProfile = binding.petMessageInput.text.toString()
+
+        requireActivity().intent.putExtra("petBirth",
+            FormattedDate(
+                binding.petBirthInput.year,
+                binding.petBirthInput.month + 1,
+                binding.petBirthInput.dayOfMonth
+            ).getFormattedString()
+        )
+        requireActivity().intent.putExtra("petPhotoRotation", viewModel.petPhotoRotation)
+        requireActivity().intent.putExtra("petName", binding.petNameInput.text.toString())
+        requireActivity().intent.putExtra("petSpecies", binding.petSpeciesInput.text.toString())
+        requireActivity().intent.putExtra("petBreed", binding.petBreedInput.text.toString())
+        requireActivity().intent.putExtra("petGender", binding.genderFemale.isChecked)
+        requireActivity().intent.putExtra("petAge", LocalDate.now().year - binding.petBirthInput.year)
+        requireActivity().intent.putExtra("petMessage", binding.petMessageInput.text.toString())
+        requireActivity().intent.putExtra("yearOnly", binding.yearOnlyCheckbox.isChecked)
     }
 
     private fun deletePet() {
         // set api state/button to loading
-        myPetViewModel.petManagerApiIsLoading = true
+        viewModel.isApiLoading = true
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .deletePetReq(DeletePetReqDto(requireActivity().intent.getLongExtra("petId", -1)))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
             // set api state/button to normal
-            myPetViewModel.petManagerApiIsLoading = false
+            viewModel.isApiLoading = false
 
             Toast.makeText(context, context?.getText(R.string.delete_pet_successful), Toast.LENGTH_LONG).show()
             activity?.finish()
         }, {
-            myPetViewModel.petManagerApiIsLoading = false
+            viewModel.isApiLoading = false
         }, {
-            myPetViewModel.petManagerApiIsLoading = false
+            viewModel.isApiLoading = false
         })
     }
 
@@ -604,31 +625,31 @@ class CreateUpdatePetFragment : Fragment() {
                 val fileName = Util.getSelectedFileName(requireContext(), data.data!!)
 
                 // copy selected photo and get real path
-                val petPhotoPathValue = ServerUtil.createCopyAndReturnRealPathLocal(requireActivity(),
+                val petPhotoPath = ServerUtil.createCopyAndReturnRealPathLocal(requireActivity(),
                     data.data!!, CREATE_UPDATE_PET_DIRECTORY, fileName)
 
                 // file type exception -> delete copied file + show Toast message
-                if (!Util.isUrlPhoto(petPhotoPathValue)) {
+                if (!Util.isUrlPhoto(petPhotoPath)) {
                     Toast.makeText(context, context?.getText(R.string.photo_file_type_exception_message), Toast.LENGTH_LONG).show()
-                    File(petPhotoPathValue).delete()
+                    File(petPhotoPath).delete()
                     return
                 }
 
                 // delete previously copied file(if any)
-                if(myPetViewModel.petPhotoPathValue != "") {
-                    File(myPetViewModel.petPhotoPathValue).delete()
+                if(viewModel.petPhotoPath != "") {
+                    File(viewModel.petPhotoPath).delete()
                 }
 
                 // save path to ViewModel
-                myPetViewModel.petPhotoPathValue = petPhotoPathValue
-                myPetViewModel.isDeletePhoto = false
+                viewModel.petPhotoPath = petPhotoPath
+                viewModel.isDeletePhoto = false
 
                 // save rotation
-                myPetViewModel.petPhotoRotation = Util.getImageRotation(myPetViewModel.petPhotoPathValue)
+                viewModel.petPhotoRotation = Util.getImageRotation(viewModel.petPhotoPath)
 
                 // set photo to view
-                Glide.with(requireContext()).load(BitmapFactory.decodeFile(myPetViewModel.petPhotoPathValue)).into(binding.petPhotoInput)
-                binding.petPhotoInput.rotation = myPetViewModel.petPhotoRotation!!
+                Glide.with(requireContext()).load(BitmapFactory.decodeFile(viewModel.petPhotoPath)).into(binding.petPhotoInput)
+                binding.petPhotoInput.rotation = viewModel.petPhotoRotation!!
             }
         }
     }
@@ -644,6 +665,6 @@ class CreateUpdatePetFragment : Fragment() {
             Util.deleteCopiedFiles(requireContext(), CREATE_UPDATE_PET_DIRECTORY)
         }
 
-        myPetViewModel.petManagerApiIsLoading = false
+        viewModel.isApiLoading = false
     }
 }

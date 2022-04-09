@@ -12,7 +12,7 @@ import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.FetchPetReqDto
-import com.sju18001.petmanagement.ui.myPet.PetProfileActivity
+import com.sju18001.petmanagement.ui.myPet.petManager.petProfile.PetProfileActivity
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -42,8 +42,10 @@ class CommunityUtil {
             petProfileIntent.putExtra("petGender", Util.getGenderSymbol(pet.gender, context))
             petProfileIntent.putExtra("petAge", Util.getAgeFromBirth(pet.birth))
             petProfileIntent.putExtra("petMessage", pet.message)
+            petProfileIntent.putExtra("yearOnly", pet.yearOnly)
 
             petProfileIntent.putExtra("fragmentType", PetProfileActivity.FragmentType.PET_PROFILE_FROM_COMMUNITY.ordinal)
+
             context.startActivity(petProfileIntent)
             (context as Activity).overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
         }

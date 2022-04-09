@@ -1,4 +1,5 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/constraintlayout_petprofile_petinfo"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -7,12 +8,10 @@
     android:paddingStart="2dp"
     android:paddingEnd="2dp"
     android:animateLayoutChanges="true"
-    android:background="@drawable/pet_info_layout_background"
     android:clipChildren="false"
     android:clipToPadding="false"
     app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toTopOf="@id/buttons_layout"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    app:layout_constraintBottom_toTopOf="@id/buttons_layout">
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/circleimageview_petprofile_petphoto"
@@ -31,7 +30,7 @@
         android:layout_width="18dp"
         android:layout_height="15dp"
         android:layout_marginBottom="68dp"
-        android:visibility="invisible"
+        android:src="@drawable/crown"
         app:layout_constraintBottom_toBottomOf="@id/circleimageview_petprofile_petphoto"
         app:layout_constraintStart_toStartOf="@id/circleimageview_petprofile_petphoto"
         app:layout_constraintEnd_toEndOf="@id/circleimageview_petprofile_petphoto"/>

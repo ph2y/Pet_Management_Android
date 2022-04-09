@@ -203,7 +203,7 @@ class PetManagerAdapter(
     private fun setPetInfoLayout(holder: HistoryListViewHolder, item: Pet){
         holder.petName.text = item.name
         holder.petBreed.text = item.breed
-        holder.petAge.text = Util.getAgeFromBirth(item.birth) + "살"
+        holder.petAge.text = Util.getAgeFromBirth(item.birth).toString() + "살"
 
         // Set visibility of pet_birth_layout
         if(item.yearOnly!!){

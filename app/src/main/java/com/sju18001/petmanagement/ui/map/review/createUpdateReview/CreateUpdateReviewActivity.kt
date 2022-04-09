@@ -67,7 +67,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     }
 
     private fun fetchReviewForUpdate(reviewId: Long) {
-        viewModel.isApiCalling.set(true)
+        viewModel.isApiLoading.set(true)
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
             .fetchReviewReq(FetchReviewReqDto(reviewId, null, null, null, null))
@@ -78,7 +78,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
             }
 
             viewModel.isReviewFetched = true
-            viewModel.isApiCalling.set(false)
+            viewModel.isApiLoading.set(false)
         }, { finish() }, { finish() })
     }
 
@@ -147,7 +147,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     private fun createReviewAndFinishActivity() {
         if(viewModel.rating.get() == 0 || viewModel.contents.get().toString().isNullOrEmpty()) return
 
-        viewModel.isApiCalling.set(true)
+        viewModel.isApiLoading.set(true)
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
             .createReviewReq(CreateReviewReqDto(viewModel.placeId, viewModel.rating.get()!!, viewModel.contents.get()!!))
@@ -157,13 +157,13 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
             intent.putExtra("reviewId", it.body()!!.id)
             setResult(Activity.RESULT_OK, intent)
             finish()
-        }, { viewModel.isApiCalling.set(false) }, { viewModel.isApiCalling.set(false) })
+        }, { viewModel.isApiLoading.set(false) }, { viewModel.isApiLoading.set(false) })
     }
 
     private fun updateReviewAndFinishActivity() {
         if(viewModel.rating.get() == 0 || viewModel.contents.get().toString().isNullOrEmpty()) return
 
-        viewModel.isApiCalling.set(true)
+        viewModel.isApiLoading.set(true)
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
             .updateReviewReq(UpdateReviewReqDto(viewModel.reviewId, viewModel.rating.get()!!, viewModel.contents.get()!!))
@@ -172,6 +172,6 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
 
             setResult(Activity.RESULT_OK, intent)
             finish()
-        }, { viewModel.isApiCalling.set(false) }, { viewModel.isApiCalling.set(false) })
+        }, { viewModel.isApiLoading.set(false) }, { viewModel.isApiLoading.set(false) })
     }
 }

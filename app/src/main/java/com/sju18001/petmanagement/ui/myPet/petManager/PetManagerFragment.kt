@@ -22,7 +22,7 @@ import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.FetchPetReqDto
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
-import com.sju18001.petmanagement.ui.myPet.PetProfileActivity
+import com.sju18001.petmanagement.ui.myPet.petManager.petProfile.PetProfileActivity
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification.Companion.cancelAll
 import java.io.ByteArrayOutputStream
@@ -64,9 +64,9 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
         // Initialize RecyclerView
         adapter = PetManagerAdapter(this, requireActivity(), object: PetManagerAdapterInterface{
             override fun onClickCreateButton() {
-                val petProfileActivityIntent = Intent(context, PetProfileActivity::class.java)
-                petProfileActivityIntent.putExtra("fragmentType", PetProfileActivity.FragmentType.CREATE_PET.ordinal)
-                startActivity(petProfileActivityIntent)
+                val petProfileIntent = Intent(context, PetProfileActivity::class.java)
+                petProfileIntent.putExtra("fragmentType", PetProfileActivity.FragmentType.CREATE_PET.ordinal)
+                startActivity(petProfileIntent)
             }
 
             override fun restoreScroll() {
@@ -104,17 +104,15 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
                 }
                 petProfileIntent.putExtra("petId", currentItem.id)
                 petProfileIntent.putExtra("petName", currentItem.name)
-                petProfileIntent.putExtra("petBirth",
-                    if(currentItem.yearOnly!!) currentItem.birth!!.substring(0, 4)
-                    else currentItem.birth
-                )
+                petProfileIntent.putExtra("petBirth", currentItem.birth)
                 petProfileIntent.putExtra("petSpecies", currentItem.species)
                 petProfileIntent.putExtra("petBreed", currentItem.breed)
-                petProfileIntent.putExtra("petGender", Util.getGenderSymbol(currentItem.gender, requireContext()))
+                petProfileIntent.putExtra("petGender", currentItem.gender)
                 petProfileIntent.putExtra("petAge", Util.getAgeFromBirth(currentItem.birth))
                 petProfileIntent.putExtra("petMessage", currentItem.message)
                 val isRepresentativePet = currentItem.id == SessionManager.fetchLoggedInAccount(requireContext())?.representativePetId?: 0
                 petProfileIntent.putExtra("isRepresentativePet", isRepresentativePet)
+                petProfileIntent.putExtra("yearOnly", currentItem.yearOnly)
 
                 petProfileIntent.putExtra("fragmentType", PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal)
 
