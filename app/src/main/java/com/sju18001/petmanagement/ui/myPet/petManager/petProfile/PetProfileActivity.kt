@@ -1,14 +1,9 @@
-package com.sju18001.petmanagement.ui.myPet
+package com.sju18001.petmanagement.ui.myPet.petManager.petProfile
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.lifecycle.SavedStateViewModelFactory
-import androidx.lifecycle.ViewModelProvider
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.databinding.ActivityPetprofileBinding
-import com.sju18001.petmanagement.ui.myPet.petScheduleManager.createUpdatePetSchedule.CreateUpdatePetScheduleFragment
-import com.sju18001.petmanagement.ui.myPet.petManager.petProfile.CreateUpdatePetFragment
-import com.sju18001.petmanagement.ui.myPet.petManager.petProfile.PetProfileFragment
 
 class PetProfileActivity : AppCompatActivity() {
     enum class FragmentType {

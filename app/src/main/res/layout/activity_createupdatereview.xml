@@ -34,7 +34,7 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:onClick="@{() -> activity.onBackButtonClicked()}"
-                android:enabled="@{!viewModel.isApiCalling}"
+                android:enabled="@{!viewModel.isApiLoading}"
                 android:src="@drawable/ic_baseline_arrow_back_36"
                 android:background="?selectableItemBackgroundBorderless"/>
 
@@ -70,35 +70,35 @@
                     android:layout_height="48dp"
                     android:src="@{util.getDrawableOfStarImage(viewModel.rating, 0, activity.baseContext)}"
                     android:onClick="@{() -> activity.onStarImageClicked(0)}"
-                    android:clickable="@{!viewModel.isApiCalling}"
+                    android:clickable="@{!viewModel.isApiLoading}"
                     />
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@{util.getDrawableOfStarImage(viewModel.rating, 1, activity.baseContext)}"
                     android:onClick="@{() -> activity.onStarImageClicked(1)}"
-                    android:clickable="@{!viewModel.isApiCalling}"
+                    android:clickable="@{!viewModel.isApiLoading}"
                     />
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@{util.getDrawableOfStarImage(viewModel.rating, 2, activity.baseContext)}"
                     android:onClick="@{() -> activity.onStarImageClicked(2)}"
-                    android:clickable="@{!viewModel.isApiCalling}"
+                    android:clickable="@{!viewModel.isApiLoading}"
                     />
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@{util.getDrawableOfStarImage(viewModel.rating, 3, activity.baseContext)}"
                     android:onClick="@{() -> activity.onStarImageClicked(3)}"
-                    android:clickable="@{!viewModel.isApiCalling}"
+                    android:clickable="@{!viewModel.isApiLoading}"
                     />
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@{util.getDrawableOfStarImage(viewModel.rating, 4, activity.baseContext)}"
                     android:onClick="@{() -> activity.onStarImageClicked(4)}"
-                    android:clickable="@{!viewModel.isApiCalling}"
+                    android:clickable="@{!viewModel.isApiLoading}"
                     />
             </LinearLayout>
 
@@ -115,14 +115,14 @@
                 android:theme="@style/onSelectedThemeCarrot"
                 android:background="@android:color/transparent"
                 android:text="@={viewModel.contents}"
-                android:enabled="@{!viewModel.isApiCalling}"
+                android:enabled="@{!viewModel.isApiLoading}"
                 app:layout_constraintTop_toBottomOf="@id/linearlayout_createupdatereview_stars"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
             <ProgressBar
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="@{viewModel.isApiCalling ? View.VISIBLE : View.GONE}"
+                android:visibility="@{viewModel.isApiLoading ? View.VISIBLE : View.GONE}"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -150,7 +150,7 @@
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:enabled="@{(!viewModel.isApiCalling &amp;&amp; (viewModel.rating != 0 &amp;&amp; viewModel.contents.length() != 0)) ? true : false}"
+                android:enabled="@{(!viewModel.isApiLoading &amp;&amp; (viewModel.rating != 0 &amp;&amp; viewModel.contents.length() != 0)) ? true : false}"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
                 android:onClick="@{() -> activity.onConfirmButtonClicked()}"

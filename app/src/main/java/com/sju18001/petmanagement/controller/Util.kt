@@ -399,8 +399,8 @@ class Util {
             }
         }
 
-        fun getAgeFromBirth(birth: String?): String {
-            return Period.between(LocalDate.parse(birth), LocalDate.now()).years.toString()
+        fun getAgeFromBirth(birth: String?): Int {
+            return Period.between(LocalDate.parse(birth), LocalDate.now()).years
         }
 
         fun getGenderSymbol(gender: Boolean, context: Context): String {

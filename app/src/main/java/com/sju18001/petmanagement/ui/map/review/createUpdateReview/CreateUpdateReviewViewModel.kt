@@ -15,5 +15,5 @@ class CreateUpdateReviewViewModel: ViewModel() {
     var rating: ObservableField<Int> = ObservableField(0)
     var contents: ObservableField<String> = ObservableField("")
 
-    var isApiCalling: ObservableField<Boolean> = ObservableField(false)
+    var isApiLoading: ObservableField<Boolean> = ObservableField(false)
 }
