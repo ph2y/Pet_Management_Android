@@ -9,17 +9,18 @@ class PetProfileViewModel : ViewModel() {
     var isPetRepresentative = MutableLiveData<Boolean>()
     var isViewsDetailed = MutableLiveData<Boolean>()
     var isOrientationPortrait = MutableLiveData<Boolean>()
+    var isFollowing = MutableLiveData<Boolean>()
 
     var isApiLoading = false
 
     var accountId: Long = -1
     var accountUsername: String = ""
-    var accountPhotoByteArray: ByteArray? = null
+    var accountPhotoByteArray = MutableLiveData<ByteArray?>()
     var accountNickname: String = ""
     var accountRepresentativePetId: Long = -1
 
     var petId = -1L
-    var petPhotoByteArray: ByteArray? = null
+    var petPhotoByteArray = MutableLiveData<ByteArray?>()
     var petPhotoRotation: Float = 0f
     var petMessage: String = ""
     var petName: String = ""

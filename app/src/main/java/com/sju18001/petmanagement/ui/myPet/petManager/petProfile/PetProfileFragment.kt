@@ -50,7 +50,83 @@ class PetProfileFragment : Fragment(){
     private val viewModel: PetProfileViewModel by viewModels()
     private var isViewDestroyed = false
 
-    private var isFollowing: Boolean = false
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setObserversOfLiveData()
+    }
+
+    private fun setObserversOfLiveData() {
+        viewModel.isViewsDetailed.observe(this, { flag ->
+            // ConstraintSet이 적용되는 내부 뷰는 Databinding이 적용되지 않으므로 따로 처리를 해줍니다.
+            if(flag) setViewsDetailed()
+            else setViewsNotDetailed()
+        })
+
+        viewModel.petPhotoByteArray.observe(this, { byteArray ->
+            if(byteArray != null) {
+                val bitmap = Util.getBitmapFromByteArray(viewModel.petPhotoByteArray.value!!)
+                Glide.with(requireContext()).load(bitmap).into(binding.circleimageviewPetprofilePetphoto)
+                binding.circleimageviewPetprofilePetphoto.rotation = viewModel.petPhotoRotation
+            }
+            else {
+                binding.circleimageviewPetprofilePetphoto.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_pets_60_with_padding))
+            }
+        })
+
+        viewModel.accountPhotoByteArray.observe(this, { byteArray ->
+            if(byteArray != null) {
+                val bitmap = Util.getBitmapFromByteArray(viewModel.accountPhotoByteArray.value!!)
+                binding.accountPhoto.setImageBitmap(bitmap)
+            }
+            else {
+                binding.accountPhoto.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_account_circle_24))
+            }
+        })
+    }
+
+    private fun setViewsDetailed() {
+        // Landscape(가로 모드)일 때는 Detailed view를 사용하지 않습니다.
+        if(!isOrientationPortrait()) return
+
+        // pet_info_layout 애니메이션
+        TransitionManager.beginDelayedTransition(
+            binding.constraintlayoutPetprofilePetinfo,
+            AutoTransition().setDuration(TRANSITION_DURATION).setInterpolator(AccelerateDecelerateInterpolator())
+        )
+        ConstraintSet().apply{
+            clone(context, R.layout.layout_petprofiledetailedpetinfo)
+        }.applyTo(binding.constraintlayoutPetprofilePetinfo)
+
+        setViewsByViewModel()
+    }
+
+    private fun isOrientationPortrait(): Boolean{
+        return requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+    }
+
+    private fun setViewsByViewModel() {
+        binding.imageviewPetprofileRepresentativeicon.visibility =
+            if (viewModel.isPetRepresentative.value == true) { View.VISIBLE } else { View.INVISIBLE }
+
+        if (viewModel.isFragmentTypePetProfileFromMyPet()) {
+            binding.constraintlayoutPetprofilePetinfo.setBackgroundResource(R.drawable.pet_info_layout_background)
+        }else{
+            binding.constraintlayoutPetprofilePetinfo.setBackgroundResource(0)
+        }
+    }
+
+    private fun setViewsNotDetailed() {
+        // pet_info_layout 애니메이션
+        TransitionManager.beginDelayedTransition(
+            binding.constraintlayoutPetprofilePetinfo,
+            ChangeBounds().setDuration(TRANSITION_DURATION).setInterpolator(AccelerateDecelerateInterpolator())
+        )
+        ConstraintSet().apply{
+            clone(context, R.layout.layout_petprofilepetinfo)
+        }.applyTo(binding.constraintlayoutPetprofilePetinfo)
+
+        setViewsByViewModel()
+    }
 
 
     override fun onCreateView(
@@ -65,7 +141,7 @@ class PetProfileFragment : Fragment(){
         loadAuthorDataByIntent()
         loadPetDataByIntent()
 
-        // Pet manager / Community에 따라 초기 뷰 세팅을 달리 함
+        // PetProfile의 출처가 PetManager? Community?
         if (viewModel.fragmentType.value == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
             replacePostFragment()
         }else{
@@ -89,6 +165,7 @@ class PetProfileFragment : Fragment(){
         viewModel.fragmentType.value = requireActivity().intent.getIntExtra("fragmentType", 0)
         viewModel.isOrientationPortrait.value = isOrientationPortrait()
         viewModel.isViewsDetailed.value = viewModel.isOrientationPortrait.value
+        viewModel.isFollowing.value = false
     }
 
     private fun loadAuthorDataByIntent() {
@@ -96,14 +173,13 @@ class PetProfileFragment : Fragment(){
         viewModel.accountUsername = requireActivity().intent.getStringExtra("accountUsername").toString()
         val accountPhotoUrl = requireActivity().intent.getStringExtra("accountPhotoUrl")
         if (accountPhotoUrl.isNullOrEmpty()) {
-            viewModel.accountPhotoByteArray = null
+            viewModel.accountPhotoByteArray.value = null
         }
         else {
             val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
                 .fetchAccountPhotoReq(FetchAccountPhotoReqDto(viewModel.accountId))
             ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-                viewModel.accountPhotoByteArray = response.body()!!.bytes()
-                setPhotoViews()
+                viewModel.accountPhotoByteArray.value = response.body()!!.bytes()
             }, {}, {})
         }
         viewModel.accountNickname = requireActivity().intent.getStringExtra("accountNickname").toString()
@@ -113,23 +189,20 @@ class PetProfileFragment : Fragment(){
     private fun loadPetDataByIntent() {
         viewModel.petId = requireActivity().intent.getLongExtra("petId", -1)
         if (viewModel.fragmentType.value == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
-            viewModel.petPhotoByteArray = Util.getByteArrayFromSharedPreferences(requireContext(),
+            viewModel.petPhotoByteArray.value = Util.getByteArrayFromSharedPreferences(requireContext(),
                 requireContext().getString(R.string.pref_name_byte_arrays),
                 requireContext().getString(R.string.data_name_my_pet_selected_pet_photo))
-
-            setPhotoViews()
         }
         else {
             val petPhotoUrl = requireActivity().intent.getStringExtra("petPhotoUrl")
             if (petPhotoUrl.isNullOrEmpty()) {
-                viewModel.petPhotoByteArray = null
+                viewModel.petPhotoByteArray.value = null
             }
             else {
                 val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
                     .fetchPetPhotoReq(FetchPetPhotoReqDto(requireActivity().intent.getLongExtra("petId", -1)))
                 ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-                    viewModel.petPhotoByteArray = response.body()!!.bytes()
-                    setPhotoViews()
+                    viewModel.petPhotoByteArray.value = response.body()!!.bytes()
                 }, {}, {})
             }
         }
@@ -152,7 +225,7 @@ class PetProfileFragment : Fragment(){
     }
 
     private fun replacePostFragment() {
-        // remove previous fragment
+        // Remove previous fragment
         childFragmentManager.findFragmentByTag(POST_FRAGMENT_TAG)?.let {
             childFragmentManager.beginTransaction().remove(it).commit()
         }
@@ -169,358 +242,6 @@ class PetProfileFragment : Fragment(){
         }
     }
 
-    private fun setPetSpinner() {
-        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .fetchPetReq(FetchPetReqDto(null, viewModel.accountUsername))
-        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-            // get pet id and name
-            val pets: MutableList<Pet> = mutableListOf()
-            response.body()?.petList?.map {
-                val item = Pet(
-                    it.id, "", it.name, it.species, it.breed, it.birth,
-                    it.yearOnly, it.gender, it.message, it.photoUrl
-                )
-                pets.add(item)
-            }
-
-            // set spinner and pet id values
-            val spinnerArray: ArrayList<String> = ArrayList()
-            for (pet in pets) {
-                if (pet.id == viewModel.accountRepresentativePetId) {
-                    spinnerArray.add("[★] " + pet.name)
-                }
-                else {
-                    spinnerArray.add(pet.name)
-                }
-            }
-
-            // set spinner adapter
-            val spinnerArrayAdapter: ArrayAdapter<String> =
-                ArrayAdapter<String>(requireContext(), R.layout.pet_name_spinner_item, spinnerArray)
-            binding.petNameSpinner.adapter = spinnerArrayAdapter
-
-            // set spinner listener
-            binding.petNameSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
-                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                    viewModel.petId = pets[position].id
-                    replacePetProfile(pets[position])
-                    replacePostFragment()
-                }
-                override fun onNothingSelected(parent: AdapterView<*>?) {}
-            }
-
-            // set spinner position
-            for(i in 0 until pets.size) {
-                if (viewModel.petId == pets[i].id) {
-                    binding.petNameSpinner.setSelection(i)
-                    break
-                }
-            }
-
-            // 화면이 가로일 때에는 스피너가 안 보이므로, onItemSelected이 호출되지 않는다.
-            if(viewModel.isOrientationPortrait.value == false) replacePostFragment()
-        }, {}, {})
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        viewModel.isViewsDetailed.observe(this, { flag ->
-            setViewsForDetail(flag)
-        })
-
-        viewModel.isPetRepresentative.observe(this, { flag ->
-            binding.imageviewPetprofileRepresentativeicon.visibility =
-                if (flag) { View.VISIBLE } else { View.INVISIBLE }
-        })
-
-        viewModel.fragmentType.observe(this, {
-            if (it == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
-                binding.constraintlayoutPetprofilePetinfo.setBackgroundResource(R.drawable.pet_info_layout_background)
-            }else{
-                binding.constraintlayoutPetprofilePetinfo.setBackgroundResource(0)
-            }
-        })
-
-        // for pet update button
-        if (viewModel.fragmentType.value == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal) {
-            binding.updatePetButton.setOnClickListener {
-                val fragment = CreateUpdatePetFragment()
-                fragment.arguments = makeBundleOfUpdatePetFragment()
-
-                activity?.supportFragmentManager?.beginTransaction()!!
-                    .replace(R.id.framelayout_petprofile_fragmentcontainer, fragment)
-                    .addToBackStack(null)
-                    .commit()
-            }
-        }
-
-        // for follow/unfollow button
-        if (viewModel.fragmentType.value == PetProfileActivity.FragmentType.PET_PROFILE_FROM_COMMUNITY.ordinal) {
-            binding.followUnfollowButton.setOnClickListener {
-                if (isFollowing) {
-                    deleteFollow()
-                } else {
-                    createFollow()
-                }
-            }
-        }
-
-        // for back button
-        binding.backButton.setOnClickListener {
-            activity?.finish()
-        }
-
-        // for history text
-        binding.textHistory.setOnClickListener {
-            viewModel.isViewsDetailed.value = viewModel.isViewsDetailed.value == false
-        }
-
-        // for pet information layout
-        binding.constraintlayoutPetprofilePetinfo.setOnClickListener {
-            viewModel.isViewsDetailed.value = true
-        }
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        // set views with data from ViewModel
-        setViewsWithPetData()
-        setViewsWithAuthorData()
-
-        // set follow/unfollow button
-        // placed here (onResume) for consistency when returning to the same account's pet profile
-        if (viewModel.fragmentType.value == PetProfileActivity.FragmentType.PET_PROFILE_FROM_COMMUNITY.ordinal) {
-            setFollowUnfollowButton()
-        }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-
-        isViewDestroyed = true
-        viewModel.isApiLoading = false
-    }
-
-    private fun replacePetProfile(pet: Pet) {
-        if (pet.photoUrl.isNullOrEmpty()) {
-            viewModel.petPhotoByteArray = null
-        }
-        else {
-            val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-                .fetchPetPhotoReq(FetchPetPhotoReqDto(viewModel.petId))
-            ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-                viewModel.petPhotoByteArray = response.body()!!.bytes()
-                setPhotoViews()
-            }, {}, {})
-        }
-        viewModel.petName = pet.name
-        viewModel.petBirth = pet.birth.toString()
-        viewModel.petSpecies = pet.species
-        viewModel.petBreed = pet.breed
-        viewModel.petGender = pet.gender
-        viewModel.petAge = Util.getAgeFromBirth(pet.birth)
-        viewModel.petMessage = pet.message.toString()
-        viewModel.isPetRepresentative.value =
-            (viewModel.petId == viewModel.accountRepresentativePetId)
-        viewModel.yearOnly = (pet.yearOnly == true)
-
-        setViewsWithPetData()
-    }
-
-    private fun setFollowUnfollowButton() {
-        if (viewModel.accountId == SessionManager.fetchLoggedInAccount(requireContext())!!.id) {
-            return
-        }
-
-        viewModel.isApiLoading = true
-        binding.followUnfollowButton.isEnabled = false
-
-        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .fetchFollowerReq(ServerUtil.getEmptyBody())
-        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-            for (follower in response.body()!!.followerList) {
-                if (follower.id == viewModel.accountId) {
-                    isFollowing = true
-
-                    binding.followUnfollowButton.setBackgroundColor(requireContext().getColor(R.color.border_line))
-                    binding.followUnfollowButton.setTextColor(requireContext().resources.getColor(R.color.black))
-                    binding.followUnfollowButton.text = requireContext().getText(R.string.unfollow_button)
-
-                    viewModel.isApiLoading = false
-                    binding.followUnfollowButton.isEnabled = true
-                    binding.followUnfollowButton.visibility = View.VISIBLE
-
-                    return@enqueueApiCall
-                }
-            }
-
-            isFollowing = false
-
-            binding.followUnfollowButton.setBackgroundColor(requireContext().getColor(R.color.carrot))
-            binding.followUnfollowButton.setTextColor(requireContext().resources.getColor(R.color.white))
-            binding.followUnfollowButton.text = requireContext().getText(R.string.follow_button)
-
-            viewModel.isApiLoading = false
-            binding.followUnfollowButton.isEnabled = true
-            binding.followUnfollowButton.visibility = View.VISIBLE
-        }, {
-            viewModel.isApiLoading = false
-            binding.followUnfollowButton.isEnabled = true
-        }, {
-            viewModel.isApiLoading = false
-            binding.followUnfollowButton.isEnabled = true
-        })
-    }
-
-    private fun createFollow() {
-        viewModel.isApiLoading = true
-        binding.followUnfollowButton.isEnabled = false
-
-        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .createFollowReq(CreateFollowReqDto(viewModel.accountId!!))
-        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
-            isFollowing = true
-            setFollowUnfollowButton()
-
-            viewModel.isApiLoading = false
-            binding.followUnfollowButton.isEnabled = true
-        }, {
-            viewModel.isApiLoading = false
-            binding.followUnfollowButton.isEnabled = true
-        }, {
-            viewModel.isApiLoading = false
-            binding.followUnfollowButton.isEnabled = true
-        })
-    }
-
-    private fun deleteFollow() {
-        viewModel.isApiLoading = true
-        binding.followUnfollowButton.isEnabled = false
-
-        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .deleteFollowReq(DeleteFollowReqDto(viewModel.accountId!!))
-        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
-            isFollowing = false
-            setFollowUnfollowButton()
-
-            viewModel.isApiLoading = false
-            binding.followUnfollowButton.isEnabled = true
-        }, {
-            viewModel.isApiLoading = false
-            binding.followUnfollowButton.isEnabled = true
-        }, {
-            viewModel.isApiLoading = false
-            binding.followUnfollowButton.isEnabled = true
-        })
-    }
-
-    private fun setPhotoViews() {
-        if(viewModel.petPhotoByteArray != null) {
-            val bitmap = Util.getBitmapFromByteArray(viewModel.petPhotoByteArray!!)
-            Glide.with(requireContext()).load(bitmap).into(binding.circleimageviewPetprofilePetphoto)
-            binding.circleimageviewPetprofilePetphoto.rotation = viewModel.petPhotoRotation
-        }
-        else {
-            binding.circleimageviewPetprofilePetphoto.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_pets_60_with_padding))
-        }
-
-        if(viewModel.accountPhotoByteArray != null) {
-            val bitmap = Util.getBitmapFromByteArray(viewModel.accountPhotoByteArray!!)
-            binding.accountPhoto.setImageBitmap(bitmap)
-        }
-        else {
-            binding.accountPhoto.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_account_circle_24))
-        }
-    }
-
-    private fun setViewsWithPetData() {
-        setPhotoViews()
-        binding.textviewPetprofilePetname.text = viewModel.petName
-        binding.textviewPetprofilePetbirth.text =
-            if(viewModel.yearOnly) viewModel.petBirth.substring(0, 4) + "년생"
-            else viewModel.petBirth.substring(2).replace('-', '.')
-        binding.textviewPetprofilePetbreed.text = viewModel.petBreed
-        binding.textviewPetprofilePetgender.text = Util.getGenderSymbol(viewModel.petGender, requireContext())
-        binding.textviewPetprofilePetage.text = "${viewModel.petAge}살"
-        val message = if(viewModel.petMessage.isNullOrEmpty()) getString(R.string.filled_heart) else viewModel.petMessage
-        binding.textviewPetprofilePetmessage.text = "\" $message \""
-    }
-
-    private fun setViewsWithAuthorData() {
-        setPhotoViews()
-        binding.accountNickname.text = viewModel.accountNickname
-    }
-
-    private fun makeBundleOfUpdatePetFragment(): Bundle {
-        val bundle = Bundle()
-        bundle.putByteArray("petPhotoByteArray", viewModel.petPhotoByteArray)
-        bundle.putFloat("petPhotoRotation", viewModel.petPhotoRotation)
-
-        bundle.putString("petMessage", viewModel.petMessage)
-        bundle.putString("petName", viewModel.petName)
-        bundle.putBoolean("petGender", viewModel.petGender)
-        bundle.putString("petSpecies", viewModel.petSpecies)
-        bundle.putString("petBreed", viewModel.petBreed)
-
-        bundle.putBoolean("yearOnly", viewModel.yearOnly)
-        bundle.putString("petBirth", viewModel.petBirth)
-
-        return bundle
-    }
-
-    private fun setRepresentativePet() {
-        // set api state/button to loading
-        viewModel.isApiLoading = true
-
-        // create DTO for API call
-        val accountData = SessionManager.fetchLoggedInAccount(requireContext())!!
-        val updateAccountReqDto = UpdateAccountReqDto(
-            accountData.email,
-            accountData.phone,
-            accountData.nickname,
-            accountData.marketing,
-            accountData.userMessage,
-            viewModel.petId,
-            accountData.notification,
-            accountData.mapSearchRadius
-        )
-
-        // update account
-        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .updateAccountReq(updateAccountReqDto)
-        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-            if (response.body()?._metadata?.status == true) {
-                // update session(update representative pet id value)
-                val account = Account(
-                    accountData.id, accountData.username, accountData.email, accountData.phone, accountData.password,
-                    accountData.marketing, accountData.nickname, accountData.photoUrl, accountData.userMessage,
-                    viewModel.petId, accountData.fcmRegistrationToken, accountData.notification, accountData.mapSearchRadius
-                )
-                SessionManager.saveLoggedInAccount(requireContext(), account)
-
-                // update flag and related views
-                viewModel.isPetRepresentative.value = true
-
-                binding.imageviewPetprofileRepresentativeicon.visibility = View.VISIBLE
-                binding.imageviewPetprofileRepresentativeicon.setImageResource(R.drawable.crown)
-                binding.imageviewPetprofileRepresentativeicon.scaleType = ImageView.ScaleType.FIT_XY
-
-                // set api state/button to normal
-                viewModel.isApiLoading = false
-            }
-        }, {
-            // set api state/button to normal
-            viewModel.isApiLoading = false
-        }, {
-            // set api state/button to normal
-            viewModel.isApiLoading = false
-        })
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
     private fun addListenerOnRecyclerView(){
         val recyclerView = binding.postFragmentContainer.findViewById<RecyclerView>(R.id.recycler_view_post)
 
@@ -564,58 +285,110 @@ class PetProfileFragment : Fragment(){
         }
     }
 
-    private fun setViewsForDetail(flag: Boolean) {
-        if(flag){
-            setViewsDetailed()
-        }else{
-            setViewsNotDetailed()
+    private fun setPetSpinner() {
+        // 해당 계정의 Pet 정보를 불러옵니다.
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .fetchPetReq(FetchPetReqDto(null, viewModel.accountUsername))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            response.body()?.petList?.let{ petList ->
+                initializeSpinner(petList)
+
+                // 해당 페이지의 펫을 선택합니다.
+                binding.petNameSpinner.setSelection(
+                    petList.indexOfFirst { it.id == viewModel.petId }
+                )
+
+                // 화면이 가로일 때에는 스피너가 안 보이기 때문에,
+                // replacePostFragment()를 내부에서 호출하는, onItemSelected()가 호출되지 않습니다.
+                if(viewModel.isOrientationPortrait.value == false) replacePostFragment()
+            }
+        }, {}, {})
+    }
+
+    private fun initializeSpinner(petList: List<Pet>) {
+        val spinnerArray: ArrayList<String> = ArrayList()
+        petList.map {
+            // 대표펫인 경우에는 강조하여 표기합니다.
+            if (it.id == viewModel.accountRepresentativePetId) { spinnerArray.add("[★] " + it.name) }
+            else { spinnerArray.add(it.name) }
+        }
+
+        binding.petNameSpinner.adapter = ArrayAdapter(requireContext(), R.layout.pet_name_spinner_item, spinnerArray)
+        binding.petNameSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                replacePetProfile(petList[position])
+                replacePostFragment()
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
         }
     }
 
-    private fun setViewsDetailed() {
-        // Landscape(가로 모드)일 때는 Detailed view를 사용하지 않습니다.
-        if(!isOrientationPortrait()) return
-
-        // pet_info_layout 애니메이션
-        TransitionManager.beginDelayedTransition(
-            binding.constraintlayoutPetprofilePetinfo,
-            AutoTransition().setDuration(TRANSITION_DURATION).setInterpolator(AccelerateDecelerateInterpolator())
-        )
-        ConstraintSet().apply{
-            clone(context, R.layout.layout_petprofiledetailedpetinfo)
-        }.applyTo(binding.constraintlayoutPetprofilePetinfo)
-
-        setViewsByViewModel()
-    }
-
-    private fun isOrientationPortrait(): Boolean{
-        return requireActivity().resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-    }
-
-    // ConstraintSet이 적용되는 내부 뷰는 Databinding이 적용되지 않으므로
-    // 따로 처리를 해주어야 합니다.
-    private fun setViewsByViewModel() {
-        binding.imageviewPetprofileRepresentativeicon.visibility =
-            if (viewModel.isPetRepresentative.value == true) { View.VISIBLE } else { View.INVISIBLE }
-
-        if (viewModel.isFragmentTypePetProfileFromMyPet()) {
-            binding.constraintlayoutPetprofilePetinfo.setBackgroundResource(R.drawable.pet_info_layout_background)
-        }else{
-            binding.constraintlayoutPetprofilePetinfo.setBackgroundResource(0)
+    private fun replacePetProfile(pet: Pet) {
+        viewModel.petId = pet.id
+        if (pet.photoUrl.isNullOrEmpty()) {
+            viewModel.petPhotoByteArray.value = null
         }
+        else {
+            val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+                .fetchPetPhotoReq(FetchPetPhotoReqDto(viewModel.petId))
+            ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+                viewModel.petPhotoByteArray.value = response.body()!!.bytes()
+            }, {}, {})
+        }
+        viewModel.petName = pet.name
+        viewModel.petBirth = pet.birth.toString()
+        viewModel.petSpecies = pet.species
+        viewModel.petBreed = pet.breed
+        viewModel.petGender = pet.gender
+        viewModel.petAge = Util.getAgeFromBirth(pet.birth)
+        viewModel.petMessage = pet.message.toString()
+        viewModel.isPetRepresentative.value =
+            (viewModel.petId == viewModel.accountRepresentativePetId)
+        viewModel.yearOnly = (pet.yearOnly == true)
     }
 
-    private fun setViewsNotDetailed() {
-        // pet_info_layout 애니메이션
-        TransitionManager.beginDelayedTransition(
-            binding.constraintlayoutPetprofilePetinfo,
-            ChangeBounds().setDuration(TRANSITION_DURATION).setInterpolator(AccelerateDecelerateInterpolator())
-        )
-        ConstraintSet().apply{
-            clone(context, R.layout.layout_petprofilepetinfo)
-        }.applyTo(binding.constraintlayoutPetprofilePetinfo)
 
-        setViewsByViewModel()
+    override fun onResume() {
+        super.onResume()
+        initializeFollowUnfollowButton()
+    }
+
+    private fun initializeFollowUnfollowButton() {
+        // 현재 펫 프로필 페이지가 내 계정의 것일 경우
+        if (viewModel.accountId == SessionManager.fetchLoggedInAccount(requireContext())!!.id) return
+
+        binding.followUnfollowButton.visibility = View.VISIBLE
+        viewModel.isApiLoading = true
+
+        // 해당 계정을 내가 팔로잉하는지 체크 -> isFollowing 세팅
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .fetchFollowerReq(ServerUtil.getEmptyBody())
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            for (follower in response.body()!!.followerList) {
+                if (follower.id == viewModel.accountId) {
+                    viewModel.isFollowing.value = true
+                    viewModel.isApiLoading = false
+
+                    return@enqueueApiCall
+                }
+            }
+
+            viewModel.isFollowing.value = false
+            viewModel.isApiLoading = false
+        }, {
+            viewModel.isApiLoading = false
+        }, {
+            viewModel.isApiLoading = false
+        })
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+
+        isViewDestroyed = true
+        viewModel.isApiLoading = false
     }
 
 
@@ -625,16 +398,129 @@ class PetProfileFragment : Fragment(){
     fun onClickSetRepresentativeButton() {
         val builder = AlertDialog.Builder(activity)
         builder.setMessage(viewModel.petName + context?.getString(R.string.set_representative_message))
-            .setPositiveButton(
-                R.string.confirm
-            ) { _, _ ->
-                setRepresentativePet()
-            }
-            .setNegativeButton(
-                R.string.cancel
-            ) { dialog, _ ->
-                dialog.cancel()
-            }
+            .setPositiveButton(R.string.confirm) { _, _ -> setRepresentativePet() }
+            .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
             .create().show()
+    }
+
+    private fun setRepresentativePet() {
+        viewModel.isApiLoading = true
+
+        // create DTO for API call
+        val accountData = SessionManager.fetchLoggedInAccount(requireContext())!!
+        val updateAccountReqDto = UpdateAccountReqDto(
+            accountData.email,
+            accountData.phone,
+            accountData.nickname,
+            accountData.marketing,
+            accountData.userMessage,
+            viewModel.petId,
+            accountData.notification,
+            accountData.mapSearchRadius
+        )
+
+        // update account
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .updateAccountReq(updateAccountReqDto)
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            if (response.body()?._metadata?.status == true) {
+                // update session(update representative pet id value)
+                val account = Account(
+                    accountData.id, accountData.username, accountData.email, accountData.phone, accountData.password,
+                    accountData.marketing, accountData.nickname, accountData.photoUrl, accountData.userMessage,
+                    viewModel.petId, accountData.fcmRegistrationToken, accountData.notification, accountData.mapSearchRadius
+                )
+                SessionManager.saveLoggedInAccount(requireContext(), account)
+
+                viewModel.isPetRepresentative.value = true
+                viewModel.isApiLoading = false
+            }
+        }, {
+            viewModel.isApiLoading = false
+        }, {
+            viewModel.isApiLoading = false
+        })
+    }
+
+    fun onClickUpdatePetButton() {
+        val fragment = CreateUpdatePetFragment()
+        fragment.arguments = makeBundleOfUpdatePetFragment()
+
+        activity?.supportFragmentManager?.beginTransaction()!!
+            .replace(R.id.framelayout_petprofile_fragmentcontainer, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    private fun makeBundleOfUpdatePetFragment(): Bundle {
+        val bundle = Bundle()
+        bundle.putByteArray("petPhotoByteArray", viewModel.petPhotoByteArray.value)
+        bundle.putFloat("petPhotoRotation", viewModel.petPhotoRotation)
+        bundle.putString("petMessage", viewModel.petMessage)
+        bundle.putString("petName", viewModel.petName)
+        bundle.putBoolean("petGender", viewModel.petGender)
+        bundle.putString("petSpecies", viewModel.petSpecies)
+        bundle.putString("petBreed", viewModel.petBreed)
+        bundle.putBoolean("yearOnly", viewModel.yearOnly)
+        bundle.putString("petBirth", viewModel.petBirth)
+
+        return bundle
+    }
+
+    fun onClickFollowUnFollowButton() {
+        if (viewModel.isFollowing.value == false) createFollow()
+        else deleteFollow()
+    }
+
+    private fun createFollow() {
+        viewModel.isApiLoading = true
+
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .createFollowReq(CreateFollowReqDto(viewModel.accountId!!))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            viewModel.isFollowing.value = true
+            viewModel.isApiLoading = false
+        }, {
+            viewModel.isApiLoading = false
+        }, {
+            viewModel.isApiLoading = false
+        })
+    }
+
+    private fun deleteFollow() {
+        viewModel.isApiLoading = true
+
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .deleteFollowReq(DeleteFollowReqDto(viewModel.accountId!!))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            viewModel.isFollowing.value = false
+            viewModel.isApiLoading = false
+        }, {
+            viewModel.isApiLoading = false
+        }, {
+            viewModel.isApiLoading = false
+        })
+    }
+
+    fun onClickBackButton() {
+        activity?.finish()
+    }
+
+    fun onClickHistoryText() {
+        viewModel.isViewsDetailed.value = (viewModel.isViewsDetailed.value == false)
+    }
+
+    fun getBirthString(): String {
+        return if(viewModel.yearOnly) viewModel.petBirth.substring(0, 4) + "년생"
+        else viewModel.petBirth.substring(2).replace('-', '.')
+    }
+
+    fun getPetGenderString() = Util.getGenderSymbol(viewModel.petGender, requireContext())
+
+    fun getPetAgeString() = "${viewModel.petAge}살"
+
+    fun getPetMessageString(): String {
+        return if(viewModel.petMessage.isNullOrEmpty()) getString(R.string.filled_heart)
+        else viewModel.petMessage
     }
 }
