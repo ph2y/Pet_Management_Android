@@ -5,11 +5,11 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class PetProfileViewModel : ViewModel() {
-    var fragmentType = MutableLiveData<Int>()
-    var isPetRepresentative = MutableLiveData<Boolean>()
-    var isViewsDetailed = MutableLiveData<Boolean>()
+    var activityType = MutableLiveData<Int>()
+    var isPetRepresentative = MutableLiveData(false)
+    var isViewsDetailed = MutableLiveData(true)
     var isOrientationPortrait = MutableLiveData<Boolean>()
-    var isFollowing = MutableLiveData<Boolean>()
+    var isFollowing = MutableLiveData(false)
 
     var isApiLoading = false
 
@@ -21,21 +21,21 @@ class PetProfileViewModel : ViewModel() {
 
     var petId = -1L
     var petPhotoByteArray = MutableLiveData<ByteArray?>()
-    var petPhotoRotation: Float = 0f
-    var petMessage: String = ""
-    var petName: String = ""
-    var petGender: Boolean = false
-    var petSpecies: String = ""
-    var petBreed: String = ""
-    var petAge: Int = 0
-    var yearOnly = false
-    var petBirth: String = "0000-00-00"
+    var petPhotoRotation = MutableLiveData(0f)
+    var petMessage = MutableLiveData("")
+    var petName = MutableLiveData("")
+    var petGender = MutableLiveData(true)
+    var petSpecies = MutableLiveData("")
+    var petBreed = MutableLiveData("")
+    var petAge = MutableLiveData(0)
+    var yearOnly = MutableLiveData(false)
+    var petBirth = MutableLiveData("0000-00-00")
 
-    fun isFragmentTypePetProfileFromMyPet(): Boolean {
-        return fragmentType.value == PetProfileActivity.FragmentType.PET_PROFILE_FROM_MY_PET.ordinal
+    fun isActivityTypePetProfile(): Boolean {
+        return activityType.value == PetProfileActivity.ActivityType.PET_PROFILE.ordinal
     }
 
-    fun isFragmentTypePetProfileFromCommunity(): Boolean {
-        return fragmentType.value == PetProfileActivity.FragmentType.PET_PROFILE_FROM_COMMUNITY.ordinal
+    fun isActivityTypeCommunity(): Boolean {
+        return activityType.value == PetProfileActivity.ActivityType.COMMUNITY.ordinal
     }
 }

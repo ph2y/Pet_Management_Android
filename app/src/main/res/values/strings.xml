@@ -123,6 +123,8 @@
     <string name="birth">생일</string>
     <string name="gender">성별</string>
     <string name="pet_list_empty_for_schedule_exception_message">펫 추가 후 일정을 추가할 수 있어요!</string>
+    <string name="pet_age">%s살</string>
+    <string name="not_confirmable_message">이름, 성별, 동물 종, 품종을 모두 작성해주세요!</string>
 
     <!-- Welcome Fragment -->
     <string name="skip_button">SKIP</string>
