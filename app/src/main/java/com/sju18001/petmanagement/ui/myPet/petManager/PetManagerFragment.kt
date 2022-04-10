@@ -129,6 +129,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
 
         // Initialize LayoutManager
         layoutManager = CustomLayoutManager.Builder(requireContext(), snapHelper)
+            .setMode(CustomLayoutManager.Mode.SCALE_MODE)
             .build()
         layoutManager.orientation = LinearLayoutManager.HORIZONTAL
         binding.myPetListRecyclerView.layoutManager = layoutManager
