@@ -80,7 +80,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="12dp"
-                android:visibility="@{viewModel.isActivityTypeCommunity() &amp;&amp; viewModel.isViewsDetailed &amp;&amp; viewModel.isOrientationPortrait? View.VISIBLE: View.GONE}"
+                android:visibility="@{viewModel.isActivityTypeCommunity() &amp;&amp; viewModel.isViewsDetailed? View.VISIBLE: View.GONE}"
                 android:background="@drawable/border"
                 app:layout_constraintTop_toBottomOf="@id/back_button_layout">
 
@@ -268,7 +268,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="16dp"
-                android:visibility="@{viewModel.isActivityTypePetProfile() &amp;&amp; viewModel.isViewsDetailed &amp;&amp; viewModel.isOrientationPortrait? View.VISIBLE: View.GONE}"
+                android:visibility="@{viewModel.isActivityTypePetProfile() &amp;&amp; viewModel.isViewsDetailed? View.VISIBLE: View.GONE}"
                 app:layout_constraintTop_toBottomOf="@id/constraintlayout_petprofile_petinfo"
                 app:layout_constraintBottom_toTopOf="@id/text_history">
 
