@@ -44,7 +44,7 @@ class CommunityUtil {
             petProfileIntent.putExtra("petMessage", pet.message)
             petProfileIntent.putExtra("yearOnly", pet.yearOnly)
 
-            petProfileIntent.putExtra("fragmentType", PetProfileActivity.FragmentType.PET_PROFILE_FROM_COMMUNITY.ordinal)
+            petProfileIntent.putExtra("activityType", PetProfileActivity.ActivityType.COMMUNITY.ordinal)
 
             context.startActivity(petProfileIntent)
             (context as Activity).overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)

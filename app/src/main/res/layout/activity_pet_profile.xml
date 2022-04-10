@@ -4,10 +4,9 @@
 
     <data>
         <import type="android.view.View"/>
-        <import type="com.sju18001.petmanagement.ui.myPet.petManager.petProfile.PetProfileActivity"/>
         <variable
-            name="fragment"
-            type="com.sju18001.petmanagement.ui.myPet.petManager.petProfile.PetProfileFragment" />
+            name="activity"
+            type="com.sju18001.petmanagement.ui.myPet.petManager.petProfile.PetProfileActivity" />
         <variable
             name="viewModel"
             type="com.sju18001.petmanagement.ui.myPet.petManager.petProfile.PetProfileViewModel" />
@@ -43,7 +42,7 @@
                     android:layout_centerVertical="true"
                     android:src="@drawable/ic_baseline_arrow_back_36_white"
                     android:background="?selectableItemBackgroundBorderless"
-                    android:onClick="@{() -> fragment.onClickBackButton()}"
+                    android:onClick="@{() -> activity.onClickBackButton()}"
                     />
 
                 <TextView
@@ -63,17 +62,16 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:padding="4dp"
+                    android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:focusable="true"
+                    android:onClick="@{() -> activity.onClickSetRepresentativeButton()}"
+                    android:padding="4dp"
+                    android:text="@string/set_representative_button"
+                    android:textColor="@color/white"
                     android:textSize="20sp"
                     android:textStyle="bold"
-                    android:textColor="@color/white"
-                    android:text="@string/set_representative_button"
-                    android:visibility="@{!viewModel.isPetRepresentative() &amp;&amp; viewModel.isFragmentTypePetProfileFromMyPet()? View.VISIBLE: View.GONE}"
-                    android:background="?attr/selectableItemBackground"
-                    android:onClick="@{() -> fragment.onClickSetRepresentativeButton()}"
-                    />
+                    android:visibility="@{!viewModel.isPetRepresentative() &amp;&amp; viewModel.isActivityTypePetProfile()? View.VISIBLE: View.GONE}" />
 
             </RelativeLayout>
 
@@ -82,7 +80,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="12dp"
-                android:visibility="@{viewModel.isFragmentTypePetProfileFromCommunity() &amp;&amp; viewModel.isViewsDetailed &amp;&amp; viewModel.isOrientationPortrait? View.VISIBLE: View.GONE}"
+                android:visibility="@{viewModel.isActivityTypeCommunity() &amp;&amp; viewModel.isViewsDetailed &amp;&amp; viewModel.isOrientationPortrait? View.VISIBLE: View.GONE}"
                 android:background="@drawable/border"
                 app:layout_constraintTop_toBottomOf="@id/back_button_layout">
 
@@ -134,7 +132,7 @@
                     android:backgroundTint="@{viewModel.isFollowing? @color/border_line: @color/carrot}"
                     android:textColor="@{viewModel.isFollowing? @color/black: @color/white}"
                     android:text="@{viewModel.isFollowing? @string/unfollow_button: @string/follow_button}"
-                    android:onClick="@{() -> fragment.onClickFollowUnFollowButton()}"/>
+                    android:onClick="@{() -> activity.onClickFollowUnFollowButton()}"/>
 
             </RelativeLayout>
 
@@ -156,7 +154,7 @@
                 android:paddingStart="2dp"
                 android:paddingEnd="2dp"
                 android:animateLayoutChanges="true"
-                android:background="@{viewModel.isFragmentTypePetProfileFromMyPet()? @drawable/pet_info_layout_background: null}"
+                android:background="@{viewModel.isActivityTypePetProfile()? @drawable/pet_info_layout_background: null}"
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 app:layout_constraintTop_toTopOf="parent"
@@ -207,7 +205,7 @@
                     android:layout_marginBottom="4dp"
                     app:layout_constraintStart_toEndOf="@id/textview_petprofile_petname"
                     app:layout_constraintBottom_toBottomOf="@id/textview_petprofile_petname"
-                    android:text="@{fragment.getPetAgeString()}"
+                    android:text="@{@string/pet_age(viewModel.petAge)}"
                     android:textSize="16sp"/>
 
                 <TextView
@@ -221,7 +219,7 @@
                     android:gravity="center"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:text="@{fragment.getPetMessageString()}"
+                    android:text="@{viewModel.petMessage.empty? @string/filled_heart: viewModel.petMessage}"
                     app:layout_constraintTop_toBottomOf="@id/textview_petprofile_petname"
                     app:layout_constraintStart_toStartOf="parent"/>
 
@@ -245,7 +243,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_toEndOf="@id/textview_petprofile_petbreed"
-                        android:text="@{fragment.getPetGenderString()}"
+                        android:text="@{viewModel.petGender? @string/pet_gender_female_symbol: @string/pet_gender_male_symbol}"
                         android:textSize="16dp"/>
 
                     <TextView
@@ -260,7 +258,6 @@
                         android:id="@+id/textview_petprofile_petbirth"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@{fragment.getBirthString()}"
                         android:textSize="16dp"/>
                 </LinearLayout>
 
@@ -271,7 +268,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="16dp"
-                android:visibility="@{viewModel.isFragmentTypePetProfileFromMyPet() &amp;&amp; viewModel.isViewsDetailed &amp;&amp; viewModel.isOrientationPortrait? View.VISIBLE: View.GONE}"
+                android:visibility="@{viewModel.isActivityTypePetProfile() &amp;&amp; viewModel.isViewsDetailed &amp;&amp; viewModel.isOrientationPortrait? View.VISIBLE: View.GONE}"
                 app:layout_constraintTop_toBottomOf="@id/constraintlayout_petprofile_petinfo"
                 app:layout_constraintBottom_toTopOf="@id/text_history">
 
@@ -286,7 +283,7 @@
                     android:textSize="18sp"
                     android:textColor="@color/white"
                     android:text="@string/update_pet_button"
-                    android:onClick="@{() -> fragment.onClickUpdatePetButton()}"
+                    android:onClick="@{() -> activity.onClickUpdatePetButton()}"
                     />
 
             </LinearLayout>
@@ -299,7 +296,7 @@
                 android:text="History"
                 android:textSize="24dp"
                 android:background="@drawable/border"
-                android:onClick="@{() -> fragment.onClickHistoryText()}"
+                android:onClick="@{() -> activity.onClickHistoryText()}"
                 app:layout_constraintTop_toBottomOf="@id/buttons_layout"
                 app:layout_constraintBottom_toTopOf="@id/post_fragment_container"/>
 

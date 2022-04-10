@@ -5,15 +5,15 @@
     <data>
         <import type="android.view.View"/>
         <variable
-            name="fragment"
-            type="com.sju18001.petmanagement.ui.myPet.petManager.petProfile.CreateUpdatePetFragment" />
+            name="activity"
+            type="com.sju18001.petmanagement.ui.myPet.petManager.petProfile.CreateUpdatePetActivity" />
         <variable
             name="viewModel"
             type="com.sju18001.petmanagement.ui.myPet.petManager.petProfile.CreateUpdatePetViewModel" />
     </data>
 
     <RelativeLayout
-        android:id="@+id/fragment_create_update_pet_parent_layout"
+        android:id="@+id/activity_create_update_pet_parent_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:windowSoftInputMode="adjustResize">
@@ -32,6 +32,8 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
+                android:enabled="@{!viewModel.isApiLoading}"
+                android:onClick="@{() -> activity.onClickBackButton()}"
                 android:background="?selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_baseline_arrow_back_36_white" />
 
@@ -42,7 +44,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginStart="12dp"
                 android:layout_toEndOf="@id/back_button"
-                android:text="@string/create_pet_title"
+                android:text="@{viewModel.isActivityTypeCreatePet()? @string/create_pet_title: @string/update_pet_title}"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
 
@@ -59,13 +61,14 @@
                     android:layout_centerInParent="true"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
-                    android:enabled="false"
                     android:focusable="true"
+                    android:onClick="@{() -> activity.onClickConfirmButton()}"
                     android:padding="4dp"
                     android:text="@string/save"
                     android:textColor="@color/white"
                     android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:visibility="@{viewModel.isApiLoading? View.GONE: View.VISIBLE}" />
 
                 <ProgressBar
                     android:id="@+id/create_pet_progress_bar"
@@ -73,7 +76,7 @@
                     android:layout_height="30dp"
                     android:layout_centerInParent="true"
                     android:indeterminateTint="@color/carrot"
-                    android:visibility="gone" />
+                    android:visibility="@{viewModel.isApiLoading? View.VISIBLE: View.GONE}" />
 
             </RelativeLayout>
 
@@ -109,7 +112,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:src="@android:color/transparent"
-                        app:civ_border_color="@color/carrot"
+                        android:rotation="@{viewModel.petPhotoRotation}"
                         app:civ_border_width="4dp" />
 
                     <de.hdodenhof.circleimageview.CircleImageView
@@ -118,8 +121,9 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_alignParentBottom="true"
-                        android:src="@drawable/ic_baseline_add_photo_alternate_48"
-                        app:civ_circle_background_color="@color/pumpkin" />
+                        android:enabled="@{!viewModel.isApiLoading}"
+                        android:onClick="@{() ->activity.onClickPetPhotoInputButton()}"
+                        android:src="@drawable/ic_baseline_add_photo_alternate_48" />
 
                 </RelativeLayout>
 
@@ -159,6 +163,8 @@
                             android:lines="2"
                             android:maxLength="60"
                             android:padding="12dp"
+                            android:enabled="@{!viewModel.isApiLoading}"
+                            android:text="@={viewModel.petMessage}"
                             android:textSize="16sp"
                             android:theme="@style/onSelectedThemeCarrot" />
 
@@ -191,6 +197,8 @@
                                 android:inputType="textPersonName"
                                 android:maxLength="20"
                                 android:padding="8dp"
+                                android:enabled="@{!viewModel.isApiLoading}"
+                                android:text="@={viewModel.petName}"
                                 android:textSize="18sp"
                                 android:theme="@style/onSelectedThemeCarrot" />
 
@@ -220,7 +228,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginEnd="2.5dp"
+                                    android:enabled="@{!viewModel.isApiLoading}"
                                     android:text="@string/pet_gender_female"
+                                    android:checked="@={viewModel.petGender}"
                                     android:theme="@style/onSelectedThemeCarrot" />
 
                                 <RadioButton
@@ -228,7 +238,9 @@
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="2.5dp"
+                                    android:enabled="@{!viewModel.isApiLoading}"
                                     android:text="@string/pet_gender_male"
+                                    android:checked="@{viewModel.petGender != null &amp;&amp; !viewModel.petGender}"
                                     android:theme="@style/onSelectedThemeCarrot" />
 
                             </RadioGroup>
@@ -266,6 +278,8 @@
                                 android:maxLength="8"
                                 android:nextFocusDown="@id/pet_breed_input"
                                 android:padding="8dp"
+                                android:enabled="@{!viewModel.isApiLoading}"
+                                android:text="@={viewModel.petSpecies}"
                                 android:textSize="18sp"
                                 android:theme="@style/onSelectedThemeCarrot" />
 
@@ -295,6 +309,8 @@
                                 android:inputType="textPersonName"
                                 android:maxLength="8"
                                 android:padding="8dp"
+                                android:enabled="@{!viewModel.isApiLoading}"
+                                android:text="@={viewModel.petBreed}"
                                 android:textSize="18sp"
                                 android:theme="@style/onSelectedThemeCarrot" />
 
@@ -321,6 +337,10 @@
                             android:layout_marginBottom="-10dp"
                             android:calendarViewShown="false"
                             android:datePickerMode="spinner"
+                            android:enabled="@{!viewModel.isApiLoading}"
+                            android:year="@={viewModel.petBirthYear}"
+                            android:month="@={viewModel.petBirthMonth}"
+                            android:day="@={viewModel.petBirthDay}"
                             android:theme="@style/onSelectedThemeCarrot" />
 
                         <CheckBox
@@ -328,6 +348,8 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
+                            android:checked="@={viewModel.yearOnly}"
+                            android:enabled="@{!viewModel.isApiLoading}"
                             android:text="@string/pet_birth_only_year_label"
                             android:theme="@style/onSelectedThemeCarrot" />
 
@@ -342,6 +364,7 @@
                     android:orientation="horizontal"
                     android:paddingTop="20dp"
                     android:paddingBottom="20dp"
+                    android:visibility="@{viewModel.isActivityTypeCreatePet? View.GONE: View.VISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/pet_info_layout">
 
@@ -353,7 +376,9 @@
                         android:background="@drawable/button_with_radius_red"
                         android:textSize="18sp"
                         android:textColor="@color/white"
-                        android:text="@string/delete_pet_button"/>
+                        android:text="@string/delete_pet_button"
+                        android:onClick="@{() -> activity.onClickDeleteButton()}"
+                        />
 
                 </LinearLayout>
 

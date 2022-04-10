@@ -5,22 +5,29 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class CreateUpdatePetViewModel : ViewModel() {
-    var fragmentType = MutableLiveData<Int>()
+    var activityType = MutableLiveData<Int>()
 
-    var isViewModelInitializedByBundle = false
-    var isApiLoading = false
+    var isApiLoading = MutableLiveData(false)
 
     var petId = -1L
+    var petPhotoByteArray = MutableLiveData<ByteArray>(null)
+    var petPhotoPath = MutableLiveData("")
+    var petPhotoRotation = MutableLiveData(0f)
+    var petMessage = MutableLiveData("")
+    var petName = MutableLiveData("")
+    var petGender = MutableLiveData<Boolean>()
+    var petSpecies = MutableLiveData("")
+    var petBreed = MutableLiveData("")
+    var yearOnly = MutableLiveData(false)
+    var petBirthYear = MutableLiveData(2022)
+    var petBirthMonth = MutableLiveData(1)
+    var petBirthDay = MutableLiveData(1)
 
-    var petPhotoByteArray: ByteArray? = null
-    var petPhotoPath: String = ""
-    var petPhotoRotation: Float = 0f
-    var isDeletePhoto = false
-    var petMessage: String? = null
-    var petName: String? = null
-    var petGender: Boolean? = null
-    var petSpecies: String? = null
-    var petBreed: String? = null
-    var yearOnly = false
-    var petBirth: String = "0000-00-00"
+    fun isActivityTypeCreatePet(): Boolean {
+        return activityType.value == CreateUpdatePetActivity.ActivityType.CREATE_PET.ordinal
+    }
+
+    fun isActivityTypeUpdatePet(): Boolean {
+        return activityType.value == CreateUpdatePetActivity.ActivityType.UPDATE_PET.ordinal
+    }
 }

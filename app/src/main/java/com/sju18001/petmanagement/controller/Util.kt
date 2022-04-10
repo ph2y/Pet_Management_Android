@@ -6,6 +6,7 @@ import android.content.*
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.location.LocationManager
 import android.media.ExifInterface
@@ -574,6 +575,14 @@ class Util {
 
         private fun convertRadianToDegree(radian: Double): Double {
             return radian * 180.0 / Math.PI
+        }
+
+        fun getByteArrayFromDrawable(drawable: Drawable): ByteArray {
+            val bitmap = (drawable as BitmapDrawable).bitmap
+            val stream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+
+            return stream.toByteArray()
         }
     }
 }
