@@ -13,7 +13,7 @@ class PetManagerDragAdapter(
         fun onRowClear(itemViewHolder: PetManagerAdapter.HistoryListViewHolder)
     }
 
-    private val SCROLL_SENSITIVITY = 20
+    private val SCROLL_SENSITIVITY = 30
 
     override fun getMovementFlags(
         recyclerView: RecyclerView,

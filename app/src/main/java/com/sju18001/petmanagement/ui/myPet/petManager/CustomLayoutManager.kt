@@ -39,6 +39,10 @@ class CustomLayoutManager constructor(
 
         if(state != null){
             layoutItems(state)
+
+            if(mode == Mode.SCALE_MODE){
+                for(i in 0 until itemCount) findViewByPosition(i)?.pivotY = (height/2).toFloat()
+            }
         }
     }
 
@@ -82,6 +86,7 @@ class CustomLayoutManager constructor(
                 val scale = computeScale(itemCenterX)
                 item.scaleX = scale
                 item.scaleY = scale
+                item.pivotX = computePivot(itemCenterX, item.width)
             }
         }
     }
@@ -102,6 +107,10 @@ class CustomLayoutManager constructor(
         }
     }
 
+    private fun computePivot(itemCenterX: Float, itemWidth: Int): Float {
+        return if(itemCenterX < width/2) itemWidth.toFloat() else 0f
+    }
+
 
     enum class Mode {
         SCALE_MODE, Y_MODE
@@ -111,7 +120,7 @@ class CustomLayoutManager constructor(
         private val context = context
         private val snapHelper = snapHelper
         private var mode = Mode.Y_MODE
-        private var minScale = 0.75f
+        private var minScale = 0.85f
         private var yOffset = -75f
 
         fun setMode(mode: Mode): Builder {
