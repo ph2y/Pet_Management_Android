@@ -43,6 +43,12 @@ import java.io.File
 import java.time.LocalDate
 import java.util.*
 
+/**
+ * 다른 곳에서 이 액티비티를 호출하는 과정에서 Intent를 전달하는데, 그 정보를 ViewModel에
+ * 저장합니다. ViewModel의 정보는 Databinding되어 있으므로 ViewModel의 값이 매우 중요합니다.
+ * 추가로 UpdatePet을 성공적으로 마쳤을 경우 PetProfileActivity에 결과를 전달합니다.
+ */
+
 class CreateUpdatePetActivity : AppCompatActivity() {
     companion object {
         const val PICK_PHOTO = 0
@@ -62,13 +68,11 @@ class CreateUpdatePetActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         setBinding()
-        
-        // ViewModel 기준 최소 1회만 초기화
-        if(viewModel.activityType.value == null) initializeViewModel()
 
         isViewDestroyed = false
         supportActionBar?.hide()
 
+        initializeViewModel()
         setObserversOfLiveData()
 
         binding.adView.loadAd(AdRequest.Builder().build())
@@ -83,8 +87,12 @@ class CreateUpdatePetActivity : AppCompatActivity() {
     }
 
     private fun initializeViewModel() {
+        // ViewModel Lifecycle 기준 최초 1회만 수행합니다.
+        if(viewModel.activityType.value != null) return
+
         viewModel.activityType.value = intent.getIntExtra("activityType", 0)
 
+        // UpdatePetActivity인 경우에는 기존 펫의 정보를 불러옵니다.
         if(viewModel.isActivityTypeUpdatePet()){
             intent.getStringExtra("petMessage")?.let{ viewModel.petMessage.value = it }
             intent.getStringExtra("petName")?.let{ viewModel.petName.value = it }
@@ -368,7 +376,7 @@ class CreateUpdatePetActivity : AppCompatActivity() {
         }
     }
 
-    // 펫의 데이터를 기반으로 Intent를 생성합니다. 해당 Intent는 이후 PetProfile로 넘어갑니다.
+    // 변경된 펫의 정보를 기반으로 Intent를 생성합니다. 해당 Intent는 이후 PetProfile로 넘어갑니다.
     private fun makeResultIntentForUpdate(): Intent {
         val intent = Intent()
         intent.putExtra("petBirth",
@@ -423,7 +431,7 @@ class CreateUpdatePetActivity : AppCompatActivity() {
     private fun showToastAndFinishAfterDeletePet() {
         Toast.makeText(baseContext, baseContext?.getText(R.string.delete_pet_successful), Toast.LENGTH_LONG).show()
 
-        setResult(Activity.RESULT_CANCELED)
+        setResult(Activity.RESULT_OK)
         finish()
     }
 }
