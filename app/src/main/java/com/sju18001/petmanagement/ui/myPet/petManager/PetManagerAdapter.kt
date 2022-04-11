@@ -28,6 +28,11 @@ interface PetManagerAdapterInterface {
     )
 }
 
+/**
+ * 아이템이 일반 펫과 CreatePetButton으로 나뉩니다. 이러한 이유로 ViewHolder가 2개가 존재합니다.
+ * 또한 onCreateViewHolder(), onBindViewHolder()에서 viewType으로 구분하여 분기합니다.
+ */
+
 class PetManagerAdapter(
         private val startDragListener: OnStartDragListener,
         private val context: Context,
@@ -76,6 +81,27 @@ class PetManagerAdapter(
         }
     }
 
+    private fun setListenerOnView(holder: HistoryListViewHolder) {
+        holder.itemView.setOnLongClickListener(View.OnLongClickListener {
+            this.startDragListener.onStartDrag(holder)
+            return@OnLongClickListener false
+        })
+
+        holder.itemView.setOnClickListener {
+            if(!clickable) return@setOnClickListener
+            if(holder.absoluteAdapterPosition == -1) return@setOnClickListener
+
+            petManagerAdapterInterface.onClickPetCard(holder, resultList, holder.absoluteAdapterPosition)
+        }
+    }
+
+    private fun setListenerOnView(holder: CreatePetButtonViewHolder) {
+        holder.iconImageView.setOnClickListener {
+            petManagerAdapterInterface.onClickCreateButton()
+        }
+    }
+
+
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(getItemViewType(position)){
             R.layout.item_petmanager -> {
@@ -83,27 +109,55 @@ class PetManagerAdapter(
 
                 val currentItem = resultList[position]
 
-                // Set representative pet icon
-                val isRepresentativePet = currentItem.id == SessionManager.fetchLoggedInAccount(context)?.representativePetId?: 0
-                if (isRepresentativePet) {
-                    holder.representativeIcon.setImageResource(R.drawable.crown)
-                    holder.representativeIcon.scaleType = ImageView.ScaleType.FIT_XY
-                    holder.representativeIcon.visibility = View.VISIBLE
-                } else{
-                    holder.representativeIcon.visibility = View.INVISIBLE
-                }
-
-                // Set pet photo
-                if(currentItem.photoUrl != null) {
-                    fetchPetPhoto(currentItem.id, holder.petPhoto)
-                }
-                else {
-                    holder.petPhoto.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_pets_60_with_padding))
-                }
-
-                setPetInfoLayout(holder, currentItem)
+                setViewsAboutRepresentativePet(holder, currentItem)
+                setViewsOfPetInfoLayout(holder, currentItem)
+                setViewsOfPhoto(holder, currentItem)
             }
         }
+    }
+
+    private fun setViewsAboutRepresentativePet(holder: HistoryListViewHolder, currentItem: Pet) {
+        val isRepresentativePet = currentItem.id == SessionManager.fetchLoggedInAccount(context)?.representativePetId?: 0
+        if (isRepresentativePet) {
+            holder.representativeIcon.setImageResource(R.drawable.crown)
+            holder.representativeIcon.scaleType = ImageView.ScaleType.FIT_XY
+            holder.representativeIcon.visibility = View.VISIBLE
+        } else{
+            holder.representativeIcon.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun setViewsOfPetInfoLayout(holder: HistoryListViewHolder, item: Pet){
+        holder.petName.text = item.name
+        holder.petBreed.text = item.breed
+        holder.petAge.text = Util.getAgeFromBirth(item.birth).toString() + "살"
+        holder.petMessage.text = if(item.message.isNullOrEmpty()) context.getString(R.string.filled_heart) else item.message
+
+        if(item.yearOnly!!) holder.petBirthLayout.visibility = View.GONE
+        else holder.petBirth.text = getBirthString(item.birth!!)
+
+        holder.petGender.text = Util.getGenderSymbol(item.gender, context)
+        if(item.gender) holder.petGender.setTextColor(context.getColor(R.color.pink))
+        else holder.petGender.setTextColor(context.getColor(R.color.peter_river))
+    }
+
+    private fun getBirthString(birth: String): String {
+        val localDate = LocalDate.parse(birth)
+        return "${localDate.monthValue}월 ${localDate.dayOfMonth}일"
+    }
+
+    private fun setViewsOfPhoto(holder: HistoryListViewHolder, currentItem: Pet) {
+        if(currentItem.photoUrl != null) fetchPetPhotoToSetPetPhoto(currentItem.id, holder.petPhoto)
+        else holder.petPhoto.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_pets_60_with_padding))
+    }
+
+    private fun fetchPetPhotoToSetPetPhoto(id: Long, view: View) {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(context)!!)
+            .fetchPetPhotoReq(FetchPetPhotoReqDto(id))
+        ServerUtil.enqueueApiCall(call, {false}, context, { response ->
+            // Set fetched photo to view
+            (view as ImageView).setImageBitmap(BitmapFactory.decodeStream(response.body()!!.byteStream()))
+        }, {}, {})
     }
 
     override fun getItemCount() = resultList.size + 1
@@ -116,6 +170,8 @@ class PetManagerAdapter(
         }
     }
 
+
+    /** DragAdapter */
     override fun onRowMoved(fromPosition: Int, toPosition: Int) {
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
@@ -136,6 +192,7 @@ class PetManagerAdapter(
         PetManagerFragment().savePetListOrder(context.getString(R.string.data_name_pet_list_id_order),
             petListIdOrder, context)
     }
+
     override fun onRowSelected(itemViewHolder: HistoryListViewHolder) {
         val anim = ValueAnimator.ofFloat(1f, 0.5f)
         anim.addUpdateListener { valueAnimator ->
@@ -151,6 +208,7 @@ class PetManagerAdapter(
         // LongClick 직후에 곧바로 발생하는 Click을 방지하기 위함
         clickable = false
     }
+
     override fun onRowClear(itemViewHolder: HistoryListViewHolder) {
         val anim = ValueAnimator.ofFloat(0.5f, 1f)
         anim.addUpdateListener { valueAnimator ->
@@ -169,64 +227,8 @@ class PetManagerAdapter(
         petManagerAdapterInterface.restoreScroll()
     }
 
-    private fun setListenerOnView(holder: HistoryListViewHolder) {
-        // Long clicking the item to draging
-        holder.itemView.setOnLongClickListener(View.OnLongClickListener {
-            this.startDragListener.onStartDrag(holder)
 
-            return@OnLongClickListener false
-        })
-
-        // click -> open pet profile
-        holder.itemView.setOnClickListener {
-            if(!clickable) return@setOnClickListener
-            if(holder.absoluteAdapterPosition == -1) return@setOnClickListener
-            petManagerAdapterInterface.onClickPetCard(holder, resultList, holder.absoluteAdapterPosition)
-        }
-    }
-
-    private fun setListenerOnView(holder: CreatePetButtonViewHolder) {
-        holder.iconImageView.setOnClickListener {
-            petManagerAdapterInterface.onClickCreateButton()
-        }
-    }
-
-    private fun fetchPetPhoto(id: Long, view: View) {
-        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(context)!!)
-            .fetchPetPhotoReq(FetchPetPhotoReqDto(id))
-        ServerUtil.enqueueApiCall(call, {false}, context, { response ->
-            // set fetched photo to view
-            (view as ImageView).setImageBitmap(BitmapFactory.decodeStream(response.body()!!.byteStream()))
-        }, {}, {})
-    }
-
-    private fun setPetInfoLayout(holder: HistoryListViewHolder, item: Pet){
-        holder.petName.text = item.name
-        holder.petBreed.text = item.breed
-        holder.petAge.text = Util.getAgeFromBirth(item.birth).toString() + "살"
-
-        // Set visibility of pet_birth_layout
-        if(item.yearOnly!!){
-            holder.petBirthLayout.visibility = View.GONE
-        } else {
-            holder.petBirth.text = getBirthString(item.birth!!)
-        }
-
-        holder.petGender.text = Util.getGenderSymbol(item.gender, context)
-        // Set color of pet_gender
-        if(item.gender) holder.petGender.setTextColor(context.getColor(R.color.pink))
-        else holder.petGender.setTextColor(context.getColor(R.color.peter_river))
-
-        holder.petMessage.text =
-            if(item.message.isNullOrEmpty()) context.getString(R.string.filled_heart) else item.message
-    }
-
-    private fun getBirthString(birth: String): String {
-        val localDate = LocalDate.parse(birth)
-        return "${localDate.monthValue}월 ${localDate.dayOfMonth}일"
-    }
-
-    public fun setResult(result: List<Pet>){
+    fun setResult(result: List<Pet>){
         this.resultList = result
         notifyDataSetChanged()
     }

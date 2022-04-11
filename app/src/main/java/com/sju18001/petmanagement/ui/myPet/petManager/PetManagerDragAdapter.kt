@@ -7,13 +7,15 @@ import com.sju18001.petmanagement.R
 class PetManagerDragAdapter(
     private val adapter: PetManagerAdapter
 ) : ItemTouchHelper.Callback() {
-    public interface Listener {
+    companion object {
+        const val SCROLL_SENSITIVITY = 30
+    }
+
+    interface Listener {
         fun onRowMoved(fromPosition: Int, toPosition: Int)
         fun onRowSelected(itemViewHolder: PetManagerAdapter.HistoryListViewHolder)
         fun onRowClear(itemViewHolder: PetManagerAdapter.HistoryListViewHolder)
     }
-
-    private val SCROLL_SENSITIVITY = 30
 
     override fun getMovementFlags(
         recyclerView: RecyclerView,
