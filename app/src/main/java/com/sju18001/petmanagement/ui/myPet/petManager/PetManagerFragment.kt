@@ -30,7 +30,6 @@ import java.io.ByteArrayOutputStream
 import java.lang.reflect.Type
 
 class PetManagerFragment : Fragment(), OnStartDragListener {
-    // variable for ViewModel
     private val myPetViewModel: MyPetViewModel by activityViewModels()
 
     // variables for view binding
@@ -62,7 +61,12 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
 
         val root: View = binding.root
 
-        // Initialize RecyclerView
+        initializeRecyclerView()
+
+        return root
+    }
+
+    private fun initializeRecyclerView() {
         adapter = PetManagerAdapter(this, requireActivity(), object: PetManagerAdapterInterface{
             override fun onClickCreateButton() {
                 val createUpdatePetIntent = Intent(context, CreateUpdatePetActivity::class.java)
@@ -84,13 +88,11 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
             ) {
                 val currentItem = dataSet[position]
 
-                // if pet photo not yet fetched
-                if (currentItem.photoUrl != null && holder.petPhoto.drawable == null) {
-                    return
-                }
+                // 사진을 아직 불러오지 못한 경우에는 PetProfile을 열지 않습니다.
+                // 이 프래그먼트에서 불러온 사진을 PetProfile로 전달하는 방식을 사용하기 때문입니다.
+                if (currentItem.photoUrl != null && holder.petPhoto.drawable == null) return
 
-                // set pet values to Intent
-                val petProfileIntent = Intent(holder.itemView.context, PetProfileActivity::class.java)
+                // 사진 정보는 SharedPreferences를 이용하여 전달합니다.
                 if(currentItem.photoUrl != null) {
                     val photoByteArray = Util.getByteArrayFromDrawable(holder.petPhoto.drawable)
                     Util.saveByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
@@ -100,6 +102,10 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
                     Util.saveByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
                         requireContext().getString(R.string.data_name_my_pet_selected_pet_photo), null)
                 }
+
+                // PetProfile로 전달할 정보들
+                val petProfileIntent = Intent(holder.itemView.context, PetProfileActivity::class.java)
+
                 petProfileIntent.putExtra("petId", currentItem.id)
                 petProfileIntent.putExtra("petName", currentItem.name)
                 petProfileIntent.putExtra("petBirth", currentItem.birth)
@@ -108,78 +114,73 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
                 petProfileIntent.putExtra("petGender", currentItem.gender)
                 petProfileIntent.putExtra("petAge", Util.getAgeFromBirth(currentItem.birth))
                 petProfileIntent.putExtra("petMessage", currentItem.message)
-                val isRepresentativePet = currentItem.id == SessionManager.fetchLoggedInAccount(requireContext())?.representativePetId?: 0
-                petProfileIntent.putExtra("isRepresentativePet", isRepresentativePet)
                 petProfileIntent.putExtra("yearOnly", currentItem.yearOnly)
-
                 petProfileIntent.putExtra("activityType", PetProfileActivity.ActivityType.PET_PROFILE.ordinal)
 
-                // open activity
+                val isRepresentativePet = currentItem.id == SessionManager.fetchLoggedInAccount(requireContext())?.representativePetId?: 0
+                petProfileIntent.putExtra("isRepresentativePet", isRepresentativePet)
+
+                // 인텐드와 함께 PetProfileActivity를 실행합니다.
                 holder.itemView.context.startActivity(petProfileIntent)
                 requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
             }
         })
         binding.myPetListRecyclerView.adapter = adapter
 
-        // Initialize PagerSnapHelper
+        // PagerSnapHelper: ViewPager처럼 움직이는 RecyclerView 구현
         snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(binding.myPetListRecyclerView)
 
-        // Initialize LayoutManager
+        // CustomLayoutManager: 스크롤 애니메이션 구현
         layoutManager = CustomLayoutManager.Builder(requireContext(), snapHelper)
             .setMode(CustomLayoutManager.Mode.SCALE_MODE)
             .build()
         layoutManager.orientation = LinearLayoutManager.HORIZONTAL
         binding.myPetListRecyclerView.layoutManager = layoutManager
 
-
-        // set adapter item change observer
-        adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
-            override fun onChanged() {
-                super.onChanged()
-
-                setEmptyNotificationView(adapter.itemCount)
-            }
-        })
-
-
+        // ItemTouchHelper: Drag & drop 구현
         touchHelper = ItemTouchHelper(PetManagerDragAdapter(adapter))
         touchHelper.attachToRecyclerView(binding.myPetListRecyclerView)
 
-        return root
+        adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
+            override fun onChanged() {
+                super.onChanged()
+                setEmptyNotificationView(adapter.itemCount)
+            }
+        })
     }
+
+    private fun setEmptyNotificationView(itemCount: Int) {
+        val visibility = if(itemCount != 1) View.GONE else View.VISIBLE
+        binding.emptyPetListNotification.visibility = visibility
+    }
+
 
     override fun onResume() {
         super.onResume()
 
-        // 첫 Fetch가 끝나기 전까지 ProgressBar 표시
         CustomProgressBar.addProgressBar(requireContext(), binding.fragmentPetPetManagerParentLayout, 80, R.color.white)
-
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchPetReq(FetchPetReqDto( null , null))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-            val petListApi: ArrayList<Pet> = ArrayList()
+            val fetchedPetList: ArrayList<Pet> = ArrayList()
             response.body()?.petList?.map {
-                petListApi.add(it)
+                fetchedPetList.add(it)
                 myPetViewModel.addPetNameForId(it.id, it.name)
             }
 
-            // sync에 필요한 petNameForId에 값이 들어갔으므로
             synchronizeAlarmManager()
 
-
-            // if RecyclerView items not yet added
+            // item에 CreatePetButton만 있을 경우(즉, 펫이 없을 경우)
             if(adapter.itemCount == 1) {
-                updatePetListOrder(petListApi)
-                reorderPetList(petListApi)
+                updatePetListOrder(fetchedPetList)
+                reorderPetList(fetchedPetList)
 
                 // set result + restore last scrolled index
                 adapter.setResult(petList)
                 binding.myPetListRecyclerView.scrollToPosition(myPetViewModel.lastScrolledIndex)
-            }
-            // check for difference in lists(current RecyclerView vs API response)
-            else {
-                checkListDifference(petListApi)
+            }else{
+                checkListDifference(fetchedPetList)
             }
 
             adapter.notifyDataSetChanged()
@@ -210,7 +211,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
         }, {}, {})
     }
 
-    private fun updatePetListOrder(apiResponse: ArrayList<Pet>) {
+    private fun updatePetListOrder(fetchedPetList: ArrayList<Pet>) {
         // get current saved pet list order
         val petListOrder = getPetListOrder(requireContext()
             .getString(R.string.data_name_pet_list_id_order), requireContext())
@@ -218,7 +219,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
         // check for not deleted
         val notDeleted: MutableList<Long> = mutableListOf()
         for(id in petListOrder) {
-            val deleted = apiResponse.find { it.id == id }
+            val deleted = fetchedPetList.find { it.id == id }
             if(deleted == null) {
                 notDeleted.add(id)
             }
@@ -226,7 +227,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
 
         // check for not added
         val notAdded: MutableList<Long> = mutableListOf()
-        for(pet in apiResponse) {
+        for(pet in fetchedPetList) {
             val added = petListOrder.find { it == pet.id }
             if(added == null) {
                 notAdded.add(pet.id)
@@ -248,7 +249,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
             .data_name_pet_list_id_order), petListOrder, requireContext())
     }
 
-    private fun reorderPetList(apiResponse: ArrayList<Pet>) {
+    private fun reorderPetList(fetchedPetList: ArrayList<Pet>) {
         // get saved pet list order
         val petListOrder = getPetListOrder(requireContext()
             .getString(R.string.data_name_pet_list_id_order), requireContext())
@@ -256,18 +257,18 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
         // sort by order
         petList = mutableListOf()
         for(id in petListOrder) {
-            val pet = apiResponse.find { it.id == id }
+            val pet = fetchedPetList.find { it.id == id }
             petList.add(pet!!)
         }
     }
 
-    private fun checkListDifference(apiResponse: ArrayList<Pet>) {
+    private fun checkListDifference(fetchedPetList: ArrayList<Pet>) {
         // variables for id lists
         val apiResponseIdList: MutableList<Long> = mutableListOf()
         val recyclerViewIdList: MutableList<Long> = mutableListOf()
 
         // get id lists for API/RecyclerView
-        apiResponse.map {
+        fetchedPetList.map {
             apiResponseIdList.add(it.id)
         }
         petList.map {
@@ -281,10 +282,10 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
         // show add/delete animation(if difference size is 1)
             // if added
         if(addedId.size == 1 && deletedId.isEmpty()) {
-            petList.add(petList.size, apiResponse[apiResponse.size - 1])
+            petList.add(petList.size, fetchedPetList[fetchedPetList.size - 1])
             adapter.notifyItemInserted(petList.size)
             binding.myPetListRecyclerView.smoothScrollToPosition(petList.size - 1)
-            updatePetListOrder(apiResponse)
+            updatePetListOrder(fetchedPetList)
             return
         }
             // if deleted
@@ -299,13 +300,13 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
             }
             val position = if(petList.size >= 1) petList.size else 0
             binding.myPetListRecyclerView.smoothScrollToPosition(position)
-            updatePetListOrder(apiResponse)
+            updatePetListOrder(fetchedPetList)
             return
         }
 
         // if there are multiple/no differences -> update list with all changes + no animation
-        updatePetListOrder(apiResponse)
-        reorderPetList(apiResponse)
+        updatePetListOrder(fetchedPetList)
+        reorderPetList(fetchedPetList)
         adapter.setResult(petList)
     }
 
@@ -326,11 +327,5 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
 
         if(json == null) { return mutableListOf() }
         return gson.fromJson(json, type)
-    }
-
-    private fun setEmptyNotificationView(itemCount: Int) {
-        // set notification view
-        val visibility = if(itemCount != 1) View.GONE else View.VISIBLE
-        binding.emptyPetListNotification.visibility = visibility
     }
 }
