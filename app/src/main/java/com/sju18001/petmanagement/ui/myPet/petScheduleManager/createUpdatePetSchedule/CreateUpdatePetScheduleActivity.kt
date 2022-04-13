@@ -46,7 +46,7 @@ class CreateUpdatePetScheduleActivity : AppCompatActivity() {
         setObserversOfLiveData()
 
         initializeAdapter()
-        Util.setupViewsForHideKeyboard(this, binding.fragmentCreateUpdatePetScheduleParentLayout)
+        Util.setupViewsForHideKeyboard(this, binding.fragmentCreateUpdatePetScheduleParentLayout, listOf(binding.confirmButton))
         binding.adView.loadAd(AdRequest.Builder().build())
     }
 
