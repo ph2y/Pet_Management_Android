@@ -6,12 +6,16 @@ import androidx.lifecycle.ViewModel
 
 class PetProfileViewModel : ViewModel() {
     var activityType = MutableLiveData<Int>()
+
+    // CreateUpdatePet에서 펫을 수정했을 때 true
+    // PetProfile을 종료할 때, 이 값이 true이면 HAS_PET_UPDATED로 결과를 전달합니다.
+    var hasPetUpdated = MutableLiveData(false)
+
     var isPetRepresentative = MutableLiveData(false)
     var isViewsDetailed = MutableLiveData(true)
     var isOrientationPortrait = MutableLiveData<Boolean>()
     var isFollowing = MutableLiveData(false)
-
-    var isApiLoading = false
+    var isApiLoading = MutableLiveData(false)
 
     var accountId: Long = -1
     var accountUsername: String = ""

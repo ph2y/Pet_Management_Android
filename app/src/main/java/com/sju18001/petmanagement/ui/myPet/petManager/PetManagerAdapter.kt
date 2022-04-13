@@ -23,7 +23,7 @@ interface PetManagerAdapterInterface {
     fun restoreScroll()
     fun onClickPetCard(
         holder: PetManagerAdapter.HistoryListViewHolder,
-        resultList: List<Pet>,
+        dataSet: ArrayList<Pet>,
         position: Int
     )
 }
@@ -40,7 +40,7 @@ class PetManagerAdapter(
     ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>(), PetManagerDragAdapter.Listener {
 
-    private var resultList = emptyList<Pet>()
+    private var dataSet = ArrayList<Pet>()
 
     private var clickable: Boolean = true
 
@@ -91,7 +91,7 @@ class PetManagerAdapter(
             if(!clickable) return@setOnClickListener
             if(holder.absoluteAdapterPosition == -1) return@setOnClickListener
 
-            petManagerAdapterInterface.onClickPetCard(holder, resultList, holder.absoluteAdapterPosition)
+            petManagerAdapterInterface.onClickPetCard(holder, dataSet, holder.absoluteAdapterPosition)
         }
     }
 
@@ -107,7 +107,7 @@ class PetManagerAdapter(
             R.layout.item_petmanager -> {
                 holder as HistoryListViewHolder
 
-                val currentItem = resultList[position]
+                val currentItem = dataSet[position]
 
                 setViewsAboutRepresentativePet(holder, currentItem)
                 setViewsOfPetInfoLayout(holder, currentItem)
@@ -160,10 +160,10 @@ class PetManagerAdapter(
         }, {}, {})
     }
 
-    override fun getItemCount() = resultList.size + 1
+    override fun getItemCount() = dataSet.size + 1
 
     override fun getItemViewType(position: Int): Int {
-        return if(position == resultList.size) {
+        return if(position == dataSet.size) {
             R.layout.item_createpetbutton
         } else {
             R.layout.item_petmanager
@@ -175,22 +175,19 @@ class PetManagerAdapter(
     override fun onRowMoved(fromPosition: Int, toPosition: Int) {
         if (fromPosition < toPosition) {
             for (i in fromPosition until toPosition) {
-                Collections.swap(resultList, i, i + 1)
+                Collections.swap(dataSet, i, i + 1)
             }
         } else {
             for (i in fromPosition downTo toPosition + 1) {
-                Collections.swap(resultList, i, i - 1)
+                Collections.swap(dataSet, i, i - 1)
             }
         }
         notifyItemMoved(fromPosition, toPosition)
 
-        // save order to device
-        val petListIdOrder: MutableList<Long> = mutableListOf()
-        resultList.map {
-            petListIdOrder.add(it.id)
-        }
-        PetManagerFragment().savePetListOrder(context.getString(R.string.data_name_pet_list_id_order),
-            petListIdOrder, context)
+        // Save order to device
+        val orderedPetIdList: ArrayList<Long> = arrayListOf()
+        dataSet.map { orderedPetIdList.add(it.id) }
+        PetManagerFragment().putOrderedPetIdList(context.getString(R.string.data_name_pet_list_id_order), orderedPetIdList, context)
     }
 
     override fun onRowSelected(itemViewHolder: HistoryListViewHolder) {
@@ -227,9 +224,20 @@ class PetManagerAdapter(
         petManagerAdapterInterface.restoreScroll()
     }
 
+    fun setItem(index: Int, item: Pet) {
+        dataSet[index] = item
+    }
 
-    fun setResult(result: List<Pet>){
-        this.resultList = result
+    fun addItem(item: Pet) {
+        dataSet.add(item)
+    }
+
+    fun removeItemAt(index: Int) {
+        dataSet.removeAt(index)
+    }
+
+    fun setResult(result: ArrayList<Pet>){
+        this.dataSet = result
         notifyDataSetChanged()
     }
 }

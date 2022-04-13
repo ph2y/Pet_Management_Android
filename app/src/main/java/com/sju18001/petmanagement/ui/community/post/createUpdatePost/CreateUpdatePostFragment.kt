@@ -446,7 +446,7 @@ class CreateUpdatePostFragment : Fragment() {
     private fun reorderPetList(apiResponse: MutableList<CreateUpdatePostPetSelectorItem>) {
         // get saved pet list order
         val petListOrder = PetManagerFragment()
-            .getPetListOrder(requireContext().getString(R.string.data_name_pet_list_id_order), requireContext())
+            .getOrderedPetIdList(requireContext().getString(R.string.data_name_pet_list_id_order), requireContext())
 
         // sort by order
         for (id in petListOrder) {
