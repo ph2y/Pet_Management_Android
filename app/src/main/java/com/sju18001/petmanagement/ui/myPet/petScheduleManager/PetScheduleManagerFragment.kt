@@ -4,14 +4,12 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.annotation.RequiresApi
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -87,7 +85,7 @@ class PetScheduleManagerFragment : Fragment() {
             override fun startCreateUpdatePetScheduleFragmentForUpdate(data: PetSchedule) {
                 val createUpdatePetScheduleActivityIntent = Intent(context, CreateUpdatePetScheduleActivity::class.java)
                 createUpdatePetScheduleActivityIntent
-                    .putExtra("fragmentType", CreateUpdatePetScheduleActivity.FragmentType.UPDATE_PET_SCHEDULE.ordinal)
+                    .putExtra("activityType", CreateUpdatePetScheduleActivity.ActivityType.UPDATE_PET_SCHEDULE.ordinal)
                     .putExtra("id", data.id)
                     .putExtra("petIdList", data.petIdList)
                     .putExtra("time", data.time)
@@ -209,7 +207,7 @@ class PetScheduleManagerFragment : Fragment() {
 
     private fun startCreatePetSchedule(){
         val createUpdatePetScheduleActivityIntent = Intent(context, CreateUpdatePetScheduleActivity::class.java)
-        createUpdatePetScheduleActivityIntent.putExtra("fragmentType", CreateUpdatePetScheduleActivity.FragmentType.CREATE_PET_SCHEDULE.ordinal)
+        createUpdatePetScheduleActivityIntent.putExtra("activityType", CreateUpdatePetScheduleActivity.ActivityType.CREATE_PET_SCHEDULE.ordinal)
 
         startActivity(createUpdatePetScheduleActivityIntent)
         requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)

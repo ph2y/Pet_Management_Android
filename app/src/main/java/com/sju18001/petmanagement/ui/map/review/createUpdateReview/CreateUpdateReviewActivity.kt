@@ -49,13 +49,13 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        initializeViewModelWithExtra()
+        initializeViewModeByIntent()
         if(isFragmentForUpdateReviewAndIsReviewNotFetched()) {
             fetchReviewForUpdate(viewModel.reviewId)
         }
     }
 
-    private fun initializeViewModelWithExtra() {
+    private fun initializeViewModeByIntent() {
         viewModel.fragmentType = intent.getIntExtra("fragmentType", 0)
         viewModel.placeId = intent.getLongExtra("placeId", -1)
         viewModel.reviewId = intent.getLongExtra("reviewId", -1)

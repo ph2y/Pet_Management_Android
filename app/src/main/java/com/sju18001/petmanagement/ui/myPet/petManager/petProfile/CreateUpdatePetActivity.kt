@@ -65,7 +65,7 @@ class CreateUpdatePetActivity : AppCompatActivity() {
         isViewDestroyed = false
         supportActionBar?.hide()
 
-        initializeViewModel()
+        initializeViewModeByIntent()
         setObserversOfLiveData()
 
         binding.adView.loadAd(AdRequest.Builder().build())
@@ -79,7 +79,7 @@ class CreateUpdatePetActivity : AppCompatActivity() {
         binding.viewModel = viewModel
     }
 
-    private fun initializeViewModel() {
+    private fun initializeViewModeByIntent() {
         // ViewModel Lifecycle 기준 최초 1회만 수행합니다.
         if(viewModel.activityType.value != null) return
 

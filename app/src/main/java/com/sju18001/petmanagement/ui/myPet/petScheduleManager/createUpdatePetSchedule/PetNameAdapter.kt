@@ -1,24 +1,21 @@
-package com.sju18001.petmanagement.ui.myPet.petScheduleManager
+package com.sju18001.petmanagement.ui.myPet.petScheduleManager.createUpdatePetSchedule
 
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 
 interface PetNameListAdapterInterface{
-    fun setViewModelForCheckBox(position: Int)
-    fun setCheckBoxForViewModel(checkBox: CheckBox, position: Int)
-    fun verifyAndEnableConfirmButton()
+    fun onClickCheckBox(position: Int)
+    fun updateCheckBoxByViewModel(checkBox: CheckBox, position: Int)
 }
 
-class PetNameListAdapter(
-    private val dataSet: ArrayList<PetNameListItem>,
+class PetNameAdapter(
+    private val dataSet: ArrayList<PetNameItem>,
     private val petNameListAdapterInterface: PetNameListAdapterInterface
-    ) : RecyclerView.Adapter<PetNameListAdapter.ViewHolder>(){
+    ) : RecyclerView.Adapter<PetNameAdapter.ViewHolder>(){
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
         val petNameCheckBox: CheckBox = view.findViewById(R.id.pet_name_check_box)
     }
@@ -28,7 +25,7 @@ class PetNameListAdapter(
         viewType: Int
     ): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.pet_name_list_item, parent, false)
+            .inflate(R.layout.pet_name_item, parent, false)
 
         val holder = ViewHolder(view)
         setListenerOnView(holder)
@@ -37,9 +34,7 @@ class PetNameListAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        updateViewHolderByDataSet(holder, dataSet[position])
-
-        petNameListAdapterInterface.setCheckBoxForViewModel(holder.petNameCheckBox, position)
+        updateViewHolderByDataSet(holder, position)
     }
 
     override fun getItemCount(): Int = dataSet.size
@@ -47,20 +42,20 @@ class PetNameListAdapter(
     private fun setListenerOnView(holder: ViewHolder) {
         holder.petNameCheckBox.setOnClickListener {
             val position = holder.absoluteAdapterPosition
-            petNameListAdapterInterface.setViewModelForCheckBox(position)
-            petNameListAdapterInterface.verifyAndEnableConfirmButton()
+            petNameListAdapterInterface.onClickCheckBox(position)
         }
     }
 
-    private fun updateViewHolderByDataSet(holder: ViewHolder, data: PetNameListItem){
-        holder.petNameCheckBox.text = data.name
+    private fun updateViewHolderByDataSet(holder: ViewHolder, position: Int){
+        holder.petNameCheckBox.text = dataSet[position].name
+        petNameListAdapterInterface.updateCheckBoxByViewModel(holder.petNameCheckBox, position)
     }
 
-    fun addItem(item: PetNameListItem){
+    fun addItem(item: PetNameItem){
         dataSet.add(item)
     }
 
-    fun getItem(position: Int): PetNameListItem{
+    fun getItem(position: Int): PetNameItem {
         return dataSet[position]
     }
 }
