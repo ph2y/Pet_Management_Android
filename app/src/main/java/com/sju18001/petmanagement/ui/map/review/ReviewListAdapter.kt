@@ -22,10 +22,9 @@ interface ReviewListAdapterInterface {
 
 class ReviewListAdapter(
     private var dataSet: ArrayList<Review>,
-    private val context: Context
+    private val context: Context,
+    private val reviewListAdapterInterface: ReviewListAdapterInterface
 ): RecyclerView.Adapter<ReviewListAdapter.ViewHolder>() {
-    lateinit var reviewListAdapterInterface: ReviewListAdapterInterface
-
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
         val accountPhoto: ImageView = view.findViewById(R.id.circleimageview_review_accountphoto)
         val nicknameText: TextView = view.findViewById(R.id.text_nickname)

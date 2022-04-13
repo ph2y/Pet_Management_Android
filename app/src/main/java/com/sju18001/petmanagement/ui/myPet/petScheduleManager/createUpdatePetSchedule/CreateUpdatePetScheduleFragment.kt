@@ -37,7 +37,6 @@ class CreateUpdatePetScheduleFragment : Fragment() {
 
     private var isViewDestroyed = false
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -89,8 +88,7 @@ class CreateUpdatePetScheduleFragment : Fragment() {
         }
 
         // 리싸이클러뷰
-        adapter = PetNameListAdapter(arrayListOf())
-        adapter.petNameListAdapterInterface = object: PetNameListAdapterInterface {
+        adapter = PetNameListAdapter(arrayListOf(), object: PetNameListAdapterInterface {
             override fun setCheckBoxForViewModel(checkBox: CheckBox, position: Int){
                 myPetViewModel.isPetChecked?.let{
                     if(it.size >= position + 1){
@@ -110,7 +108,7 @@ class CreateUpdatePetScheduleFragment : Fragment() {
             override fun verifyAndEnableConfirmButton() {
                 this@CreateUpdatePetScheduleFragment.verifyAndEnableConfirmButton()
             }
-        }
+        })
 
         binding.petNameListRecyclerView.adapter = adapter
         binding.petNameListRecyclerView.layoutManager = LinearLayoutManager(activity)
@@ -154,7 +152,6 @@ class CreateUpdatePetScheduleFragment : Fragment() {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun loadState(myPetViewModel: MyPetViewModel){
         // Timepicker
         if(myPetViewModel.time != 0){
@@ -191,7 +188,6 @@ class CreateUpdatePetScheduleFragment : Fragment() {
         }, {}, {})
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun createPetSchedule(){
         lockViews()
 
@@ -209,7 +205,6 @@ class CreateUpdatePetScheduleFragment : Fragment() {
         })
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun updatePetSchedule(id: Long, enabled: Boolean){
         lockViews()
 

@@ -29,10 +29,9 @@ interface CommentListAdapterInterface{
 class CommentListAdapter(
     private var dataSet: ArrayList<Comment>,
     private var pageIndices: ArrayList<Int>,
-    private var topReplyIdList: ArrayList<Long?> // -1: 답글 없음, NULL: 답글 있으나 불러온 적 없음, N+: 답글 있으며 불러온 적 있음
+    private var topReplyIdList: ArrayList<Long?>, // -1: 답글 없음, NULL: 답글 있으나 불러온 적 없음, N+: 답글 있으며 불러온 적 있음
+    private val commentListAdapterInterface: CommentListAdapterInterface
     ) : RecyclerView.Adapter<CommentListAdapter.ViewHolder>()  {
-    lateinit var commentListAdapterInterface: CommentListAdapterInterface
-
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
         val layout: ConstraintLayout = view.findViewById(R.id.constraintlayout_comment)
         val accountPhoto: ImageView = view.findViewById(R.id.circleimageview_comment_accountphoto)

@@ -116,8 +116,7 @@ class CommentFragment : Fragment() {
     }
 
     private fun initializeAdapter(){
-        adapter = CommentListAdapter(arrayListOf(), arrayListOf(), arrayListOf())
-        adapter.commentListAdapterInterface = object: CommentListAdapterInterface{
+        adapter = CommentListAdapter(arrayListOf(), arrayListOf(), arrayListOf(), object: CommentListAdapterInterface{
             override fun getActivity(): Activity {
                 return requireActivity()
             }
@@ -179,7 +178,7 @@ class CommentFragment : Fragment() {
             override fun startPetProfile(author: Account) {
                 CommunityUtil.fetchRepresentativePetAndStartPetProfile(requireContext(), author, isViewDestroyed)
             }
-        }
+        })
 
         binding.recyclerViewComment?.let{
             it.adapter = adapter

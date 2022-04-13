@@ -148,10 +148,7 @@ class PostFragment : Fragment() {
      */
     private fun initializeAdapter(){
         // 빈 배열로 초기화
-        adapter = PostListAdapter(arrayListOf(), arrayListOf(), arrayListOf())
-
-        // 인터페이스 구현
-        adapter.postListAdapterInterface = object: PostListAdapterInterface {
+        adapter = PostListAdapter(arrayListOf(), arrayListOf(), arrayListOf(), object: PostListAdapterInterface {
             override fun startCommentActivity(postId: Long) {
                 val commentActivityIntent = Intent(context, CommentActivity::class.java)
                 commentActivityIntent.putExtra("postId", postId)
@@ -232,7 +229,7 @@ class PostFragment : Fragment() {
             override fun getContext(): Context {
                 return requireContext()
             }
-        }
+        })
 
         // 리싸이클러뷰 초기화
         binding.recyclerViewPost?.let{

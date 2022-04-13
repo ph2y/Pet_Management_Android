@@ -22,8 +22,11 @@ interface PetScheduleListAdapterInterface{
     fun getContext(): Context
 }
 
-class PetScheduleListAdapter(private var dataSet: ArrayList<PetSchedule>, private val petNameForId: HashMap<Long, String>) : RecyclerView.Adapter<PetScheduleListAdapter.ViewHolder>(){
-    lateinit var petScheduleListAdapterInterface: PetScheduleListAdapterInterface
+class PetScheduleListAdapter(
+    private var dataSet: ArrayList<PetSchedule>,
+    private val petNameForId: HashMap<Long, String>,
+    private var petScheduleListAdapterInterface: PetScheduleListAdapterInterface
+    ) : RecyclerView.Adapter<PetScheduleListAdapter.ViewHolder>(){
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
         val noonTextView: TextView = view.findViewById(R.id.noon_text_view)
@@ -46,7 +49,6 @@ class PetScheduleListAdapter(private var dataSet: ArrayList<PetSchedule>, privat
         return holder
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         updateViewHolderByDataSet(holder, dataSet[position])
     }
@@ -92,7 +94,6 @@ class PetScheduleListAdapter(private var dataSet: ArrayList<PetSchedule>, privat
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun updateViewHolderByDataSet(holder: ViewHolder, data: PetSchedule){
         val localTime = LocalTime.parse(data.time)
         holder.noonTextView.text = if(localTime.hour <= 12) "오전" else "오후"
