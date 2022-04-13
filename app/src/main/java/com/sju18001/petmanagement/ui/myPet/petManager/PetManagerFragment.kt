@@ -217,11 +217,11 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
     private fun savePetPhotoByteArrayToSharedPreferences(holder: PetManagerAdapter.HistoryListViewHolder, currentItem: Pet) {
         if(currentItem.photoUrl != null) {
             val photoByteArray = Util.getByteArrayFromDrawable(holder.petPhoto.drawable)
-            Util.saveByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
+            Util.putByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
                 requireContext().getString(R.string.data_name_my_pet_selected_pet_photo), photoByteArray)
         }
         else {
-            Util.saveByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
+            Util.putByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
                 requireContext().getString(R.string.data_name_my_pet_selected_pet_photo), null)
         }
     }

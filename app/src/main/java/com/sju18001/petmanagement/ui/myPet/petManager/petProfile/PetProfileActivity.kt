@@ -524,7 +524,6 @@ class PetProfileActivity : AppCompatActivity(){
         intent.putExtra("petBreed", viewModel.petBreed.value)
         intent.putExtra("yearOnly", viewModel.yearOnly.value)
         intent.putExtra("petBirth", viewModel.petBirth.value)
-        intent.putExtra("originalPetPhotoSize", viewModel.petPhotoByteArray.value?.size)
 
         return intent
     }

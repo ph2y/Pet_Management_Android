@@ -9,6 +9,9 @@ class CreateUpdatePetViewModel : ViewModel() {
 
     var isApiLoading = MutableLiveData(false)
 
+    // 사진이 있었다가 제거된 경우, 또는 사진을 업로드한 경우 true
+    var hasPetPhotoChanged = false
+
     var petId = -1L
     var petPhotoByteArray = MutableLiveData<ByteArray>(null)
     var petPhotoPath = MutableLiveData("")
