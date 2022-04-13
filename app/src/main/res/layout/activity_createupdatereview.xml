@@ -33,7 +33,7 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
-                android:onClick="@{() -> activity.onBackButtonClicked()}"
+                android:onClick="@{() -> activity.onClickBackButton()}"
                 android:enabled="@{!viewModel.isApiLoading}"
                 android:src="@drawable/ic_baseline_arrow_back_36"
                 android:background="?selectableItemBackgroundBorderless"/>
@@ -69,35 +69,35 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@{util.getDrawableOfStarImage(viewModel.rating, 0, activity.baseContext)}"
-                    android:onClick="@{() -> activity.onStarImageClicked(0)}"
+                    android:onClick="@{() -> activity.onClickStarImage(0)}"
                     android:clickable="@{!viewModel.isApiLoading}"
                     />
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@{util.getDrawableOfStarImage(viewModel.rating, 1, activity.baseContext)}"
-                    android:onClick="@{() -> activity.onStarImageClicked(1)}"
+                    android:onClick="@{() -> activity.onClickStarImage(1)}"
                     android:clickable="@{!viewModel.isApiLoading}"
                     />
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@{util.getDrawableOfStarImage(viewModel.rating, 2, activity.baseContext)}"
-                    android:onClick="@{() -> activity.onStarImageClicked(2)}"
+                    android:onClick="@{() -> activity.onClickStarImage(2)}"
                     android:clickable="@{!viewModel.isApiLoading}"
                     />
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@{util.getDrawableOfStarImage(viewModel.rating, 3, activity.baseContext)}"
-                    android:onClick="@{() -> activity.onStarImageClicked(3)}"
+                    android:onClick="@{() -> activity.onClickStarImage(3)}"
                     android:clickable="@{!viewModel.isApiLoading}"
                     />
                 <ImageView
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:src="@{util.getDrawableOfStarImage(viewModel.rating, 4, activity.baseContext)}"
-                    android:onClick="@{() -> activity.onStarImageClicked(4)}"
+                    android:onClick="@{() -> activity.onClickStarImage(4)}"
                     android:clickable="@{!viewModel.isApiLoading}"
                     />
             </LinearLayout>
@@ -153,7 +153,7 @@
                 android:enabled="@{(!viewModel.isApiLoading &amp;&amp; (viewModel.rating != 0 &amp;&amp; viewModel.contents.length() != 0)) ? true : false}"
                 android:insetTop="0dp"
                 android:insetBottom="0dp"
-                android:onClick="@{() -> activity.onConfirmButtonClicked()}"
+                android:onClick="@{() -> activity.onClickConfirmButton()}"
                 android:text="@string/complete"
                 android:textSize="18sp"
                 app:cornerRadius="0dp" />

@@ -419,11 +419,11 @@ class ReviewFragment : Fragment() {
     /**
      * Databinding functions
      */
-    fun onBackButtonClicked() {
+    fun onClickBackButton() {
         activity?.finish()
     }
 
-    fun onCreateReviewFabClicked() {
+    fun onClickCreateReviewFab() {
         startCreateReviewActivity()
     }
 }

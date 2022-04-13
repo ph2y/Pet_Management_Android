@@ -38,7 +38,7 @@
                 android:layout_centerVertical="true"
                 android:background="?selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_baseline_arrow_back_36"
-                android:onClick="@{() -> fragment.onBackButtonClicked()}"/>
+                android:onClick="@{() -> fragment.onClickBackButton()}"/>
 
             <TextView
                 android:id="@+id/text_back_title"
@@ -170,7 +170,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/ic_baseline_create_24"
             android:layout_margin="16dp"
-            android:onClick="@{() -> fragment.onCreateReviewFabClicked()}"
+            android:onClick="@{() -> fragment.onClickCreateReviewFab()}"
             android:visibility="@{viewModel.myReviewId == -1? View.VISIBLE : View.GONE}"
             app:layout_constraintBottom_toTopOf="@id/ad_view"
             app:layout_constraintEnd_toEndOf="parent"
