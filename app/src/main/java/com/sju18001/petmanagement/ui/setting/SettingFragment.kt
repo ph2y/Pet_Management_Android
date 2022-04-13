@@ -70,11 +70,11 @@ class SettingFragment : Fragment() {
             accountLookupIntent.putExtra("mapSearchRadius", accountData.mapSearchRadius)
 
             if(accountData.photoUrl != null) {
-                Util.saveByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
+                Util.putByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
                     requireContext().getString(R.string.data_name_setting_selected_account_photo), settingViewModel.accountPhotoProfileByteArray)
             }
             else {
-                Util.saveByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
+                Util.putByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
                     requireContext().getString(R.string.data_name_setting_selected_account_photo), null)
             }
 

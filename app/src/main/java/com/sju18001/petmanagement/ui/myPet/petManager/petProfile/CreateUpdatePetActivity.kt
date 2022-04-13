@@ -239,6 +239,8 @@ class CreateUpdatePetActivity : AppCompatActivity() {
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
             startActivityForResult(Intent.createChooser(intent, "사진 선택"), PICK_PHOTO)
+
+            viewModel.hasPetPhotoChanged = true
         }
 
         dialog.findViewById<Button>(R.id.use_default_image).setOnClickListener {
@@ -246,6 +248,9 @@ class CreateUpdatePetActivity : AppCompatActivity() {
 
             // 기존에 파일이 있었다면 삭제
             if (viewModel.petPhotoPath.value != "") File(viewModel.petPhotoPath.value).delete()
+
+            // 기존 PetPhoto있는 상태에서 사진을 삭제한 경우
+            if (viewModel.petPhotoByteArray.value != null) viewModel.hasPetPhotoChanged = true
 
             viewModel.petPhotoRotation.value = 0f
             viewModel.petPhotoByteArray.value = null
@@ -314,17 +319,13 @@ class CreateUpdatePetActivity : AppCompatActivity() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
             .updatePetReq(updatePetReqDto)
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, baseContext, {
-            if(hasPetPhotoChanged()){
+            if(viewModel.hasPetPhotoChanged){
                 if(viewModel.petPhotoPath.value != "") updatePetPhotoAndFinish(viewModel.petId, viewModel.petPhotoPath.value!!)
                 else deletePetPhotoAndFinish(viewModel.petId)
             }else{
                 showToastAndFinishAfterCreateUpdatePet()
             }
         }, { viewModel.isApiLoading.value = false }, { viewModel.isApiLoading.value = false })
-    }
-
-    private fun hasPetPhotoChanged(): Boolean {
-        return intent.getIntExtra("originalPetPhotoSize", 0) != viewModel.petPhotoByteArray.value?.size?:0
     }
 
     private fun updatePetPhotoAndFinish(id: Long, path: String) {
@@ -376,12 +377,12 @@ class CreateUpdatePetActivity : AppCompatActivity() {
         // 사진이 기본 이미지일 때 예외 처리
         try{
             val photoByteArray = Util.getByteArrayFromDrawable(binding.petPhotoInput.drawable)
-            Util.saveByteArrayToSharedPreferences(
+            Util.putByteArrayToSharedPreferences(
                 baseContext, baseContext.getString(R.string.pref_name_byte_arrays),
                 baseContext.getString(R.string.data_name_my_pet_selected_pet_photo), photoByteArray
             )
         }catch(e: Exception){
-            Util.saveByteArrayToSharedPreferences(
+            Util.putByteArrayToSharedPreferences(
                 baseContext, baseContext.getString(R.string.pref_name_byte_arrays),
                 baseContext.getString(R.string.data_name_my_pet_selected_pet_photo), null
             )

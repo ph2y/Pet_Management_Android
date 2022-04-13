@@ -271,7 +271,7 @@ class Util {
             return result
         }
 
-        fun saveByteArrayToSharedPreferences(context: Context, prefName: String, dataName: String, data: ByteArray?) {
+        fun putByteArrayToSharedPreferences(context: Context, prefName: String, dataName: String, data: ByteArray?) {
             val preferences: SharedPreferences = context.getSharedPreferences(prefName, Context.MODE_PRIVATE)
 
             if (data == null) {
@@ -579,6 +579,10 @@ class Util {
 
         fun getByteArrayFromDrawable(drawable: Drawable): ByteArray {
             val bitmap = (drawable as BitmapDrawable).bitmap
+            return getByteArrayFromBitmap(bitmap)
+        }
+
+        fun getByteArrayFromBitmap(bitmap: Bitmap): ByteArray {
             val stream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, stream)
 
