@@ -43,7 +43,6 @@ class FollowerAdapter(val context: Context, private val buttonInterface: FollowU
         return holder
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(holder: FollowerAdapter.HistoryListViewHolder, position: Int) {
         // set account photo
         if(resultList[position].getHasPhoto()) {
