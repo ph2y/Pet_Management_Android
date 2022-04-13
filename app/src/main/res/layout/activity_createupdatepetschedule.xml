@@ -180,7 +180,7 @@
                 android:insetBottom="0dp"
                 android:text="@string/complete"
                 android:textSize="18sp"
-                android:enabled="@{!viewModel.isApiLoading &amp;&amp; viewModel.checkedBoxCount > 0}"
+                android:enabled="@{!viewModel.isApiLoading &amp;&amp; viewModel.checkedPetCount > 0}"
                 android:onClick="@{() -> activity.onClickConfirmButton()}"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

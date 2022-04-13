@@ -34,12 +34,6 @@ class MyPetViewModel(private val handle: SavedStateHandle) : ViewModel() {
             field = value
         }
 
-    var isPetChecked = handle.get<Array<Boolean>>("isPetChecked")?: null
-        set(value){
-            handle.set("isPetChecked", value)
-            field = value
-        }
-
     var memo = handle.get<String>("memo")?: ""
         set(value){
             handle.set("memo", value)
