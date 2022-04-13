@@ -1,5 +1,6 @@
 package com.sju18001.petmanagement.ui.myPet.petManager
 
+import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
@@ -10,6 +11,8 @@ import android.util.Log
 import android.view.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.app.ActivityOptionsCompat
+import androidx.core.util.Pair
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.*
@@ -162,8 +165,9 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
 
                     savePetPhotoByteArrayToSharedPreferences(holder, currentItem)
 
-                    startForResult.launch(makePetProfileIntent(currentItem))
-                    requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
+                    val intent = makePetProfileIntent(currentItem)
+                    val options = ActivityOptionsCompat.makeSceneTransitionAnimation(requireActivity(), holder.petPhoto, "petPhoto")
+                    startForResult.launch(intent, options)
                 }
             }
         })

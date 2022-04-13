@@ -337,9 +337,11 @@ class PostFragment : Fragment() {
     }
 
     private fun setEmptyNotificationView(itemCount: Int?) {
-        binding.emptyPostListNotification.visibility =
-            if(itemCount != 0) View.GONE
-            else View.VISIBLE
+        binding.emptyPostListNotification.post {
+            binding.emptyPostListNotification.visibility =
+                if(itemCount != 0) View.GONE
+                else View.VISIBLE
+        }
     }
 
 

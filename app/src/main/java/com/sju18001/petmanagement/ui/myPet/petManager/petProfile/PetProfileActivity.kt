@@ -434,6 +434,20 @@ class PetProfileActivity : AppCompatActivity(){
         isViewDestroyed = true
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+        finishByActivityType()
+    }
+
+    private fun finishByActivityType() {
+        if(viewModel.isActivityTypePetProfile()) finishAfterTransition()
+        else{
+            overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
+            finish()
+        }
+    }
+
+
     override fun finish() {
         if(viewModel.hasPetUpdated.value == true) {
             val intent = Intent()
@@ -442,7 +456,6 @@ class PetProfileActivity : AppCompatActivity(){
         }
 
         super.finish()
-        overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
     }
 
 
@@ -546,7 +559,7 @@ class PetProfileActivity : AppCompatActivity(){
 
 
     fun onClickBackButton() {
-        finish()
+        finishByActivityType()
     }
 
 
