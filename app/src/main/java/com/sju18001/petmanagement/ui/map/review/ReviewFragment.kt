@@ -163,10 +163,7 @@ class ReviewFragment : Fragment() {
      */
     private fun initializeAdapter() {
         // 빈 배열로 초기화
-        adapter = ReviewListAdapter(arrayListOf(), requireContext())
-
-        // 인터페이스 구현
-        adapter.reviewListAdapterInterface = object: ReviewListAdapterInterface {
+        adapter = ReviewListAdapter(arrayListOf(), requireContext(), object: ReviewListAdapterInterface {
             override fun setAccountPhoto(id: Long, holder: ReviewListAdapter.ViewHolder) {
                 val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
                     .fetchAccountPhotoReq(FetchAccountPhotoReqDto(id))
@@ -194,7 +191,7 @@ class ReviewFragment : Fragment() {
             override fun startPetProfile(author: Account) {
                 CommunityUtil.fetchRepresentativePetAndStartPetProfile(requireContext(), author, isViewDestroyed)
             }
-        }
+        })
 
         binding.recyclerViewReview?.let{
             it.adapter = adapter

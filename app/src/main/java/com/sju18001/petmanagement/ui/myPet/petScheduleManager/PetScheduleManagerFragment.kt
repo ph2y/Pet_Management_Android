@@ -39,7 +39,6 @@ class PetScheduleManagerFragment : Fragment() {
 
     private var isViewDestroyed = false
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -84,9 +83,7 @@ class PetScheduleManagerFragment : Fragment() {
     }
 
     private fun initializeAdapter(){
-        adapter = PetScheduleListAdapter(arrayListOf(), myPetViewModel.petNameForId)
-        adapter.petScheduleListAdapterInterface = object: PetScheduleListAdapterInterface {
-            @RequiresApi(Build.VERSION_CODES.O)
+        adapter = PetScheduleListAdapter(arrayListOf(), myPetViewModel.petNameForId, object: PetScheduleListAdapterInterface {
             override fun startCreateUpdatePetScheduleFragmentForUpdate(data: PetSchedule) {
                 val createUpdatePetScheduleActivityIntent = Intent(context, CreateUpdatePetScheduleActivity::class.java)
                 createUpdatePetScheduleActivityIntent
@@ -131,7 +128,6 @@ class PetScheduleManagerFragment : Fragment() {
                 ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {}, {}, {})
             }
 
-            @RequiresApi(Build.VERSION_CODES.O)
             override fun updatePetSchedule(data: PetSchedule){
                 val updatePetScheduleReqDto = UpdatePetScheduleReqDto(
                     data.id, data.petIdList, data.time, data.memo, data.enabled
@@ -144,7 +140,7 @@ class PetScheduleManagerFragment : Fragment() {
             override fun getContext(): Context {
                 return requireContext()
             }
-        }
+        })
 
         binding.petScheduleListRecyclerView.adapter = adapter
         binding.petScheduleListRecyclerView.layoutManager = LinearLayoutManager(activity)

@@ -27,9 +27,12 @@ interface PostListAdapterInterface {
     fun getContext(): Context
 }
 
-class PostListAdapter(private var dataSet: ArrayList<Post>, private var likedCounts: ArrayList<Long>, private var isPostLiked: ArrayList<Boolean>) : RecyclerView.Adapter<PostListAdapter.ViewHolder>() {
-    lateinit var postListAdapterInterface: PostListAdapterInterface
-
+class PostListAdapter(
+    private var dataSet: ArrayList<Post>,
+    private var likedCounts: ArrayList<Long>,
+    private var isPostLiked: ArrayList<Boolean>,
+    private val postListAdapterInterface: PostListAdapterInterface
+    ) : RecyclerView.Adapter<PostListAdapter.ViewHolder>() {
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
         val accountPhotoImage: ImageView = view.findViewById(R.id.account_photo)
         val nicknameTextView: TextView = view.findViewById(R.id.nickname)

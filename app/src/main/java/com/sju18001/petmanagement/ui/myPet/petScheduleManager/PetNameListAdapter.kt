@@ -15,9 +15,10 @@ interface PetNameListAdapterInterface{
     fun verifyAndEnableConfirmButton()
 }
 
-class PetNameListAdapter(private val dataSet: ArrayList<PetNameListItem>) : RecyclerView.Adapter<PetNameListAdapter.ViewHolder>(){
-    lateinit var petNameListAdapterInterface: PetNameListAdapterInterface
-
+class PetNameListAdapter(
+    private val dataSet: ArrayList<PetNameListItem>,
+    private val petNameListAdapterInterface: PetNameListAdapterInterface
+    ) : RecyclerView.Adapter<PetNameListAdapter.ViewHolder>(){
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
         val petNameCheckBox: CheckBox = view.findViewById(R.id.pet_name_check_box)
     }
@@ -35,7 +36,6 @@ class PetNameListAdapter(private val dataSet: ArrayList<PetNameListItem>) : Recy
         return holder
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         updateViewHolderByDataSet(holder, dataSet[position])
 
@@ -52,7 +52,6 @@ class PetNameListAdapter(private val dataSet: ArrayList<PetNameListItem>) : Recy
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
     private fun updateViewHolderByDataSet(holder: ViewHolder, data: PetNameListItem){
         holder.petNameCheckBox.text = data.name
     }
