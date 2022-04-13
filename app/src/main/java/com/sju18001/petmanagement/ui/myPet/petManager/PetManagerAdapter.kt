@@ -45,25 +45,25 @@ class PetManagerAdapter(
     private var clickable: Boolean = true
 
     class HistoryListViewHolder(itemView: View): RecyclerView.ViewHolder(itemView) {
-        val petPhoto: ImageView = itemView.findViewById(R.id.circleimageview_petmanager_petphoto)
-        val representativeIcon: ImageView = itemView.findViewById(R.id.imageview_petmanager_representativeicon)
-        val petName: TextView = itemView.findViewById(R.id.textview_petmanager_petname)
-        val petBreed: TextView = itemView.findViewById(R.id.textview_petmanager_petbreed)
-        val petAge: TextView = itemView.findViewById(R.id.textview_petmanager_petage)
-        val petBirthLayout: LinearLayout = itemView.findViewById(R.id.linearlayout_petmanager_petbirth)
-        val petBirth: TextView = itemView.findViewById(R.id.textview_petmanager_petbirth)
-        val petGender: TextView = itemView.findViewById(R.id.textview_petmanager_petgender)
-        val petMessage: TextView = itemView.findViewById(R.id.textview_petmanager_petmessage)
+        val petPhoto: ImageView = itemView.findViewById(R.id.circleimageview_petphoto)
+        val representativeIcon: ImageView = itemView.findViewById(R.id.imageview_representativeicon)
+        val petName: TextView = itemView.findViewById(R.id.textview_petname)
+        val petBreed: TextView = itemView.findViewById(R.id.textview_petbreed)
+        val petAge: TextView = itemView.findViewById(R.id.textview_petage)
+        val petBirthLayout: LinearLayout = itemView.findViewById(R.id.linearlayout_petbirth)
+        val petBirth: TextView = itemView.findViewById(R.id.textview_petbirth)
+        val petGender: TextView = itemView.findViewById(R.id.textview_petgender)
+        val petMessage: TextView = itemView.findViewById(R.id.textview_petmessage)
     }
 
     class CreatePetButtonViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val iconImageView: ImageView = view.findViewById(R.id.imageview_createpetbutton_icon)
+        val iconImageView: ImageView = view.findViewById(R.id.imageview_icon)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return when(viewType){
-            R.layout.item_petmanager -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_petmanager, parent, false)
+            R.layout.item_pet_petmanager -> {
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_pet_petmanager, parent, false)
 
                 val holder = HistoryListViewHolder(view)
                 setListenerOnView(holder)
@@ -71,7 +71,7 @@ class PetManagerAdapter(
                 holder
             }
             else -> {
-                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_createpetbutton, parent, false)
+                val view = LayoutInflater.from(parent.context).inflate(R.layout.item_createpetbutton_petmanager, parent, false)
 
                 val holder = CreatePetButtonViewHolder(view)
                 setListenerOnView(holder)
@@ -104,7 +104,7 @@ class PetManagerAdapter(
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         when(getItemViewType(position)){
-            R.layout.item_petmanager -> {
+            R.layout.item_pet_petmanager -> {
                 holder as HistoryListViewHolder
 
                 val currentItem = dataSet[position]
@@ -164,9 +164,9 @@ class PetManagerAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return if(position == dataSet.size) {
-            R.layout.item_createpetbutton
+            R.layout.item_createpetbutton_petmanager
         } else {
-            R.layout.item_petmanager
+            R.layout.item_pet_petmanager
         }
     }
 

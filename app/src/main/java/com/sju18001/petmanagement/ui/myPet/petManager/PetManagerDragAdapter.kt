@@ -71,8 +71,8 @@ class PetManagerDragAdapter(
         current: RecyclerView.ViewHolder,
         target: RecyclerView.ViewHolder
     ): Boolean {
-        return if(current.itemViewType == R.layout.item_createpetbutton ||
-            target.itemViewType == R.layout.item_createpetbutton) false
+        return if(current.itemViewType == R.layout.item_createpetbutton_petmanager ||
+            target.itemViewType == R.layout.item_createpetbutton_petmanager) false
         else super.canDropOver(recyclerView, current, target)
     }
 

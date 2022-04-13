@@ -1,6 +1,5 @@
 package com.sju18001.petmanagement.ui.myPet.petManager.petProfile
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.content.Intent
 import android.content.res.Configuration
@@ -8,11 +7,8 @@ import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
-import android.util.Log
-import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
-import android.view.ViewGroup
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -22,8 +18,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sju18001.petmanagement.R
@@ -31,7 +25,7 @@ import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
-import com.sju18001.petmanagement.databinding.ActivityPetProfileBinding
+import com.sju18001.petmanagement.databinding.ActivityPetprofileBinding
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.*
@@ -54,7 +48,7 @@ class PetProfileActivity : AppCompatActivity(){
         PET_PROFILE, COMMUNITY
     }
 
-    private lateinit var binding: ActivityPetProfileBinding
+    private lateinit var binding: ActivityPetprofileBinding
 
     private val viewModel: PetProfileViewModel by viewModels()
     private var isViewDestroyed = false
@@ -114,7 +108,7 @@ class PetProfileActivity : AppCompatActivity(){
     }
 
     private fun setBinding() {
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_pet_profile)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_petprofile)
 
         binding.lifecycleOwner = this
         binding.activity = this@PetProfileActivity
@@ -149,7 +143,7 @@ class PetProfileActivity : AppCompatActivity(){
         // 현재 펫 프로필 페이지가 내 계정의 것일 경우: 팔로우 기능 없음
         if (viewModel.accountId == SessionManager.fetchLoggedInAccount(baseContext)!!.id) return
 
-        binding.followUnfollowButton.visibility = View.VISIBLE
+        binding.buttonFollowunfollow.visibility = View.VISIBLE
         viewModel.isApiLoading.value = true
 
         // 해당 계정을 내가 팔로잉하는지 체크 -> isFollowing 초기화
@@ -237,26 +231,26 @@ class PetProfileActivity : AppCompatActivity(){
         viewModel.petPhotoByteArray.observe(this, { byteArray ->
             if(byteArray != null) {
                 val bitmap = Util.getBitmapFromByteArray(viewModel.petPhotoByteArray.value!!)
-                Glide.with(baseContext).load(bitmap).into(binding.circleimageviewPetprofilePetphoto)
-                binding.circleimageviewPetprofilePetphoto.rotation = viewModel.petPhotoRotation.value!!
+                Glide.with(baseContext).load(bitmap).into(binding.circleimageviewPetphoto)
+                binding.circleimageviewPetphoto.rotation = viewModel.petPhotoRotation.value!!
             }
             else {
-                binding.circleimageviewPetprofilePetphoto.setImageDrawable(getDrawable(R.drawable.ic_baseline_pets_60_with_padding))
+                binding.circleimageviewPetphoto.setImageDrawable(getDrawable(R.drawable.ic_baseline_pets_60_with_padding))
             }
         })
 
         viewModel.accountPhotoByteArray.observe(this, { byteArray ->
             if(byteArray != null) {
                 val bitmap = Util.getBitmapFromByteArray(viewModel.accountPhotoByteArray.value!!)
-                binding.accountPhoto.setImageBitmap(bitmap)
+                binding.circleimageviewAccountphoto.setImageBitmap(bitmap)
             }
             else {
-                binding.accountPhoto.setImageDrawable(getDrawable(R.drawable.ic_baseline_account_circle_24))
+                binding.circleimageviewAccountphoto.setImageDrawable(getDrawable(R.drawable.ic_baseline_account_circle_24))
             }
         })
 
         viewModel.petBirth.observe(this, {
-            binding.textviewPetprofilePetbirth.text =
+            binding.textviewPetbirth.text =
                 if(viewModel.yearOnly.value == true) viewModel.petBirth.value!!.substring(0, 4) + "년생"
                 else viewModel.petBirth.value!!.substring(2).replace('-', '.')
         })
@@ -268,12 +262,12 @@ class PetProfileActivity : AppCompatActivity(){
 
         // pet_info_layout 애니메이션
         TransitionManager.beginDelayedTransition(
-            binding.constraintlayoutPetprofilePetinfo,
+            binding.constraintlayoutPetinfo,
             AutoTransition().setDuration(TRANSITION_DURATION).setInterpolator(AccelerateDecelerateInterpolator())
         )
         ConstraintSet().apply{
             clone(baseContext, R.layout.layout_petprofiledetailedpetinfo)
-        }.applyTo(binding.constraintlayoutPetprofilePetinfo)
+        }.applyTo(binding.constraintlayoutPetinfo)
 
         // ConstraintSet이 적용되는 내부 뷰는 Databinding이 적용되지 않으므로 따로 처리를 해줍니다.
         setViewsByViewModel()
@@ -284,25 +278,25 @@ class PetProfileActivity : AppCompatActivity(){
     }
 
     private fun setViewsByViewModel() {
-        binding.imageviewPetprofileRepresentativeicon.visibility =
+        binding.imageviewRepresentativeicon.visibility =
             if (viewModel.isPetRepresentative.value == true) { View.VISIBLE } else { View.INVISIBLE }
 
         if (viewModel.isActivityTypePetProfile()) {
-            binding.constraintlayoutPetprofilePetinfo.setBackgroundResource(R.drawable.pet_info_layout_background)
+            binding.constraintlayoutPetinfo.setBackgroundResource(R.drawable.pet_info_layout_background)
         }else{
-            binding.constraintlayoutPetprofilePetinfo.setBackgroundResource(0)
+            binding.constraintlayoutPetinfo.setBackgroundResource(0)
         }
     }
 
     private fun setViewsNotDetailed() {
         // pet_info_layout 애니메이션
         TransitionManager.beginDelayedTransition(
-            binding.constraintlayoutPetprofilePetinfo,
+            binding.constraintlayoutPetinfo,
             ChangeBounds().setDuration(TRANSITION_DURATION).setInterpolator(AccelerateDecelerateInterpolator())
         )
         ConstraintSet().apply{
             clone(baseContext, R.layout.layout_petprofilepetinfo)
-        }.applyTo(binding.constraintlayoutPetprofilePetinfo)
+        }.applyTo(binding.constraintlayoutPetinfo)
 
         // ConstraintSet이 적용되는 내부 뷰는 Databinding이 적용되지 않으므로 따로 처리를 해줍니다.
         setViewsByViewModel()
@@ -320,16 +314,16 @@ class PetProfileActivity : AppCompatActivity(){
         val fragment = PostFragment.newInstance(viewModel.petId)
         supportFragmentManager
             .beginTransaction()
-            .add(R.id.post_fragment_container, fragment, POST_FRAGMENT_TAG)
+            .add(R.id.framelayout_postfragment, fragment, POST_FRAGMENT_TAG)
             .commit()
 
-        binding.postFragmentContainer.post{
+        binding.framelayoutPostfragment.post{
             addListenerOnRecyclerView()
         }
     }
 
     private fun addListenerOnRecyclerView(){
-        val recyclerView = binding.postFragmentContainer.findViewById<RecyclerView>(R.id.recycler_view_post)
+        val recyclerView = binding.framelayoutPostfragment.findViewById<RecyclerView>(R.id.recycler_view_post)
 
         // 터치를 시작할 때의 좌표를 기록함
         var x = 0f
@@ -380,7 +374,7 @@ class PetProfileActivity : AppCompatActivity(){
                 initializeSpinner(petList)
 
                 // 현재 페이지에 해당하는 펫을 선택합니다.
-                binding.petNameSpinner.setSelection(
+                binding.appcompatspinnerPet.setSelection(
                     petList.indexOfFirst { it.id == viewModel.petId }
                 )
             }
@@ -395,8 +389,8 @@ class PetProfileActivity : AppCompatActivity(){
             else { spinnerArray.add(it.name) }
         }
 
-        binding.petNameSpinner.adapter = ArrayAdapter(baseContext, R.layout.pet_name_spinner_item, spinnerArray)
-        binding.petNameSpinner.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
+        binding.appcompatspinnerPet.adapter = ArrayAdapter(baseContext, R.layout.pet_name_spinner_item, spinnerArray)
+        binding.appcompatspinnerPet.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 updatePetDataOfViewModel(petList[position])
                 replacePostFragment()

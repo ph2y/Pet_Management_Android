@@ -1,24 +1,15 @@
 package com.sju18001.petmanagement.ui.myPet.petManager.petProfile
 
-import android.app.Activity
 import android.app.AlertDialog
 import android.app.Dialog
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
-import android.os.Build
 import android.os.Bundle
-import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.view.Window
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
-import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.bumptech.glide.Glide
@@ -29,17 +20,13 @@ import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
-import com.sju18001.petmanagement.databinding.ActivityCreateUpdatePetBinding
+import com.sju18001.petmanagement.databinding.ActivityCreateupdatepetBinding
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.restapi.global.FileType
 import com.sju18001.petmanagement.ui.myPet.petManager.PetManagerFragment
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import java.io.ByteArrayOutputStream
 import java.io.File
 import java.time.LocalDate
 import java.util.*
@@ -61,7 +48,7 @@ class CreateUpdatePetActivity : AppCompatActivity() {
         CREATE_PET, UPDATE_PET
     }
 
-    private lateinit var binding: ActivityCreateUpdatePetBinding
+    private lateinit var binding: ActivityCreateupdatepetBinding
 
     private val viewModel: CreateUpdatePetViewModel by viewModels()
     private var isViewDestroyed = false
@@ -85,7 +72,7 @@ class CreateUpdatePetActivity : AppCompatActivity() {
     }
 
     private fun setBinding() {
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_create_update_pet)
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_createupdatepet)
 
         binding.lifecycleOwner = this
         binding.activity = this@CreateUpdatePetActivity
@@ -122,31 +109,31 @@ class CreateUpdatePetActivity : AppCompatActivity() {
         viewModel.petPhotoPath.observe(this, {
             if(!it.isNullOrEmpty()){
                 val bitmap = BitmapFactory.decodeFile(it)
-                Glide.with(baseContext).load(bitmap).into(binding.petPhotoInput)
+                Glide.with(baseContext).load(bitmap).into(binding.circleimageviewPetphoto)
             }else{
                 val drawable = getDrawable(R.drawable.ic_baseline_pets_60_with_padding)
-                binding.petPhotoInput.setImageDrawable(drawable)
+                binding.circleimageviewPetphoto.setImageDrawable(drawable)
             }
         })
 
         viewModel.petPhotoByteArray.observe(this, {
             if(it != null){
                 val bitmap = Util.getBitmapFromByteArray(it)
-                Glide.with(baseContext).load(bitmap).into(binding.petPhotoInput)
+                Glide.with(baseContext).load(bitmap).into(binding.circleimageviewPetphoto)
             }else{
                 val drawable = getDrawable(R.drawable.ic_baseline_pets_60_with_padding)
-                binding.petPhotoInput.setImageDrawable(drawable)
+                binding.circleimageviewPetphoto.setImageDrawable(drawable)
             }
         })
 
         // 해당 property에 databinding이 적용되지 않는 문제가 있어 옵저버로 대체하였음
         viewModel.isApiLoading.observe(this, {
             if(it){
-                binding.petPhotoInput.borderColor = resources.getColor(R.color.gray)
-                binding.petPhotoInputButton.circleBackgroundColor = resources.getColor(R.color.gray)
+                binding.circleimageviewPetphoto.borderColor = resources.getColor(R.color.gray)
+                binding.circleimageviewPetphotoinputbutton.circleBackgroundColor = resources.getColor(R.color.gray)
             }else{
-                binding.petPhotoInput.borderColor = resources.getColor(R.color.carrot)
-                binding.petPhotoInputButton.circleBackgroundColor = resources.getColor(R.color.pumpkin)
+                binding.circleimageviewPetphoto.borderColor = resources.getColor(R.color.carrot)
+                binding.circleimageviewPetphotoinputbutton.circleBackgroundColor = resources.getColor(R.color.pumpkin)
             }
         })
     }
@@ -154,7 +141,7 @@ class CreateUpdatePetActivity : AppCompatActivity() {
 
     override fun onStart() {
         super.onStart()
-        Util.setupViewsForHideKeyboard(this, binding.activityCreateUpdatePetParentLayout)
+        Util.setupViewsForHideKeyboard(this, binding.relativelayoutParentlayout)
     }
 
 
@@ -274,13 +261,13 @@ class CreateUpdatePetActivity : AppCompatActivity() {
     private fun createPet() {
         trimViewModelOfInputText()
         val createPetRequestDto = CreatePetReqDto(
-            binding.petNameInput.text.toString(),
-            binding.petSpeciesInput.text.toString(),
-            binding.petBreedInput.text.toString(),
-            FormattedDate(binding.petBirthInput.year, binding.petBirthInput.month, binding.petBirthInput.dayOfMonth).getFormattedString(),
-            binding.yearOnlyCheckbox.isChecked,
-            binding.genderFemale.isChecked,
-            binding.petMessageInput.text.toString()
+            binding.edittextPetname.text.toString(),
+            binding.edittextPetspecies.text.toString(),
+            binding.edittextPetbreed.text.toString(),
+            FormattedDate(binding.datepickerPetbirth.year, binding.datepickerPetbirth.month, binding.datepickerPetbirth.dayOfMonth).getFormattedString(),
+            binding.checkboxYearonly.isChecked,
+            binding.radiobuttonFemale.isChecked,
+            binding.edittextPetmessage.text.toString()
         )
 
         viewModel.isApiLoading.value = true
@@ -305,14 +292,14 @@ class CreateUpdatePetActivity : AppCompatActivity() {
         trimViewModelOfInputText()
         val updatePetReqDto = UpdatePetReqDto(
             viewModel.petId!!,
-            binding.petNameInput.text.toString(),
-            binding.petSpeciesInput.text.toString(),
-            binding.petBreedInput.text.toString(),
-            FormattedDate(binding.petBirthInput.year, binding.petBirthInput.month+1, binding.petBirthInput.dayOfMonth)
+            binding.edittextPetname.text.toString(),
+            binding.edittextPetspecies.text.toString(),
+            binding.edittextPetbreed.text.toString(),
+            FormattedDate(binding.datepickerPetbirth.year, binding.datepickerPetbirth.month+1, binding.datepickerPetbirth.dayOfMonth)
                 .getFormattedString(),
-            binding.yearOnlyCheckbox.isChecked,
-            binding.genderFemale.isChecked,
-            binding.petMessageInput.text.toString()
+            binding.checkboxYearonly.isChecked,
+            binding.radiobuttonFemale.isChecked,
+            binding.edittextPetmessage.text.toString()
         )
 
         viewModel.isApiLoading.value = true
@@ -376,7 +363,7 @@ class CreateUpdatePetActivity : AppCompatActivity() {
     private fun savePetPhotoByteArrayToSharedPreferences() {
         // 사진이 기본 이미지일 때 예외 처리
         try{
-            val photoByteArray = Util.getByteArrayFromDrawable(binding.petPhotoInput.drawable)
+            val photoByteArray = Util.getByteArrayFromDrawable(binding.circleimageviewPetphoto.drawable)
             Util.putByteArrayToSharedPreferences(
                 baseContext, baseContext.getString(R.string.pref_name_byte_arrays),
                 baseContext.getString(R.string.data_name_my_pet_selected_pet_photo), photoByteArray
@@ -396,19 +383,19 @@ class CreateUpdatePetActivity : AppCompatActivity() {
 
         intent.putExtra("petBirth",
             FormattedDate(
-                binding.petBirthInput.year,
-                binding.petBirthInput.month + 1,
-                binding.petBirthInput.dayOfMonth
+                binding.datepickerPetbirth.year,
+                binding.datepickerPetbirth.month + 1,
+                binding.datepickerPetbirth.dayOfMonth
             ).getFormattedString()
         )
         intent.putExtra("petPhotoRotation", viewModel.petPhotoRotation.value)
-        intent.putExtra("petName", binding.petNameInput.text.toString())
-        intent.putExtra("petSpecies", binding.petSpeciesInput.text.toString())
-        intent.putExtra("petBreed", binding.petBreedInput.text.toString())
-        intent.putExtra("petGender", binding.genderFemale.isChecked)
-        intent.putExtra("petAge", LocalDate.now().year - binding.petBirthInput.year)
-        intent.putExtra("petMessage", binding.petMessageInput.text.toString())
-        intent.putExtra("yearOnly", binding.yearOnlyCheckbox.isChecked)
+        intent.putExtra("petName", binding.edittextPetname.text.toString())
+        intent.putExtra("petSpecies", binding.edittextPetspecies.text.toString())
+        intent.putExtra("petBreed", binding.edittextPetbreed.text.toString())
+        intent.putExtra("petGender", binding.radiobuttonFemale.isChecked)
+        intent.putExtra("petAge", LocalDate.now().year - binding.datepickerPetbirth.year)
+        intent.putExtra("petMessage", binding.edittextPetmessage.text.toString())
+        intent.putExtra("yearOnly", binding.checkboxYearonly.isChecked)
 
         return intent
     }

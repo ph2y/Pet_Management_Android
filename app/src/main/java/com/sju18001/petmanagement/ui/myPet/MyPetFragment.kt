@@ -9,20 +9,20 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.databinding.FragmentMyPetBinding
+import com.sju18001.petmanagement.databinding.FragmentMypetBinding
 import com.sju18001.petmanagement.ui.myPet.petManager.PetManagerFragment
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleManagerFragment
 
 
 class MyPetFragment : Fragment() {
-    private var _binding: FragmentMyPetBinding? = null
+    private var _binding: FragmentMypetBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentMyPetBinding.inflate(inflater, container, false)
+        _binding = FragmentMypetBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -31,8 +31,8 @@ class MyPetFragment : Fragment() {
 
         val TAB_ELEMENTS = listOf(requireContext().getText(R.string.pet_manager_title), requireContext().getText(R.string.pet_schedule_manager_title))
 
-        val tabLayout = binding.tabLayout
-        val viewPager = binding.viewPager.also{
+        val tabLayout = binding.tablayout
+        val viewPager = binding.viewpager.also{
             it.adapter = MyPetCollectionAdapter(this)
             it.currentItem = requireActivity().intent.getIntExtra("pageIndex", 0)
             it.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {

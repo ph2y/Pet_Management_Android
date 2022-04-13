@@ -13,13 +13,13 @@
     </data>
 
     <RelativeLayout
-        android:id="@+id/activity_create_update_pet_parent_layout"
+        android:id="@+id/relativelayout_parentlayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:windowSoftInputMode="adjustResize">
 
         <RelativeLayout
-            android:id="@+id/back_button_layout"
+            android:id="@+id/relativelayout_backbutton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -27,7 +27,7 @@
             android:padding="16dp">
 
             <ImageButton
-                android:id="@+id/back_button"
+                android:id="@+id/imagebutton_backbutton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -38,12 +38,11 @@
                 android:src="@drawable/ic_baseline_arrow_back_36_white" />
 
             <TextView
-                android:id="@+id/back_button_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="12dp"
-                android:layout_toEndOf="@id/back_button"
+                android:layout_toEndOf="@id/imagebutton_backbutton"
                 android:text="@{viewModel.isActivityTypeCreatePet()? @string/create_pet_title: @string/update_pet_title}"
                 android:textColor="@color/white"
                 android:textSize="20sp" />
@@ -55,7 +54,6 @@
                 android:layout_centerVertical="true">
 
                 <TextView
-                    android:id="@+id/confirm_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
@@ -71,7 +69,6 @@
                     android:visibility="@{viewModel.isApiLoading? View.GONE: View.VISIBLE}" />
 
                 <ProgressBar
-                    android:id="@+id/create_pet_progress_bar"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:layout_centerInParent="true"
@@ -85,7 +82,7 @@
         <ScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/back_button_layout"
+            android:layout_below="@id/relativelayout_backbutton"
             android:layout_above="@id/ad_view"
             android:background="@drawable/pet_info_layout_background"
             android:fillViewport="true">
@@ -98,17 +95,17 @@
                 android:paddingRight="24dp">
 
                 <RelativeLayout
-                    android:id="@+id/pet_photo_input_layout"
+                    android:id="@+id/relativelayout_petphoto"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:layout_marginTop="4dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toTopOf="@id/pet_info_layout">
+                    app:layout_constraintBottom_toTopOf="@id/linearlayout_petinfo">
 
                     <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/pet_photo_input"
+                        android:id="@+id/circleimageview_petphoto"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:src="@android:color/transparent"
@@ -116,7 +113,7 @@
                         app:civ_border_width="4dp" />
 
                     <de.hdodenhof.circleimageview.CircleImageView
-                        android:id="@+id/pet_photo_input_button"
+                        android:id="@+id/circleimageview_petphotoinputbutton"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
@@ -128,7 +125,7 @@
                 </RelativeLayout>
 
                 <LinearLayout
-                    android:id="@+id/pet_info_layout"
+                    android:id="@+id/linearlayout_petinfo"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="25dp"
@@ -137,8 +134,8 @@
                     android:orientation="vertical"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/pet_photo_input_layout"
-                    app:layout_constraintBottom_toTopOf="@id/delete_pet_layout">
+                    app:layout_constraintTop_toBottomOf="@id/relativelayout_petphoto"
+                    app:layout_constraintBottom_toTopOf="@id/linearlayout_deletepet">
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -153,7 +150,7 @@
                             android:text="@string/pet_message" />
 
                         <EditText
-                            android:id="@+id/pet_message_input"
+                            android:id="@+id/edittext_petmessage"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="8dp"
@@ -188,7 +185,7 @@
                                 android:text="@string/pet_name_label" />
 
                             <EditText
-                                android:id="@+id/pet_name_input"
+                                android:id="@+id/edittext_petname"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
@@ -224,7 +221,7 @@
                                 android:orientation="horizontal">
 
                                 <RadioButton
-                                    android:id="@+id/gender_female"
+                                    android:id="@+id/radiobutton_female"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginEnd="2.5dp"
@@ -234,7 +231,6 @@
                                     android:theme="@style/onSelectedThemeCarrot" />
 
                                 <RadioButton
-                                    android:id="@+id/gender_male"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="2.5dp"
@@ -268,7 +264,7 @@
 
                             <!--TODO: remove maxLength + create spinner for species type-->
                             <EditText
-                                android:id="@+id/pet_species_input"
+                                android:id="@+id/edittext_petspecies"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
@@ -276,7 +272,7 @@
                                 android:hint="@string/pet_species_hint"
                                 android:inputType="textPersonName"
                                 android:maxLength="8"
-                                android:nextFocusDown="@id/pet_breed_input"
+                                android:nextFocusDown="@id/edittext_petbreed"
                                 android:padding="8dp"
                                 android:enabled="@{!viewModel.isApiLoading}"
                                 android:text="@={viewModel.petSpecies}"
@@ -299,7 +295,7 @@
 
                             <!--TODO: remove maxLength + create spinner for breed type-->
                             <EditText
-                                android:id="@+id/pet_breed_input"
+                                android:id="@+id/edittext_petbreed"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="8dp"
@@ -330,7 +326,7 @@
                             android:text="@string/pet_birth_label" />
 
                         <DatePicker
-                            android:id="@+id/pet_birth_input"
+                            android:id="@+id/datepicker_petbirth"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="-10dp"
@@ -344,7 +340,7 @@
                             android:theme="@style/onSelectedThemeCarrot" />
 
                         <CheckBox
-                            android:id="@+id/year_only_checkbox"
+                            android:id="@+id/checkbox_yearonly"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
@@ -358,7 +354,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/delete_pet_layout"
+                    android:id="@+id/linearlayout_deletepet"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
@@ -366,10 +362,10 @@
                     android:paddingBottom="20dp"
                     android:visibility="@{viewModel.isActivityTypeCreatePet? View.GONE: View.VISIBLE}"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/pet_info_layout">
+                    app:layout_constraintTop_toBottomOf="@+id/linearlayout_petinfo">
 
                     <TextView
-                        android:id="@+id/delete_pet_button"
+                        android:id="@+id/textview_deletepet"
                         android:layout_width="match_parent"
                         android:layout_height="36dp"
                         android:gravity="center"
