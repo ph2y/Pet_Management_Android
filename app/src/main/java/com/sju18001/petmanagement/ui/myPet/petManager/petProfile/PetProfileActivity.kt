@@ -36,11 +36,12 @@ import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.community.post.PostFragment
+import com.sju18001.petmanagement.ui.myPet.petManager.PetManagerFragment
 
 /**
- * 다른 곳에서 이 액티비티를 호출하는 과정에서 Intent를 전달하는데, 그 정보를 ViewModel에
- * 저장합니다. ViewModel의 정보는 Databinding되어 있으므로 ViewModel의 값이 매우 중요합니다.
- * 추가로 UpdatePetActivity을 수행한 뒤 변경된 결과를 받아오게 되는데, 이때 이 정보들을 ViewModel에 대입합니다.
+ * 다른 곳에서 이 액티비티를 호출하는 과정에서 Intent를 전달하는데, 그 정보를 ViewModel에 저장합니다.
+ * ViewModel의 정보는 Databinding되어 있으므로 ViewModel의 값이 매우 중요합니다.
+ * UpdatePetActivity를 수행한 뒤 변경된 결과를 받아오게 되는데, 이 정보들을 ViewModel에 대입함으로써 최신 상태가 유지됩니다.
  */
 
 class PetProfileActivity : AppCompatActivity(){
@@ -58,30 +59,35 @@ class PetProfileActivity : AppCompatActivity(){
     private val viewModel: PetProfileViewModel by viewModels()
     private var isViewDestroyed = false
 
-    // UpdatePet을 한 뒤에 변경된 데이터를 다시 ViewModel에 저장합니다.
-    private val startForUpdateResult =
+    private val startForResult =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
-        if(result.resultCode == Activity.RESULT_OK){
-            val intent = result.data
-            if(intent != null){
-                viewModel.petPhotoByteArray.value = Util.getByteArrayFromSharedPreferences(
-                    baseContext,
-                    baseContext.getString(R.string.pref_name_byte_arrays),
-                    baseContext.getString(R.string.data_name_my_pet_selected_pet_photo)
-                )
+        when(result.resultCode){
+            PetManagerFragment.HAS_PET_UPDATED -> {
+                // CreateUpdatePet에서 수정된 데이터를 다시 ViewModel에 저장합니다.
+                val intent = result.data
+                if(intent != null){
+                    viewModel.hasPetUpdated.value = true
 
-                viewModel.petPhotoRotation.value = intent.getFloatExtra("petPhotoRotation", 0f)
-                viewModel.petName.value = intent.getStringExtra("petName")
-                viewModel.petBirth.value = intent.getStringExtra("petBirth")
-                viewModel.petSpecies.value = intent.getStringExtra("petSpecies")
-                viewModel.petBreed.value = intent.getStringExtra("petBreed")
-                viewModel.petGender.value = intent.getBooleanExtra("petGender", true)
-                viewModel.petAge.value =  intent.getIntExtra("petAge", 0)
-                viewModel.petMessage.value = intent.getStringExtra("petMessage")
-                viewModel.yearOnly.value = intent.getBooleanExtra("yearOnly", false)
-            }else{
-                // RESULT_OK를 주었으나 Intent가 없는 경우는 펫을 삭제했을 경우이다.
-                // 펫을 삭제했다면 PetProfile 페이지에 있으면 안 된다.
+                    viewModel.petPhotoByteArray.value = Util.getByteArrayFromSharedPreferences(
+                        baseContext,
+                        baseContext.getString(R.string.pref_name_byte_arrays),
+                        baseContext.getString(R.string.data_name_my_pet_selected_pet_photo)
+                    )
+
+                    viewModel.petPhotoRotation.value = intent.getFloatExtra("petPhotoRotation", 0f)
+                    viewModel.petName.value = intent.getStringExtra("petName")
+                    viewModel.petBirth.value = intent.getStringExtra("petBirth")
+                    viewModel.petSpecies.value = intent.getStringExtra("petSpecies")
+                    viewModel.petBreed.value = intent.getStringExtra("petBreed")
+                    viewModel.petGender.value = intent.getBooleanExtra("petGender", true)
+                    viewModel.petAge.value =  intent.getIntExtra("petAge", 0)
+                    viewModel.petMessage.value = intent.getStringExtra("petMessage")
+                    viewModel.yearOnly.value = intent.getBooleanExtra("yearOnly", false)
+                }
+            }
+            PetManagerFragment.HAS_PET_DELETED -> {
+                // CreateUpdatePet에서 삭제를 하여 돌아왔을 경우에는 PetManager로 나가야 합니다.
+                setResult(PetManagerFragment.HAS_PET_DELETED)
                 finish()
             }
         }
@@ -107,6 +113,13 @@ class PetProfileActivity : AppCompatActivity(){
         }
     }
 
+    private fun setBinding() {
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_pet_profile)
+
+        binding.lifecycleOwner = this
+        binding.activity = this@PetProfileActivity
+        binding.viewModel = viewModel
+    }
 
     /** initializeViewModel() */
     private fun initializeViewModel() {
@@ -137,7 +150,7 @@ class PetProfileActivity : AppCompatActivity(){
         if (viewModel.accountId == SessionManager.fetchLoggedInAccount(baseContext)!!.id) return
 
         binding.followUnfollowButton.visibility = View.VISIBLE
-        viewModel.isApiLoading = true
+        viewModel.isApiLoading.value = true
 
         // 해당 계정을 내가 팔로잉하는지 체크 -> isFollowing 초기화
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
@@ -146,18 +159,18 @@ class PetProfileActivity : AppCompatActivity(){
             for (follower in response.body()!!.followerList) {
                 if (follower.id == viewModel.accountId) {
                     viewModel.isFollowing.value = true
-                    viewModel.isApiLoading = false
+                    viewModel.isApiLoading.value = false
 
                     return@enqueueApiCall
                 }
             }
 
             viewModel.isFollowing.value = false
-            viewModel.isApiLoading = false
+            viewModel.isApiLoading.value = false
         }, {
-            viewModel.isApiLoading = false
+            viewModel.isApiLoading.value = false
         }, {
-            viewModel.isApiLoading = false
+            viewModel.isApiLoading.value = false
         })
     }
 
@@ -211,14 +224,6 @@ class PetProfileActivity : AppCompatActivity(){
                 }, {}, {})
             }
         }
-    }
-
-    private fun setBinding() {
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_pet_profile)
-
-        binding.lifecycleOwner = this
-        binding.activity = this@PetProfileActivity
-        binding.viewModel = viewModel
     }
 
 
@@ -427,10 +432,15 @@ class PetProfileActivity : AppCompatActivity(){
     override fun onDestroy() {
         super.onDestroy()
         isViewDestroyed = true
-        viewModel.isApiLoading = false
     }
 
     override fun finish() {
+        if(viewModel.hasPetUpdated.value == true) {
+            val intent = Intent()
+            intent.putExtra("updatedPetId", viewModel.petId)
+            setResult(PetManagerFragment.HAS_PET_UPDATED, intent)
+        }
+
         super.finish()
         overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
     }
@@ -448,7 +458,7 @@ class PetProfileActivity : AppCompatActivity(){
     }
 
     private fun setRepresentativePet() {
-        viewModel.isApiLoading = true
+        viewModel.isApiLoading.value = true
 
         // create DTO for API call
         val accountData = SessionManager.fetchLoggedInAccount(baseContext)!!
@@ -476,15 +486,15 @@ class PetProfileActivity : AppCompatActivity(){
                 SessionManager.saveLoggedInAccount(baseContext, account)
 
                 viewModel.isPetRepresentative.value = true
-                viewModel.isApiLoading = false
+                viewModel.isApiLoading.value = false
             }
-        }, { viewModel.isApiLoading = false }, { viewModel.isApiLoading = false })
+        }, { viewModel.isApiLoading.value = false }, { viewModel.isApiLoading.value = false })
     }
 
 
     fun onClickUpdatePetButton() {
         val intent = makeCreateUpdatePetActivityIntent()
-        startForUpdateResult.launch(intent)
+        startForResult.launch(intent)
         overridePendingTransition(0, 0)
     }
 
@@ -513,25 +523,25 @@ class PetProfileActivity : AppCompatActivity(){
     }
 
     private fun createFollow() {
-        viewModel.isApiLoading = true
+        viewModel.isApiLoading.value = true
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
             .createFollowReq(CreateFollowReqDto(viewModel.accountId!!))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, baseContext, {
             viewModel.isFollowing.value = true
-            viewModel.isApiLoading = false
-        }, { viewModel.isApiLoading = false }, { viewModel.isApiLoading = false })
+            viewModel.isApiLoading.value = false
+        }, { viewModel.isApiLoading.value = false }, { viewModel.isApiLoading.value = false })
     }
 
     private fun deleteFollow() {
-        viewModel.isApiLoading = true
+        viewModel.isApiLoading.value = true
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
             .deleteFollowReq(DeleteFollowReqDto(viewModel.accountId!!))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, baseContext, {
             viewModel.isFollowing.value = false
-            viewModel.isApiLoading = false
-        }, { viewModel.isApiLoading = false }, { viewModel.isApiLoading = false })
+            viewModel.isApiLoading.value = false
+        }, { viewModel.isApiLoading.value = false }, { viewModel.isApiLoading.value = false })
     }
 
 
