@@ -111,7 +111,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     /**
      * Databinding functions
      */
-    fun onBackButtonClicked() {
+    fun onClickBackButton() {
         val builder = AlertDialog.Builder(this)
         builder.setMessage(this.getString(R.string.cancel_review_dialog_message))
             .setPositiveButton(R.string.confirm) { _, _ ->
@@ -122,11 +122,11 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
             }.create().show()
     }
 
-    fun onStarImageClicked(index: Int) {
+    fun onClickStarImage(index: Int) {
         viewModel.rating.set(index + 1)
     }
 
-    fun onConfirmButtonClicked() {
+    fun onClickConfirmButton() {
         val builder = AlertDialog.Builder(this)
         builder.setMessage(this.getString(R.string.post_review_dialog_message))
             .setPositiveButton(R.string.confirm) { _, _ ->

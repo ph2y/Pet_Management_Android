@@ -564,15 +564,15 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     /**
      * Databinding functions
      */
-    fun onDrawerButtonClicked() {
+    fun onClickDrawerButton() {
         binding.layoutDrawer.open()
     }
 
-    fun onSearchTextCancelClicked() {
+    fun onClickSearchTextCancel() {
         binding.searchTextInput!!.setText("")
     }
 
-    fun onPlaceCardClicked(place: Place) {
+    fun onClickPlaceCard(place: Place) {
         startReviewActivity(place)
     }
 
@@ -608,7 +608,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         }
     }
 
-    fun onCallButtonClicked(place: Place){
+    fun onClickCallButton(place: Place){
         val buttonStrings: Array<CharSequence> = arrayOf("전화하기", "연락처 저장하기", "클립보드에 복사하기")
         AlertDialog.Builder(context)
             .setTitle(place.phone)
@@ -637,7 +637,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
             .create().show()
     }
 
-    fun onBookmarkButtonClicked(place: Place){
+    fun onClickBookmarkButton(place: Place){
         when(viewModel.getIsBookmarked()){
             false -> createBookmark(place)
             true -> deleteBookmark(place.id)
