@@ -330,6 +330,13 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
     }
 
 
+    override fun onResume() {
+        super.onResume()
+        // 대표펫 아이콘 업데이트를 위함임
+        adapter.notifyItemRangeChanged(0, adapter.itemCount)
+    }
+
+
     /** OnStartDragListener */
     override fun onStartDrag(viewHolder: RecyclerView.ViewHolder) {
         touchHelper.startDrag(viewHolder)
