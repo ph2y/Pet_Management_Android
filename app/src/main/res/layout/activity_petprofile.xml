@@ -13,21 +13,20 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/fragment_pet_profile_parent_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:animateLayoutChanges="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/top_fixed_layout"
+            android:id="@+id/constraintlayout_topfixed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:visibility="@{viewModel.isViewsDetailed &amp;&amp; viewModel.isOrientationPortrait? View.VISIBLE: View.GONE}"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/pet_profile_main_scroll_view">
+            app:layout_constraintBottom_toTopOf="@id/constraintlayout_contents">
 
             <RelativeLayout
-                android:id="@+id/back_button_layout"
+                android:id="@+id/relativelayout_backbutton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
@@ -35,7 +34,7 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageButton
-                    android:id="@+id/back_button"
+                    android:id="@+id/imagebutton_backbutton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
@@ -46,10 +45,9 @@
                     />
 
                 <TextView
-                    android:id="@+id/back_button_title"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/back_button"
+                    android:layout_toEndOf="@id/imagebutton_backbutton"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="12dp"
                     android:textSize="20sp"
@@ -57,7 +55,6 @@
                     android:text="@string/pet_profile_title"/>
 
                 <TextView
-                    android:id="@+id/set_representative_button"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -76,16 +73,15 @@
             </RelativeLayout>
 
             <RelativeLayout
-                android:id="@+id/account_info_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="12dp"
                 android:visibility="@{viewModel.isActivityTypeCommunity() &amp;&amp; viewModel.isViewsDetailed? View.VISIBLE: View.GONE}"
                 android:background="@drawable/border"
-                app:layout_constraintTop_toBottomOf="@id/back_button_layout">
+                app:layout_constraintTop_toBottomOf="@id/relativelayout_backbutton">
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/account_photo"
+                    android:id="@+id/circleimageview_accountphoto"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:layout_centerVertical="true"
@@ -94,17 +90,15 @@
                     app:civ_border_width="1dp" />
 
                 <LinearLayout
-                    android:id="@+id/username_and_pets_layout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/account_photo"
-                    android:layout_toStartOf="@id/follow_unfollow_button"
+                    android:layout_toEndOf="@id/circleimageview_accountphoto"
+                    android:layout_toStartOf="@id/button_followunfollow"
                     android:layout_centerVertical="true"
                     android:layout_marginLeft="6dp"
                     android:orientation="vertical">
 
                     <TextView
-                        android:id="@+id/account_nickname"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="20sp"
@@ -113,7 +107,7 @@
                         android:layout_marginBottom="-4dp"/>
 
                     <androidx.appcompat.widget.AppCompatSpinner
-                        android:id="@+id/pet_name_spinner"
+                        android:id="@+id/appcompatspinner_pet"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="-2dp"
@@ -122,7 +116,7 @@
                 </LinearLayout>
 
                 <Button
-                    android:id="@+id/follow_unfollow_button"
+                    android:id="@+id/button_followunfollow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
@@ -139,14 +133,14 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/pet_profile_main_scroll_view"
+            android:id="@+id/constraintlayout_contents"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@id/top_fixed_layout"
+            app:layout_constraintTop_toBottomOf="@id/constraintlayout_topfixed"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/constraintlayout_petprofile_petinfo"
+                android:id="@+id/constraintlayout_petinfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingTop="20dp"
@@ -158,10 +152,10 @@
                 android:clipChildren="false"
                 android:clipToPadding="false"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintBottom_toTopOf="@id/buttons_layout">
+                app:layout_constraintBottom_toTopOf="@id/linearlayout_updatepetbutton">
 
                 <de.hdodenhof.circleimageview.CircleImageView
-                    android:id="@+id/circleimageview_petprofile_petphoto"
+                    android:id="@+id/circleimageview_petphoto"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
                     android:src="@drawable/ic_baseline_account_circle_24"
@@ -173,19 +167,19 @@
                     app:civ_border_width="4dp"/>
 
                 <ImageView
-                    android:id="@+id/imageview_petprofile_representativeicon"
+                    android:id="@+id/imageview_representativeicon"
                     android:layout_width="37dp"
                     android:layout_height="30dp"
                     android:layout_marginBottom="136dp"
                     android:scaleType="fitXY"
                     android:src="@drawable/crown"
                     android:visibility="@{ viewModel.isPetRepresentative? View.VISIBLE: View.INVISIBLE }"
-                    app:layout_constraintBottom_toBottomOf="@id/circleimageview_petprofile_petphoto"
-                    app:layout_constraintStart_toStartOf="@id/circleimageview_petprofile_petphoto"
-                    app:layout_constraintEnd_toEndOf="@id/circleimageview_petprofile_petphoto"/>
+                    app:layout_constraintBottom_toBottomOf="@id/circleimageview_petphoto"
+                    app:layout_constraintStart_toStartOf="@id/circleimageview_petphoto"
+                    app:layout_constraintEnd_toEndOf="@id/circleimageview_petphoto"/>
 
                 <TextView
-                    android:id="@+id/textview_petprofile_petname"
+                    android:id="@+id/textview_petname"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
@@ -194,23 +188,23 @@
                     android:ellipsize="end"
                     android:textSize="32sp"
                     android:textStyle="bold"
-                    app:layout_constraintTop_toBottomOf="@id/circleimageview_petprofile_petphoto"
+                    app:layout_constraintTop_toBottomOf="@id/circleimageview_petphoto"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"/>
 
                 <TextView
-                    android:id="@+id/textview_petprofile_petage"
+                    android:id="@+id/textview_petage"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginBottom="4dp"
-                    app:layout_constraintStart_toEndOf="@id/textview_petprofile_petname"
-                    app:layout_constraintBottom_toBottomOf="@id/textview_petprofile_petname"
+                    app:layout_constraintStart_toEndOf="@id/textview_petname"
+                    app:layout_constraintBottom_toBottomOf="@id/textview_petname"
                     android:text="@{@string/pet_age(viewModel.petAge)}"
                     android:textSize="16sp"/>
 
                 <TextView
-                    android:id="@+id/textview_petprofile_petmessage"
+                    android:id="@+id/textview_petmessage"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:paddingStart="14dp"
@@ -221,42 +215,42 @@
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:text="@{viewModel.petMessage.empty? @string/filled_heart: viewModel.petMessage}"
-                    app:layout_constraintTop_toBottomOf="@id/textview_petprofile_petname"
+                    app:layout_constraintTop_toBottomOf="@id/textview_petname"
                     app:layout_constraintStart_toStartOf="parent"/>
 
                 <LinearLayout
-                    android:id="@+id/linearlayout_petprofile_petinfofooter"
+                    android:id="@+id/linearlayout_petinfofooter"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    app:layout_constraintTop_toBottomOf="@id/textview_petprofile_petmessage"
+                    app:layout_constraintTop_toBottomOf="@id/textview_petmessage"
                     app:layout_constraintStart_toStartOf="parent">
 
                     <TextView
-                        android:id="@+id/textview_petprofile_petbreed"
+                        android:id="@+id/textview_petbreed"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="@{viewModel.petBreed}"
                         android:textSize="16dp"/>
 
                     <TextView
-                        android:id="@+id/textview_petprofile_petgender"
+                        android:id="@+id/textview_petgender"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_toEndOf="@id/textview_petprofile_petbreed"
+                        android:layout_toEndOf="@id/textview_petbreed"
                         android:text="@{viewModel.petGender? @string/pet_gender_female_symbol: @string/pet_gender_male_symbol}"
                         android:textSize="16dp"/>
 
                     <TextView
-                        android:id="@+id/textview_petprofile_genderandbirthseparator"
+                        android:id="@+id/textview_genderandbirthseparator"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_toEndOf="@id/textview_petprofile_petgender"
+                        android:layout_toEndOf="@id/textview_petgender"
                         android:text=", "
                         android:textSize="16dp"/>
 
                     <TextView
-                        android:id="@+id/textview_petprofile_petbirth"
+                        android:id="@+id/textview_petbirth"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:textSize="16dp"/>
@@ -265,16 +259,15 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <LinearLayout
-                android:id="@+id/buttons_layout"
+                android:id="@+id/linearlayout_updatepetbutton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="16dp"
                 android:visibility="@{viewModel.isActivityTypePetProfile() &amp;&amp; viewModel.isViewsDetailed? View.VISIBLE: View.GONE}"
-                app:layout_constraintTop_toBottomOf="@id/constraintlayout_petprofile_petinfo"
-                app:layout_constraintBottom_toTopOf="@id/text_history">
+                app:layout_constraintTop_toBottomOf="@id/constraintlayout_petinfo"
+                app:layout_constraintBottom_toTopOf="@id/textview_history">
 
                 <TextView
-                    android:id="@+id/update_pet_button"
                     android:layout_width="match_parent"
                     android:layout_height="36dp"
                     android:layout_marginLeft="16dp"
@@ -290,7 +283,7 @@
             </LinearLayout>
 
             <TextView
-                android:id="@+id/text_history"
+                android:id="@+id/textview_history"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="16dp"
@@ -298,15 +291,14 @@
                 android:textSize="24dp"
                 android:background="@drawable/border"
                 android:onClick="@{() -> activity.onClickHistoryText()}"
-                app:layout_constraintTop_toBottomOf="@id/buttons_layout"
-                app:layout_constraintBottom_toTopOf="@id/post_fragment_container"/>
+                app:layout_constraintTop_toBottomOf="@id/linearlayout_updatepetbutton"
+                app:layout_constraintBottom_toTopOf="@id/framelayout_postfragment"/>
 
             <LinearLayout
-                android:id="@+id/post_data_loading_layout"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/text_history"
+                app:layout_constraintTop_toBottomOf="@id/textview_history"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 android:orientation="vertical"
@@ -327,10 +319,10 @@
             </LinearLayout>
 
             <FrameLayout
-                android:id="@+id/post_fragment_container"
+                android:id="@+id/framelayout_postfragment"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layout_constraintTop_toBottomOf="@id/text_history"
+                app:layout_constraintTop_toBottomOf="@id/textview_history"
                 app:layout_constraintBottom_toBottomOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,6 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/constraintlayout_petprofile_petinfo"
+    android:id="@+id/constraintlayout_petinfo"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="20dp"
@@ -11,10 +11,10 @@
     android:clipChildren="false"
     android:clipToPadding="false"
     app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toTopOf="@id/buttons_layout">
+    app:layout_constraintBottom_toTopOf="@id/linearlayout_updatepetbutton">
 
     <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/circleimageview_petprofile_petphoto"
+        android:id="@+id/circleimageview_petphoto"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:src="@drawable/ic_baseline_account_circle_24"
@@ -25,17 +25,17 @@
         app:civ_border_width="4dp"/>
 
     <ImageView
-        android:id="@+id/imageview_petprofile_representativeicon"
+        android:id="@+id/imageview_representativeicon"
         android:layout_width="37dp"
         android:layout_height="30dp"
         android:layout_marginBottom="136dp"
         android:src="@drawable/crown"
-        app:layout_constraintBottom_toBottomOf="@id/circleimageview_petprofile_petphoto"
-        app:layout_constraintStart_toStartOf="@id/circleimageview_petprofile_petphoto"
-        app:layout_constraintEnd_toEndOf="@id/circleimageview_petprofile_petphoto"/>
+        app:layout_constraintBottom_toBottomOf="@id/circleimageview_petphoto"
+        app:layout_constraintStart_toStartOf="@id/circleimageview_petphoto"
+        app:layout_constraintEnd_toEndOf="@id/circleimageview_petphoto"/>
 
     <TextView
-        android:id="@+id/textview_petprofile_petname"
+        android:id="@+id/textview_petname"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="12dp"
@@ -44,23 +44,23 @@
         android:ellipsize="end"
         android:textSize="32sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/circleimageview_petprofile_petphoto"
+        app:layout_constraintTop_toBottomOf="@id/circleimageview_petphoto"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
     <TextView
-        android:id="@+id/textview_petprofile_petage"
+        android:id="@+id/textview_petage"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="10dp"
         android:layout_marginBottom="4dp"
-        app:layout_constraintStart_toEndOf="@id/textview_petprofile_petname"
-        app:layout_constraintBottom_toBottomOf="@id/textview_petprofile_petname"
+        app:layout_constraintStart_toEndOf="@id/textview_petname"
+        app:layout_constraintBottom_toBottomOf="@id/textview_petname"
         android:text="2살"
         android:textSize="16sp"/>
 
     <TextView
-        android:id="@+id/textview_petprofile_petmessage"
+        android:id="@+id/textview_petmessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingStart="14dp"
@@ -70,42 +70,42 @@
         android:gravity="center"
         android:textSize="16sp"
         android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/textview_petprofile_petname"
+        app:layout_constraintTop_toBottomOf="@id/textview_petname"
         app:layout_constraintStart_toStartOf="parent"/>
 
     <LinearLayout
-        android:id="@+id/linearlayout_petprofile_petinfofooter"
+        android:id="@+id/linearlayout_petinfofooter"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        app:layout_constraintTop_toBottomOf="@id/textview_petprofile_petmessage"
+        app:layout_constraintTop_toBottomOf="@id/textview_petmessage"
         app:layout_constraintStart_toStartOf="parent">
 
         <TextView
-            android:id="@+id/textview_petprofile_petbreed"
+            android:id="@+id/textview_petbreed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="포메라니안"
             android:textSize="16dp"/>
 
         <TextView
-            android:id="@+id/textview_petprofile_petgender"
+            android:id="@+id/textview_petgender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/textview_petprofile_petbreed"
+            android:layout_toEndOf="@id/textview_petbreed"
             android:text="@string/pet_gender_male_symbol"
             android:textSize="16dp"/>
 
         <TextView
-            android:id="@+id/textview_petprofile_genderandbirthseparator"
+            android:id="@+id/textview_genderandbirthseparator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/textview_petprofile_petgender"
+            android:layout_toEndOf="@id/textview_petgender"
             android:text=", "
             android:textSize="16dp"/>
 
         <TextView
-            android:id="@+id/textview_petprofile_petbirth"
+            android:id="@+id/textview_petbirth"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="21-09-13"

@@ -10,11 +10,6 @@ import com.sju18001.petmanagement.databinding.ActivityCommentBinding
 class CommentActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCommentBinding
 
-    // variable for ViewModel
-    private val commentViewModel: CommentViewModel by lazy{
-        ViewModelProvider(this, SavedStateViewModelFactory(application, this)).get(CommentViewModel::class.java)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -24,10 +19,10 @@ class CommentActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         // 프래그먼트 실행
-        if(supportFragmentManager.findFragmentById(R.id.comment_activity_fragment_container) == null){
+        if(supportFragmentManager.findFragmentById(R.id.constraintlayout_fragmentcontainer) == null){
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.comment_activity_fragment_container, CommentFragment())
+                .add(R.id.constraintlayout_fragmentcontainer, CommentFragment())
                 .commit()
         }
     }

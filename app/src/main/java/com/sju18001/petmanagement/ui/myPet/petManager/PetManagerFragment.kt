@@ -21,7 +21,7 @@ import com.google.gson.reflect.TypeToken
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.CustomProgressBar
 import com.sju18001.petmanagement.controller.Util
-import com.sju18001.petmanagement.databinding.FragmentPetManagerBinding
+import com.sju18001.petmanagement.databinding.FragmentPetmanagerBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
@@ -57,7 +57,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
 
     private val myPetViewModel: MyPetViewModel by activityViewModels()
 
-    private var _binding: FragmentPetManagerBinding? = null
+    private var _binding: FragmentPetmanagerBinding? = null
     private val binding get() = _binding!!
 
     private lateinit var adapter: PetManagerAdapter
@@ -79,7 +79,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
                     it.body()?.petList?.get(0)?.let { createdPet ->
                         adapter.addItem(createdPet)
                         adapter.notifyItemInserted(adapter.itemCount)
-                        binding.myPetListRecyclerView.smoothScrollToPosition(adapter.itemCount - 2)
+                        binding.recyclerviewPet.smoothScrollToPosition(adapter.itemCount - 2)
 
                         val petListOrder = getOrderedPetIdList(requireContext()
                             .getString(R.string.data_name_pet_list_id_order), requireContext())
@@ -124,7 +124,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentPetManagerBinding.inflate(inflater, container, false)
+        _binding = FragmentPetmanagerBinding.inflate(inflater, container, false)
         isViewDestroyed = false
 
         initializeRecyclerView()
@@ -145,7 +145,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
             override fun restoreScroll() {
                 snapHelper.findSnapView(layoutManager)?.let {
                     val position = layoutManager.getPosition(it)
-                    binding.myPetListRecyclerView.smoothScrollToPosition(position)
+                    binding.recyclerviewPet.smoothScrollToPosition(position)
                 }
             }
 
@@ -157,7 +157,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
                 val centerPosition = getCenterPosition()
                 // 옆에 있는 펫을 누른 경우: 그쪽으로 이동
                 if(position != centerPosition){
-                    binding.myPetListRecyclerView.smoothScrollToPosition(position)
+                    binding.recyclerviewPet.smoothScrollToPosition(position)
                 }else{
                     val currentItem = dataSet[position]
                     // 사진을 아직 불러오지 못한 경우
@@ -171,22 +171,22 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
                 }
             }
         })
-        binding.myPetListRecyclerView.adapter = adapter
+        binding.recyclerviewPet.adapter = adapter
 
         // PagerSnapHelper: ViewPager처럼 움직이는 RecyclerView 구현
         snapHelper = PagerSnapHelper()
-        snapHelper.attachToRecyclerView(binding.myPetListRecyclerView)
+        snapHelper.attachToRecyclerView(binding.recyclerviewPet)
 
         // CustomLayoutManager: 스크롤 애니메이션 구현
         layoutManager = CustomLayoutManager.Builder(requireContext(), snapHelper)
             .setMode(CustomLayoutManager.Mode.SCALE_MODE)
             .build()
         layoutManager.orientation = LinearLayoutManager.HORIZONTAL
-        binding.myPetListRecyclerView.layoutManager = layoutManager
+        binding.recyclerviewPet.layoutManager = layoutManager
 
         // ItemTouchHelper: Drag & drop 구현
         touchHelper = ItemTouchHelper(PetManagerDragAdapter(adapter))
-        touchHelper.attachToRecyclerView(binding.myPetListRecyclerView)
+        touchHelper.attachToRecyclerView(binding.recyclerviewPet)
 
         adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
@@ -228,7 +228,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
 
     private fun setEmptyNotificationView(itemCount: Int) {
         val visibility = if(itemCount != 1) View.GONE else View.VISIBLE
-        binding.emptyPetListNotification.visibility = visibility
+        binding.textviewEmptypet.visibility = visibility
     }
 
 
@@ -252,7 +252,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
             adapter.setResult(petList)
             adapter.notifyDataSetChanged()
 
-            binding.myPetListRecyclerView.scrollToPosition(myPetViewModel.lastScrolledIndex)
+            binding.recyclerviewPet.scrollToPosition(myPetViewModel.lastScrolledIndex)
 
             CustomProgressBar.removeProgressBar(binding.fragmentPetManagerParentLayout)
         }, { CustomProgressBar.removeProgressBar(binding.fragmentPetManagerParentLayout) },
