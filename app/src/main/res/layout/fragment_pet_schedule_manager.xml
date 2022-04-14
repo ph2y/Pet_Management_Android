@@ -1,54 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/fragment_pet_schedule_manager_parent_layout"
-    tools:context=".ui.myPet.petScheduleManager.PetScheduleManagerFragment">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <TextView
-        android:id="@+id/empty_pet_schedule_list_notification"
+    <data>
+        <variable
+            name="fragment"
+            type="com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleManagerFragment" />
+    </data>
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_above="@id/ad_view"
-        android:gravity="center"
-        android:translationZ="1dp"
-        android:text="@string/empty_pet_schedule_list_notification"
-        android:textAlignment="center"
-        android:textColor="@color/gray"
-        android:textSize="16sp"
-        android:visibility="gone"/>
+        android:layout_height="match_parent"
+        android:id="@+id/fragment_pet_schedule_manager_parent_layout"
+        tools:context=".ui.myPet.petScheduleManager.PetScheduleManagerFragment">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/pet_schedule_list_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_above="@id/ad_view"
-        android:clipToPadding="false"
-        android:background="@color/ghost_white"/>
+        <TextView
+            android:id="@+id/empty_pet_schedule_list_notification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_above="@id/ad_view"
+            android:gravity="center"
+            android:translationZ="1dp"
+            android:text="@string/empty_pet_schedule_list_notification"
+            android:textAlignment="center"
+            android:textColor="@color/gray"
+            android:textSize="16sp"
+            android:visibility="gone"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/create_pet_schedule_fab"
-        android:layout_alignParentEnd="true"
-        android:layout_above="@id/ad_view"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:src="@drawable/ic_baseline_add_24"
-        android:layout_margin="16dp"
-        app:backgroundTint="@color/pumpkin"
-        app:tint="@color/white"/>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/pet_schedule_list_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_above="@id/ad_view"
+            android:clipToPadding="false"
+            android:background="@color/ghost_white"/>
 
-    <!-- TODO: change adUnitId (current: sample ad unit id) -->
-    <com.google.android.gms.ads.AdView
-        xmlns:ads="http://schemas.android.com/apk/res-auto"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
-        ads:adSize="BANNER"
-        android:id="@+id/ad_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"/>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/create_pet_schedule_fab"
+            android:layout_alignParentEnd="true"
+            android:layout_above="@id/ad_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_baseline_add_24"
+            android:layout_margin="16dp"
+            android:onClick="@{() -> fragment.onClickCreatePetScheduleButton()}"
+            app:backgroundTint="@color/pumpkin"
+            app:tint="@color/white"/>
 
-</RelativeLayout>
+        <!-- TODO: change adUnitId (current: sample ad unit id) -->
+        <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
+            ads:adSize="BANNER"
+            android:id="@+id/ad_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+
+</layout>

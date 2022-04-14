@@ -38,31 +38,28 @@ class PetScheduleManagerFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentPetScheduleManagerBinding.inflate(inflater, container, false)
+        setBinding(inflater, container)
         isViewDestroyed = false
 
         initializeAdapter()
 
-        // 추가 버튼
-        binding.createPetScheduleFab.setOnClickListener{
-            checkIfAccountHasPetAndStartCreatePetSchedule()
-        }
-
         return binding.root
+    }
+
+    private fun setBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        _binding = FragmentPetScheduleManagerBinding.inflate(inflater, container, false)
+
+        binding.lifecycleOwner = this
+        binding.fragment = this@PetScheduleManagerFragment
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.adView.loadAd(AdRequest.Builder().build())
     }
 
     override fun onResume() {
         super.onResume()
-
-        // 첫 Fetch가 끝나기 전까지 ProgressBar 표시
-        CustomProgressBar.addProgressBar(requireContext(), binding.fragmentPetScheduleManagerParentLayout, 80, R.color.white)
-
         updateAdapterDataSetByFetchPetSchedule()
     }
 
@@ -140,29 +137,24 @@ class PetScheduleManagerFragment : Fragment() {
         binding.petScheduleListRecyclerView.adapter = adapter
         binding.petScheduleListRecyclerView.layoutManager = LinearLayoutManager(activity)
 
-        // set adapter item change observer
         adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
                 super.onChanged()
-
                 setEmptyNotificationView(adapter.itemCount)
             }
-
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
                 super.onItemRangeRemoved(positionStart, itemCount)
-
                 setEmptyNotificationView(adapter.itemCount)
             }
         })
     }
 
     private fun updateAdapterDataSetByFetchPetSchedule(){
-        val dataSet = arrayListOf<PetSchedule>()
-
+        CustomProgressBar.addProgressBar(requireContext(), binding.fragmentPetScheduleManagerParentLayout, 80, R.color.white)
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchPetScheduleReq(ServerUtil.getEmptyBody())
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-            // dataSet에 값 저장
+            val dataSet = arrayListOf<PetSchedule>()
             response.body()?.petScheduleList?.map{
                 dataSet.add(PetSchedule(
                     it.id, it.username, it.petList, it.time, it.memo, it.enabled,
@@ -176,18 +168,24 @@ class PetScheduleManagerFragment : Fragment() {
 
             CustomProgressBar.removeProgressBar(binding.fragmentPetScheduleManagerParentLayout)
         },{ CustomProgressBar.removeProgressBar(binding.fragmentPetScheduleManagerParentLayout) },
-            { CustomProgressBar.removeProgressBar(binding.fragmentPetScheduleManagerParentLayout) })
+            { CustomProgressBar.removeProgressBar(binding.fragmentPetScheduleManagerParentLayout) }
+        )
     }
 
     private fun setEmptyNotificationView(itemCount: Int) {
-        // set notification view
         val visibility = if(itemCount != 0) View.GONE else View.VISIBLE
         binding.emptyPetScheduleListNotification.visibility = visibility
     }
 
+
+    /** databinding functions */
+    fun onClickCreatePetScheduleButton() {
+        checkIfAccountHasPetAndStartCreatePetSchedule()
+    }
+
     private fun checkIfAccountHasPetAndStartCreatePetSchedule() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-                .fetchPetReq(FetchPetReqDto(null, null))
+            .fetchPetReq(FetchPetReqDto(null, null))
         ServerUtil.enqueueApiCall(call, { isViewDestroyed }, requireContext(), { response ->
             var petCount = 0
             response.body()?.petList?.map {
