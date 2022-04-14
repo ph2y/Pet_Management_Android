@@ -52,10 +52,6 @@ class FollowFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // initialize tab elements
-        val TAB_ELEMENTS = listOf(requireContext().getText(R.string.follower_fragment_title),
-            requireContext().getText(R.string.following_fragment_title))
-
         // initialize ViewPager2
         val tabLayout = binding.tabLayout
         val viewPager = binding.viewPager.also{
@@ -69,8 +65,9 @@ class FollowFragment : Fragment() {
             })
         }
 
+        val tabElements = listOf(requireContext().getText(R.string.follower_fragment_title), requireContext().getText(R.string.following_fragment_title))
         TabLayoutMediator(tabLayout, viewPager){ tab, position ->
-            tab.text = TAB_ELEMENTS[position]
+            tab.text = tabElements[position]
         }.attach()
 
         // searchEditText listeners
