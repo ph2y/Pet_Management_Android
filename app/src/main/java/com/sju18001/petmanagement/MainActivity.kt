@@ -13,8 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import com.google.android.gms.ads.*
-import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.databinding.ActivityMainBinding
@@ -43,8 +41,6 @@ class MainActivity : AppCompatActivity() {
     private var activeFragmentIndex: Int = 0
 
     private var isViewDestroyed = false
-
-    private var interstitialAd: InterstitialAd? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -204,8 +200,6 @@ class MainActivity : AppCompatActivity() {
         FcmUtil.getFirebaseMessagingToken { token -> sendRegistrationToServer(token) }
 
         MobileAds.initialize(this) {}
-
-        loadInterstitialAd()
     }
 
     override fun onDestroy() {
@@ -223,9 +217,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        if (interstitialAd != null) {
-            interstitialAd?.show(this)
-        }
+        val builder = AlertDialog.Builder(this)
+        builder.setMessage(baseContext.getString(R.string.exit_dialog))
+            .setPositiveButton(
+                R.string.confirm
+            ) { _, _ ->
+                super.onBackPressed()
+            }
+            .setNegativeButton(
+                R.string.cancel
+            ) { dialog, _ ->
+                dialog.cancel()
+            }
+            .create().show()
     }
 
     // for saving currently active fragment index
@@ -263,43 +267,6 @@ class MainActivity : AppCompatActivity() {
             3 -> { return false }
         }
         return false
-    }
-
-    private fun loadInterstitialAd() {
-        val adRequest = AdRequest.Builder().build()
-
-        // TODO: change adUnitId (current: sample ad unit id)
-        InterstitialAd.load(this,"ca-app-pub-3940256099942544/1033173712", adRequest, object : InterstitialAdLoadCallback() {
-            override fun onAdFailedToLoad(adError: LoadAdError) {
-                interstitialAd = null
-            }
-            override fun onAdLoaded(interstitialAd: InterstitialAd) {
-                this@MainActivity.interstitialAd = interstitialAd
-                interstitialAd.fullScreenContentCallback = object: FullScreenContentCallback() {
-                    override fun onAdDismissedFullScreenContent() {
-                        loadInterstitialAd()
-
-                        val builder = AlertDialog.Builder(this@MainActivity)
-                        builder.setMessage(baseContext.getString(R.string.exit_dialog))
-                            .setPositiveButton(
-                                R.string.confirm
-                            ) { _, _ ->
-                                finish()
-                            }
-                            .setNegativeButton(
-                                R.string.cancel
-                            ) { dialog, _ ->
-                                dialog.cancel()
-                            }
-                            .create().show()
-                    }
-                    override fun onAdFailedToShowFullScreenContent(adError: AdError?) {}
-                    override fun onAdShowedFullScreenContent() {
-                        this@MainActivity.interstitialAd = null
-                    }
-                }
-            }
-        })
     }
 
     // 디버그 전용 Key
