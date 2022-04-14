@@ -16,7 +16,7 @@
         tools:context=".ui.myPet.petScheduleManager.PetScheduleManagerFragment">
 
         <TextView
-            android:id="@+id/empty_pet_schedule_list_notification"
+            android:id="@+id/textview_emptypetschedule"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -30,7 +30,7 @@
             android:visibility="gone"/>
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/pet_schedule_list_recycler_view"
+            android:id="@+id/recyclerview_petschedule"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
@@ -39,7 +39,6 @@
             android:background="@color/ghost_white"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/create_pet_schedule_fab"
             android:layout_alignParentEnd="true"
             android:layout_above="@id/ad_view"
             android:layout_width="wrap_content"

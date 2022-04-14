@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.ads.AdRequest
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.CustomProgressBar
-import com.sju18001.petmanagement.databinding.FragmentPetScheduleManagerBinding
+import com.sju18001.petmanagement.databinding.FragmentPetschedulemanagerBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
@@ -26,11 +26,11 @@ import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.createUpdatePetSchedule.CreateUpdatePetScheduleActivity
 
 class PetScheduleManagerFragment : Fragment() {
-    private var _binding: FragmentPetScheduleManagerBinding? = null
+    private var _binding: FragmentPetschedulemanagerBinding? = null
     private val binding get() = _binding!!
 
     private val myPetViewModel: MyPetViewModel by activityViewModels()
-    private lateinit var adapter: PetScheduleListAdapter
+    private lateinit var adapter: PetScheduleAdapter
 
     private var isViewDestroyed = false
 
@@ -47,7 +47,7 @@ class PetScheduleManagerFragment : Fragment() {
     }
 
     private fun setBinding(inflater: LayoutInflater, container: ViewGroup?) {
-        _binding = FragmentPetScheduleManagerBinding.inflate(inflater, container, false)
+        _binding = FragmentPetschedulemanagerBinding.inflate(inflater, container, false)
 
         binding.lifecycleOwner = this
         binding.fragment = this@PetScheduleManagerFragment
@@ -75,7 +75,7 @@ class PetScheduleManagerFragment : Fragment() {
     }
 
     private fun initializeAdapter(){
-        adapter = PetScheduleListAdapter(arrayListOf(), { myPetViewModel.petNameForId }, object: PetScheduleListAdapterInterface {
+        adapter = PetScheduleAdapter(arrayListOf(), { myPetViewModel.petNameForId }, object: PetScheduleAdapterInterface {
             override fun startCreateUpdatePetScheduleFragmentForUpdate(data: PetSchedule) {
                 val createUpdatePetScheduleActivityIntent = Intent(context, CreateUpdatePetScheduleActivity::class.java)
                 createUpdatePetScheduleActivityIntent
@@ -134,17 +134,17 @@ class PetScheduleManagerFragment : Fragment() {
             }
         })
 
-        binding.petScheduleListRecyclerView.adapter = adapter
-        binding.petScheduleListRecyclerView.layoutManager = LinearLayoutManager(activity)
+        binding.recyclerviewPetschedule.adapter = adapter
+        binding.recyclerviewPetschedule.layoutManager = LinearLayoutManager(activity)
 
         adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
                 super.onChanged()
-                setEmptyNotificationView(adapter.itemCount)
+                setEmptyPetTextView(adapter.itemCount)
             }
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
                 super.onItemRangeRemoved(positionStart, itemCount)
-                setEmptyNotificationView(adapter.itemCount)
+                setEmptyPetTextView(adapter.itemCount)
             }
         })
     }
@@ -172,9 +172,9 @@ class PetScheduleManagerFragment : Fragment() {
         )
     }
 
-    private fun setEmptyNotificationView(itemCount: Int) {
+    private fun setEmptyPetTextView(itemCount: Int) {
         val visibility = if(itemCount != 0) View.GONE else View.VISIBLE
-        binding.emptyPetScheduleListNotification.visibility = visibility
+        binding.textviewEmptypetschedule.visibility = visibility
     }
 
 

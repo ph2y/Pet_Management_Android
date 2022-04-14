@@ -46,7 +46,7 @@ class CreateUpdatePetScheduleActivity : AppCompatActivity() {
         setObserversOfLiveData()
 
         initializeAdapter()
-        Util.setupViewsForHideKeyboard(this, binding.fragmentCreateUpdatePetScheduleParentLayout, listOf(binding.confirmButton))
+        Util.setupViewsForHideKeyboard(this, binding.constraintlayoutParent, listOf(binding.buttonConfirm))
         binding.adView.loadAd(AdRequest.Builder().build())
     }
 
@@ -71,7 +71,7 @@ class CreateUpdatePetScheduleActivity : AppCompatActivity() {
 
     private fun setObserversOfLiveData() {
         viewModel.isApiLoading.observe(this, { isApiLoading ->
-            val recyclerView = binding.petNameListRecyclerView
+            val recyclerView = binding.recyclerviewPetname
             if(isApiLoading){
                 for(i in 0..adapter.itemCount) {
                     val checkBox = recyclerView.findViewHolderForLayoutPosition(i)?.itemView?.findViewById<CheckBox>(R.id.pet_name_check_box)
@@ -108,8 +108,8 @@ class CreateUpdatePetScheduleActivity : AppCompatActivity() {
             }
         })
 
-        binding.petNameListRecyclerView.adapter = adapter
-        binding.petNameListRecyclerView.layoutManager = LinearLayoutManager(baseContext)
+        binding.recyclerviewPetname.adapter = adapter
+        binding.recyclerviewPetname.layoutManager = LinearLayoutManager(baseContext)
 
         initializeDataByFetchingPet()
     }
@@ -173,7 +173,7 @@ class CreateUpdatePetScheduleActivity : AppCompatActivity() {
     private fun createPetSchedule(){
         viewModel.isApiLoading.value = true
         val createPetScheduleReqDto = CreatePetScheduleReqDto(
-            getCheckedPetIdList(), LocalTime.of(binding.timePicker.hour, binding.timePicker.minute).toString(), binding.memoEditText.text.toString()
+            getCheckedPetIdList(), LocalTime.of(binding.timepicker.hour, binding.timepicker.minute).toString(), viewModel.memo.value
         )
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
             .createPetScheduleReq(createPetScheduleReqDto)
@@ -204,17 +204,17 @@ class CreateUpdatePetScheduleActivity : AppCompatActivity() {
 
         PetScheduleNotification.setAlarmManagerRepeating(
             baseContext,
-            intent.getLongExtra("id", -1),
-            LocalTime.of(binding.timePicker.hour, binding.timePicker.minute)
+            intent.getLongExtra("timepicker", -1),
+            LocalTime.of(binding.timepicker.hour, binding.timepicker.minute)
                 .toString() + ":00",
             Util.getPetNamesFromPetIdList(petNameForId, getCheckedPetIdList()),
-            binding.memoEditText.text.toString()
+            viewModel.memo.value
         )
     }
 
     private fun updatePetSchedule(id: Long, enabled: Boolean){
         val updatePetScheduleReqDto = UpdatePetScheduleReqDto(
-            id, getCheckedPetIdList(), LocalTime.of(binding.timePicker.hour, binding.timePicker.minute).toString(), binding.memoEditText.text.toString(), enabled
+            id, getCheckedPetIdList(), LocalTime.of(binding.timepicker.hour, binding.timepicker.minute).toString(), viewModel.memo.value, enabled
         )
 
         viewModel.isApiLoading.value = true

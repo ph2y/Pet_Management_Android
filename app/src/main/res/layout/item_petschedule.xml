@@ -6,10 +6,10 @@
         <import type="java.util.HashMap"/>
         <variable
             name="adapter"
-            type="com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleListAdapter" />
+            type="com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleAdapter" />
         <variable
             name="holder"
-            type="com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleListAdapter.ViewHolder" />
+            type="com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleAdapter.ViewHolder" />
         <variable
             name="petSchedule"
             type="com.sju18001.petmanagement.restapi.dao.PetSchedule" />
