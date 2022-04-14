@@ -51,6 +51,35 @@ class ServerUtil {
             })
         }
 
+        /** TODO: remove this function. (Find the cause of the error and fix it.) */
+        fun <T> enqueueApiCallWithoutErrorMessage(
+            call: Call<T>,
+            getIsViewDestroyed: ()-> Boolean,
+            context: Context,
+            onResponseOrFailure: ()->Unit
+        ){
+            call.enqueue(object: Callback<T> {
+                override fun onResponse(call: Call<T>, response: Response<T>) {
+                    if(getIsViewDestroyed()) return
+
+                    onResponseOrFailure.invoke()
+
+                    if (!response.isSuccessful && response.errorBody() != null) {
+                        Util.getMessageFromErrorBody(response.errorBody()!!)
+                            ?.let { Util.log(context, it) }
+                    }
+                }
+
+                override fun onFailure(call: Call<T>, t: Throwable) {
+                    if(getIsViewDestroyed()) return
+
+                    onResponseOrFailure.invoke()
+
+                    Util.log(context, t.message.toString())
+                }
+            })
+        }
+
         fun getEmptyBody(): RequestBody{
             return RequestBody.create(MediaType.parse("application/json; charset=UTF-8"), "{}")
         }

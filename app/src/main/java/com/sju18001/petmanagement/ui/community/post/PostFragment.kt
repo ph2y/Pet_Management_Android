@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -503,9 +502,9 @@ class PostFragment : Fragment() {
     private fun reportPost(id: Long){
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .reportPostReq(ReportPostReqDto(id))
-        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+        ServerUtil.enqueueApiCallWithoutErrorMessage(call, {isViewDestroyed}, requireContext(), {
             Toast.makeText(context, getString(R.string.report_post_successful), Toast.LENGTH_LONG).show()
-        }, {}, {})
+        })
     }
 
 
