@@ -86,6 +86,9 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
                         petListOrder.add(createdPetId!!)
                         putOrderedPetIdList(requireContext().getString(R.string
                             .data_name_pet_list_id_order), petListOrder, requireContext())
+
+
+                        myPetViewModel.setPetNameForId(createdPetId!!, it.body()!!.petList[0].name)
                     }
                 },{},{})
             }
@@ -109,6 +112,9 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
                             adapter.setItem(centerPosition, updatedPet)
                             adapter.notifyItemChanged(centerPosition)
                         }
+
+
+                        myPetViewModel.setPetNameForId(updatedPetId!!, it.body()!!.petList[0].name)
                     }
                 },{},{})
             }
@@ -241,7 +247,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
             val fetchedPetList: ArrayList<Pet> = ArrayList()
             response.body()?.petList?.map {
                 fetchedPetList.add(it)
-                myPetViewModel.addPetNameForId(it.id, it.name)
+                myPetViewModel.setPetNameForId(it.id, it.name)
             }
 
             synchronizeAlarmManager()
@@ -286,8 +292,11 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
             .getString(R.string.data_name_pet_list_id_order), requireContext())
 
         // 사라진 펫 제거 ... fetchedPetList: 2,3,4 / orderedPetIdList: 2,4,(5) -> 2,4
-        for(id in orderedPetIdList){
-            if(fetchedPetList.find{ it.id == id } == null) orderedPetIdList.remove(id)
+        // 리스트를 제거하는 동작을 수행하기 때문에 반복문을 거꾸로 진행한다.
+        for(i in orderedPetIdList.count()-1 downTo 0){
+            if(fetchedPetList.find{ it.id == orderedPetIdList[i] } == null){
+                orderedPetIdList.remove(orderedPetIdList[i])
+            }
         }
 
         // 새로 생긴 펫 추가 ... fetchedPetList: 2,(3),4 / orderedPetIdList: 2,4 -> 2,4,3

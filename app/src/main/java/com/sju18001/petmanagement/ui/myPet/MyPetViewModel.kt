@@ -23,7 +23,7 @@ class MyPetViewModel(private val handle: SavedStateHandle) : ViewModel() {
             field = value
         }
 
-    fun addPetNameForId(id: Long, name: String){
+    fun setPetNameForId(id: Long, name: String){
         petNameForId[id] = name
     }
 
