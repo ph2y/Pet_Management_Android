@@ -2,16 +2,22 @@ package com.sju18001.petmanagement.ui.myPet.petScheduleManager
 
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Switch
 import android.widget.TextView
 import androidx.annotation.RequiresApi
+import androidx.databinding.BindingAdapter
+import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.Util
+import com.sju18001.petmanagement.databinding.PetScheduleListItemBinding
 import com.sju18001.petmanagement.restapi.dao.PetSchedule
+import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
 import java.time.LocalTime
 
 interface PetScheduleListAdapterInterface{
@@ -24,84 +30,38 @@ interface PetScheduleListAdapterInterface{
 
 class PetScheduleListAdapter(
     private var dataSet: ArrayList<PetSchedule>,
-    private val petNameForId: HashMap<Long, String>,
+    private val getPetNameForId: () -> HashMap<Long, String>,
     private var petScheduleListAdapterInterface: PetScheduleListAdapterInterface
     ) : RecyclerView.Adapter<PetScheduleListAdapter.ViewHolder>(){
+    class ViewHolder(
+        private val adapter: PetScheduleListAdapter,
+        private val binding: PetScheduleListItemBinding,
+        private val getPetNameForId: () -> HashMap<Long, String>
+        ): RecyclerView.ViewHolder(binding.root){
+        fun bind(petSchedule: PetSchedule) {
+            binding.adapter = adapter
+            binding.holder = this
+            binding.petSchedule = petSchedule
+            binding.petNameForId = getPetNameForId.invoke()
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view){
-        val noonTextView: TextView = view.findViewById(R.id.noon_text_view)
-        val timeTextView: TextView = view.findViewById(R.id.time_text_view)
-        val enabledSwitch: Switch = view.findViewById(R.id.enabled_switch)
-        val petListTextView: TextView = view.findViewById(R.id.pet_list_text_view)
-        val memoTextView: TextView = view.findViewById(R.id.memo_text_view)
+            binding.executePendingBindings()
+        }
     }
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
     ): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.pet_schedule_list_item, parent, false)
-
-        val holder = ViewHolder(view)
-        setListenerOnView(holder)
-
-        return holder
+        val binding = DataBindingUtil.inflate<PetScheduleListItemBinding>(LayoutInflater.from(parent.context),
+            R.layout.pet_schedule_list_item, parent, false)
+        return ViewHolder(this, binding, getPetNameForId)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        updateViewHolderByDataSet(holder, dataSet[position])
+        holder.bind(dataSet[position])
     }
 
     override fun getItemCount(): Int = dataSet.size
-
-    private fun setListenerOnView(holder: ViewHolder) {
-        // 아이템 Click
-        holder.itemView.setOnClickListener {
-            val position = holder.absoluteAdapterPosition
-            petScheduleListAdapterInterface.startCreateUpdatePetScheduleFragmentForUpdate(dataSet[position])
-        }
-
-        // 아이템 Long click
-        holder.itemView.setOnLongClickListener { _ ->
-            val position = holder.absoluteAdapterPosition
-            petScheduleListAdapterInterface.askForDeleteItem(position, dataSet[position])
-            true
-        }
-
-        // 스위치
-        holder.enabledSwitch.setOnCheckedChangeListener { _, isChecked ->
-            val position = holder.absoluteAdapterPosition
-            dataSet[position].enabled = isChecked
-            petScheduleListAdapterInterface.updatePetSchedule(dataSet[position])
-
-            if(isChecked){
-                // Notification ON
-                PetScheduleNotification.setAlarmManagerRepeating(
-                    petScheduleListAdapterInterface.getContext(),
-                    dataSet[position].id,
-                    dataSet[position].time,
-                    Util.getPetNamesFromPetIdList(petNameForId, dataSet[position].petIdList),
-                    dataSet[position].memo
-                )
-            }else{
-                // Notification OFF
-                PetScheduleNotification.cancelAlarmManagerRepeating(
-                    petScheduleListAdapterInterface.getContext(),
-                    dataSet[position].id
-                )
-            }
-        }
-    }
-
-    private fun updateViewHolderByDataSet(holder: ViewHolder, data: PetSchedule){
-        val localTime = LocalTime.parse(data.time)
-        holder.noonTextView.text = if(localTime.hour <= 12) "오전" else "오후"
-        holder.timeTextView.text = localTime.hour.toString().padStart(2, '0') + ":" + localTime.minute.toString().padStart(2, '0')
-        holder.enabledSwitch.isChecked = data.enabled!!
-        holder.petListTextView.text = Util.getPetNamesFromPetIdList(petNameForId, data.petIdList)
-        holder.memoTextView.text = data.memo
-    }
 
     fun removeItem(index: Int){
         dataSet.removeAt(index)
@@ -109,5 +69,63 @@ class PetScheduleListAdapter(
 
     fun setDataSet(_dataSet: ArrayList<PetSchedule>){
         dataSet = _dataSet
+    }
+
+
+    /** databinding functions */
+    companion object {
+        @JvmStatic
+        @BindingAdapter("setNoonTextView")
+        fun setNoonTextView(textView: TextView, time: String) {
+            val localTime = LocalTime.parse(time)
+            textView.text = if(localTime.hour <= 12) "오전" else "오후"
+        }
+
+        @JvmStatic
+        @BindingAdapter("setTimeTextView")
+        fun setTimeTextView(textView: TextView, time: String) {
+            val localTime = LocalTime.parse(time)
+            textView.text = localTime.hour.toString().padStart(2, '0') +
+                    ":" + localTime.minute.toString().padStart(2, '0')
+        }
+
+        @JvmStatic
+        @BindingAdapter("petNameForId", "petIdList")
+        fun setPetListView(textView: TextView, petNameForId: HashMap<Long, String>, petIdList: String) {
+            textView.text = Util.getPetNamesFromPetIdList(petNameForId, petIdList)
+        }
+    }
+
+    fun onClickPetScheduleItem(holder: ViewHolder) {
+        val position = holder.absoluteAdapterPosition
+        petScheduleListAdapterInterface.startCreateUpdatePetScheduleFragmentForUpdate(dataSet[position])
+    }
+
+    fun onLongClickPetScheduleItem(holder: ViewHolder): Boolean {
+        val position = holder.absoluteAdapterPosition
+        petScheduleListAdapterInterface.askForDeleteItem(position, dataSet[position])
+        return true
+    }
+
+    fun onClickEnabledSwitch(isChecked: Boolean, holder: ViewHolder) {
+        val position = holder.absoluteAdapterPosition
+        petScheduleListAdapterInterface.updatePetSchedule(dataSet[position])
+
+        if(isChecked){
+            // Notification ON
+            PetScheduleNotification.setAlarmManagerRepeating(
+                petScheduleListAdapterInterface.getContext(),
+                dataSet[position].id,
+                dataSet[position].time,
+                Util.getPetNamesFromPetIdList(getPetNameForId.invoke(), dataSet[position].petIdList),
+                dataSet[position].memo
+            )
+        }else{
+            // Notification OFF
+            PetScheduleNotification.cancelAlarmManagerRepeating(
+                petScheduleListAdapterInterface.getContext(),
+                dataSet[position].id
+            )
+        }
     }
 }

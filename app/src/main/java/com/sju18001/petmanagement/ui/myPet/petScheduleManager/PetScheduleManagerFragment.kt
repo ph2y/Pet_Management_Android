@@ -29,10 +29,7 @@ class PetScheduleManagerFragment : Fragment() {
     private var _binding: FragmentPetScheduleManagerBinding? = null
     private val binding get() = _binding!!
 
-    // ViewModel
     private val myPetViewModel: MyPetViewModel by activityViewModels()
-
-    // 리싸이클러뷰
     private lateinit var adapter: PetScheduleListAdapter
 
     private var isViewDestroyed = false
@@ -81,7 +78,7 @@ class PetScheduleManagerFragment : Fragment() {
     }
 
     private fun initializeAdapter(){
-        adapter = PetScheduleListAdapter(arrayListOf(), myPetViewModel.petNameForId, object: PetScheduleListAdapterInterface {
+        adapter = PetScheduleListAdapter(arrayListOf(), { myPetViewModel.petNameForId }, object: PetScheduleListAdapterInterface {
             override fun startCreateUpdatePetScheduleFragmentForUpdate(data: PetSchedule) {
                 val createUpdatePetScheduleActivityIntent = Intent(context, CreateUpdatePetScheduleActivity::class.java)
                 createUpdatePetScheduleActivityIntent
