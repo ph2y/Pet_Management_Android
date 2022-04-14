@@ -29,8 +29,6 @@ class MyPetFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val TAB_ELEMENTS = listOf(requireContext().getText(R.string.pet_manager_title), requireContext().getText(R.string.pet_schedule_manager_title))
-
         val tabLayout = binding.tablayout
         val viewPager = binding.viewpager.also{
             it.adapter = MyPetCollectionAdapter(this)
@@ -44,8 +42,9 @@ class MyPetFragment : Fragment() {
             it.isUserInputEnabled = false
         }
 
+        val tabElements = listOf(requireContext().getText(R.string.pet_manager_title), requireContext().getText(R.string.pet_schedule_manager_title))
         TabLayoutMediator(tabLayout, viewPager){ tab, position ->
-            tab.text = TAB_ELEMENTS[position]
+            tab.text = tabElements[position]
         }.attach()
     }
 

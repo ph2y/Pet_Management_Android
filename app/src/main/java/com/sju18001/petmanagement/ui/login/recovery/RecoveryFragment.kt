@@ -10,8 +10,6 @@ import com.google.android.material.tabs.TabLayoutMediator
 import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentRecoveryBinding
 
-private val TAB_ELEMENTS = listOf("아이디 찾기", "비밀번호 찾기")
-
 class RecoveryFragment: Fragment() {
     private var _binding: FragmentRecoveryBinding? = null
     private val binding get() = _binding!!
@@ -32,8 +30,9 @@ class RecoveryFragment: Fragment() {
         val viewPager = binding.viewPager
         viewPager.adapter = RecoveryCollectionAdapter(this)
 
+        val tabElements = listOf("아이디 찾기", "비밀번호 찾기")
         TabLayoutMediator(tabLayout, viewPager){ tab, position ->
-            tab.text = TAB_ELEMENTS[position]
+            tab.text = tabElements[position]
         }.attach()
     }
 
