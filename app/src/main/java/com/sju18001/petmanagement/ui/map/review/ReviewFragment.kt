@@ -5,12 +5,10 @@ import android.app.AlertDialog
 import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -308,9 +306,9 @@ class ReviewFragment : Fragment() {
     private fun reportReview(id: Long){
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .reportReviewReq(ReportReviewReqDto(id))
-        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+        ServerUtil.enqueueApiCallWithoutErrorMessage(call, {isViewDestroyed}, requireContext(), {
             Toast.makeText(context, getString(R.string.report_review_successful), Toast.LENGTH_LONG).show()
-        }, {}, {})
+        },)
     }
 
     private fun setEmptyNotificationView(itemCount: Int?) {

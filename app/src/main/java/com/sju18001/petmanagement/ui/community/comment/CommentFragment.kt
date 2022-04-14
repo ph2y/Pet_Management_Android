@@ -294,9 +294,9 @@ class CommentFragment : Fragment() {
     private fun reportComment(id: Long){
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .reportCommentReq(ReportCommentReqDto(id))
-        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+        ServerUtil.enqueueApiCallWithoutErrorMessage(call, {isViewDestroyed}, requireContext(), {
             Toast.makeText(context, getString(R.string.report_comment_successful), Toast.LENGTH_LONG).show()
-        }, {}, {})
+        })
     }
 
     private fun setViewForReplyCancel(){
