@@ -1,13 +1,11 @@
-package com.sju18001.petmanagement.ui.community.follow
+package com.sju18001.petmanagement.ui.community.follow.follower
 
 import android.content.Context
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
@@ -17,12 +15,14 @@ import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.community.CommunityUtil
+import com.sju18001.petmanagement.ui.community.follow.FollowItem
+import com.sju18001.petmanagement.ui.community.follow.FollowUnfollowButtonInterface
 import de.hdodenhof.circleimageview.CircleImageView
 
 class FollowerAdapter(val context: Context, private val buttonInterface: FollowUnfollowButtonInterface):
     RecyclerView.Adapter<FollowerAdapter.HistoryListViewHolder>() {
 
-    private var resultList = mutableListOf<FollowListItem>()
+    private var resultList = mutableListOf<FollowItem>()
 
     private var isViewDestroyed = false
 
@@ -33,17 +33,17 @@ class FollowerAdapter(val context: Context, private val buttonInterface: FollowU
         val button: Button = view.findViewById(R.id.button_follow)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FollowerAdapter.HistoryListViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryListViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_follow, parent, false)
 
-        val holder = FollowerAdapter.HistoryListViewHolder(view)
+        val holder = HistoryListViewHolder(view)
         setListenerOnView(holder)
 
         return holder
     }
 
-    override fun onBindViewHolder(holder: FollowerAdapter.HistoryListViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: HistoryListViewHolder, position: Int) {
         // set account photo
         if(resultList[position].getHasPhoto()) {
             if(resultList[position].getPhoto() == null) {
@@ -74,7 +74,7 @@ class FollowerAdapter(val context: Context, private val buttonInterface: FollowU
         }
     }
 
-    private fun setListenerOnView(holder: FollowerAdapter.HistoryListViewHolder){
+    private fun setListenerOnView(holder: HistoryListViewHolder){
         // start pet profile
         holder.cardView.setOnClickListener {
             val position = holder.absoluteAdapterPosition
@@ -161,7 +161,7 @@ class FollowerAdapter(val context: Context, private val buttonInterface: FollowU
 
     override fun getItemCount() = resultList.size
 
-    public fun setResult(result: MutableList<FollowListItem>){
+    public fun setResult(result: MutableList<FollowItem>){
         this.resultList = result
         notifyDataSetChanged()
     }

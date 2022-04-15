@@ -1,6 +1,7 @@
-package com.sju18001.petmanagement.ui.community.follow
+package com.sju18001.petmanagement.ui.community.follow.following
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,9 +16,12 @@ import com.sju18001.petmanagement.databinding.FragmentFollowingBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
+import com.sju18001.petmanagement.ui.community.follow.FollowActivity
+import com.sju18001.petmanagement.ui.community.follow.FollowItem
+import com.sju18001.petmanagement.ui.community.follow.FollowUnfollowButtonInterface
+import com.sju18001.petmanagement.ui.community.follow.FollowViewModel
 
-class FollowingFragment : Fragment() {
-
+class FollowingFragment(private val initializeFollowerIdList: () -> Unit) : Fragment() {
     // for shared ViewModel
     private lateinit var followViewModel: FollowViewModel
 
@@ -27,7 +31,7 @@ class FollowingFragment : Fragment() {
 
     // variables for RecyclerView
     private lateinit var followingAdapter: FollowingAdapter
-    private var followingList: MutableList<FollowListItem> = mutableListOf()
+    private var followingList: MutableList<FollowItem> = mutableListOf()
 
     private var isViewDestroyed = false
 
@@ -61,7 +65,7 @@ class FollowingFragment : Fragment() {
         // initialize RecyclerView
         followingAdapter = FollowingAdapter(requireContext(), followViewModel, object: FollowUnfollowButtonInterface {
             override fun updateFollowUnfollowButton() {
-                (parentFragment as FollowFragment).updateFollowerIdList()
+                initializeFollowerIdList.invoke()
             }
         })
         binding.followingRecyclerView.setHasFixedSize(true)
@@ -112,15 +116,14 @@ class FollowingFragment : Fragment() {
                 val nickname = it.nickname
                 val representativePetId = it.representativePetId
 
-                val item = FollowListItem()
+                val item = FollowItem()
                 item.setValues(hasPhoto, null, id, username, nickname!!, true, representativePetId)
                 followingList.add(item)
             }
 
             // set following count
-            val followingText = requireContext().getText(R.string.following_fragment_title).toString() +
-                    ' ' + followingList.size.toString()
-            followViewModel.setFollowingTitle(followingText)
+            followViewModel.followingTitle.value =
+                    "${requireContext().getText(R.string.following_fragment_title)} ${followingList.size}"
 
             // set RecyclerView
             followingAdapter.setResult(followingList)
