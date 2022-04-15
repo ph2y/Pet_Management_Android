@@ -177,7 +177,7 @@ class PetScheduleManagerFragment : Fragment() {
     }
 
 
-    /** databinding functions */
+    /** Databinding functions */
     fun onClickCreatePetScheduleButton() {
         checkIfAccountHasPetAndStartCreatePetSchedule()
     }

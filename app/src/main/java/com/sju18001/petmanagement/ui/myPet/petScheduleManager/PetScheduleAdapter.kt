@@ -2,8 +2,10 @@ package com.sju18001.petmanagement.ui.myPet.petScheduleManager
 
 import android.content.Context
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -86,6 +88,14 @@ class PetScheduleAdapter(
         @BindingAdapter("petNameForId", "petIdList")
         fun setPetListView(textView: TextView, petNameForId: HashMap<Long, String>, petIdList: String) {
             textView.text = Util.getPetNamesFromPetIdList(petNameForId, petIdList)
+        }
+
+        @JvmStatic
+        @BindingAdapter("layout_marginLeft")
+        fun setMarginLeft(view: View, dp: Int) {
+            val layoutParams = view.layoutParams as ViewGroup.MarginLayoutParams
+            layoutParams.leftMargin = dp
+            view.layoutParams = layoutParams
         }
     }
 
