@@ -21,7 +21,6 @@
             android:id="@+id/constraintlayout_topfixed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="@{viewModel.isViewsDetailed &amp;&amp; viewModel.isOrientationPortrait? View.VISIBLE: View.GONE}"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toTopOf="@id/constraintlayout_contents">
 
@@ -73,10 +72,10 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/relativelayout_accountinfo"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="12dp"
-                android:visibility="@{viewModel.isActivityTypeCommunity() &amp;&amp; viewModel.isViewsDetailed? View.VISIBLE: View.GONE}"
                 android:background="@drawable/border"
                 app:layout_constraintTop_toBottomOf="@id/relativelayout_backbutton">
 
@@ -263,7 +262,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:paddingBottom="16dp"
-                android:visibility="@{viewModel.isActivityTypePetProfile() &amp;&amp; viewModel.isViewsDetailed? View.VISIBLE: View.GONE}"
                 app:layout_constraintTop_toBottomOf="@id/constraintlayout_petinfo"
                 app:layout_constraintBottom_toTopOf="@id/textview_history">
 
