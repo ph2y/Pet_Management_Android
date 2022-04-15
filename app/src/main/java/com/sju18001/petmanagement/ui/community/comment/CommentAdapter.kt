@@ -16,7 +16,7 @@ import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dao.Comment
 
-interface CommentListAdapterInterface{
+interface CommentAdapterInterface{
     fun getActivity(): Activity
     fun onClickReply(id: Long, nickname: String)
     fun onLongClickComment(authorId: Long, commentId: Long, commentContents: String, position: Int)
@@ -24,12 +24,12 @@ interface CommentListAdapterInterface{
     fun startPetProfile(author: Account)
 }
 
-class CommentListAdapter(
+class CommentAdapter(
     private var dataSet: ArrayList<Comment>,
     private var pageIndices: ArrayList<Int>,
     private var topReplyIdList: ArrayList<Long?>, // -1: 답글 없음, NULL: 답글 있으나 불러온 적 없음, N+: 답글 있으며 불러온 적 있음
-    private val commentListAdapterInterface: CommentListAdapterInterface
-    ) : RecyclerView.Adapter<CommentListAdapter.ViewHolder>()  {
+    private val commentAdapterInterface: CommentAdapterInterface
+    ) : RecyclerView.Adapter<CommentAdapter.ViewHolder>()  {
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
         val layout: ConstraintLayout = view.findViewById(R.id.constraintlayout_comment)
         val accountPhoto: ImageView = view.findViewById(R.id.circleimageview_comment_accountphoto)
@@ -54,33 +54,33 @@ class CommentListAdapter(
         // start pet profile
         holder.accountPhoto.setOnClickListener {
             val position = holder.absoluteAdapterPosition
-            commentListAdapterInterface.startPetProfile(dataSet[position].author)
+            commentAdapterInterface.startPetProfile(dataSet[position].author)
         }
         holder.nickname.setOnClickListener {
             val position = holder.absoluteAdapterPosition
-            commentListAdapterInterface.startPetProfile(dataSet[position].author)
+            commentAdapterInterface.startPetProfile(dataSet[position].author)
         }
 
         holder.reply.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             dataSet[position].author.nickname?.let {
-                commentListAdapterInterface.onClickReply(dataSet[position].id, it)
+                commentAdapterInterface.onClickReply(dataSet[position].id, it)
             }
         }
 
         holder.layout.setOnLongClickListener { _ ->
             val position = holder.absoluteAdapterPosition
-            commentListAdapterInterface.onLongClickComment(dataSet[position].author.id, dataSet[position].id, dataSet[position].contents, position)
+            commentAdapterInterface.onLongClickComment(dataSet[position].author.id, dataSet[position].id, dataSet[position].contents, position)
             true
         }
 
         holder.loadReply.setOnClickListener {
             val position = holder.absoluteAdapterPosition
-            commentListAdapterInterface.onClickLoadReply(pageIndices[position], null, dataSet[position].id, position)
+            commentAdapterInterface.onClickLoadReply(pageIndices[position], null, dataSet[position].id, position)
             pageIndices[position] += 1
 
             // 답글 불러오기 -> 이전 답글 불러오기
-            holder.loadReply.text = commentListAdapterInterface.getActivity().getString(R.string.load_prev_reply_title)
+            holder.loadReply.text = commentAdapterInterface.getActivity().getString(R.string.load_prev_reply_title)
         }
     }
 

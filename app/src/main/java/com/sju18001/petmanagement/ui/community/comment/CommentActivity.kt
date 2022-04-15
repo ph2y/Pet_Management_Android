@@ -36,7 +36,7 @@ class CommentActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCommentBinding
 
     private val viewModel: CommentViewModel by viewModels()
-    private lateinit var adapter: CommentListAdapter
+    private lateinit var adapter: CommentAdapter
 
     private var isViewDestroyed = false
 
@@ -90,7 +90,7 @@ class CommentActivity : AppCompatActivity() {
     }
 
     private fun initializeAdapter(){
-        adapter = CommentListAdapter(arrayListOf(), arrayListOf(), arrayListOf(), object: CommentListAdapterInterface{
+        adapter = CommentAdapter(arrayListOf(), arrayListOf(), arrayListOf(), object: CommentAdapterInterface{
             override fun getActivity() = this@CommentActivity
 
             override fun onClickReply(id: Long, nickname: String) {
