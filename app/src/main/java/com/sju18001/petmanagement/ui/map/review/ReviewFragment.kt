@@ -386,8 +386,7 @@ class ReviewFragment : Fragment() {
                 CustomProgressBar.removeProgressBar(binding.fragmentReviewParentLayout)
             }
         }, { CustomProgressBar.removeProgressBar(binding.fragmentReviewParentLayout) },
-            { CustomProgressBar.removeProgressBar(binding.fragmentReviewParentLayout) }
-        )
+            { CustomProgressBar.removeProgressBar(binding.fragmentReviewParentLayout) })
     }
 
     private fun startCreateReviewActivity() {
