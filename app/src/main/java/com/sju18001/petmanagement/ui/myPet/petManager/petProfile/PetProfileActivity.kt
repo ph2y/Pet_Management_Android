@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -17,6 +18,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -129,6 +131,10 @@ class PetProfileActivity : AppCompatActivity(){
         }
     }
 
+    private fun isOrientationPortrait(): Boolean{
+        return resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+    }
+
     private fun initializeAuthorDataOfViewModel() {
         viewModel.accountId = intent.getLongExtra("accountId", -1)
         viewModel.accountUsername = intent.getStringExtra("accountUsername").toString()
@@ -220,10 +226,10 @@ class PetProfileActivity : AppCompatActivity(){
         }
     }
 
-
     /** setObserversOfLiveData() */
     private fun setObserversOfLiveData() {
         viewModel.isViewsDetailed.observe(this, { flag ->
+            // Databinding이 ConstraintSet + Transition에 제대로 적용이 안 되므로 수동으로 뷰를 바꿔줍니다.
             if(flag) setViewsDetailed()
             else setViewsNotDetailed()
         })
@@ -257,8 +263,19 @@ class PetProfileActivity : AppCompatActivity(){
     }
 
     private fun setViewsDetailed() {
+        setPetInfoLayoutDetailed()
+
+        binding.constraintlayoutTopfixed.visibility =
+            if(viewModel.isOrientationPortrait.value == true) View.VISIBLE else View.GONE
+        binding.relativelayoutAccountinfo.visibility =
+            if(viewModel.isActivityTypeCommunity()) View.VISIBLE else View.GONE
+        binding.linearlayoutUpdatepetbutton.visibility =
+            if(viewModel.isActivityTypePetProfile()) View.VISIBLE else View.GONE
+    }
+
+    private fun setPetInfoLayoutDetailed() {
         // Landscape(가로 모드)일 때는 Detailed view를 사용하지 않습니다.
-        if(!isOrientationPortrait()) return
+        if(viewModel.isOrientationPortrait.value == false) return
 
         // pet_info_layout 애니메이션
         TransitionManager.beginDelayedTransition(
@@ -270,14 +287,10 @@ class PetProfileActivity : AppCompatActivity(){
         }.applyTo(binding.constraintlayoutPetinfo)
 
         // ConstraintSet이 적용되는 내부 뷰는 Databinding이 적용되지 않으므로 따로 처리를 해줍니다.
-        setViewsByViewModel()
+        setViewsInPetInfoLayoutByViewModel()
     }
 
-    private fun isOrientationPortrait(): Boolean{
-        return resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-    }
-
-    private fun setViewsByViewModel() {
+    private fun setViewsInPetInfoLayoutByViewModel() {
         binding.imageviewRepresentativeicon.visibility =
             if (viewModel.isPetRepresentative.value == true) { View.VISIBLE } else { View.INVISIBLE }
 
@@ -289,6 +302,14 @@ class PetProfileActivity : AppCompatActivity(){
     }
 
     private fun setViewsNotDetailed() {
+        setPetInfoLayoutNotDetailed()
+
+        binding.constraintlayoutTopfixed.visibility = View.GONE
+        binding.relativelayoutAccountinfo.visibility = View.GONE
+        binding.linearlayoutUpdatepetbutton.visibility = View.GONE
+    }
+
+    private fun setPetInfoLayoutNotDetailed() {
         // pet_info_layout 애니메이션
         TransitionManager.beginDelayedTransition(
             binding.constraintlayoutPetinfo,
@@ -299,7 +320,7 @@ class PetProfileActivity : AppCompatActivity(){
         }.applyTo(binding.constraintlayoutPetinfo)
 
         // ConstraintSet이 적용되는 내부 뷰는 Databinding이 적용되지 않으므로 따로 처리를 해줍니다.
-        setViewsByViewModel()
+        setViewsInPetInfoLayoutByViewModel()
     }
 
 
