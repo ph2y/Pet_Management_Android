@@ -1,6 +1,5 @@
-package com.sju18001.petmanagement.ui.myPet.petManager.petProfile
+package com.sju18001.petmanagement.ui.myPet.petManager.createUpdatePet
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 

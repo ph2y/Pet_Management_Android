@@ -6,10 +6,10 @@
         <import type="android.view.View"/>
         <variable
             name="activity"
-            type="com.sju18001.petmanagement.ui.myPet.petManager.petProfile.CreateUpdatePetActivity" />
+            type="com.sju18001.petmanagement.ui.myPet.petManager.createUpdatePet.CreateUpdatePetActivity" />
         <variable
             name="viewModel"
-            type="com.sju18001.petmanagement.ui.myPet.petManager.petProfile.CreateUpdatePetViewModel" />
+            type="com.sju18001.petmanagement.ui.myPet.petManager.createUpdatePet.CreateUpdatePetViewModel" />
     </data>
 
     <RelativeLayout
