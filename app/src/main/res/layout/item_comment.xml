@@ -1,92 +1,121 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/constraintlayout_comment"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="10dp"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <de.hdodenhof.circleimageview.CircleImageView
-        android:id="@+id/circleimageview_comment_accountphoto"
-        android:layout_width="36dp"
-        android:layout_height="36dp"
-        android:src="@drawable/marker_pet"
-        app:civ_border_width="1dp"
-        app:civ_border_color="@color/carrot"
-        app:layout_constraintVertical_bias="0"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        />
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="adapter"
+            type="com.sju18001.petmanagement.ui.community.comment.CommentAdapter" />
+        <variable
+            name="holder"
+            type="com.sju18001.petmanagement.ui.community.comment.CommentAdapter.ViewHolder" />
+        <variable
+            name="comment"
+            type="com.sju18001.petmanagement.restapi.dao.Comment" />
+        <variable
+            name="topReplyId"
+            type="Long" />
+    </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="0dp"
+        android:id="@+id/constraintlayout_comment"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="10dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toEndOf="@id/circleimageview_comment_accountphoto"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:padding="10dp"
+        android:onLongClick="@{() -> adapter.onLongClickComment(holder)}"
+        app:layout_marginLeft="@{comment.parentCommentId == null? 0: 96}"
         >
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintlayout_comment_contents"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/circleimageview_comment_accountphoto"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:src="@drawable/marker_pet"
+            android:onClick="@{() -> adapter.startPetProfile(holder)}"
+            app:civ_border_width="1dp"
+            app:civ_border_color="@color/carrot"
+            app:layout_constraintVertical_bias="0"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
-            <TextView
-                android:id="@+id/textview_comment_nickname"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="zimmerman"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                />
-            <TextView
-                android:id="@+id/textview_comment_contents"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:text="hi"
-                android:textColor="@color/black"
-                android:ellipsize="none"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            />
+
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/constraintlayout_comment_footer"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintTop_toBottomOf="@id/constraintlayout_comment_contents"
-            app:layout_constraintStart_toStartOf="parent">
+            android:layout_marginLeft="10dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@id/circleimageview_comment_accountphoto"
+            app:layout_constraintEnd_toEndOf="parent"
+            >
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintlayout_comment_contents"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent">
+                <TextView
+                    android:id="@+id/textview_comment_nickname"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{comment.author.nickname}"
+                    android:textColor="@color/black"
+                    android:textStyle="bold"
+                    android:onClick="@{() -> adapter.startPetProfile(holder)}"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    />
+                <TextView
+                    android:id="@+id/textview_comment_contents"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/black"
+                    android:ellipsize="none"
+                    app:contents="@{comment.contents}"
+                    app:nicknameTextView="@{textviewCommentNickname}"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/constraintlayout_comment_footer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/constraintlayout_comment_contents"
+                app:layout_constraintStart_toStartOf="parent">
+                <TextView
+                    android:id="@+id/textview_comment_timestamp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:timestamp="@{comment.timestamp}"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    />
+                <TextView
+                    android:id="@+id/textview_comment_reply"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/reply_button"
+                    android:layout_marginLeft="15dp"
+                    android:visibility="@{comment.parentCommentId == null? View.VISIBLE: View.GONE}"
+                    android:onClick="@{() -> adapter.onClickReply(holder)}"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/textview_comment_timestamp"
+                    />
+            </androidx.constraintlayout.widget.ConstraintLayout>
             <TextView
-                android:id="@+id/textview_comment_timestamp"
+                android:id="@+id/textview_comment_loadreply"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="36분"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                />
-            <TextView
-                android:id="@+id/textview_comment_reply"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/reply_button"
-                android:layout_marginLeft="15dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toEndOf="@id/textview_comment_timestamp"
-                />
+                android:text="@string/load_reply_title"
+                android:visibility="@{topReplyId == adapter.NO_REPLY? View.GONE: View.VISIBLE}"
+                android:onClick="@{() -> adapter.onClickLoadReply(textviewCommentLoadreply, holder)}"
+                app:layout_constraintTop_toBottomOf="@id/constraintlayout_comment_footer"
+                app:layout_constraintStart_toStartOf="@id/constraintlayout_comment_footer"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
-        <TextView
-            android:id="@+id/textview_comment_loadreply"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/load_reply_title"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@id/constraintlayout_comment_footer"
-            app:layout_constraintStart_toStartOf="@id/constraintlayout_comment_footer"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

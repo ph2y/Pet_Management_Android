@@ -67,7 +67,7 @@ class UpdateCommentActivity : AppCompatActivity() {
     }
 
 
-    /** databinding functions */
+    /** Databinding functions */
     fun onClickBackButton() {
         finish()
     }

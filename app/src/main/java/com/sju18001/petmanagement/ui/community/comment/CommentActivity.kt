@@ -219,7 +219,7 @@ class CommentActivity : AppCompatActivity() {
             response.body()?.let{
                 // 더이상 불러올 답글이 없을 시
                 if(it.isLast == true){
-                    adapter.setTopReplyIdList(-1, position)
+                    adapter.setTopReplyIdList(CommentAdapter.NO_REPLY, position)
                     adapter.notifyItemChanged(position)
 
                     Toast.makeText(baseContext, getString(R.string.no_more_reply), Toast.LENGTH_SHORT).show()
@@ -232,6 +232,7 @@ class CommentActivity : AppCompatActivity() {
                         adapter.addItemOnPosition(item[i], position+1)
                     }
 
+                    adapter.addPageIndices(position)
                     adapter.notifyItemRangeInserted(position + 1, replyCount)
                 }
             }
@@ -256,7 +257,7 @@ class CommentActivity : AppCompatActivity() {
                         adapter.addItem(item)
 
                         if(item.childCommentCnt > 0){
-                            adapter.setTopReplyIdList(null, adapter.itemCount-1)
+                            adapter.setTopReplyIdList(CommentAdapter.REPLY_NOT_FETCHED, adapter.itemCount-1)
                             adapter.notifyItemChanged(adapter.itemCount-1)
                         }
                     }
