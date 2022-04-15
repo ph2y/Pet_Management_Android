@@ -1,14 +1,12 @@
-package com.sju18001.petmanagement.ui.community.follow
+package com.sju18001.petmanagement.ui.community.follow.following
 
 import android.app.AlertDialog
 import android.content.Context
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
@@ -19,13 +17,17 @@ import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.DeleteFollowReqDto
 import com.sju18001.petmanagement.restapi.dto.FetchAccountPhotoReqDto
 import com.sju18001.petmanagement.ui.community.CommunityUtil
+import com.sju18001.petmanagement.ui.community.follow.FollowItem
+import com.sju18001.petmanagement.ui.community.follow.FollowUnfollowButtonInterface
+import com.sju18001.petmanagement.ui.community.follow.FollowViewModel
 import de.hdodenhof.circleimageview.CircleImageView
 
 class FollowingAdapter(val context: Context, private val followViewModel: FollowViewModel,
-                       private val buttonInterface: FollowUnfollowButtonInterface):
+                       private val buttonInterface: FollowUnfollowButtonInterface
+):
     RecyclerView.Adapter<FollowingAdapter.HistoryListViewHolder>() {
 
-    private var resultList = mutableListOf<FollowListItem>()
+    private var resultList = mutableListOf<FollowItem>()
 
     private var isViewDestroyed = false
 
@@ -36,17 +38,17 @@ class FollowingAdapter(val context: Context, private val followViewModel: Follow
         val button: Button = view.findViewById(R.id.button_follow)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FollowingAdapter.HistoryListViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryListViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_follow, parent, false)
 
-        val holder = FollowingAdapter.HistoryListViewHolder(view)
+        val holder = HistoryListViewHolder(view)
         setListenerOnView(holder)
 
         return holder
     }
 
-    override fun onBindViewHolder(holder: FollowingAdapter.HistoryListViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: HistoryListViewHolder, position: Int) {
         // set account photo
         if(resultList[position].getHasPhoto()) {
             if(resultList[position].getPhoto() == null) {
@@ -70,7 +72,7 @@ class FollowingAdapter(val context: Context, private val followViewModel: Follow
         holder.button.text = context.getText(R.string.unfollow_button)
     }
 
-    private fun setListenerOnView(holder: FollowingAdapter.HistoryListViewHolder) {
+    private fun setListenerOnView(holder: HistoryListViewHolder) {
         // start pet profile
         holder.cardView.setOnClickListener {
             val position = holder.absoluteAdapterPosition
@@ -106,7 +108,7 @@ class FollowingAdapter(val context: Context, private val followViewModel: Follow
         }
     }
 
-    private fun deleteFollow(id: Long, holder: FollowingAdapter.HistoryListViewHolder, position: Int) {
+    private fun deleteFollow(id: Long, holder: HistoryListViewHolder, position: Int) {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(context)!!)
             .deleteFollowReq(DeleteFollowReqDto(id))
 
@@ -117,9 +119,8 @@ class FollowingAdapter(val context: Context, private val followViewModel: Follow
             resultList.removeAt(position)
 
             // set following count
-            val followingText = context.getText(R.string.following_fragment_title).toString() +
-                    ' ' + resultList.size.toString()
-            followViewModel.setFollowingTitle(followingText)
+            followViewModel.followingTitle.value =
+                    "${context.getText(R.string.following_fragment_title)} ${resultList.size}"
 
             // show animation
             notifyItemRemoved(position)
@@ -133,7 +134,7 @@ class FollowingAdapter(val context: Context, private val followViewModel: Follow
         })
     }
 
-    private fun setAccountPhoto(id: Long, holder: FollowingAdapter.HistoryListViewHolder, position: Int) {
+    private fun setAccountPhoto(id: Long, holder: HistoryListViewHolder, position: Int) {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(context)!!)
             .fetchAccountPhotoReq(FetchAccountPhotoReqDto(id))
 
@@ -151,7 +152,7 @@ class FollowingAdapter(val context: Context, private val followViewModel: Follow
 
     override fun getItemCount() = resultList.size
 
-    public fun setResult(result: MutableList<FollowListItem>){
+    public fun setResult(result: MutableList<FollowItem>){
         this.resultList = result
         notifyDataSetChanged()
     }
