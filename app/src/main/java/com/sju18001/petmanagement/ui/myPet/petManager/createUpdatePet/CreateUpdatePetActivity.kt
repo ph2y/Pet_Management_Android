@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.ui.myPet.petManager.petProfile
+package com.sju18001.petmanagement.ui.myPet.petManager.createUpdatePet
 
 import android.app.AlertDialog
 import android.app.Dialog

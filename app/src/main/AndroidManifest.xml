@@ -84,7 +84,7 @@
         </provider>
 
         <activity android:name=".ui.myPet.petScheduleManager.createUpdatePetSchedule.CreateUpdatePetScheduleActivity" />
-        <activity android:name=".ui.myPet.petManager.petProfile.CreateUpdatePetActivity" />
+        <activity android:name=".ui.myPet.petManager.createUpdatePet.CreateUpdatePetActivity" />
         <activity android:name=".ui.myPet.petManager.petProfile.PetProfileActivity" />
         <activity android:name=".ui.setting.SettingActivity" />
         <activity android:name=".MainActivity" />

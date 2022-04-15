@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.transition.AutoTransition
 import android.transition.ChangeBounds
 import android.transition.TransitionManager
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
@@ -18,7 +17,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.databinding.BindingAdapter
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
@@ -32,6 +30,7 @@ import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.community.post.PostFragment
+import com.sju18001.petmanagement.ui.myPet.petManager.createUpdatePet.CreateUpdatePetActivity
 import com.sju18001.petmanagement.ui.myPet.petManager.PetManagerFragment
 
 /**

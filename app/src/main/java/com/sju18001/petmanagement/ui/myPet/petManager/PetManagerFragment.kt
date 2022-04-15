@@ -1,18 +1,13 @@
 package com.sju18001.petmanagement.ui.myPet.petManager
 
-import android.app.ActivityOptions
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
-import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityOptionsCompat
-import androidx.core.util.Pair
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.*
@@ -28,11 +23,10 @@ import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.FetchPetReqDto
 import com.sju18001.petmanagement.ui.myPet.MyPetViewModel
-import com.sju18001.petmanagement.ui.myPet.petManager.petProfile.CreateUpdatePetActivity
+import com.sju18001.petmanagement.ui.myPet.petManager.createUpdatePet.CreateUpdatePetActivity
 import com.sju18001.petmanagement.ui.myPet.petManager.petProfile.PetProfileActivity
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification
 import com.sju18001.petmanagement.ui.myPet.petScheduleManager.PetScheduleNotification.Companion.cancelAll
-import java.io.ByteArrayOutputStream
 import java.lang.reflect.Type
 
 /**
