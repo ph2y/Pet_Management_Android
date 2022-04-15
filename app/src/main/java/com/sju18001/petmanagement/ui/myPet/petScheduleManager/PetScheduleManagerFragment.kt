@@ -168,8 +168,7 @@ class PetScheduleManagerFragment : Fragment() {
 
             CustomProgressBar.removeProgressBar(binding.fragmentPetScheduleManagerParentLayout)
         },{ CustomProgressBar.removeProgressBar(binding.fragmentPetScheduleManagerParentLayout) },
-            { CustomProgressBar.removeProgressBar(binding.fragmentPetScheduleManagerParentLayout) }
-        )
+            { CustomProgressBar.removeProgressBar(binding.fragmentPetScheduleManagerParentLayout) })
     }
 
     private fun setEmptyPetTextView(itemCount: Int) {

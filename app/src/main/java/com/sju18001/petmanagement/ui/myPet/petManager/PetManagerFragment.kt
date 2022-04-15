@@ -256,8 +256,7 @@ class PetManagerFragment : Fragment(), OnStartDragListener {
 
             CustomProgressBar.removeProgressBar(binding.fragmentPetManagerParentLayout)
         }, { CustomProgressBar.removeProgressBar(binding.fragmentPetManagerParentLayout) },
-            { CustomProgressBar.removeProgressBar(binding.fragmentPetManagerParentLayout) }
-        )
+            { CustomProgressBar.removeProgressBar(binding.fragmentPetManagerParentLayout) })
     }
 
     private fun synchronizeAlarmManager() {

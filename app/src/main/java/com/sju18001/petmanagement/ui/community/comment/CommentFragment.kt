@@ -39,7 +39,7 @@ class CommentFragment : Fragment() {
             result: ActivityResult ->
         if(result.resultCode == Activity.RESULT_OK){
             result.data?.let{
-                val newContents = it.getStringExtra("newContents")?: ""
+                val newContents = it.getStringExtra("contents")?: ""
                 val position = it.getIntExtra("position", -1)
 
                 adapter.updateCommentContents(newContents, position)
@@ -241,12 +241,12 @@ class CommentFragment : Fragment() {
             when(which){
                 0 -> {
                     // 수정
-                    val updateCommunityActivityIntent = Intent(context, UpdateCommentActivity::class.java)
-                    updateCommunityActivityIntent.putExtra("id", id)
-                    updateCommunityActivityIntent.putExtra("contents", contents)
-                    updateCommunityActivityIntent.putExtra("position", position)
+                    val updateCommentActivityIntent = Intent(context, UpdateCommentActivity::class.java)
+                    updateCommentActivityIntent.putExtra("id", id)
+                    updateCommentActivityIntent.putExtra("contents", contents)
+                    updateCommentActivityIntent.putExtra("position", position)
 
-                    startForResult.launch(updateCommunityActivityIntent)
+                    startForResult.launch(updateCommentActivityIntent)
                     requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
                 }
                 1 -> {
