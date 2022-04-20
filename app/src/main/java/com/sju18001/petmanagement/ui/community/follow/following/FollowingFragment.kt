@@ -27,7 +27,7 @@ class FollowingFragment(private val initializeFollowerIdList: () -> Unit) : Frag
     private var _binding: FragmentFollowingBinding? = null
     private val binding get() = _binding!!
 
-    private lateinit var followingAdapter: FollowingAdapter
+    private lateinit var adapter: FollowingAdapter
     private var isViewDestroyed = false
 
     override fun onCreateView(
@@ -38,6 +38,10 @@ class FollowingFragment(private val initializeFollowerIdList: () -> Unit) : Frag
         _binding = FragmentFollowingBinding.inflate(inflater, container, false)
         isViewDestroyed = false
 
+        followViewModel = ViewModelProvider(requireActivity(),
+            SavedStateViewModelFactory(requireActivity().application, requireActivity())
+        ).get(FollowViewModel::class.java)
+
         initializeAdapter()
         setListenerOnView()
 
@@ -45,23 +49,23 @@ class FollowingFragment(private val initializeFollowerIdList: () -> Unit) : Frag
     }
 
     private fun initializeAdapter() {
-        followingAdapter = FollowingAdapter(requireContext(), followViewModel, object: FollowUnfollowButtonInterface {
+        adapter = FollowingAdapter(requireContext(), followViewModel, object: FollowUnfollowButtonInterface {
             override fun updateFollowUnfollowButton() {
                 initializeFollowerIdList.invoke()
             }
         })
         binding.followingRecyclerView.setHasFixedSize(true)
-        binding.followingRecyclerView.adapter = followingAdapter
+        binding.followingRecyclerView.adapter = adapter
         binding.followingRecyclerView.layoutManager = LinearLayoutManager(activity)
 
-        followingAdapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
+        adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
                 super.onChanged()
-                setEmptyFollowingView(followingAdapter.itemCount)
+                setEmptyFollowingView(adapter.itemCount)
             }
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
                 super.onItemRangeRemoved(positionStart, itemCount)
-                setEmptyFollowingView(followingAdapter.itemCount)
+                setEmptyFollowingView(adapter.itemCount)
             }
         })
     }
@@ -78,23 +82,17 @@ class FollowingFragment(private val initializeFollowerIdList: () -> Unit) : Frag
     }
 
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        followViewModel = ViewModelProvider(requireActivity(),
-            SavedStateViewModelFactory(requireActivity().application, requireActivity())
-        ).get(FollowViewModel::class.java)
-    }
-
-
     override fun onResume() {
         super.onResume()
         updateRecyclerView()
     }
 
-    private fun updateRecyclerView() {
+    fun updateRecyclerView() {
+        // 최초 1회만 로딩바를 띄웁니다.
+        if(adapter.itemCount == 0){
+            CustomProgressBar.addProgressBar(requireContext(), binding.fragmentFollowingParentLayout, 80, R.color.white)
+        }
         var followingList = mutableListOf<FollowItem>()
-        CustomProgressBar.addProgressBar(requireContext(), binding.fragmentFollowingParentLayout, 80, R.color.white)
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchFollowerReq(ServerUtil.getEmptyBody())
@@ -104,11 +102,10 @@ class FollowingFragment(private val initializeFollowerIdList: () -> Unit) : Frag
                     it.nickname!!, true, it.representativePetId)
                 followingList.add(item)
             }
-            followingAdapter.setResult(followingList)
+            adapter.setResult(followingList)
 
             // 추가로 TabLayout의 타이틀의 카운트도 변경합니다.
-            followViewModel.followingTitle.value =
-                    "${requireContext().getText(R.string.following_fragment_title)} ${followingList.size}"
+            followViewModel.followingTitle.value = "${requireContext().getText(R.string.following_fragment_title)} ${followingList.size}"
 
             CustomProgressBar.removeProgressBar(binding.fragmentFollowingParentLayout)
             binding.followingSwipeRefreshLayout.isRefreshing = false
@@ -129,6 +126,6 @@ class FollowingFragment(private val initializeFollowerIdList: () -> Unit) : Frag
         isViewDestroyed = true
 
         // for API cancel
-        followingAdapter.onDestroy()
+        adapter.onDestroy()
     }
 }

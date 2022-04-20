@@ -220,7 +220,7 @@ class FollowActivity : AppCompatActivity() {
         (supportFragmentManager.fragments[0] as FollowerFragment).updateRecyclerView()
         // 두번째 Fragment에 진입한 적이 없어서 초기화가 되지 않았을 경우를 대비한다
         if(supportFragmentManager.fragments.size-1 >= 1){
-            (supportFragmentManager.fragments[1] as FollowingFragment).fetchFollowing()
+            (supportFragmentManager.fragments[1] as FollowingFragment).updateRecyclerView()
         }
     }
 
