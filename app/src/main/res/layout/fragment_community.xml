@@ -1,40 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/community_fragment_container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingBottom="@dimen/nav_height"
-    >
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <FrameLayout
-        android:id="@+id/post_fragment_container"
+    <data>
+        <variable
+            name="fragment"
+            type="com.sju18001.petmanagement.ui.community.CommunityFragment" />
+    </data>
+
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@id/ad_view"/>
+        android:paddingBottom="@dimen/nav_height"
+        >
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/create_post_fab"
-        android:layout_above="@id/ad_view"
-        android:layout_alignParentEnd="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:src="@drawable/ic_baseline_create_24"
-        android:layout_margin="16dp"
-        app:backgroundTint="@color/pumpkin"
-        app:tint="@color/white"
-        />
+        <FrameLayout
+            android:id="@+id/framelayout_postfragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@id/ad_view"/>
 
-    <!-- TODO: change adUnitId (current: sample ad unit id) -->
-    <com.google.android.gms.ads.AdView
-        xmlns:ads="http://schemas.android.com/apk/res-auto"
-        ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
-        ads:adSize="BANNER"
-        android:id="@+id/ad_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentBottom="true"/>
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_above="@id/ad_view"
+            android:layout_alignParentEnd="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:src="@drawable/ic_baseline_create_24"
+            android:layout_margin="16dp"
+            android:onClick="@{() -> fragment.onClickCreatePostButton()}"
+            app:backgroundTint="@color/pumpkin"
+            app:tint="@color/white"
+            />
 
-</RelativeLayout>
+        <!-- TODO: change adUnitId (current: sample ad unit id) -->
+        <com.google.android.gms.ads.AdView
+            xmlns:ads="http://schemas.android.com/apk/res-auto"
+            ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
+            ads:adSize="BANNER"
+            android:id="@+id/ad_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentBottom="true"/>
+
+    </RelativeLayout>
+
+</layout>
