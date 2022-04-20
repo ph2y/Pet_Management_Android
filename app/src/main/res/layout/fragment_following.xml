@@ -6,7 +6,7 @@
     android:id="@+id/fragment_following_parent_layout">
 
     <TextView
-        android:id="@+id/empty_following_list"
+        android:id="@+id/textview_emptyfollowing"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/empty_following_list"
@@ -21,12 +21,12 @@
         />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-        android:id="@+id/following_swipe_refresh_layout"
+        android:id="@+id/swiperefreshlayout_following"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/following_recycler_view"
+            android:id="@+id/recyclerview_following"
             android:layout_width="0dp"
             android:layout_height="match_parent"/>
 

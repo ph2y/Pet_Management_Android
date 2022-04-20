@@ -13,7 +13,7 @@
         android:padding="12dp">
 
         <LinearLayout
-            android:id="@+id/linearlayout_follow_accountinfo"
+            android:id="@+id/linearlayout_accountinfo"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toStartOf="parent"
@@ -24,7 +24,7 @@
             android:orientation="horizontal">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/circleimageview_follow_accountphoto"
+                android:id="@+id/circleimageview_accountphoto"
                 android:layout_width="36dp"
                 android:layout_height="36dp"
                 app:civ_border_width="1dp"
@@ -32,7 +32,7 @@
                 android:src="@drawable/ic_baseline_account_circle_24"/>
 
             <TextView
-                android:id="@+id/textview_follow_accountnickname"
+                android:id="@+id/textview_accountnickname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
@@ -47,7 +47,7 @@
             android:id="@+id/button_follow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/linearlayout_follow_accountinfo"
+            app:layout_constraintStart_toEndOf="@id/linearlayout_accountinfo"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
