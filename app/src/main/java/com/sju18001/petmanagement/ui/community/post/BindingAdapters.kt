@@ -47,7 +47,7 @@ object BindingAdapters {
             if(!serializedHashTags.isNullOrEmpty()){
                 visibility = View.VISIBLE
                 adapter = PostTagAdapter(ArrayList(serializedHashTags.split(',')))
-                layoutManager = LinearLayoutManager(postAdapterInterface.getContext())
+                layoutManager = LinearLayoutManager(postAdapterInterface.getContextFromFragment())
                 (layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.HORIZONTAL
             }else{
                 visibility = View.GONE
