@@ -288,6 +288,8 @@
     <string name="cancel_dialog_message">글 작성을 취소할까요?</string>
     <string name="file_size_limit_exception_message_20MB">크기가 20MB 미만인 파일만 업로드 가능해요!</string>
     <string name="file_size_limit_exception_message_100MB">크기가 100MB 미만인 파일만 업로드 가능해요!</string>
+    <string name="post_header_format">%1$s님의 %2$s</string>
+    <string name="post_like_format">좋아요 %s개</string>
 
     <!-- Community Fragment -->
     <string name="comment">댓글</string>
