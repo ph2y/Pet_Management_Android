@@ -1,13 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/layout_post_media"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
-
     <ImageView
-        android:id="@+id/image_post_media"
+        android:id="@+id/imageview_postmedia"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
@@ -15,7 +12,7 @@
         />
 
     <VideoView
-        android:id="@+id/video_post_media"
+        android:id="@+id/videoview_postmedia"
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_centerInParent="true"

@@ -9,20 +9,16 @@ import com.sju18001.petmanagement.R
 
 class PostTagAdapter(private var dataSet: ArrayList<String>) : RecyclerView.Adapter<PostTagAdapter.ViewHolder>() {
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
-        val parentView: View = view
-        val textTag: TextView = view.findViewById(R.id.text_tag)
+        val tag: TextView = view.findViewById(R.id.textview_tag)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.tag_item, parent, false)
-
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_tag, parent, false)
         return ViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // Set text
-        holder.textTag.text = dataSet[position]
+        holder.tag.text = dataSet[position]
     }
 
     override fun getItemCount(): Int = dataSet.size

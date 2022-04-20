@@ -6,8 +6,9 @@
     android:paddingLeft="3dp"
     android:paddingRight="3dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <TextView
-        android:id="@+id/text_tag_description"
+        android:id="@+id/textview_sharp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="#"
@@ -16,11 +17,12 @@
         app:layout_constraintStart_toStartOf="parent"
         />
     <TextView
-        android:id="@+id/text_tag"
+        android:id="@+id/textview_tag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="해운대"
         android:textColor="@color/peter_river"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toEndOf="@id/text_tag_description"/>
+        app:layout_constraintStart_toEndOf="@id/textview_sharp"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

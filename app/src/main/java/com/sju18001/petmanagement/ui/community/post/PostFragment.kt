@@ -530,7 +530,7 @@ class PostFragment : Fragment() {
         val lastIndex = layoutManager.findLastVisibleItemPosition()
 
         for(i in firstIndex..lastIndex){
-            val videoPostMedia = layoutManager.findViewByPosition(i)?.findViewById<VideoView>(R.id.video_post_media)
+            val videoPostMedia = layoutManager.findViewByPosition(i)?.findViewById<VideoView>(R.id.videoview_postmedia)
             videoPostMedia?.start()
         }
     }
@@ -541,7 +541,7 @@ class PostFragment : Fragment() {
         val lastIndex = layoutManager.findLastVisibleItemPosition()
 
         for(i in firstIndex..lastIndex){
-            val videoPostMedia = layoutManager.findViewByPosition(i)?.findViewById<VideoView>(R.id.video_post_media)
+            val videoPostMedia = layoutManager.findViewByPosition(i)?.findViewById<VideoView>(R.id.videoview_postmedia)
             videoPostMedia?.pause()
         }
     }

@@ -17,13 +17,12 @@ class PostMediaAdapter(
     private val parentHolder: PostAdapter.ViewHolder
 ): RecyclerView.Adapter<PostMediaAdapter.ViewPagerHolder>() {
     private val viewPager = parentHolder.viewPager
-    override fun getItemCount(): Int = mediaAttachments.size
 
     inner class ViewPagerHolder(parent: ViewGroup): RecyclerView.ViewHolder(
-        LayoutInflater.from(parent.context).inflate(R.layout.post_media_item, parent, false)
+        LayoutInflater.from(parent.context).inflate(R.layout.item_postmedia, parent, false)
     ){
-        val postMediaImage: ImageView = itemView.findViewById(R.id.image_post_media)
-        val postMediaVideo: VideoView = itemView.findViewById(R.id.video_post_media)
+        val postMediaImage: ImageView = itemView.findViewById(R.id.imageview_postmedia)
+        val postMediaVideo: VideoView = itemView.findViewById(R.id.videoview_postmedia)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewPagerHolder{
@@ -36,6 +35,8 @@ class PostMediaAdapter(
     override fun onBindViewHolder(holder: ViewPagerHolder, position: Int) {
         communityPostAdapterInterface.setPostMedia(holder, id, position, mediaAttachments[position].url, parentHolder.dummyLayout)
     }
+
+    override fun getItemCount(): Int = mediaAttachments.size
 
     private fun setListenerOnView(holder: ViewPagerHolder) {
         viewPager.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
