@@ -14,14 +14,14 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/fragment_comment_parent_layout"
+        android:id="@+id/constraintlayout_parent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:windowSoftInputMode="adjustResize"
         tools:context=".ui.community.comment.CommentActivity">
 
         <RelativeLayout
-            android:id="@+id/layout_back_button"
+            android:id="@+id/relativelayout_backbutton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
@@ -29,7 +29,7 @@
             android:padding="16dp">
 
             <ImageButton
-                android:id="@+id/button_back"
+                android:id="@+id/imagebutton_backbutton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
@@ -40,10 +40,9 @@
                 />
 
             <TextView
-                android:id="@+id/text_back_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/button_back"
+                android:layout_toEndOf="@id/imagebutton_backbutton"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="12dp"
                 android:textSize="20sp"
@@ -54,13 +53,13 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            app:layout_constraintBottom_toTopOf="@id/layout_comment_input"
+            app:layout_constraintBottom_toTopOf="@id/constraintlayout_commentinput"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/layout_back_button">
+            app:layout_constraintTop_toBottomOf="@id/relativelayout_backbutton">
 
             <TextView
-                android:id="@+id/empty_comment_list_notification"
+                android:id="@+id/textview_emptycomment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -72,15 +71,15 @@
         </FrameLayout>
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/layout_swipe_refresh"
+            android:id="@+id/swiperefreshlayout_comment"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintTop_toBottomOf="@id/layout_back_button"
+            app:layout_constraintTop_toBottomOf="@id/relativelayout_backbutton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintBottom_toTopOf="@id/ad_view">
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_view_comment"
+                android:id="@+id/recyclerview_comment"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:clipToPadding="false"/>
@@ -95,19 +94,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             ads:layout_constraintStart_toStartOf="parent"
-            ads:layout_constraintBottom_toTopOf="@id/layout_reply_description"/>
+            ads:layout_constraintBottom_toTopOf="@id/constraintlayout_reply"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_reply_description"
+            android:id="@+id/constraintlayout_reply"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:background="@color/border_line"
-            app:layout_constraintBottom_toTopOf="@id/layout_comment_input"
+            app:layout_constraintBottom_toTopOf="@id/constraintlayout_commentinput"
             app:layout_constraintStart_toStartOf="parent"
             >
             <TextView
-                android:id="@+id/text_reply_nickname"
+                android:id="@+id/textview_replynickname"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{viewModel.replyNickname}"
@@ -120,10 +119,9 @@
                 android:text="님에게 답글을 남깁니다."
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/text_reply_nickname"/>
+                app:layout_constraintStart_toEndOf="@id/textview_replynickname"/>
 
             <ImageButton
-                android:id="@+id/button_reply_cancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@drawable/ic_baseline_cancel_24"
@@ -135,7 +133,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/layout_comment_input"
+            android:id="@+id/constraintlayout_commentinput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingTop="10dp"
@@ -145,8 +143,9 @@
             android:background="@drawable/border"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent">
+
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/image_profile"
+                android:id="@+id/circleimageview_profile"
                 android:layout_width="24dp"
                 android:layout_height="24dp"
                 android:src="@drawable/ic_baseline_account_circle_28"
@@ -155,8 +154,9 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"/>
+
             <EditText
-                android:id="@+id/edit_text_comment"
+                android:id="@+id/edittext_comment"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:background="@android:color/transparent"
@@ -174,18 +174,18 @@
                 android:enabled="@{!viewModel.isApiLoading}"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@id/image_profile"
-                app:layout_constraintEnd_toStartOf="@id/layout_comment_button"
+                app:layout_constraintStart_toEndOf="@id/circleimageview_profile"
+                app:layout_constraintEnd_toStartOf="@id/relativelayout_createcomment"
                 />
             <RelativeLayout
-                android:id="@+id/layout_comment_button"
+                android:id="@+id/relativelayout_createcomment"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent">
 
                 <ImageButton
-                    android:id="@+id/button_create_comment"
+                    android:id="@+id/imagebutton_createcomment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
@@ -194,8 +194,8 @@
                     android:onClick="@{() -> activity.onClickCreateCommentButton()}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
+
                 <ProgressBar
-                    android:id="@+id/progress_bar_comment"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
                     android:visibility="@{viewModel.isApiLoading? View.VISIBLE: View.GONE}"

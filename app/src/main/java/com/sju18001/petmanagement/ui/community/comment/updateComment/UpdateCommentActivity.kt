@@ -37,7 +37,7 @@ class UpdateCommentActivity : AppCompatActivity() {
 
         initializeViewModelByIntent()
 
-        Util.setupViewsForHideKeyboard(this, binding.fragmentUpdateCommentParentLayout)
+        Util.setupViewsForHideKeyboard(this, binding.constraintlayoutParent)
         showKeyboard()
     }
 
@@ -54,7 +54,7 @@ class UpdateCommentActivity : AppCompatActivity() {
     }
 
     private fun showKeyboard() {
-        val editTextUpdateComment = binding.editTextUpdateComment
+        val editTextUpdateComment = binding.edittextUpdatecomment
         editTextUpdateComment.postDelayed({
             Util.showKeyboard(this, editTextUpdateComment)
         }, 100)
@@ -74,7 +74,7 @@ class UpdateCommentActivity : AppCompatActivity() {
 
     fun updateComment(){
         val updateCommentReq = UpdateCommentReqDto(intent.getLongExtra("id", -1),
-            binding.editTextUpdateComment.text.toString())
+            binding.edittextUpdatecomment.text.toString())
 
         viewModel.isApiLoading.value = true
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
