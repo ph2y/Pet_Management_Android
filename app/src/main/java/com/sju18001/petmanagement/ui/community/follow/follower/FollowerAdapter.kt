@@ -19,11 +19,11 @@ import com.sju18001.petmanagement.ui.community.follow.FollowItem
 import com.sju18001.petmanagement.ui.community.follow.FollowUnfollowButtonInterface
 import de.hdodenhof.circleimageview.CircleImageView
 
-class FollowerAdapter(val context: Context, private val buttonInterface: FollowUnfollowButtonInterface):
-    RecyclerView.Adapter<FollowerAdapter.HistoryListViewHolder>() {
-
+class FollowerAdapter(
+    private val context: Context,
+    private val buttonInterface: FollowUnfollowButtonInterface
+    ): RecyclerView.Adapter<FollowerAdapter.HistoryListViewHolder>() {
     private var resultList = mutableListOf<FollowItem>()
-
     private var isViewDestroyed = false
 
     class HistoryListViewHolder(view: View): RecyclerView.ViewHolder(view) {
@@ -45,12 +45,12 @@ class FollowerAdapter(val context: Context, private val buttonInterface: FollowU
 
     override fun onBindViewHolder(holder: HistoryListViewHolder, position: Int) {
         // set account photo
-        if(resultList[position].getHasPhoto()) {
-            if(resultList[position].getPhoto() == null) {
-                setAccountPhoto(resultList[position].getId(), holder, position)
+        if(resultList[position].hasPhoto) {
+            if(resultList[position].photo == null) {
+                setAccountPhoto(resultList[position].id, holder, position)
             }
             else {
-                holder.accountPhotoCircleImageView.setImageBitmap(resultList[position].getPhoto())
+                holder.accountPhotoCircleImageView.setImageBitmap(resultList[position].photo)
             }
         }
         else {
@@ -58,11 +58,11 @@ class FollowerAdapter(val context: Context, private val buttonInterface: FollowU
         }
 
         // set account nickname
-        val nicknameText = resultList[position].getNickname() + '님'
+        val nicknameText = resultList[position].nickname + '님'
         holder.accountNicknameTextView.text = nicknameText
 
         // for follow/unfollow button
-        if(resultList[position].getIsFollowing()) {
+        if(resultList[position].isFollowing) {
             holder.button.setBackgroundColor(context.getColor(R.color.border_line))
             holder.button.setTextColor(context.resources.getColor(R.color.black))
             holder.button.text = context.getText(R.string.unfollow_button)
@@ -79,9 +79,9 @@ class FollowerAdapter(val context: Context, private val buttonInterface: FollowU
         holder.cardView.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             CommunityUtil.fetchRepresentativePetAndStartPetProfile(context, Account(
-                resultList[position].getId(), resultList[position].getUsername(), "", "", null,
-                null, resultList[position].getNickname(), if (resultList[position].getHasPhoto()) "true" else null,
-                "", resultList[position].getRepresentativePetId(), null, null, 0.0), isViewDestroyed)
+                resultList[position].id, resultList[position].username, "", "", null,
+                null, resultList[position].nickname, if (resultList[position].hasPhoto) "true" else null,
+                "", resultList[position].representativePetId, null, null, 0.0), isViewDestroyed)
         }
 
         holder.button.setOnClickListener {
@@ -91,11 +91,11 @@ class FollowerAdapter(val context: Context, private val buttonInterface: FollowU
             holder.button.isEnabled = false
 
             // API call
-            if(resultList[position].getIsFollowing()) {
-                deleteFollow(resultList[position].getId(), holder, position)
+            if(resultList[position].isFollowing) {
+                deleteFollow(resultList[position].id, holder, position)
             }
             else {
-                createFollow(resultList[position].getId(), holder, position)
+                createFollow(resultList[position].id, holder, position)
             }
         }
     }
@@ -106,9 +106,9 @@ class FollowerAdapter(val context: Context, private val buttonInterface: FollowU
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, context, {
             // update isFollowing and button state
             val currentItem = resultList[position]
-            currentItem.setValues(
-                currentItem.getHasPhoto(), currentItem.getPhoto(), currentItem.getId(), currentItem.getUsername(),
-                currentItem.getNickname(), true, currentItem.getRepresentativePetId()
+            resultList[position] = FollowItem(
+                currentItem.hasPhoto, currentItem.photo, currentItem.id, currentItem.username,
+                currentItem.nickname, true, currentItem.representativePetId
             )
             notifyItemChanged(position)
 
@@ -128,9 +128,9 @@ class FollowerAdapter(val context: Context, private val buttonInterface: FollowU
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, context, {
             // update isFollowing and button state
             val currentItem = resultList[position]
-            currentItem.setValues(
-                currentItem.getHasPhoto(), currentItem.getPhoto(), currentItem.getId(), currentItem.getUsername(),
-                currentItem.getNickname(), false, currentItem.getRepresentativePetId()
+            resultList[position] = FollowItem(
+                currentItem.hasPhoto, currentItem.photo, currentItem.id, currentItem.username,
+                currentItem.nickname, false, currentItem.representativePetId
             )
             notifyItemChanged(position)
 
@@ -152,21 +152,21 @@ class FollowerAdapter(val context: Context, private val buttonInterface: FollowU
             holder.accountPhotoCircleImageView.setImageBitmap(photoBitmap)
 
             val currentItem = resultList[position]
-            currentItem.setValues(
-                currentItem.getHasPhoto(), photoBitmap, currentItem.getId(), currentItem.getUsername(),
-                currentItem.getNickname(), currentItem.getIsFollowing(), currentItem.getRepresentativePetId()
+            resultList[position] = FollowItem(
+                currentItem.hasPhoto, photoBitmap, currentItem.id, currentItem.username,
+                currentItem.nickname, currentItem.isFollowing, currentItem.representativePetId
             )
         }, {}, {})
     }
 
     override fun getItemCount() = resultList.size
 
-    public fun setResult(result: MutableList<FollowItem>){
+    fun setResult(result: MutableList<FollowItem>){
         this.resultList = result
         notifyDataSetChanged()
     }
 
-    public fun onDestroy() {
+    fun onDestroy() {
         isViewDestroyed = true
     }
 }
