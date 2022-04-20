@@ -343,7 +343,7 @@ class PetProfileActivity : AppCompatActivity(){
     }
 
     private fun addListenerOnRecyclerView(){
-        val recyclerView = binding.framelayoutPostfragment.findViewById<RecyclerView>(R.id.recycler_view_post)
+        val recyclerView = binding.framelayoutPostfragment.findViewById<RecyclerView>(R.id.recyclerview_post)
 
         // 터치를 시작할 때의 좌표를 기록함
         var x = 0f

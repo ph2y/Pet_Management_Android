@@ -35,12 +35,14 @@ import com.sju18001.petmanagement.ui.community.post.postGeneralFile.PostGeneralF
 import de.hdodenhof.circleimageview.CircleImageView
 import java.net.URLEncoder
 
-class PostFragment : Fragment() {
+class PostFragment : Fragment(), PostAdapterInterface {
     /**
      * 외부에서 petId를 지정해줄 수 있습니다. PetProfile 내부에 PostFragment가
      * 존재할 때 petId를 지정하여 값을 참조합니다.
      */
     companion object{
+        private const val COMMUNITY_DIRECTORY = "community"
+
         @JvmStatic
         fun newInstance(petId: Long) = PostFragment().apply{
             arguments = Bundle().apply{
@@ -52,12 +54,7 @@ class PostFragment : Fragment() {
     private var _binding: FragmentPostBinding? = null
     private val binding get() = _binding!!
 
-    // constant variables
-    private var COMMUNITY_DIRECTORY: String = "community"
-
-    // 리싸이클러뷰
     private lateinit var adapter: PostAdapter
-
     private var isViewDestroyed = false
 
     /**
@@ -83,7 +80,7 @@ class PostFragment : Fragment() {
                         adapter.notifyItemInserted(0)
                         adapter.notifyItemRangeChanged(0, adapter.itemCount)
 
-                        binding.recyclerViewPost.scrollToPosition(0)
+                        binding.recyclerviewPost.scrollToPosition(0)
 
                         setEmptyNotificationView(1)
                     }
@@ -138,7 +135,7 @@ class PostFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentPostBinding.inflate(inflater, container, false)
+        setBinding(inflater, container)
         isViewDestroyed = false
 
         initializeAdapter()
@@ -146,93 +143,18 @@ class PostFragment : Fragment() {
 
         return binding.root
     }
-    
-    /**
-     * 리싸이클러뷰 초기화 함수
-     */
+
+
+    private fun setBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        _binding = FragmentPostBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = this
+    }
+
+
+    /** initializeAdapter() */
     private fun initializeAdapter(){
-        // 빈 배열로 초기화
-        adapter = PostAdapter(arrayListOf(), arrayListOf(), arrayListOf(), object: PostAdapterInterface {
-            override fun startCommentActivity(postId: Long) {
-                val commentActivityIntent = Intent(context, CommentActivity::class.java)
-                commentActivityIntent.putExtra("postId", postId)
-
-                startActivity(commentActivityIntent)
-                requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
-            }
-
-            override fun createLike(holder: PostAdapter.ViewHolder, postId: Long, position: Int){
-                val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-                    .createLikeReq(CreateLikeReqDto(postId, null))
-                ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
-                    adapter.setLikedCount(position, adapter.getLikedCount(position) + 1)
-                    adapter.setIsPostLiked(position, true)
-                    adapter.bindViewHolder(holder, position)
-                }, {}, {})
-            }
-
-            override fun deleteLike(holder: PostAdapter.ViewHolder, postId: Long, position: Int) {
-                val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-                    .deleteLikeReq(DeleteLikeReqDto(postId, null))
-                ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
-                    adapter.setLikedCount(position, adapter.getLikedCount(position) - 1)
-                    adapter.setIsPostLiked(position, false)
-                    adapter.bindViewHolder(holder, position)
-                }, {}, {})
-            }
-
-            override fun onClickPostFunctionButton(post: Post, position: Int) {
-                val loggedInAccount = SessionManager.fetchLoggedInAccount(requireContext())!!
-
-                // 자기 자신이 쓴 글인가?
-                if(loggedInAccount.id == post.author.id){
-                    showPostDialogForAuthor(post, position)
-                }else{
-                    showPostDialogForNonAuthor(post.id)
-                }
-            }
-
-            override fun setAccountPhoto(holder: PostAdapter.ViewHolder, id: Long){
-                val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-                    .fetchAccountPhotoReq(FetchAccountPhotoReqDto(id))
-                ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-                    val photoBitmap = Util.getBitmapFromInputStream(response.body()!!.byteStream())
-                    holder.accountPhotoImage.setImageBitmap(photoBitmap)
-                }, {}, {})
-            }
-
-            override fun setAccountDefaultPhoto(holder: PostAdapter.ViewHolder) {
-                holder.accountPhotoImage.setImageDrawable(requireContext().getDrawable(R.drawable.ic_baseline_account_circle_24))
-            }
-
-            override fun setPostMedia(
-                holder: PostMediaAdapter.ViewPagerHolder,
-                postId: Long,
-                index: Int,
-                url: String,
-                dummyImageView: ConstraintLayout
-            ) {
-                if(!Util.isUrlVideo(url)){
-                    setPostMediaImage(holder, postId, index, dummyImageView)
-                } else {
-                    setPostMediaVideo(holder, url, dummyImageView)
-                }
-            }
-
-            override fun startGeneralFileActivity(postId: Long, fileAttachments: String) {
-                val postGeneralFileActivityIntent = Intent(context, PostGeneralFileActivity::class.java)
-                postGeneralFileActivityIntent.putExtra("postId", postId)
-                postGeneralFileActivityIntent.putExtra("fileAttachments", fileAttachments)
-                startActivity(postGeneralFileActivityIntent)
-            }
-
-            override fun getContext(): Context {
-                return requireContext()
-            }
-        })
-
-        // 리싸이클러뷰 초기화
-        binding.recyclerViewPost?.let{
+        adapter = PostAdapter(arrayListOf(), arrayListOf(), arrayListOf(), this)
+        binding.recyclerviewPost?.let{
             it.adapter = adapter
             it.layoutManager = LinearLayoutManager(activity)
 
@@ -243,11 +165,8 @@ class PostFragment : Fragment() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                     if(!recyclerView.canScrollVertically(1) && adapter.itemCount != 0 && !isLast){
                         val latAndLong = Util.getGeolocation(requireContext())
-                        updatePostRecyclerView(
-                            FetchPostReqDto(
-                                pageIndex, topPostId, arguments?.getLong("petId"), null, latAndLong[0], latAndLong[1]
-                            )
-                        )
+                        updatePostRecyclerView(FetchPostReqDto(pageIndex, topPostId,
+                            arguments?.getLong("petId"), null, latAndLong[0], latAndLong[1]))
                         pageIndex += 1
                     }
                 }
@@ -273,78 +192,217 @@ class PostFragment : Fragment() {
         })
     }
 
-    private fun setPostMediaImage(
-        holder: PostMediaAdapter.ViewPagerHolder,
-        postId: Long,
-        index: Int,
-        dummyImageView: ConstraintLayout
-    ) {
-        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .fetchPostImageReq(FetchPostImageReqDto(postId, index, FileType.GENERAL_IMAGE))
-        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-            // Set post image
-            val postMediaImage = holder.postMediaImage
-            postMediaImage.visibility = View.VISIBLE
-            holder.postMediaVideo.visibility = View.GONE
-
-            val photoBitmap = Util.getBitmapFromInputStream(response.body()!!.byteStream())
-            postMediaImage.setImageBitmap(photoBitmap)
-
-            // 사진의 사이즈를 가로로 꽉 채우되, 비율을 유지합니다.
-            val screenWidth = Util.getScreenWidthInPixel(requireActivity())
-            val ratio: Float = screenWidth.toFloat() / photoBitmap.width.toFloat()
-            postMediaImage.layoutParams.height = (photoBitmap.height.toFloat() * ratio).toInt()
-
-            // 더미 이미지 제거
-            dummyImageView.visibility = View.GONE
-        }, { dummyImageView.visibility = View.GONE }, { dummyImageView.visibility = View.GONE })
-    }
-
-    private fun setPostMediaVideo(
-        holder: PostMediaAdapter.ViewPagerHolder,
-        url: String,
-        dummyImageView: ConstraintLayout
-    ) {
-        // View
-        val postMediaVideo = holder.postMediaVideo
-        postMediaVideo.visibility = View.VISIBLE
-        holder.postMediaImage.visibility = View.GONE
-
-        val encodedUrl = RetrofitBuilder.BASE_URL + "/api/post/video/fetch?url=" + URLEncoder.encode(url, "UTF8")
-
-        // 반복 재생
-        postMediaVideo.setOnCompletionListener {
-            postMediaVideo.start()
-        }
-
-        // 재생
-        postMediaVideo.setVideoPath(encodedUrl)
-        postMediaVideo.requestFocus()
-        postMediaVideo.setOnPreparedListener {
-            // 더미 이미지 제거
-            dummyImageView.visibility = View.GONE
-
-            // set layout height
-            postMediaVideo.layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
-            postMediaVideo.alpha = 1f
-            postMediaVideo.requestLayout()
-
-            postMediaVideo.start()
-        }
-    }
-
     private fun setEmptyNotificationView(itemCount: Int?) {
-        binding.emptyPostListNotification.post {
-            binding.emptyPostListNotification.visibility =
+        binding.textviewEmptypost.post {
+            binding.textviewEmptypost.visibility =
                 if(itemCount != 0) View.GONE
                 else View.VISIBLE
         }
     }
 
 
-    /**
-     * Post function button 관련 함수
-     */
+    /** resetAndUpdatePostRecyclerView() */
+    private fun resetAndUpdatePostRecyclerView(){
+        resetPostData()
+
+        val latAndLong = Util.getGeolocation(requireContext())
+        updatePostRecyclerView(FetchPostReqDto(null, null,
+            getPetIdFromArguments(), null, latAndLong[0], latAndLong[1]))
+    }
+
+    private fun resetPostData(){
+        topPostId = null
+        pageIndex = 1
+        adapter.resetItem()
+
+        adapter.notifyDataSetChanged()
+    }
+
+    private fun getPetIdFromArguments(): Long? {
+        return arguments?.getLong("petId")
+    }
+
+    private fun updatePostRecyclerView(body: FetchPostReqDto) {
+        CustomProgressBar.addProgressBar(requireContext(), binding.framelayoutParent, 80, R.color.white)
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .fetchPostReq(body)
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            isLast = response.body()!!.isLast == true
+
+            response.body()!!.postList?.let {
+                if(it.isNotEmpty()){
+                    if(topPostId == null) topPostId = it.first().id
+
+                    it.map { item ->
+                        adapter.addItem(item)
+                        fetchLikeAndSetLikeViews(adapter.itemCount-1, item.id)
+                    }
+                    adapter.notifyDataSetChanged()
+                }
+
+                CustomProgressBar.removeProgressBar(binding.framelayoutParent)
+                binding.swiperefreshlayoutPost.isRefreshing = false
+            }
+        }, {
+            CustomProgressBar.removeProgressBar(binding.framelayoutParent)
+            binding.swiperefreshlayoutPost.isRefreshing = false
+        }, {
+            CustomProgressBar.removeProgressBar(binding.framelayoutParent)
+            binding.swiperefreshlayoutPost.isRefreshing = false
+        })
+    }
+
+    private fun fetchLikeAndSetLikeViews(position: Int, postId: Long){
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .fetchLikeReq(FetchLikeReqDto(postId, null))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            adapter.setLikedCount(position, response.body()!!.likedCount!!)
+
+            // 본인이 좋아요를 눌렀는가?
+            val flag = response.body()!!.likedAccountIdList?.contains(SessionManager.fetchLoggedInAccount(requireContext())!!.id)?: false
+            adapter.setIsPostLiked(position, flag)
+
+            adapter.notifyItemChanged(position)
+        }, {}, {})
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+
+        binding.swiperefreshlayoutPost.setOnRefreshListener {
+            resetAndUpdatePostRecyclerView()
+        }
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        _binding = null
+        isViewDestroyed = true
+
+        Util.deleteCopiedFiles(requireContext(), COMMUNITY_DIRECTORY)
+    }
+
+
+    /** 공개 함수 */
+    // 네비게이션 바를 통해 프래그먼트 전환 시 필요한 함수입니다.
+    fun startAllVideos(){
+        val layoutManager = (binding.recyclerviewPost.layoutManager as LinearLayoutManager)
+        val firstIndex = layoutManager.findFirstVisibleItemPosition()
+        val lastIndex = layoutManager.findLastVisibleItemPosition()
+
+        for(i in firstIndex..lastIndex){
+            val videoPostMedia = layoutManager.findViewByPosition(i)?.findViewById<VideoView>(R.id.videoview_postmedia)
+            videoPostMedia?.start()
+        }
+    }
+
+    fun pauseAllVideos(){
+        val layoutManager = (binding.recyclerviewPost.layoutManager as LinearLayoutManager)
+        val firstIndex = layoutManager.findFirstVisibleItemPosition()
+        val lastIndex = layoutManager.findLastVisibleItemPosition()
+
+        for(i in firstIndex..lastIndex){
+            val videoPostMedia = layoutManager.findViewByPosition(i)?.findViewById<VideoView>(R.id.videoview_postmedia)
+            videoPostMedia?.pause()
+        }
+    }
+
+    // CommunityFragment의 create_post_fab를 위한 함수입니다.
+    fun checkIfAccountHasPetAndStartCreatePostFragment() {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+                .fetchPetReq(FetchPetReqDto(null, null))
+        ServerUtil.enqueueApiCall(call, { isViewDestroyed }, requireContext(), { response ->
+            var petCount = 0
+            response.body()?.petList?.map {
+                petCount++
+            }
+
+            if (petCount > 0) {
+                startCreatePostFragment()
+            } else {
+                Toast.makeText(context, getString(R.string.pet_list_empty_for_post_exception_message), Toast.LENGTH_LONG).show()
+            }
+        }, {}, {})
+    }
+
+    private fun startCreatePostFragment(){
+        val createUpdatePostActivityIntent = Intent(context, CreateUpdatePostActivity::class.java)
+        createUpdatePostActivityIntent.putExtra("fragmentType", "create_post")
+
+        startForCreateResult.launch(createUpdatePostActivityIntent)
+        requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
+    }
+
+
+    /** PostAdapterInterface 관련 */
+    override fun startCommentActivity(postId: Long) {
+        val commentActivityIntent = Intent(context, CommentActivity::class.java)
+        commentActivityIntent.putExtra("postId", postId)
+
+        startActivity(commentActivityIntent)
+        requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
+    }
+
+    override fun createLike(holder: PostAdapter.ViewHolder, postId: Long, position: Int){
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .createLikeReq(CreateLikeReqDto(postId, null))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            adapter.setLikedCount(position, adapter.getLikedCount(position) + 1)
+            adapter.setIsPostLiked(position, true)
+            adapter.bindViewHolder(holder, position)
+        }, {}, {})
+    }
+
+    override fun deleteLike(holder: PostAdapter.ViewHolder, postId: Long, position: Int) {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .deleteLikeReq(DeleteLikeReqDto(postId, null))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            adapter.setLikedCount(position, adapter.getLikedCount(position) - 1)
+            adapter.setIsPostLiked(position, false)
+            adapter.bindViewHolder(holder, position)
+        }, {}, {})
+    }
+
+    override fun setAccountPhoto(holder: PostAdapter.ViewHolder, id: Long){
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .fetchAccountPhotoReq(FetchAccountPhotoReqDto(id))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
+            val photoBitmap = Util.getBitmapFromInputStream(response.body()!!.byteStream())
+            holder.accountPhotoImage.setImageBitmap(photoBitmap)
+        }, {}, {})
+    }
+
+    override fun setAccountDefaultPhoto(holder: PostAdapter.ViewHolder) {
+        holder.accountPhotoImage.setImageDrawable(requireContext().getDrawable(R.drawable.ic_baseline_account_circle_24))
+    }
+
+    override fun startGeneralFileActivity(postId: Long, fileAttachments: String) {
+        val postGeneralFileActivityIntent = Intent(context, PostGeneralFileActivity::class.java)
+        postGeneralFileActivityIntent.putExtra("postId", postId)
+        postGeneralFileActivityIntent.putExtra("fileAttachments", fileAttachments)
+        startActivity(postGeneralFileActivityIntent)
+    }
+
+    // Fragment의 getContext 함수와 중복되지 않도록 유의할 것
+    override fun getContextFromFragment(): Context {
+        return requireContext()
+    }
+
+
+    override fun onClickPostFunctionButton(post: Post, position: Int) {
+        val loggedInAccount = SessionManager.fetchLoggedInAccount(requireContext())!!
+
+        // 자기 자신이 쓴 글인가?
+        if(loggedInAccount.id == post.author.id){
+            showPostDialogForAuthor(post, position)
+        }else{
+            showPostDialogForNonAuthor(post.id)
+        }
+    }
+
     private fun showPostDialogForAuthor(post: Post, position: Int){
         val builder = AlertDialog.Builder(requireActivity())
         builder.setItems(arrayOf("수정", "삭제")) { _, which ->
@@ -357,13 +415,11 @@ class PostFragment : Fragment() {
     }
 
     private fun startUpdatePostActivity(post: Post, position: Int){
-        val createUpdatePostActivityIntent = getUpdatePostActivityIntent(post, position)
-        startForUpdateResult.launch(createUpdatePostActivityIntent)
-
+        startForUpdateResult.launch(makeUpdatePostActivityIntent(post, position))
         requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
     }
 
-    private fun getUpdatePostActivityIntent(post: Post, position: Int): Intent {
+    private fun makeUpdatePostActivityIntent(post: Post, position: Int): Intent {
         val res = Intent(context, CreateUpdatePostActivity::class.java)
         res.putExtra("fragmentType", "update_post")
         res.putExtra("postId", post.id)
@@ -410,13 +466,9 @@ class PostFragment : Fragment() {
 
     private fun showPostDialogForNonAuthor(postId: Long){
         val builder = AlertDialog.Builder(requireActivity())
-        builder.setItems(arrayOf("신고"), DialogInterface.OnClickListener{ _, which ->
-            when(which){
-                0 -> {
-                    reportPost(postId)
-                }
-            }
-        })
+        builder.setItems(arrayOf("신고")){ _, _ ->
+            reportPost(postId)
+        }
             .create().show()
     }
 
@@ -428,147 +480,64 @@ class PostFragment : Fragment() {
         }, {}, {})
     }
 
-    /** resetAndUpdatePostRecyclerView() */
-    private fun resetAndUpdatePostRecyclerView(){
-        resetPostData()
 
-        val latAndLong = Util.getGeolocation(requireContext())
-        updatePostRecyclerView(
-            FetchPostReqDto(null, null, getPetIdFromArguments(), null, latAndLong[0], latAndLong[1])
-        )
+    override fun setPostMedia(
+        holder: PostMediaAdapter.ViewPagerHolder,
+        postId: Long,
+        index: Int,
+        url: String,
+        dummyImageView: ConstraintLayout
+    ) {
+        if(!Util.isUrlVideo(url)) setPostMediaImage(holder, postId, index, dummyImageView)
+        else setPostMediaVideo(holder, url, dummyImageView)
     }
 
-    private fun resetPostData(){
-        topPostId = null
-        pageIndex = 1
-        adapter.resetItem()
-
-        adapter.notifyDataSetChanged()
-    }
-
-    private fun getPetIdFromArguments(): Long? {
-        return arguments?.getLong("petId")
-    }
-
-    private fun updatePostRecyclerView(body: FetchPostReqDto) {
-        CustomProgressBar.addProgressBar(requireContext(), binding.fragmentPostParentLayout, 80, R.color.white)
+    private fun setPostMediaImage(
+        holder: PostMediaAdapter.ViewPagerHolder,
+        postId: Long,
+        index: Int,
+        dummyImageView: ConstraintLayout
+    ) {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .fetchPostReq(body)
+            .fetchPostImageReq(FetchPostImageReqDto(postId, index, FileType.GENERAL_IMAGE))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-            isLast = response.body()!!.isLast == true
+            val photoBitmap = Util.getBitmapFromInputStream(response.body()!!.byteStream())
+            holder.postMediaImage.setImageBitmap(photoBitmap)
 
-            response.body()!!.postList?.let {
-                if(it.isNotEmpty()){
-                    // Set topPostId
-                    if(topPostId == null){
-                        topPostId = it.first().id
-                    }
+            // 사진의 사이즈를 가로로 꽉 채우되, 비율을 유지합니다.
+            val screenWidth = Util.getScreenWidthInPixel(requireActivity())
+            val ratio: Float = screenWidth.toFloat() / photoBitmap.width.toFloat()
+            holder.postMediaImage.layoutParams.height = (photoBitmap.height.toFloat() * ratio).toInt()
 
-                    // 데이터 추가
-                    it.map { item ->
-                        adapter.addItem(item)
-                        fetchLikeAndSetLikeViews(adapter.itemCount-1, item.id)
-                    }
-                    adapter.notifyDataSetChanged()
+            holder.postMediaImage.visibility = View.VISIBLE
+            holder.postMediaVideo.visibility = View.GONE
+            dummyImageView.visibility = View.GONE
+        }, { dummyImageView.visibility = View.GONE }, { dummyImageView.visibility = View.GONE })
+    }
 
-                    setEmptyNotificationView(response.body()?.postList?.size)
-                }
+    private fun setPostMediaVideo(
+        holder: PostMediaAdapter.ViewPagerHolder,
+        url: String,
+        dummyImageView: ConstraintLayout
+    ) {
+        holder.postMediaVideo.apply{
+            val encodedUrl = RetrofitBuilder.BASE_URL + "/api/post/video/fetch?url=" + URLEncoder.encode(url, "UTF8")
+            setVideoPath(encodedUrl)
+            requestFocus()
 
-                CustomProgressBar.removeProgressBar(binding.fragmentPostParentLayout)
-                binding.layoutSwipeRefresh.isRefreshing = false
+            setOnCompletionListener { start() } // 반복 재생
+            setOnPreparedListener {
+                // Set layout height
+                layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT
+                alpha = 1f
+                requestLayout()
+
+                start()
+
+                visibility = View.VISIBLE
+                holder.postMediaImage.visibility = View.GONE
+                dummyImageView.visibility = View.GONE
             }
-        }, {
-            CustomProgressBar.removeProgressBar(binding.fragmentPostParentLayout)
-            binding.layoutSwipeRefresh.isRefreshing = false
-        }, {
-            CustomProgressBar.removeProgressBar(binding.fragmentPostParentLayout)
-            binding.layoutSwipeRefresh.isRefreshing = false
-        })
-    }
-
-    private fun fetchLikeAndSetLikeViews(position: Int, postId: Long){
-        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .fetchLikeReq(FetchLikeReqDto(postId, null))
-        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-            adapter.setLikedCount(position, response.body()!!.likedCount!!)
-
-            // 본인이 좋아요를 눌렀는가?
-            val flag = response.body()!!.likedAccountIdList?.contains(SessionManager.fetchLoggedInAccount(requireContext())!!.id)?: false
-            adapter.setIsPostLiked(position, flag)
-
-            adapter.notifyItemChanged(position)
-        }, {}, {})
-    }
-
-
-    override fun onStart() {
-        super.onStart()
-
-        binding.layoutSwipeRefresh.setOnRefreshListener {
-            resetAndUpdatePostRecyclerView()
         }
-    }
-
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-
-        _binding = null
-        isViewDestroyed = true
-
-        Util.deleteCopiedFiles(requireContext(), COMMUNITY_DIRECTORY)
-    }
-
-
-    /**
-     * 공개 함수
-     */
-    // 네비게이션 바를 통해 프래그먼트 전환 시 필요한 함수입니다.
-    fun startAllVideos(){
-        val layoutManager = (binding.recyclerViewPost.layoutManager as LinearLayoutManager)
-        val firstIndex = layoutManager.findFirstVisibleItemPosition()
-        val lastIndex = layoutManager.findLastVisibleItemPosition()
-
-        for(i in firstIndex..lastIndex){
-            val videoPostMedia = layoutManager.findViewByPosition(i)?.findViewById<VideoView>(R.id.videoview_postmedia)
-            videoPostMedia?.start()
-        }
-    }
-
-    fun pauseAllVideos(){
-        val layoutManager = (binding.recyclerViewPost.layoutManager as LinearLayoutManager)
-        val firstIndex = layoutManager.findFirstVisibleItemPosition()
-        val lastIndex = layoutManager.findLastVisibleItemPosition()
-
-        for(i in firstIndex..lastIndex){
-            val videoPostMedia = layoutManager.findViewByPosition(i)?.findViewById<VideoView>(R.id.videoview_postmedia)
-            videoPostMedia?.pause()
-        }
-    }
-
-    // CommunityFragment의 create_post_fab를 위한 함수입니다.
-    fun checkIfAccountHasPetAndStartCreatePostFragment() {
-        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-                .fetchPetReq(FetchPetReqDto(null, null))
-        ServerUtil.enqueueApiCall(call, { isViewDestroyed }, requireContext(), { response ->
-            var petCount = 0
-            response.body()?.petList?.map {
-                petCount++
-            }
-
-            if (petCount > 0) {
-                startCreatePostFragment()
-            } else {
-                Toast.makeText(context, getString(R.string.pet_list_empty_for_post_exception_message), Toast.LENGTH_LONG).show()
-            }
-        }, {}, {})
-    }
-
-    private fun startCreatePostFragment(){
-        val createUpdatePostActivityIntent = Intent(context, CreateUpdatePostActivity::class.java)
-        createUpdatePostActivityIntent.putExtra("fragmentType", "create_post")
-
-        startForCreateResult.launch(createUpdatePostActivityIntent)
-        requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
     }
 }

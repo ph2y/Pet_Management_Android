@@ -27,7 +27,7 @@ interface PostAdapterInterface {
     fun setAccountDefaultPhoto(holder: PostAdapter.ViewHolder)
     fun setPostMedia(holder: PostMediaAdapter.ViewPagerHolder, postId: Long, index: Int, url: String, dummyImageView: ConstraintLayout)
     fun startGeneralFileActivity(postId: Long, fileAttachments: String)
-    fun getContext(): Context
+    fun getContextFromFragment(): Context
 }
 
 class PostAdapter(
