@@ -385,6 +385,10 @@ class CommentActivity : AppCompatActivity() {
         })
     }
 
+    override fun finish() {
+        super.finish()
+        overridePendingTransition(R.anim.enter_from_left, R.anim.exit_to_right)
+    }
 
     override fun onDestroy() {
         super.onDestroy()
