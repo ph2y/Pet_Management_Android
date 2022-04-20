@@ -53,9 +53,9 @@ class FollowerFragment(private val initializeFollowerIdList: () -> Unit) : Fragm
                 initializeFollowerIdList.invoke()
             }
         })
-        binding.followerRecyclerView.setHasFixedSize(true)
-        binding.followerRecyclerView.adapter = adapter
-        binding.followerRecyclerView.layoutManager = LinearLayoutManager(activity)
+        binding.recyclerviewFollower.setHasFixedSize(true)
+        binding.recyclerviewFollower.adapter = adapter
+        binding.recyclerviewFollower.layoutManager = LinearLayoutManager(activity)
 
         adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
@@ -71,11 +71,11 @@ class FollowerFragment(private val initializeFollowerIdList: () -> Unit) : Fragm
 
     private fun setEmptyFollowerView(itemCount: Int){
         val visibility = if(itemCount != 0) View.GONE else View.VISIBLE
-        binding.emptyFollowerList.visibility = visibility
+        binding.textviewEmptyfollower.visibility = visibility
     }
 
     private fun setListenerOnView(){
-        binding.followerSwipeRefreshLayout.setOnRefreshListener {
+        binding.swiperefreshlayoutFollower.setOnRefreshListener {
             updateRecyclerView()
         }
     }
@@ -121,13 +121,13 @@ class FollowerFragment(private val initializeFollowerIdList: () -> Unit) : Fragm
             followViewModel.followerTitle.value = "${requireContext().getText(R.string.follower_fragment_title)} ${followerList.size}"
 
             CustomProgressBar.removeProgressBar(binding.fragmentFollowerParentLayout)
-            binding.followerSwipeRefreshLayout.isRefreshing = false
+            binding.swiperefreshlayoutFollower.isRefreshing = false
         }, {
             CustomProgressBar.removeProgressBar(binding.fragmentFollowerParentLayout)
-            binding.followerSwipeRefreshLayout.isRefreshing = false
+            binding.swiperefreshlayoutFollower.isRefreshing = false
         }, {
             CustomProgressBar.removeProgressBar(binding.fragmentFollowerParentLayout)
-            binding.followerSwipeRefreshLayout.isRefreshing = false
+            binding.swiperefreshlayoutFollower.isRefreshing = false
         })
     }
 

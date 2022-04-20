@@ -28,8 +28,8 @@ class FollowerAdapter(
 
     class HistoryListViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val cardView: View = view.findViewById(R.id.cardview_follow)
-        val accountPhotoCircleImageView: CircleImageView = view.findViewById(R.id.circleimageview_follow_accountphoto)
-        val accountNicknameTextView: TextView = view.findViewById(R.id.textview_follow_accountnickname)
+        val accountPhotoCircleImageView: CircleImageView = view.findViewById(R.id.circleimageview_accountphoto)
+        val accountNicknameTextView: TextView = view.findViewById(R.id.textview_accountnickname)
         val button: Button = view.findViewById(R.id.button_follow)
     }
 

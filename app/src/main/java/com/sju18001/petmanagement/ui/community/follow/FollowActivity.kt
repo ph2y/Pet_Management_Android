@@ -53,7 +53,7 @@ class FollowActivity : AppCompatActivity() {
         initializeViewPager()
         initializeFollowerIdList()
 
-        Util.setupViewsForHideKeyboard(this, binding.fragmentFollowParentLayout)
+        Util.setupViewsForHideKeyboard(this, binding.constraintlayoutParent)
 
         binding.adView.loadAd(AdRequest.Builder().build())
     }
@@ -67,8 +67,8 @@ class FollowActivity : AppCompatActivity() {
     }
 
     private fun initializeViewPager() {
-        val tabLayout = binding.tabLayout
-        val viewPager = binding.viewPager.also{
+        val tabLayout = binding.tablayoutFollow
+        val viewPager = binding.viewpagerFollow.also{
             it.adapter = FollowCollectionAdapter(this) { initializeFollowerIdList() }
             it.currentItem = viewModel.pageIndex
             it.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback() {
@@ -123,16 +123,16 @@ class FollowActivity : AppCompatActivity() {
     }
 
     private fun setListeners() {
-        binding.searchEditText.setOnEditorActionListener{ _, _, _ ->
+        binding.edittextSearch.setOnEditorActionListener{ _, _, _ ->
             checkSearchKeywordAndSearchAccount()
             true
         }
 
         viewModel.followerTitle.observe(this, { followerTitle ->
-            binding.tabLayout.getTabAt(0)!!.text = followerTitle
+            binding.tablayoutFollow.getTabAt(0)!!.text = followerTitle
         })
         viewModel.followingTitle.observe(this, { followingTitle ->
-            binding.tabLayout.getTabAt(1)!!.text = followingTitle
+            binding.tablayoutFollow.getTabAt(1)!!.text = followingTitle
         })
 
         viewModel.accountPhotoUrl.observe(this, {
@@ -143,10 +143,10 @@ class FollowActivity : AppCompatActivity() {
         viewModel.accountPhotoByteArray.observe(this, {
             if(it == null){
                 val drawable = getDrawable(R.drawable.ic_baseline_account_circle_24)
-                binding.accountPhoto.setImageDrawable(drawable)
+                binding.circleimageviewPhoto.setImageDrawable(drawable)
             }else{
                 val bitmap = Util.getBitmapFromByteArray(viewModel.accountPhotoByteArray.value!!)
-                binding.accountPhoto.setImageBitmap(bitmap)
+                binding.circleimageviewPhoto.setImageBitmap(bitmap)
             }
         })
     }

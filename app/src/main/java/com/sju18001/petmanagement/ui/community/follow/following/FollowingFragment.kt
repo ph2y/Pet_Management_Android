@@ -54,9 +54,9 @@ class FollowingFragment(private val initializeFollowerIdList: () -> Unit) : Frag
                 initializeFollowerIdList.invoke()
             }
         })
-        binding.followingRecyclerView.setHasFixedSize(true)
-        binding.followingRecyclerView.adapter = adapter
-        binding.followingRecyclerView.layoutManager = LinearLayoutManager(activity)
+        binding.recyclerviewFollowing.setHasFixedSize(true)
+        binding.recyclerviewFollowing.adapter = adapter
+        binding.recyclerviewFollowing.layoutManager = LinearLayoutManager(activity)
 
         adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
@@ -72,11 +72,11 @@ class FollowingFragment(private val initializeFollowerIdList: () -> Unit) : Frag
 
     private fun setEmptyFollowingView(itemCount: Int){
         val visibility = if(itemCount != 0) View.GONE else View.VISIBLE
-        binding.emptyFollowingList.visibility = visibility
+        binding.textviewEmptyfollowing.visibility = visibility
     }
 
     private fun setListenerOnView() {
-        binding.followingSwipeRefreshLayout.setOnRefreshListener {
+        binding.swiperefreshlayoutFollowing.setOnRefreshListener {
             updateRecyclerView()
         }
     }
@@ -108,13 +108,13 @@ class FollowingFragment(private val initializeFollowerIdList: () -> Unit) : Frag
             followViewModel.followingTitle.value = "${requireContext().getText(R.string.following_fragment_title)} ${followingList.size}"
 
             CustomProgressBar.removeProgressBar(binding.fragmentFollowingParentLayout)
-            binding.followingSwipeRefreshLayout.isRefreshing = false
+            binding.swiperefreshlayoutFollowing.isRefreshing = false
         }, {
             CustomProgressBar.removeProgressBar(binding.fragmentFollowingParentLayout)
-            binding.followingSwipeRefreshLayout.isRefreshing = false
+            binding.swiperefreshlayoutFollowing.isRefreshing = false
         }, {
             CustomProgressBar.removeProgressBar(binding.fragmentFollowingParentLayout)
-            binding.followingSwipeRefreshLayout.isRefreshing = false
+            binding.swiperefreshlayoutFollowing.isRefreshing = false
         })
     }
 
