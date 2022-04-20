@@ -11,8 +11,6 @@ import com.sju18001.petmanagement.ui.community.post.PostFragment
 
 
 class CommunityFragment : Fragment() {
-    val communityViewModel: CommunityViewModel by activityViewModels()
-
     private var _binding: FragmentCommunityBinding? = null
     private val binding get() = _binding!!
 
@@ -23,30 +21,28 @@ class CommunityFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentCommunityBinding.inflate(inflater, container, false)
+        setBinding(inflater, container)
 
-        // For create post FAB
-        binding.createPostFab.setOnClickListener {
-            postFragment?.let{
-                it.checkIfAccountHasPetAndStartCreatePostFragment()
-            }
-        }
-
-        // Set PostFragment
-        if(childFragmentManager.findFragmentById(R.id.post_fragment_container) == null){
+        if(childFragmentManager.findFragmentById(R.id.framelayout_postfragment) == null){
             postFragment = PostFragment()
             childFragmentManager
                 .beginTransaction()
-                .add(R.id.post_fragment_container, postFragment!!)
+                .add(R.id.framelayout_postfragment, postFragment!!)
                 .commit()
         }
 
         return binding.root
     }
 
+    private fun setBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        _binding = FragmentCommunityBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = this
+        binding.fragment = this@CommunityFragment
+    }
+
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.adView.loadAd(AdRequest.Builder().build())
     }
 
@@ -55,15 +51,19 @@ class CommunityFragment : Fragment() {
         _binding = null
     }
 
+
+    // 네비게이션 탭 전환 시 MainActivity에서 아래 전역 함수를 실행하게 됩니다.
     fun startAllVideos(){
-        postFragment?.let{
-            it.startAllVideos()
-        }
+        postFragment?.let{ it.startAllVideos() }
     }
 
     fun pauseAllVideos(){
-        postFragment?.let{
-            it.pauseAllVideos()
-        }
+        postFragment?.let{ it.pauseAllVideos() }
+    }
+
+
+    /** Databinding functions */
+    fun onClickCreatePostButton() {
+        postFragment?.let{ it.checkIfAccountHasPetAndStartCreatePostFragment() }
     }
 }
