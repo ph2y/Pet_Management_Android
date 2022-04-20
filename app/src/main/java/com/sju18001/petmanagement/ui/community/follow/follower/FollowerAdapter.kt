@@ -44,38 +44,33 @@ class FollowerAdapter(
     }
 
     override fun onBindViewHolder(holder: HistoryListViewHolder, position: Int) {
-        // set account photo
-        if(resultList[position].hasPhoto) {
-            if(resultList[position].photo == null) {
-                setAccountPhoto(resultList[position].id, holder, position)
-            }
-            else {
-                holder.accountPhotoCircleImageView.setImageBitmap(resultList[position].photo)
-            }
-        }
-        else {
-            holder.accountPhotoCircleImageView.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_account_circle_24))
-        }
+        setAccountPhoto(holder, position)
 
-        // set account nickname
-        val nicknameText = resultList[position].nickname + '님'
-        holder.accountNicknameTextView.text = nicknameText
-
-        // for follow/unfollow button
-        if(resultList[position].isFollowing) {
+        holder.accountNicknameTextView.text = resultList[position].nickname + '님'
+        if(resultList[position].isFollowing){
             holder.button.setBackgroundColor(context.getColor(R.color.border_line))
             holder.button.setTextColor(context.resources.getColor(R.color.black))
             holder.button.text = context.getText(R.string.unfollow_button)
-        }
-        else {
+        }else{
             holder.button.setBackgroundColor(context.getColor(R.color.carrot))
             holder.button.setTextColor(context.resources.getColor(R.color.white))
             holder.button.text = context.getText(R.string.follow_button)
         }
     }
 
+    private fun setAccountPhoto(holder: HistoryListViewHolder, position: Int) {
+        if(resultList[position].hasPhoto) {
+            if(resultList[position].photo == null){
+                setAccountPhoto(resultList[position].id, holder, position)
+            }else{
+                holder.accountPhotoCircleImageView.setImageBitmap(resultList[position].photo)
+            }
+        }else{
+            holder.accountPhotoCircleImageView.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_account_circle_24))
+        }
+    }
+
     private fun setListenerOnView(holder: HistoryListViewHolder){
-        // start pet profile
         holder.cardView.setOnClickListener {
             val position = holder.absoluteAdapterPosition
             CommunityUtil.fetchRepresentativePetAndStartPetProfile(context, Account(
@@ -86,25 +81,19 @@ class FollowerAdapter(
 
         holder.button.setOnClickListener {
             val position = holder.absoluteAdapterPosition
-
-            // set button to loading
-            holder.button.isEnabled = false
-
-            // API call
-            if(resultList[position].isFollowing) {
+            if(resultList[position].isFollowing){
                 deleteFollow(resultList[position].id, holder, position)
-            }
-            else {
+            }else{
                 createFollow(resultList[position].id, holder, position)
             }
         }
     }
 
     private fun createFollow(id: Long, holder: HistoryListViewHolder, position: Int) {
+        holder.button.isEnabled = false
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(context)!!)
             .createFollowReq(CreateFollowReqDto(id))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, context, {
-            // update isFollowing and button state
             val currentItem = resultList[position]
             resultList[position] = FollowItem(
                 currentItem.hasPhoto, currentItem.photo, currentItem.id, currentItem.username,
@@ -112,21 +101,16 @@ class FollowerAdapter(
             )
             notifyItemChanged(position)
 
-            holder.button.isEnabled = true
-
             buttonInterface.updateFollowUnfollowButton()
-        }, {
+
             holder.button.isEnabled = true
-        }, {
-            holder.button.isEnabled = true
-        })
+        }, { holder.button.isEnabled = true }, { holder.button.isEnabled = true })
     }
 
     private fun deleteFollow(id: Long, holder: HistoryListViewHolder, position: Int) {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(context)!!)
             .deleteFollowReq(DeleteFollowReqDto(id))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, context, {
-            // update isFollowing and button state
             val currentItem = resultList[position]
             resultList[position] = FollowItem(
                 currentItem.hasPhoto, currentItem.photo, currentItem.id, currentItem.username,
@@ -134,14 +118,10 @@ class FollowerAdapter(
             )
             notifyItemChanged(position)
 
-            holder.button.isEnabled = true
-
             buttonInterface.updateFollowUnfollowButton()
-        }, {
+
             holder.button.isEnabled = true
-        }, {
-            holder.button.isEnabled = true
-        })
+        }, { holder.button.isEnabled = true }, { holder.button.isEnabled = true })
     }
 
     private fun setAccountPhoto(id: Long, holder: HistoryListViewHolder, position: Int) {
