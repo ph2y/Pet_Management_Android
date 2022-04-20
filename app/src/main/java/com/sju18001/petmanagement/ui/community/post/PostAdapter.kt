@@ -41,9 +41,9 @@ class PostAdapter(
         private val binding: ItemPostBinding,
         private val postAdapterInterface: PostAdapterInterface
     ): RecyclerView.ViewHolder(binding.root){
-        val accountPhotoImage = binding.accountPhoto
-        val viewPager = binding.viewPager
-        val dummyLayout = binding.layoutDummy
+        val accountPhotoImage = binding.circleimageviewAccountphoto
+        val viewPager = binding.viewpagerMedia
+        val dummyLayout = binding.constraintlayoutDummy
 
         fun bind(post: Post, likedCount: Long, isPostLiked: Boolean) {
             binding.adapter = adapter
@@ -57,11 +57,11 @@ class PostAdapter(
 
             bindDummyLayout(post)
             bindViewPager(post)
-            Util.setViewMore(binding.textContents, binding.viewMore, 5)
+            Util.setViewMore(binding.textviewTextcontents, binding.textviewViewmore, 5)
         }
 
         private fun bindDummyLayout(post: Post) {
-            binding.layoutDummy.visibility =
+            binding.constraintlayoutDummy.visibility =
                 if(!post.imageAttachments.isNullOrEmpty() || !post.videoAttachments.isNullOrEmpty()) View.VISIBLE
                 else View.GONE
         }
@@ -72,14 +72,14 @@ class PostAdapter(
 
             if(!post.imageAttachments.isNullOrEmpty() || !post.videoAttachments.isNullOrEmpty()){
                 val mediaAttachments = imageAttachments + videoAttachments
-                binding.viewPager.adapter =
+                binding.viewpagerMedia.adapter =
                     PostMediaAdapter(postAdapterInterface, post.id, mediaAttachments, this)
-                binding.viewPager.visibility = View.VISIBLE
-                binding.viewPager.orientation = ViewPager2.ORIENTATION_HORIZONTAL
+                binding.viewpagerMedia.visibility = View.VISIBLE
+                binding.viewpagerMedia.orientation = ViewPager2.ORIENTATION_HORIZONTAL
             }else{
-                binding.viewPager.adapter =
+                binding.viewpagerMedia.adapter =
                     PostMediaAdapter(postAdapterInterface, 0, arrayOf(), this)
-                binding.viewPager.visibility = View.GONE
+                binding.viewpagerMedia.visibility = View.GONE
             }
         }
     }
