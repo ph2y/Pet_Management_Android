@@ -37,6 +37,10 @@ class FollowerFragment(private val initializeFollowerIdList: () -> Unit) : Fragm
         _binding = FragmentFollowerBinding.inflate(inflater, container, false)
         isViewDestroyed = false
 
+        followViewModel = ViewModelProvider(requireActivity(),
+            SavedStateViewModelFactory(requireActivity().application, requireActivity())
+        ).get(FollowViewModel::class.java)
+
         initializeAdapter()
         setListenerOnView()
 
@@ -77,15 +81,6 @@ class FollowerFragment(private val initializeFollowerIdList: () -> Unit) : Fragm
     }
 
 
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        followViewModel = ViewModelProvider(requireActivity(),
-            SavedStateViewModelFactory(requireActivity().application, requireActivity())
-        ).get(FollowViewModel::class.java)
-    }
-
-
     override fun onResume() {
         super.onResume()
         updateRecyclerView()
@@ -94,8 +89,11 @@ class FollowerFragment(private val initializeFollowerIdList: () -> Unit) : Fragm
     // 팔로잉하는 유저들을 먼저 불러온 뒤 팔로워를 불러와야 합니다.
     // 내가 팔로잉 하는 유저의 리스트에 따라, 팔로워에 해당하는 아이템의 버튼이 달라져야 하기 때문입니다.
     fun updateRecyclerView() {
+        // 최초 1회만 로딩바를 띄웁니다.
+        if(adapter.itemCount == 0){
+            CustomProgressBar.addProgressBar(requireContext(), binding.fragmentFollowerParentLayout, 80, R.color.white)
+        }
         var followingIdList = mutableListOf<Long>()
-        CustomProgressBar.addProgressBar(requireContext(), binding.fragmentFollowerParentLayout, 80, R.color.white)
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchFollowerReq(ServerUtil.getEmptyBody())
@@ -120,8 +118,7 @@ class FollowerFragment(private val initializeFollowerIdList: () -> Unit) : Fragm
             adapter.setResult(followerList)
 
             // 추가로 TabLayout의 타이틀의 카운트도 변경합니다.
-            followViewModel.followerTitle.value =
-                "${requireContext().getText(R.string.follower_fragment_title)} ${followerList.size}"
+            followViewModel.followerTitle.value = "${requireContext().getText(R.string.follower_fragment_title)} ${followerList.size}"
 
             CustomProgressBar.removeProgressBar(binding.fragmentFollowerParentLayout)
             binding.followerSwipeRefreshLayout.isRefreshing = false
