@@ -69,8 +69,8 @@ class CommentActivity : AppCompatActivity() {
 
         Util.setupViewsForHideKeyboard(
             this,
-            binding.fragmentCommentParentLayout,
-            listOf(binding.layoutCommentInput)
+            binding.constraintlayoutParent,
+            listOf(binding.constraintlayoutCommentinput)
         )
 
         binding.adView.loadAd(AdRequest.Builder().build())
@@ -116,7 +116,7 @@ class CommentActivity : AppCompatActivity() {
             }
         })
 
-        binding.recyclerViewComment?.let{
+        binding.recyclerviewComment?.let{
             it.adapter = adapter
             it.layoutManager = LinearLayoutManager(this)
 
@@ -240,7 +240,7 @@ class CommentActivity : AppCompatActivity() {
     }
 
     private fun fetchComment(body: FetchCommentReqDto){
-        CustomProgressBar.addProgressBar(baseContext, binding.fragmentCommentParentLayout, 80, R.color.white)
+        CustomProgressBar.addProgressBar(baseContext, binding.constraintlayoutParent, 80, R.color.white)
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
             .fetchCommentReq(body)
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, baseContext, { response ->
@@ -262,23 +262,23 @@ class CommentActivity : AppCompatActivity() {
                         }
                     }
 
-                    binding.recyclerViewComment.post{ adapter.notifyDataSetChanged() }
+                    binding.recyclerviewComment.post{ adapter.notifyDataSetChanged() }
                 }
             }
 
-            CustomProgressBar.removeProgressBar(binding.fragmentCommentParentLayout)
-            binding.layoutSwipeRefresh.isRefreshing = false
+            CustomProgressBar.removeProgressBar(binding.constraintlayoutParent)
+            binding.swiperefreshlayoutComment.isRefreshing = false
         }, {
-            CustomProgressBar.removeProgressBar(binding.fragmentCommentParentLayout)
-            binding.layoutSwipeRefresh.isRefreshing = false
+            CustomProgressBar.removeProgressBar(binding.constraintlayoutParent)
+            binding.swiperefreshlayoutComment.isRefreshing = false
         }, {
-            CustomProgressBar.removeProgressBar(binding.fragmentCommentParentLayout)
-            binding.layoutSwipeRefresh.isRefreshing = false
+            CustomProgressBar.removeProgressBar(binding.constraintlayoutParent)
+            binding.swiperefreshlayoutComment.isRefreshing = false
         })
     }
 
     private fun setEmptyNotificationView(itemCount: Int?) {
-        binding.emptyCommentListNotification.visibility =
+        binding.textviewEmptycomment.visibility =
             if (itemCount != 0) View.GONE else View.VISIBLE
     }
 
@@ -296,7 +296,7 @@ class CommentActivity : AppCompatActivity() {
         viewModel.pageIndex = 1
 
         adapter.resetDataSet()
-        binding.recyclerViewComment.post{ adapter.notifyDataSetChanged() }
+        binding.recyclerviewComment.post{ adapter.notifyDataSetChanged() }
     }
 
 
@@ -304,7 +304,7 @@ class CommentActivity : AppCompatActivity() {
         if(!viewModel.loggedInAccount!!.photoUrl.isNullOrEmpty()){
             fetchAccountPhotoToAccountPhoto(viewModel.loggedInAccount!!.id)
         }else{
-            binding.imageProfile.setImageDrawable(getDrawable(R.drawable.ic_baseline_account_circle_24))
+            binding.circleimageviewProfile.setImageDrawable(getDrawable(R.drawable.ic_baseline_account_circle_24))
         }
     }
 
@@ -313,7 +313,7 @@ class CommentActivity : AppCompatActivity() {
             .fetchAccountPhotoReq(FetchAccountPhotoReqDto(id))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, baseContext, { response ->
             val photoBitmap = Util.getBitmapFromInputStream(response.body()!!.byteStream())
-            binding.imageProfile.setImageBitmap(photoBitmap)
+            binding.circleimageviewProfile.setImageBitmap(photoBitmap)
         }, {}, {})
     }
 
@@ -328,22 +328,22 @@ class CommentActivity : AppCompatActivity() {
     private fun setLiveDataObservers() {
         viewModel.replyId.observe(this, { replyId ->
             if(replyId != null) {
-                binding.layoutReplyDescription.visibility = View.VISIBLE
-                Util.showKeyboard(this@CommentActivity, binding.editTextComment)
+                binding.constraintlayoutReply.visibility = View.VISIBLE
+                Util.showKeyboard(this@CommentActivity, binding.edittextComment)
             }else{
-                binding.layoutReplyDescription.visibility = View.GONE
+                binding.constraintlayoutReply.visibility = View.GONE
             }
         })
     }
 
     private fun setListenerOnViews(){
         // 키보드 엔터 -> 댓글 생성
-        binding.editTextComment.setOnEditorActionListener{ _, _, _ ->
+        binding.edittextComment.setOnEditorActionListener{ _, _, _ ->
             createComment(CreateCommentReqDto(viewModel.postId, viewModel.replyId.value, viewModel.contents.value!!))
             true
         }
 
-        binding.layoutSwipeRefresh.setOnRefreshListener {
+        binding.swiperefreshlayoutComment.setOnRefreshListener {
             resetCommentDataAndFetchComment()
         }
     }
@@ -366,7 +366,7 @@ class CommentActivity : AppCompatActivity() {
                         adapter.notifyItemInserted(0)
                         adapter.notifyItemRangeChanged(0, adapter.itemCount)
 
-                        binding.recyclerViewComment.scrollToPosition(0)
+                        binding.recyclerviewComment.scrollToPosition(0)
                     }
                 }
 
@@ -402,7 +402,7 @@ class CommentActivity : AppCompatActivity() {
     }
 
     fun onClickCreateCommentButton() {
-        if (binding.editTextComment.text.isNullOrBlank()) {
+        if (binding.edittextComment.text.isNullOrBlank()) {
             Toast.makeText(baseContext, getText(R.string.empty_comment_exception_message), Toast.LENGTH_SHORT).show()
         } else {
             createComment(CreateCommentReqDto(viewModel.postId, viewModel.replyId.value, viewModel.contents.value!!))
