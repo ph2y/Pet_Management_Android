@@ -48,30 +48,27 @@ class FollowingAdapter(
     }
 
     override fun onBindViewHolder(holder: HistoryListViewHolder, position: Int) {
-        // set account photo
+        setAccountPhoto(holder, position)
+
+        holder.accountNickname.text = resultList[position].nickname + '님'
+        holder.button.setBackgroundColor(context.getColor(R.color.border_line))
+        holder.button.setTextColor(context.resources.getColor(R.color.black))
+        holder.button.text = context.getText(R.string.unfollow_button)
+    }
+
+    private fun setAccountPhoto(holder: HistoryListViewHolder, position: Int) {
         if(resultList[position].hasPhoto) {
             if(resultList[position].photo == null){
                 setAccountPhoto(resultList[position].id, holder, position)
             }else{
                 holder.accountPhoto.setImageBitmap(resultList[position].photo)
             }
-        }
-        else {
+        }else{
             holder.accountPhoto.setImageDrawable(context.getDrawable(R.drawable.ic_baseline_account_circle_24))
         }
-
-        // set account nickname
-        val nicknameText = resultList[position].nickname + '님'
-        holder.accountNickname.text = nicknameText
-
-        // for follow/unfollow button
-        holder.button.setBackgroundColor(context.getColor(R.color.border_line))
-        holder.button.setTextColor(context.resources.getColor(R.color.black))
-        holder.button.text = context.getText(R.string.unfollow_button)
     }
 
     private fun setListenerOnView(holder: HistoryListViewHolder) {
-        // start pet profile
         holder.cardView.setOnClickListener {
             val position = holder.absoluteAdapterPosition
 
@@ -83,18 +80,11 @@ class FollowingAdapter(
 
         holder.button.setOnClickListener {
             val position = holder.absoluteAdapterPosition
-
-            // show confirm dialog
-            val builder = AlertDialog.Builder(context)
             val messageText = resultList[position].nickname + context.getString(R.string.unfollow_confirm_dialog_message)
-            builder.setMessage(messageText)
+            AlertDialog.Builder(context).setMessage(messageText)
                 .setPositiveButton(
                     R.string.confirm
                 ) { _, _ ->
-                    // set button to loading
-                    holder.button.isEnabled = false
-
-                    // API call
                     deleteFollow(resultList[position].id, holder, position)
                 }
                 .setNegativeButton(
@@ -107,35 +97,26 @@ class FollowingAdapter(
     }
 
     private fun deleteFollow(id: Long, holder: HistoryListViewHolder, position: Int) {
+        holder.button.isEnabled = false
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(context)!!)
             .deleteFollowReq(DeleteFollowReqDto(id))
-
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, context, {
-            holder.button.isEnabled = true
-
-            // remove from list
             resultList.removeAt(position)
-
-            // set following count
             followViewModel.followingTitle.value =
                     "${context.getText(R.string.following_fragment_title)} ${resultList.size}"
 
-            // show animation
             notifyItemRemoved(position)
             notifyItemRangeChanged(position, resultList.size)
 
             buttonInterface.updateFollowUnfollowButton()
-        }, {
+
             holder.button.isEnabled = true
-        }, {
-            holder.button.isEnabled = true
-        })
+        }, { holder.button.isEnabled = true }, { holder.button.isEnabled = true })
     }
 
     private fun setAccountPhoto(id: Long, holder: HistoryListViewHolder, position: Int) {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(context)!!)
             .fetchAccountPhotoReq(FetchAccountPhotoReqDto(id))
-
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, context, { response ->
             val photoBitmap = Util.getBitmapFromInputStream(response.body()!!.byteStream())
             holder.accountPhoto.setImageBitmap(photoBitmap)
