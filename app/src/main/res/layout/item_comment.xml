@@ -94,6 +94,7 @@
                     app:layout_constraintStart_toStartOf="parent"
                     />
                 <TextView
+                    android:id="@+id/textview_loadreply"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/reply_button"
@@ -110,7 +111,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/load_reply_title"
                 android:visibility="@{topReplyId == adapter.NO_REPLY? View.GONE: View.VISIBLE}"
-                android:onClick="@{() -> adapter.onClickLoadReply(textviewCommentLoadreply, holder)}"
+                android:onClick="@{() -> adapter.onClickLoadReply(textviewLoadreply, holder)}"
                 app:layout_constraintTop_toBottomOf="@id/constraintlayout_footer"
                 app:layout_constraintStart_toStartOf="@id/constraintlayout_footer"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
