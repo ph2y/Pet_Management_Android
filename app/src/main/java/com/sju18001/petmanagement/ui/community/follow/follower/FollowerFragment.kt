@@ -21,18 +21,12 @@ import com.sju18001.petmanagement.ui.community.follow.FollowUnfollowButtonInterf
 import com.sju18001.petmanagement.ui.community.follow.FollowViewModel
 
 class FollowerFragment(private val initializeFollowerIdList: () -> Unit) : Fragment() {
-    // for shared ViewModel
     private lateinit var followViewModel: FollowViewModel
 
-    // variables for view binding
     private var _binding: FragmentFollowerBinding? = null
     private val binding get() = _binding!!
 
-    // variables for RecyclerView
-    private lateinit var followerAdapter: FollowerAdapter
-    private var followingIdList: MutableList<Long> = mutableListOf()
-    private var followerList: MutableList<FollowItem> = mutableListOf()
-
+    private lateinit var adapter: FollowerAdapter
     private var isViewDestroyed = false
 
     override fun onCreateView(
@@ -40,60 +34,35 @@ class FollowerFragment(private val initializeFollowerIdList: () -> Unit) : Fragm
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // view binding
         _binding = FragmentFollowerBinding.inflate(inflater, container, false)
         isViewDestroyed = false
 
-        val root = binding.root
+        initializeAdapter()
+        setListenerOnView()
 
-        // initialize RecyclerView
-        followerAdapter = FollowerAdapter(requireContext(), object: FollowUnfollowButtonInterface {
+        return binding.root
+    }
+
+    private fun initializeAdapter() {
+        adapter = FollowerAdapter(requireContext(), object: FollowUnfollowButtonInterface {
             override fun updateFollowUnfollowButton() {
                 initializeFollowerIdList.invoke()
             }
         })
         binding.followerRecyclerView.setHasFixedSize(true)
-        binding.followerRecyclerView.adapter = followerAdapter
+        binding.followerRecyclerView.adapter = adapter
         binding.followerRecyclerView.layoutManager = LinearLayoutManager(activity)
 
-        // Set adapter item change observer
-        followerAdapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
+        adapter.registerAdapterDataObserver(object: RecyclerView.AdapterDataObserver() {
             override fun onChanged() {
                 super.onChanged()
-                setEmptyFollowerView(followerAdapter.itemCount)
+                setEmptyFollowerView(adapter.itemCount)
             }
             override fun onItemRangeRemoved(positionStart: Int, itemCount: Int) {
                 super.onItemRangeRemoved(positionStart, itemCount)
-                setEmptyFollowerView(followerAdapter.itemCount)
+                setEmptyFollowerView(adapter.itemCount)
             }
         })
-
-        // for swipe refresh
-        binding.followerSwipeRefreshLayout.setOnRefreshListener {
-            updateRecyclerView()
-        }
-
-        return root
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?) {
-        super.onActivityCreated(savedInstanceState)
-
-        // initialize ViewModel
-        followViewModel = ViewModelProvider(requireActivity(),
-            SavedStateViewModelFactory(requireActivity().application, requireActivity())
-        ).get(FollowViewModel::class.java)
-    }
-
-    override fun onResume() {
-        super.onResume()
-
-        // show progressbar for the first fetch
-        if (followerList.isEmpty()) {
-            CustomProgressBar.addProgressBar(requireContext(), binding.fragmentFollowerParentLayout, 80, R.color.white)
-        }
-
-        updateRecyclerView()
     }
 
     private fun setEmptyFollowerView(itemCount: Int){
@@ -101,50 +70,60 @@ class FollowerFragment(private val initializeFollowerIdList: () -> Unit) : Fragm
         binding.emptyFollowerList.visibility = visibility
     }
 
-    fun updateRecyclerView() {  // update followingIdList -> fetch follower
-        // reset list
-        followingIdList = mutableListOf()
+    private fun setListenerOnView(){
+        binding.followerSwipeRefreshLayout.setOnRefreshListener {
+            updateRecyclerView()
+        }
+    }
+
+
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+        followViewModel = ViewModelProvider(requireActivity(),
+            SavedStateViewModelFactory(requireActivity().application, requireActivity())
+        ).get(FollowViewModel::class.java)
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+        updateRecyclerView()
+    }
+
+    // 팔로잉하는 유저들을 먼저 불러온 뒤 팔로워를 불러와야 합니다.
+    // 내가 팔로잉 하는 유저의 리스트에 따라, 팔로워에 해당하는 아이템의 버튼이 달라져야 하기 때문입니다.
+    fun updateRecyclerView() {
+        var followingIdList = mutableListOf<Long>()
+        CustomProgressBar.addProgressBar(requireContext(), binding.fragmentFollowerParentLayout, 80, R.color.white)
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchFollowerReq(ServerUtil.getEmptyBody())
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-            response.body()!!.followerList.map {
-                followingIdList.add(it.id)
-            }
-
-            fetchFollower()
+            response.body()!!.followerList.map { followingIdList.add(it.id) }
+            updateRecyclerViewByFollowingIdList(followingIdList)
         }, {}, {})
     }
 
-    private fun fetchFollower() {
-        // reset list
-        followerList = mutableListOf()
-
+    private fun updateRecyclerViewByFollowingIdList(followingIdList: MutableList<Long>) {
+        var followerList = mutableListOf<FollowItem>()
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchFollowingReq(ServerUtil.getEmptyBody())
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             response.body()!!.followingList.map {
-                val hasPhoto = it.photoUrl != null
-                val id = it.id
-                val username = it.username
-                val nickname = it.nickname
-                val isFollowing = it.id in followingIdList
-                val representativePetId = it.representativePetId
-
-                val item = FollowItem()
-                item.setValues(hasPhoto, null, id, username, nickname!!, isFollowing, representativePetId)
+                val item = FollowItem(
+                    it.photoUrl != null, null, it.id, it.username, it.nickname!!,
+                    it.id in followingIdList, it.representativePetId
+                )
                 followerList.add(item)
             }
+            adapter.setResult(followerList)
 
-            // set follower count
+            // 추가로 TabLayout의 타이틀의 카운트도 변경합니다.
             followViewModel.followerTitle.value =
                 "${requireContext().getText(R.string.follower_fragment_title)} ${followerList.size}"
 
-            // set RecyclerView
-            followerAdapter.setResult(followerList)
-
             CustomProgressBar.removeProgressBar(binding.fragmentFollowerParentLayout)
-            // set swipe isRefreshing to false
             binding.followerSwipeRefreshLayout.isRefreshing = false
         }, {
             CustomProgressBar.removeProgressBar(binding.fragmentFollowerParentLayout)
@@ -157,11 +136,11 @@ class FollowerFragment(private val initializeFollowerIdList: () -> Unit) : Fragm
 
     override fun onDestroyView() {
         super.onDestroyView()
+
         _binding = null
-
-        // call onDestroy inside adapter(for API cancel)
-        followerAdapter.onDestroy()
-
         isViewDestroyed = true
+
+        // for API cancel
+        adapter.onDestroy()
     }
 }
