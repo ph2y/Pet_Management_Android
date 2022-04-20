@@ -11,10 +11,10 @@ import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.restapi.global.FileMetaData
 
 class PostMediaAdapter(
-    private var communityPostListAdapterInterface: PostListAdapterInterface,
+    private var communityPostAdapterInterface: PostAdapterInterface,
     private val id: Long,
     private val mediaAttachments: Array<FileMetaData>,
-    private val parentHolder: PostListAdapter.ViewHolder
+    private val parentHolder: PostAdapter.ViewHolder
 ): RecyclerView.Adapter<PostMediaAdapter.ViewPagerHolder>() {
     private val viewPager = parentHolder.viewPager
     override fun getItemCount(): Int = mediaAttachments.size
@@ -34,7 +34,7 @@ class PostMediaAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewPagerHolder, position: Int) {
-        communityPostListAdapterInterface.setPostMedia(holder, id, position, mediaAttachments[position].url, parentHolder.dummyLayout)
+        communityPostAdapterInterface.setPostMedia(holder, id, position, mediaAttachments[position].url, parentHolder.dummyLayout)
     }
 
     private fun setListenerOnView(holder: ViewPagerHolder) {

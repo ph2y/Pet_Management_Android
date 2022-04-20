@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 
-class PostTagListAdapter(private var dataSet: ArrayList<String>) : RecyclerView.Adapter<PostTagListAdapter.ViewHolder>() {
+class PostTagAdapter(private var dataSet: ArrayList<String>) : RecyclerView.Adapter<PostTagAdapter.ViewHolder>() {
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
         val parentView: View = view
         val textTag: TextView = view.findViewById(R.id.text_tag)
