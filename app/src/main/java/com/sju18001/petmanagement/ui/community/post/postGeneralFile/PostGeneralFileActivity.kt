@@ -4,8 +4,10 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.view.Window
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -17,83 +19,83 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.global.FileMetaData
 
 class PostGeneralFileActivity : AppCompatActivity() {
-
-    // const
-    private var GENERAL_FILE_ACTIVITY_DIRECTORY: String = "general_file_activity"
-
-    // variable for view binding
-    private lateinit var binding: ActivityPostgeneralfileBinding
-
-    // variable for ViewModel
-    private val postGeneralFileViewModel: PostGeneralFileViewModel by lazy {
-        ViewModelProvider(this, SavedStateViewModelFactory(application, this)).get(PostGeneralFileViewModel::class.java)
+    companion object{
+        private const val GENERAL_FILE_ACTIVITY_DIRECTORY: String = "general_file_activity"
     }
 
-    // variables for RecyclerView
-    private lateinit var postGeneralFileAdapter: PostGeneralFileAdapter
-    private var postGeneralFileList: MutableList<PostGeneralFileItem> = mutableListOf()
+    private lateinit var binding: ActivityPostgeneralfileBinding
+
+    private val viewModel: PostGeneralFileViewModel by lazy {
+        ViewModelProvider(this, SavedStateViewModelFactory(application, this)).get(PostGeneralFileViewModel::class.java)
+    }
+    private lateinit var adapter: PostGeneralFileAdapter
 
     private var isViewDestroyed = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // no title bar
-        supportRequestWindowFeature(Window.FEATURE_NO_TITLE)
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE) // No title bar
+        setBinding()
 
-        // view binding
-        binding = ActivityPostgeneralfileBinding.inflate(layoutInflater)
         isViewDestroyed = false
 
-        setContentView(binding.root)
+        initializeAdapter()
     }
 
-    override fun onStart() {
-        super.onStart()
+    private fun setBinding() {
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_postgeneralfile)
 
-        // initialize RecyclerView
-        postGeneralFileAdapter = PostGeneralFileAdapter(this, postGeneralFileViewModel, GENERAL_FILE_ACTIVITY_DIRECTORY)
-        binding.recyclerviewPostgeneralfile.adapter = postGeneralFileAdapter
+        binding.lifecycleOwner = this
+        binding.activity = this@PostGeneralFileActivity
+    }
+
+    private fun initializeAdapter() {
+        adapter = PostGeneralFileAdapter(this, viewModel, GENERAL_FILE_ACTIVITY_DIRECTORY)
+        binding.recyclerviewPostgeneralfile.adapter = adapter
         binding.recyclerviewPostgeneralfile.layoutManager = LinearLayoutManager(this)
 
-        // set RecyclerView values
-        postGeneralFileList = mutableListOf()
-        val postId = this.intent.getLongExtra("postId", -1)
-        val postGeneralFile = Gson().fromJson(this.intent.getStringExtra("fileAttachments"), Array<FileMetaData>::class.java)
-        for (i in postGeneralFile.indices) {
-            postGeneralFileList.add(PostGeneralFileItem(postId, postGeneralFile[i].name.split("post_${postId}_").last(), i))
-        }
-        postGeneralFileAdapter.setResult(postGeneralFileList)
-
-        binding.imagebuttonPostgeneralfileClose.setOnClickListener { finish() }
+        initializeAdapterDataByFileAttachments()
     }
 
+    private fun initializeAdapterDataByFileAttachments() {
+        val postId = this.intent.getLongExtra("postId", -1)
+        val postGeneralFile = Gson().fromJson(this.intent.getStringExtra("fileAttachments"), Array<FileMetaData>::class.java)
+
+        var postGeneralFileList: MutableList<PostGeneralFile> = mutableListOf()
+        for (i in postGeneralFile.indices) {
+            val name = postGeneralFile[i].name.split("post_${postId}_").last()
+            postGeneralFileList.add(PostGeneralFile(postId, name, i))
+        }
+        adapter.setResult(postGeneralFileList)
+    }
+
+
+    // 다운로드 버튼을 눌러 ACTION_CREATE_DOCUMENT을 수행한 이후
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
         if (requestCode == ServerUtil.WRITE_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             data?.data?.also { uri ->
-                // save Uri + write
-                postGeneralFileViewModel.userSelectedUri = uri
-                ServerUtil.writeFileToUri(this,
-                    postGeneralFileViewModel.downloadedFilePath!!, postGeneralFileViewModel.userSelectedUri!!)
-
-                // reset download button
-                postGeneralFileAdapter.setResult(postGeneralFileList)
-
-                Toast.makeText(this, this.getText(R.string.download_complete_message), Toast.LENGTH_SHORT).show()
+                // 이전에 Adapter에서 저장했던 복사본의 경로를 참조하여 파일을 생성합니다.
+                viewModel.copyFilePath?.let { ServerUtil.writeFileToUri(this, it, uri) }
+                Toast.makeText(baseContext, getText(R.string.download_complete_message), Toast.LENGTH_SHORT).show()
             }
         }
     }
 
+
     override fun onDestroy() {
         super.onDestroy()
 
-        postGeneralFileAdapter.onDestroy()
+        adapter.onDestroy()
         isViewDestroyed = true
 
-        if(isFinishing) {
-            Util.deleteCopiedFiles(this, GENERAL_FILE_ACTIVITY_DIRECTORY)
-        }
+        if(isFinishing) Util.deleteCopiedFiles(this, GENERAL_FILE_ACTIVITY_DIRECTORY)
+    }
+
+
+    fun onClickCloseButton() {
+        finish()
     }
 }

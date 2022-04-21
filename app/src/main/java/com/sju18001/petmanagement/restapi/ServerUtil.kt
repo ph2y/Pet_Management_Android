@@ -89,7 +89,7 @@ class ServerUtil {
             return FileProvider.getUriForFile(context, "${context.applicationInfo.packageName}.fileprovider", newFile)
         }
 
-        fun createCopyAndReturnRealPathServer(context: Context, byteArray: ByteArray, extension: String, directory: String): String {
+        fun createCopyAndGetAbsolutePath(context: Context, byteArray: ByteArray, extension: String, directory: String): String {
             val baseDirectory = context.getExternalFilesDir(null).toString() + File.separator + directory
             if(!File(baseDirectory).exists()) { File(baseDirectory).mkdir() }
 
@@ -107,20 +107,6 @@ class ServerUtil {
             outputStream.close()
 
             return newFile
-        }
-
-        fun getUriFromUser(activity: Activity, fileName: String) {
-            // get MIME type
-            val mimeTypeMap = MimeTypeMap.getSingleton()
-            val mimeType = mimeTypeMap.getMimeTypeFromExtension(fileName.split('.').last())
-
-            // get Uri from user
-            val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
-                type = mimeType
-                addCategory(Intent.CATEGORY_OPENABLE)
-                putExtra(Intent.EXTRA_TITLE, fileName)
-            }
-            activity.startActivityForResult(intent, WRITE_REQUEST_CODE)
         }
 
         fun writeFileToUri(context: Context, downloadedFilePath: String, uri: Uri) {

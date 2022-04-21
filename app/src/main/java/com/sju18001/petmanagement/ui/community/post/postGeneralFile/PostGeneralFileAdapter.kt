@@ -10,95 +10,100 @@ import android.widget.ImageButton
 import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
+import com.sju18001.petmanagement.databinding.ItemPostgeneralfileBinding
 import com.sju18001.petmanagement.restapi.dto.FetchPostFileReqDto
 
-class PostGeneralFileAdapter(private val activity: Activity, private val generalFileViewModel: PostGeneralFileViewModel,
-                             private val GENERAL_FILE_ACTIVITY_DIRECTORY: String):
-    RecyclerView.Adapter<PostGeneralFileAdapter.HistoryListViewHolder>() {
-
-    private var resultList = mutableListOf<PostGeneralFileItem>()
-
+class PostGeneralFileAdapter(
+    private val activity: Activity,
+    private val generalFileViewModel: PostGeneralFileViewModel,
+    private val GENERAL_FILE_ACTIVITY_DIRECTORY: String
+    ): RecyclerView.Adapter<PostGeneralFileAdapter.ViewHolder>() {
+    private var dataSet = mutableListOf<PostGeneralFile>()
     private var isViewDestroyed = false
 
-    class HistoryListViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val name: TextView = view.findViewById(R.id.textview_postgeneralfile_name)
-        val downloadButton: ImageButton = view.findViewById(R.id.imagebutton_postgeneralfile_download)
-        val downloadProgressBar: ProgressBar = view.findViewById(R.id.progressbar_postgeneralfile_download)
-    }
+    class ViewHolder(
+        private val adapter: PostGeneralFileAdapter,
+        private val binding: ItemPostgeneralfileBinding
+    ): RecyclerView.ViewHolder(binding.root) {
+        val nameTextView = binding.textviewName
+        val downloadButton = binding.imagebuttonDownload
+        val downloadProgressBar = binding.progressbarDownload
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryListViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_postgeneralfile, parent, false)
+        fun bind(postGeneralFile: PostGeneralFile) {
+            binding.adapter = adapter
+            binding.holder = this
+            binding.postGeneralFile = postGeneralFile
 
-        val holder = HistoryListViewHolder(view)
-        setListenerOnView(holder)
-
-        return holder
-    }
-
-    override fun onBindViewHolder(holder: HistoryListViewHolder, position: Int) {
-        holder.name.text = resultList[position].name
-    }
-
-    private fun setListenerOnView(holder: HistoryListViewHolder) {
-        holder.name.setOnClickListener {
-            val position = holder.absoluteAdapterPosition
-
-            // set button to downloading
-            holder.name.isClickable = false
-            holder.downloadButton.visibility = View.INVISIBLE
-            holder.downloadProgressBar.visibility = View.VISIBLE
-
-            fetchGeneralFile(resultList[position].postId, resultList[position].fileId, resultList[position].name, true) {
-                holder.name.isClickable = true
-                holder.downloadButton.visibility = View.VISIBLE
-                holder.downloadProgressBar.visibility = View.INVISIBLE
-            }
-        }
-
-        holder.downloadButton.setOnClickListener {
-            val position = holder.absoluteAdapterPosition
-
-            // set button to downloading
-            holder.downloadButton.visibility = View.INVISIBLE
-            holder.downloadProgressBar.visibility = View.VISIBLE
-
-            // fetch file + write
-            fetchGeneralFile(resultList[position].postId, resultList[position].fileId, resultList[position].name, false) {
-                holder.downloadButton.visibility = View.VISIBLE
-                holder.downloadProgressBar.visibility = View.INVISIBLE
-            }
+            binding.executePendingBindings()
         }
     }
 
-    private fun fetchGeneralFile(postId: Long, fileId: Int, fileName: String, isExecutionOnly: Boolean, callback:()->Unit) {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding = DataBindingUtil.inflate<ItemPostgeneralfileBinding>(LayoutInflater.from(parent.context),
+            R.layout.item_postgeneralfile, parent, false)
+        return ViewHolder(this, binding)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.bind(dataSet[position])
+    }
+
+    override fun getItemCount() = dataSet.size
+
+    fun setResult(result: MutableList<PostGeneralFile>){
+        this.dataSet = result
+        notifyDataSetChanged()
+    }
+
+    fun onDestroy() {
+        isViewDestroyed = true
+    }
+
+
+    /** Databinding functions */
+    fun onClickPostGeneralFileName(holder: ViewHolder, postGeneralFile: PostGeneralFile) {
+        fetchGeneralFile(holder, postGeneralFile, true)
+    }
+
+    fun onClickDownloadButton(holder: ViewHolder, postGeneralFile: PostGeneralFile) {
+        fetchGeneralFile(holder, postGeneralFile, false)
+    }
+
+    private fun fetchGeneralFile(holder: ViewHolder, postGeneralFile: PostGeneralFile, isExecutionOnly: Boolean) {
+        val postId = postGeneralFile.postId
+        val fileId = postGeneralFile.fileId
+        val fileName = postGeneralFile.name
+
+        lockViews(holder)
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(activity)!!)
             .fetchPostFileReq(FetchPostFileReqDto(postId, fileId))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, activity, { response ->
             val extension = fileName.split('.').last()
 
             if(isExecutionOnly){
-                executeByteArrayAsFile(extension, response.body()!!.byteStream().readBytes())
+                startActionView(extension, response.body()!!.byteStream().readBytes())
             }else{
-                // download file + save downloaded path -> write file
-                generalFileViewModel.downloadedFilePath = ServerUtil
-                    .createCopyAndReturnRealPathServer(activity, response.body()!!.byteStream().readBytes(),
-                        extension, GENERAL_FILE_ACTIVITY_DIRECTORY)
-
-                // get Uri from user + write file
-                ServerUtil.getUriFromUser(activity, fileName)
+                // 이후 ACTION_CREATE_DOCUMENT를 통해 사용자가 파일의 경로를 지정하게 되면,
+                // 액티비티에서, 그 경로에 복사본 파일을 저장하게 됩니다.
+                generalFileViewModel.copyFilePath =
+                    ServerUtil.createCopyAndGetAbsolutePath(
+                        activity, response.body()!!.byteStream().readBytes(),
+                        extension, GENERAL_FILE_ACTIVITY_DIRECTORY
+                    )
+                startActionCreateDocument(activity, fileName)
             }
 
-            callback.invoke()
-        }, {callback.invoke()}, {callback.invoke()})
+            unlockViews(holder)
+        }, { unlockViews(holder) }, { unlockViews(holder) })
     }
 
-    private fun executeByteArrayAsFile(extension: String, byteArray: ByteArray) {
+    private fun startActionView(extension: String, byteArray: ByteArray) {
         val mimeTypeMap = MimeTypeMap.getSingleton()
         val mimeType = mimeTypeMap.getMimeTypeFromExtension(extension)
         val contentUri = ServerUtil.createCopyAndReturnContentUri(activity, byteArray, extension, GENERAL_FILE_ACTIVITY_DIRECTORY)
@@ -112,19 +117,33 @@ class PostGeneralFileAdapter(private val activity: Activity, private val general
         try{
             activity.startActivity(intent)
         } catch (e:Exception){
-            // 파일 타입을 지원하지 않는 경우(ex. hwp)
+            // 파일 타입을 지원하지 않는 경우(ex: .hwp)
             Toast.makeText(activity, activity.getText(R.string.general_file_type_exception_for_start_message), Toast.LENGTH_SHORT).show()
         }
     }
 
-    override fun getItemCount() = resultList.size
+    private fun startActionCreateDocument(activity: Activity, fileName: String) {
+        val mimeTypeMap = MimeTypeMap.getSingleton()
+        val mimeType = mimeTypeMap.getMimeTypeFromExtension(fileName.split('.').last())
 
-    public fun setResult(result: MutableList<PostGeneralFileItem>){
-        this.resultList = result
-        notifyDataSetChanged()
+        val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
+            type = mimeType
+            addCategory(Intent.CATEGORY_OPENABLE)
+            putExtra(Intent.EXTRA_TITLE, fileName)
+        }
+
+        activity.startActivityForResult(intent, ServerUtil.WRITE_REQUEST_CODE)
     }
 
-    public fun onDestroy() {
-        isViewDestroyed = true
+    private fun lockViews(holder: ViewHolder) {
+        holder.nameTextView.isClickable = false
+        holder.downloadButton.visibility = View.INVISIBLE
+        holder.downloadProgressBar.visibility = View.VISIBLE
+    }
+
+    private fun unlockViews(holder: ViewHolder) {
+        holder.nameTextView.isClickable = true
+        holder.downloadButton.visibility = View.VISIBLE
+        holder.downloadProgressBar.visibility = View.INVISIBLE
     }
 }
