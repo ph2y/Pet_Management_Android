@@ -1,38 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    tools:context=".ui.community.post.postGeneralFile.PostGeneralFileActivity">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <RelativeLayout
+    <data>
+        <variable
+            name="activity"
+            type="com.sju18001.petmanagement.ui.community.post.postGeneralFile.PostGeneralFileActivity" />
+    </data>
+
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="14dp">
+        android:orientation="vertical"
+        tools:context=".ui.community.post.postGeneralFile.PostGeneralFileActivity">
 
-        <TextView
+        <RelativeLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="@string/general_file_dialog_title"
-            android:textSize="18sp" />
+            android:layout_margin="14dp">
 
-        <ImageButton
-            android:id="@+id/imagebutton_postgeneralfile_close"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/general_file_dialog_title"
+                android:textSize="18sp" />
+
+            <ImageButton
+                android:id="@+id/imagebutton_close"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="?selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_baseline_close_24"
+                android:onClick="@{() -> activity.onClickCloseButton()}"
+                />
+
+        </RelativeLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerview_postgeneralfile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:layout_alignParentEnd="true"
-            android:src="@drawable/ic_baseline_close_24"
-            android:background="?selectableItemBackgroundBorderless"/>
+            android:clipToPadding="false"/>
 
-    </RelativeLayout>
+    </LinearLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerview_postgeneralfile"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:clipToPadding="false"/>
-
-</LinearLayout>
+</layout>

@@ -349,7 +349,7 @@ class CreateUpdatePostFragment : Fragment() {
                 // copy file and get real path
                 val imageByteArray = response.body()!!.byteStream().readBytes()
                 createUpdatePostViewModel.photoPathList[index] =
-                    ServerUtil.createCopyAndReturnRealPathServer(requireContext(), imageByteArray, extension, CREATE_UPDATE_POST_DIRECTORY)
+                    ServerUtil.createCopyAndGetAbsolutePath(requireContext(), imageByteArray, extension, CREATE_UPDATE_POST_DIRECTORY)
 
                 // if all is done fetching -> set RecyclerView + set usage + show main ScrollView
                 if("" !in createUpdatePostViewModel.photoPathList) {
@@ -376,7 +376,7 @@ class CreateUpdatePostFragment : Fragment() {
                 // copy file and get real path
                 val videoByteArray = response.body()!!.byteStream().readBytes()
                 createUpdatePostViewModel.videoPathList[index] =
-                    ServerUtil.createCopyAndReturnRealPathServer(requireContext(), videoByteArray, extension, CREATE_UPDATE_POST_DIRECTORY)
+                    ServerUtil.createCopyAndGetAbsolutePath(requireContext(), videoByteArray, extension, CREATE_UPDATE_POST_DIRECTORY)
 
                 // if all is done fetching -> set RecyclerView + set usage + show main ScrollView
                 if("" !in createUpdatePostViewModel.videoPathList) {
@@ -402,7 +402,7 @@ class CreateUpdatePostFragment : Fragment() {
                 // copy file and get real path
                 val generalFileByteArray = response.body()!!.byteStream().readBytes()
                 createUpdatePostViewModel.generalFilePathList[index] =
-                    ServerUtil.createCopyAndReturnRealPathServer(requireContext(), generalFileByteArray, extension, CREATE_UPDATE_POST_DIRECTORY)
+                    ServerUtil.createCopyAndGetAbsolutePath(requireContext(), generalFileByteArray, extension, CREATE_UPDATE_POST_DIRECTORY)
 
                 // save general file name
                 val generalFileName = postGeneral[index].url.split("post_${postId}_").last()

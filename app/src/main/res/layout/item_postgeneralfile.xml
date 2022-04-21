@@ -1,40 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="16dp">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView
-        android:id="@+id/textview_postgeneralfile_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_toStartOf="@id/relativelayout_postgeneralfile_download"
-        android:layout_centerVertical="true"
-        android:layout_marginEnd="12dp"/>
+    <data>
+        <variable
+            name="adapter"
+            type="com.sju18001.petmanagement.ui.community.post.postGeneralFile.PostGeneralFileAdapter" />
+        <variable
+            name="holder"
+            type="com.sju18001.petmanagement.ui.community.post.postGeneralFile.PostGeneralFileAdapter.ViewHolder" />
+        <variable
+            name="postGeneralFile"
+            type="com.sju18001.petmanagement.ui.community.post.postGeneralFile.PostGeneralFile" />
+    </data>
 
     <RelativeLayout
-        android:id="@+id/relativelayout_postgeneralfile_download"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerVertical="true">
+        android:padding="16dp">
 
-        <ImageButton
-            android:id="@+id/imagebutton_postgeneralfile_download"
+        <TextView
+            android:id="@+id/textview_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:src="@drawable/ic_baseline_download_24"/>
+            android:layout_alignParentStart="true"
+            android:layout_toStartOf="@id/relativelayout_download"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="12dp"
+            android:text="@{postGeneralFile.name}"
+            android:onClick="@{() -> adapter.onClickPostGeneralFileName(holder, postGeneralFile)}"
+            />
 
-        <ProgressBar
-            android:id="@+id/progressbar_postgeneralfile_download"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:visibility="invisible"
-            android:indeterminateTint="@color/carrot"
-            android:layout_centerInParent="true"/>
+        <RelativeLayout
+            android:id="@+id/relativelayout_download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            >
+
+            <ImageButton
+                android:id="@+id/imagebutton_download"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:src="@drawable/ic_baseline_download_24"
+                android:onClick="@{() -> adapter.onClickDownloadButton(holder, postGeneralFile)}"
+                />
+
+            <ProgressBar
+                android:id="@+id/progressbar_download"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:visibility="invisible"
+                android:indeterminateTint="@color/carrot"
+                android:layout_centerInParent="true"/>
+
+        </RelativeLayout>
 
     </RelativeLayout>
 
-</RelativeLayout>
+</layout>
