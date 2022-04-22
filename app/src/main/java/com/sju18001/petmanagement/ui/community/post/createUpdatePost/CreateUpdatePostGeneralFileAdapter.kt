@@ -8,13 +8,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.databinding.FragmentCreateUpdatePostBinding
+import com.sju18001.petmanagement.databinding.ActivityCreateupdatepostBinding
 import java.io.File
 
-class CreateUpdatePostGeneralFileAdapter(private val createUpdatePostViewModel: CreateUpdatePostViewModel,
-                                         private val context: Context, private val binding: FragmentCreateUpdatePostBinding,
-                                         private val confirmButtonAndUsageInterface: ConfirmButtonAndUsageInterface) :
-    RecyclerView.Adapter<CreateUpdatePostGeneralFileAdapter.HistoryListViewHolder>() {
+class CreateUpdatePostGeneralFileAdapter(
+    private val createUpdatePostViewModel: CreateUpdatePostViewModel,
+    private val context: Context,
+    private val binding: ActivityCreateupdatepostBinding,
+    private val confirmButtonAndUsageInterface: ConfirmButtonAndUsageInterface
+    ) : RecyclerView.Adapter<CreateUpdatePostGeneralFileAdapter.HistoryListViewHolder>() {
 
     private var resultList = mutableListOf<String>()
 
