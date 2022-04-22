@@ -45,7 +45,7 @@ class CreateUpdatePetScheduleActivity : AppCompatActivity() {
         initializeViewModelByIntent()
         setObserversOfLiveData()
 
-        initializeAdapter()
+        initializeRecyclerView()
         Util.setupViewsForHideKeyboard(this, binding.constraintlayoutParent, listOf(binding.buttonConfirm))
         binding.adView.loadAd(AdRequest.Builder().build())
     }
@@ -88,7 +88,7 @@ class CreateUpdatePetScheduleActivity : AppCompatActivity() {
         })
     }
 
-    private fun initializeAdapter(){
+    private fun initializeRecyclerView(){
         adapter = PetNameAdapter(arrayListOf(), object : PetNameListAdapterInterface {
             override fun updateCheckBoxByViewModel(checkBox: CheckBox, position: Int) {
                 viewModel.isPetChecked.value?.let {

@@ -136,7 +136,7 @@ class ReviewFragment : Fragment() {
         setBinding(inflater, container)
         isViewDestroyed = false
 
-        initializeAdapter()
+        initializeRecyclerView()
         CustomProgressBar.addProgressBar(requireContext(), binding.fragmentReviewParentLayout, 80, R.color.white)
         doInitialFetch()
 
@@ -157,10 +157,8 @@ class ReviewFragment : Fragment() {
         binding.util = Util.Companion
     }
 
-    /**
-     * 리싸이클러뷰 초기화
-     */
-    private fun initializeAdapter() {
+    /** initializeRecyclerView() */
+    private fun initializeRecyclerView() {
         // 빈 배열로 초기화
         adapter = ReviewListAdapter(arrayListOf(), requireContext(), object: ReviewListAdapterInterface {
             override fun setAccountPhoto(id: Long, holder: ReviewListAdapter.ViewHolder) {

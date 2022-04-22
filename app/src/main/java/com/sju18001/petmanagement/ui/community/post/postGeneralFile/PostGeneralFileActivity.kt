@@ -40,7 +40,7 @@ class PostGeneralFileActivity : AppCompatActivity() {
 
         isViewDestroyed = false
 
-        initializeAdapter()
+        initializeRecyclerView()
     }
 
     private fun setBinding() {
@@ -50,15 +50,15 @@ class PostGeneralFileActivity : AppCompatActivity() {
         binding.activity = this@PostGeneralFileActivity
     }
 
-    private fun initializeAdapter() {
+    private fun initializeRecyclerView() {
         adapter = PostGeneralFileAdapter(this, viewModel, GENERAL_FILE_ACTIVITY_DIRECTORY)
         binding.recyclerviewPostgeneralfile.adapter = adapter
         binding.recyclerviewPostgeneralfile.layoutManager = LinearLayoutManager(this)
 
-        initializeAdapterDataByFileAttachments()
+        initializeRecyclerViewDataByFileAttachments()
     }
 
-    private fun initializeAdapterDataByFileAttachments() {
+    private fun initializeRecyclerViewDataByFileAttachments() {
         val postId = this.intent.getLongExtra("postId", -1)
         val postGeneralFile = Gson().fromJson(this.intent.getStringExtra("fileAttachments"), Array<FileMetaData>::class.java)
 
