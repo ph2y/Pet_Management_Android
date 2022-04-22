@@ -3,14 +3,11 @@ package com.sju18001.petmanagement.ui.community.post
 import android.app.Activity
 import android.app.AlertDialog
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import android.widget.VideoView
 import androidx.activity.result.ActivityResult
@@ -32,7 +29,6 @@ import com.sju18001.petmanagement.restapi.global.FileType
 import com.sju18001.petmanagement.ui.community.comment.CommentActivity
 import com.sju18001.petmanagement.ui.community.post.createUpdatePost.CreateUpdatePostActivity
 import com.sju18001.petmanagement.ui.community.post.postGeneralFile.PostGeneralFileActivity
-import de.hdodenhof.circleimageview.CircleImageView
 import java.net.URLEncoder
 
 class PostFragment : Fragment(), PostAdapterInterface {

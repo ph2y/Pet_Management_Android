@@ -7,11 +7,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.databinding.FragmentCreateUpdatePostBinding
+import com.sju18001.petmanagement.databinding.ActivityCreateupdatepostBinding
 
-class CreateUpdatePostHashtagAdapter(private val createUpdatePostViewModel: CreateUpdatePostViewModel,
-                                     private val binding: FragmentCreateUpdatePostBinding) :
-    RecyclerView.Adapter<CreateUpdatePostHashtagAdapter.HistoryListViewHolder>() {
+class CreateUpdatePostHashtagAdapter(
+    private val createUpdatePostViewModel: CreateUpdatePostViewModel,
+    private val binding: ActivityCreateupdatepostBinding
+    ) : RecyclerView.Adapter<CreateUpdatePostHashtagAdapter.HistoryListViewHolder>() {
 
     private var resultList = mutableListOf<String>()
 
