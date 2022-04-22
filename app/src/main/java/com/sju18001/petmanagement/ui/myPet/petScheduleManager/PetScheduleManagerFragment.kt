@@ -41,7 +41,7 @@ class PetScheduleManagerFragment : Fragment() {
         setBinding(inflater, container)
         isViewDestroyed = false
 
-        initializeAdapter()
+        initializeRecyclerView()
 
         return binding.root
     }
@@ -53,28 +53,7 @@ class PetScheduleManagerFragment : Fragment() {
         binding.fragment = this@PetScheduleManagerFragment
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.adView.loadAd(AdRequest.Builder().build())
-    }
-
-    override fun onResume() {
-        super.onResume()
-        updateAdapterDataSetByFetchPetSchedule()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-
-        isViewDestroyed = true
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
-
-    private fun initializeAdapter(){
+    private fun initializeRecyclerView(){
         adapter = PetScheduleAdapter(arrayListOf(), { myPetViewModel.petNameForId }, object: PetScheduleAdapterInterface {
             override fun startCreateUpdatePetScheduleFragmentForUpdate(data: PetSchedule) {
                 val createUpdatePetScheduleActivityIntent = Intent(context, CreateUpdatePetScheduleActivity::class.java)
@@ -149,6 +128,22 @@ class PetScheduleManagerFragment : Fragment() {
         })
     }
 
+    private fun setEmptyPetTextView(itemCount: Int) {
+        val visibility = if(itemCount != 0) View.GONE else View.VISIBLE
+        binding.textviewEmptypetschedule.visibility = visibility
+    }
+
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.adView.loadAd(AdRequest.Builder().build())
+    }
+
+    override fun onResume() {
+        super.onResume()
+        updateAdapterDataSetByFetchPetSchedule()
+    }
+
     private fun updateAdapterDataSetByFetchPetSchedule(){
         CustomProgressBar.addProgressBar(requireContext(), binding.fragmentPetScheduleManagerParentLayout, 80, R.color.white)
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
@@ -171,9 +166,16 @@ class PetScheduleManagerFragment : Fragment() {
             { CustomProgressBar.removeProgressBar(binding.fragmentPetScheduleManagerParentLayout) })
     }
 
-    private fun setEmptyPetTextView(itemCount: Int) {
-        val visibility = if(itemCount != 0) View.GONE else View.VISIBLE
-        binding.textviewEmptypetschedule.visibility = visibility
+
+    override fun onDestroy() {
+        super.onDestroy()
+
+        isViewDestroyed = true
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 

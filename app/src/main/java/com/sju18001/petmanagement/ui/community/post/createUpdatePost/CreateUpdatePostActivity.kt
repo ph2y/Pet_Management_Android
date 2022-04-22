@@ -52,7 +52,7 @@ class CreateUpdatePostActivity : AppCompatActivity() {
 
     // variables for RecyclerView
     private lateinit var postPetSelectorAdapter: CreateUpdatePostPetSelectorAdapter
-    private lateinit var mediaAdapter: MediaListAdapter
+    private lateinit var mediaAdapter: CreateUpdatePostMediaAdapter
     private lateinit var generalFileAdapter: CreateUpdatePostGeneralFileAdapter
     private lateinit var hashtagAdapter: CreateUpdatePostHashtagAdapter
 
@@ -75,6 +75,49 @@ class CreateUpdatePostActivity : AppCompatActivity() {
 
         supportActionBar?.hide()
         binding.adView.loadAd(AdRequest.Builder().build())
+    }
+
+    private fun initializeRecyclerViews() {
+        // interface for confirm button verification inside RecyclerView adapter
+        val confirmButtonAndUsageInterface = object: ConfirmButtonAndUsageInterface {
+            override fun verifyAndEnableConfirmButton() {
+                this@CreateUpdatePostActivity.verifyAndEnableConfirmButton()
+            }
+            override fun updatePhotoUsage() {
+                this@CreateUpdatePostActivity.updatePhotoUsage()
+            }
+            override fun updateVideoUsage() {
+                this@CreateUpdatePostActivity.updateVideoUsage()
+            }
+        }
+
+        // Initialize pet selector recycler view
+        postPetSelectorAdapter = CreateUpdatePostPetSelectorAdapter(viewModel, baseContext, confirmButtonAndUsageInterface)
+        binding.recyclerviewCreateupdatepostPostpetselector.adapter = postPetSelectorAdapter
+        binding.recyclerviewCreateupdatepostPostpetselector.layoutManager = LinearLayoutManager(this)
+        (binding.recyclerviewCreateupdatepostPostpetselector.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.HORIZONTAL
+        postPetSelectorAdapter.updateDataSet(viewModel.petList)
+
+        // Initialize media recycler view
+        mediaAdapter = CreateUpdatePostMediaAdapter(viewModel, baseContext, binding, confirmButtonAndUsageInterface)
+        binding.mediaRecyclerView.adapter = mediaAdapter
+        binding.mediaRecyclerView.layoutManager = LinearLayoutManager(this)
+        (binding.mediaRecyclerView.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.HORIZONTAL
+        mediaAdapter.setResult(viewModel.mediaList)
+
+        // Initialize general file recycler view
+        generalFileAdapter = CreateUpdatePostGeneralFileAdapter(viewModel, baseContext, binding, confirmButtonAndUsageInterface)
+        binding.generalRecyclerView.adapter = generalFileAdapter
+        binding.generalRecyclerView.layoutManager = LinearLayoutManager(this)
+        (binding.generalRecyclerView.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.VERTICAL
+        generalFileAdapter.setResult(viewModel.generalFileNameList)
+
+        // Initialize hashtag recycler view
+        hashtagAdapter = CreateUpdatePostHashtagAdapter(viewModel, binding)
+        binding.hashtagRecyclerView.adapter = hashtagAdapter
+        binding.hashtagRecyclerView.layoutManager = FlexboxLayoutManager(this)
+        (binding.hashtagRecyclerView.layoutManager as FlexboxLayoutManager).flexWrap = FlexWrap.WRAP
+        hashtagAdapter.setResult(viewModel.hashtagList)
     }
 
     private fun setBinding() {
@@ -284,7 +327,7 @@ class CreateUpdatePostActivity : AppCompatActivity() {
                 // initialize lists
                 for (i in postImage.indices) {
                     viewModel.photoPathList.add("")
-                    viewModel.mediaList.add(MediaListItem(false, i))
+                    viewModel.mediaList.add(CreateUpdatePostMedia(false, i))
                 }
 
                 fetchPostImageData(postImage)
@@ -298,7 +341,7 @@ class CreateUpdatePostActivity : AppCompatActivity() {
                 // initialize lists
                 for (i in postVideo.indices) {
                     viewModel.videoPathList.add("")
-                    viewModel.mediaList.add(MediaListItem(true, i))
+                    viewModel.mediaList.add(CreateUpdatePostMedia(true, i))
                 }
 
                 fetchPostVideoData(postVideo)
@@ -521,50 +564,6 @@ class CreateUpdatePostActivity : AppCompatActivity() {
         binding.createUpdatePostMainScrollView.visibility = View.VISIBLE
         binding.postDataLoadingLayout.visibility = View.GONE
         verifyAndEnableConfirmButton()
-    }
-    
-
-    private fun initializeRecyclerViews() {
-        // interface for confirm button verification inside RecyclerView adapter
-        val confirmButtonAndUsageInterface = object: ConfirmButtonAndUsageInterface {
-            override fun verifyAndEnableConfirmButton() {
-                this@CreateUpdatePostActivity.verifyAndEnableConfirmButton()
-            }
-            override fun updatePhotoUsage() {
-                this@CreateUpdatePostActivity.updatePhotoUsage()
-            }
-            override fun updateVideoUsage() {
-                this@CreateUpdatePostActivity.updateVideoUsage()
-            }
-        }
-
-        // initialize RecyclerView (for pet)
-        postPetSelectorAdapter = CreateUpdatePostPetSelectorAdapter(viewModel, baseContext, confirmButtonAndUsageInterface)
-        binding.recyclerviewCreateupdatepostPostpetselector.adapter = postPetSelectorAdapter
-        binding.recyclerviewCreateupdatepostPostpetselector.layoutManager = LinearLayoutManager(this)
-        (binding.recyclerviewCreateupdatepostPostpetselector.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.HORIZONTAL
-        postPetSelectorAdapter.updateDataSet(viewModel.petList)
-
-        // initialize RecyclerView (for media)
-        mediaAdapter = MediaListAdapter(viewModel, baseContext, binding, confirmButtonAndUsageInterface)
-        binding.mediaRecyclerView.adapter = mediaAdapter
-        binding.mediaRecyclerView.layoutManager = LinearLayoutManager(this)
-        (binding.mediaRecyclerView.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.HORIZONTAL
-        mediaAdapter.setResult(viewModel.mediaList)
-
-        // initialize RecyclerView (for general files)
-        generalFileAdapter = CreateUpdatePostGeneralFileAdapter(viewModel, baseContext, binding, confirmButtonAndUsageInterface)
-        binding.generalRecyclerView.adapter = generalFileAdapter
-        binding.generalRecyclerView.layoutManager = LinearLayoutManager(this)
-        (binding.generalRecyclerView.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.VERTICAL
-        generalFileAdapter.setResult(viewModel.generalFileNameList)
-
-        // initialize RecyclerView (for hashtags)
-        hashtagAdapter = CreateUpdatePostHashtagAdapter(viewModel, binding)
-        binding.hashtagRecyclerView.adapter = hashtagAdapter
-        binding.hashtagRecyclerView.layoutManager = FlexboxLayoutManager(this)
-        (binding.hashtagRecyclerView.layoutManager as FlexboxLayoutManager).flexWrap = FlexWrap.WRAP
-        hashtagAdapter.setResult(viewModel.hashtagList)
     }
 
     private fun updatePhotoUsage() {
@@ -1111,7 +1110,7 @@ class CreateUpdatePostActivity : AppCompatActivity() {
 
                     // save media list item
                     viewModel.mediaList
-                        .add(MediaListItem(false, viewModel.photoPathList.size - 1))
+                        .add(CreateUpdatePostMedia(false, viewModel.photoPathList.size - 1))
 
                     verifyAndEnableConfirmButton()
 
@@ -1166,7 +1165,7 @@ class CreateUpdatePostActivity : AppCompatActivity() {
 
                     // save media list item
                     viewModel.mediaList
-                        .add(MediaListItem(true, viewModel.videoPathList.size - 1))
+                        .add(CreateUpdatePostMedia(true, viewModel.videoPathList.size - 1))
 
                     verifyAndEnableConfirmButton()
 

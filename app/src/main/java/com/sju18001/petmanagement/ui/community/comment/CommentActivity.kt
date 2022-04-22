@@ -62,7 +62,7 @@ class CommentActivity : AppCompatActivity() {
         supportActionBar?.hide()
 
         initializeViewModel()
-        initializeAdapter()
+        initializeRecyclerView()
 
         resetCommentDataAndFetchComment()
         fetchAccountPhoto()
@@ -89,7 +89,7 @@ class CommentActivity : AppCompatActivity() {
         viewModel.loggedInAccount = SessionManager.fetchLoggedInAccount(baseContext)!!
     }
 
-    private fun initializeAdapter(){
+    private fun initializeRecyclerView(){
         adapter = CommentAdapter(arrayListOf(), arrayListOf(), arrayListOf(), object: CommentAdapterInterface{
             override fun getActivity() = this@CommentActivity
 

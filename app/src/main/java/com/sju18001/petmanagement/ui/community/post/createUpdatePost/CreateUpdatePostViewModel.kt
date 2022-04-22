@@ -1,6 +1,5 @@
 package com.sju18001.petmanagement.ui.community.post.createUpdatePost
 
-import android.graphics.Bitmap
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 
@@ -46,7 +45,7 @@ class CreateUpdatePostViewModel(private val handle: SavedStateHandle) : ViewMode
             handle.set("videoPathList", value)
             field = value
         }
-    var mediaList = handle.get<MutableList<MediaListItem>>("mediaList")?: mutableListOf()
+    var mediaList = handle.get<MutableList<CreateUpdatePostMedia>>("mediaList")?: mutableListOf()
         set(value) {
             handle.set("mediaList", value)
             field = value

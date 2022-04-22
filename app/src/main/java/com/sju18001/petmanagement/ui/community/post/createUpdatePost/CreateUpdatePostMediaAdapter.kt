@@ -11,14 +11,14 @@ import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.databinding.ActivityCreateupdatepostBinding
 import java.io.File
 
-class MediaListAdapter(
+class CreateUpdatePostMediaAdapter(
     private val createUpdatePostViewModel: CreateUpdatePostViewModel,
     private val context: Context,
     private val binding: ActivityCreateupdatepostBinding,
     private val confirmButtonAndUsageInterface: ConfirmButtonAndUsageInterface
-    ) : RecyclerView.Adapter<MediaListAdapter.HistoryListViewHolder>() {
+    ) : RecyclerView.Adapter<CreateUpdatePostMediaAdapter.HistoryListViewHolder>() {
 
-    private var resultList = mutableListOf<MediaListItem>()
+    private var resultList = mutableListOf<CreateUpdatePostMedia>()
 
     class HistoryListViewHolder(view: View): RecyclerView.ViewHolder(view) {
         val thumbnail: ImageView = view.findViewById(R.id.photos_thumbnail)
@@ -27,7 +27,7 @@ class MediaListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryListViewHolder {
         val view = LayoutInflater.from(parent.context)
-                .inflate(R.layout.uploaded_media_list_item, parent, false)
+                .inflate(R.layout.item_createupdatepostmedia, parent, false)
 
         val holder = HistoryListViewHolder(view)
         setListenerOnView(holder)
@@ -108,7 +108,7 @@ class MediaListAdapter(
         confirmButtonAndUsageInterface.verifyAndEnableConfirmButton()
     }
 
-    public fun setResult(result: MutableList<MediaListItem>){
+    public fun setResult(result: MutableList<CreateUpdatePostMedia>){
         this.resultList = result
         notifyDataSetChanged()
     }

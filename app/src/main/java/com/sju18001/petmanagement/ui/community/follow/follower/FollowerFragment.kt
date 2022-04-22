@@ -41,13 +41,13 @@ class FollowerFragment(private val initializeFollowerIdList: () -> Unit) : Fragm
             SavedStateViewModelFactory(requireActivity().application, requireActivity())
         ).get(FollowViewModel::class.java)
 
-        initializeAdapter()
+        initializeRecyclerView()
         setListenerOnView()
 
         return binding.root
     }
 
-    private fun initializeAdapter() {
+    private fun initializeRecyclerView() {
         adapter = FollowerAdapter(requireContext(), object: FollowUnfollowButtonInterface {
             override fun updateFollowUnfollowButton() {
                 initializeFollowerIdList.invoke()

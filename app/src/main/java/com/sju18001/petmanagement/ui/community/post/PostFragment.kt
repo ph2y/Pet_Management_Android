@@ -134,7 +134,7 @@ class PostFragment : Fragment(), PostAdapterInterface {
         setBinding(inflater, container)
         isViewDestroyed = false
 
-        initializeAdapter()
+        initializeRecyclerView()
         resetAndUpdatePostRecyclerView()
 
         return binding.root
@@ -147,8 +147,8 @@ class PostFragment : Fragment(), PostAdapterInterface {
     }
 
 
-    /** initializeAdapter() */
-    private fun initializeAdapter(){
+    /** initializeRecyclerView() */
+    private fun initializeRecyclerView(){
         adapter = PostAdapter(arrayListOf(), arrayListOf(), arrayListOf(), this)
         binding.recyclerviewPost?.let{
             it.adapter = adapter
