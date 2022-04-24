@@ -6,7 +6,7 @@
     android:paddingEnd="4dp">
 
     <TextView
-        android:id="@+id/textview_createupdateposthashtag_name"
+        android:id="@+id/textview_name"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_centerVertical="true"
@@ -15,10 +15,10 @@
         android:textSize="16sp"/>
 
     <ImageView
-        android:id="@+id/imageview_createupdateposthashtag_deletebutton"
+        android:id="@+id/imageview_deletebutton"
         android:layout_width="18dp"
         android:layout_height="18dp"
-        android:layout_toEndOf="@id/textview_createupdateposthashtag_name"
+        android:layout_toEndOf="@id/textview_name"
         android:layout_centerVertical="true"
         android:layout_marginStart="2dp"
         android:src="@drawable/ic_baseline_cancel_24"/>

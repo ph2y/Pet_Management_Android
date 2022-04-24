@@ -1,6 +1,7 @@
 package com.sju18001.petmanagement.ui.community.post.createUpdatePost
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,17 +13,15 @@ import com.sju18001.petmanagement.databinding.ActivityCreateupdatepostBinding
 import java.io.File
 
 class CreateUpdatePostMediaAdapter(
-    private val createUpdatePostViewModel: CreateUpdatePostViewModel,
     private val context: Context,
-    private val binding: ActivityCreateupdatepostBinding,
-    private val confirmButtonAndUsageInterface: ConfirmButtonAndUsageInterface
-    ) : RecyclerView.Adapter<CreateUpdatePostMediaAdapter.HistoryListViewHolder>() {
-
-    private var resultList = mutableListOf<CreateUpdatePostMedia>()
+    private val createUpdatePostViewModel: CreateUpdatePostViewModel
+    )
+    : RecyclerView.Adapter<CreateUpdatePostMediaAdapter.HistoryListViewHolder>() {
+    private var dataSet = mutableListOf<CreateUpdatePostMedia>()
 
     class HistoryListViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val thumbnail: ImageView = view.findViewById(R.id.photos_thumbnail)
-        val deleteButton: ImageView = view.findViewById(R.id.delete_button)
+        val thumbnail: ImageView = view.findViewById(R.id.imageview_thumbnail)
+        val deleteButton: ImageView = view.findViewById(R.id.imageview_deletebutton)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryListViewHolder {
@@ -36,80 +35,59 @@ class CreateUpdatePostMediaAdapter(
     }
 
     override fun onBindViewHolder(holder: HistoryListViewHolder, position: Int) {
-        if (!resultList[position].isVideo) { // if photo
-            Glide.with(context).load(File(createUpdatePostViewModel.photoPathList[resultList[position].indexInList])).into(holder.thumbnail)
-        } else { // if video
+        if (dataSet[position].isVideo){
             Glide.with(context)
-                .load(createUpdatePostViewModel.videoPathList[resultList[position].indexInList])
+                .load(createUpdatePostViewModel.videoPathList.value!![dataSet[position].indexInList])
                 .placeholder(R.drawable.ic_baseline_video_library_36)
+                .into(holder.thumbnail)
+        }else{
+            Glide.with(context)
+                .load(File(createUpdatePostViewModel.photoPathList.value!![dataSet[position].indexInList]))
                 .into(holder.thumbnail)
         }
     }
 
-    override fun getItemCount() = resultList.size
+    override fun getItemCount() = dataSet.size
 
     private fun setListenerOnView(holder: HistoryListViewHolder) {
         holder.deleteButton.setOnClickListener {
             val position = holder.absoluteAdapterPosition
-
-            if (!resultList[position].isVideo) { // if photo
-                deletePhoto(position)
-                confirmButtonAndUsageInterface.updatePhotoUsage()
-            } else { // if video
-                deleteVideo(position)
-                confirmButtonAndUsageInterface.updateVideoUsage()
-            }
+            if (dataSet[position].isVideo) deleteVideo(position)
+            else deletePhoto(position)
         }
     }
 
     private fun deletePhoto(position: Int) {
-        // delete file
-        File(createUpdatePostViewModel.photoPathList[resultList[position].indexInList]).delete()
+        File(dataSet[position].path).delete()
 
-        // delete ViewModel values + RecyclerView list
-        createUpdatePostViewModel.photoPathList.removeAt(resultList[position].indexInList)
-        createUpdatePostViewModel.mediaList.removeAt(position)
-
-        // for item remove animation
+        createUpdatePostViewModel.removePhotoPath(dataSet[position].path)
+        dataSet.removeAt(position)
         notifyItemRemoved(position)
-        notifyItemRangeChanged(position, this.resultList.size)
 
-        // re-index mediaList values for photos
+        // Photo들의 index를 다시 구성합니다.
         var newIndex = 0
-        for (i in createUpdatePostViewModel.mediaList.indices) {
-            if (!createUpdatePostViewModel.mediaList[i].isVideo) {
-                createUpdatePostViewModel.mediaList[i].indexInList = newIndex++
-            }
+        for (i in 0 until itemCount) {
+            if (!dataSet[i].isVideo) dataSet[i].indexInList = newIndex++
         }
-
-        confirmButtonAndUsageInterface.verifyAndEnableConfirmButton()
     }
 
     private fun deleteVideo(position: Int) {
-        // delete file
-        File(createUpdatePostViewModel.videoPathList[resultList[position].indexInList]).delete()
+        File(dataSet[position].path).delete()
 
-        // delete ViewModel values + RecyclerView list
-        createUpdatePostViewModel.videoPathList.removeAt(resultList[position].indexInList)
-        createUpdatePostViewModel.mediaList.removeAt(position)
-
-        // for item remove animation
+        createUpdatePostViewModel.removeVideoPath(dataSet[position].path)
+        dataSet.removeAt(position)
         notifyItemRemoved(position)
-        notifyItemRangeChanged(position, this.resultList.size)
 
-        // re-index mediaList values for videos
+        // Video들의 index를 다시 구성합니다.
         var newIndex = 0
-        for (i in createUpdatePostViewModel.mediaList.indices) {
-            if (createUpdatePostViewModel.mediaList[i].isVideo) {
-                createUpdatePostViewModel.mediaList[i].indexInList = newIndex++
-            }
+        for (i in 0 until itemCount) {
+            if (dataSet[i].isVideo) dataSet[i].indexInList = newIndex++
         }
-
-        confirmButtonAndUsageInterface.verifyAndEnableConfirmButton()
     }
 
-    public fun setResult(result: MutableList<CreateUpdatePostMedia>){
-        this.resultList = result
-        notifyDataSetChanged()
+    fun getDataSet() = dataSet
+
+    fun addItem(item: CreateUpdatePostMedia) {
+        dataSet.add(item)
     }
 }

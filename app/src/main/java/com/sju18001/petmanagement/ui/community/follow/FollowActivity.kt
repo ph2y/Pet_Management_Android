@@ -90,7 +90,7 @@ class FollowActivity : AppCompatActivity() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
             .fetchFollowerReq(ServerUtil.getEmptyBody())
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, baseContext, { response ->
-            response.body()!!.followerList.map { viewModel.followerIdList.value!!.add(it.id) }
+            response.body()!!.followerList.map { viewModel.addFollowerId(it.id) }
         }, {}, {})
     }
 
@@ -208,9 +208,7 @@ class FollowActivity : AppCompatActivity() {
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, baseContext, {
             updateViewPager()
 
-            viewModel.followerIdList.value!!.add(viewModel.accountId.value!!)
-            // 리스너 호출용: add, remove는 데이터 변경 감지가 안 된다
-            viewModel.followerIdList.value = viewModel.followerIdList.value
+            viewModel.addFollowerId(viewModel.accountId.value!!)
 
             viewModel.isApiLoading.value = false
         }, { viewModel.isApiLoading.value = false }, {})

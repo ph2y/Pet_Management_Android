@@ -133,10 +133,10 @@ class CreateUpdatePetScheduleActivity : AppCompatActivity() {
                 petNameForId[it.id] = it.name
 
                 if(it.id.toString() in checkedPetIdList){
-                    viewModel.isPetChecked.value!!.add(true)
+                    viewModel.addIsPetChecked(true)
                     viewModel.checkedPetCount.value = viewModel.checkedPetCount.value!! + 1
                 }else{
-                    viewModel.isPetChecked.value!!.add(false)
+                    viewModel.addIsPetChecked(false)
                 }
             }
             adapter.notifyDataSetChanged()

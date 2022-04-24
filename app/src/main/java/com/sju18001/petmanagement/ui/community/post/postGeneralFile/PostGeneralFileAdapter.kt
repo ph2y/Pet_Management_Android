@@ -16,6 +16,7 @@ import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
+import com.sju18001.petmanagement.controller.Util.Companion.getExtensionFromUrl
 import com.sju18001.petmanagement.databinding.ItemPostgeneralfileBinding
 import com.sju18001.petmanagement.restapi.dto.FetchPostFileReqDto
 
@@ -84,7 +85,7 @@ class PostGeneralFileAdapter(
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(activity)!!)
             .fetchPostFileReq(FetchPostFileReqDto(postId, fileId))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, activity, { response ->
-            val extension = fileName.split('.').last()
+            val extension = getExtensionFromUrl(fileName)
 
             if(isExecutionOnly){
                 startActionView(extension, response.body()!!.byteStream().readBytes())
@@ -124,7 +125,7 @@ class PostGeneralFileAdapter(
 
     private fun startActionCreateDocument(activity: Activity, fileName: String) {
         val mimeTypeMap = MimeTypeMap.getSingleton()
-        val mimeType = mimeTypeMap.getMimeTypeFromExtension(fileName.split('.').last())
+        val mimeType = mimeTypeMap.getMimeTypeFromExtension(getExtensionFromUrl(fileName))
 
         val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
             type = mimeType

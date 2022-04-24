@@ -2,6 +2,16 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <data>
+        <import type="android.view.View"/>
+        <variable
+            name="activity"
+            type="com.sju18001.petmanagement.ui.community.post.createUpdatePost.CreateUpdatePostActivity" />
+        <variable
+            name="viewModel"
+            type="com.sju18001.petmanagement.ui.community.post.createUpdatePost.CreateUpdatePostViewModel" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/fragment_create_update_post_parent_layout"
         android:layout_width="match_parent"
@@ -51,28 +61,33 @@
                 android:layout_alignParentStart="true"
                 android:layout_centerVertical="true"
                 android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_baseline_arrow_back_36"/>
+                android:enabled="@{!viewModel.isApiLoading}"
+                android:onClick="@{() -> activity.onClickBackButton()}"
+                android:src="@drawable/ic_baseline_arrow_back_36" />
 
             <TextView
                 android:id="@+id/back_button_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toEndOf="@id/back_button"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="12dp"
+                android:layout_toEndOf="@id/back_button"
+                android:text="@{viewModel.isActivityTypeCreatePost()? @string/create_post_title: @string/update_post_title}"
                 android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="@string/create_post_title"/>
+                android:textStyle="bold" />
 
             <ImageButton
                 android:id="@+id/location_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toStartOf="@id/disclosure_button"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="12dp"
+                android:layout_toStartOf="@id/disclosure_button"
                 android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_baseline_location_on_30"/>
+                android:enabled="@{!viewModel.isApiLoading}"
+                android:src="@{viewModel.isUsingLocation? @drawable/ic_baseline_location_on_30: @drawable/ic_baseline_location_off_30}"
+                android:onClick="@{() -> activity.onClickLocationButton()}"
+                />
 
             <ImageButton
                 android:id="@+id/disclosure_button"
@@ -81,7 +96,9 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:background="?selectableItemBackgroundBorderless"
-                android:src="@drawable/ic_baseline_public_30"/>
+                android:enabled="@{!viewModel.isApiLoading}"
+                android:onClick="@{() -> activity.onClickDisclosureButton()}"
+                android:src="@drawable/ic_baseline_public_30" />
 
         </RelativeLayout>
 
@@ -135,7 +152,7 @@
                     android:orientation="vertical">
 
                     <EditText
-                        android:id="@+id/post_edit_text"
+                        android:id="@+id/contents_edit_text"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:paddingStart="16dp"
@@ -147,7 +164,10 @@
                         android:maxLength="10000"
                         android:minLines="5"
                         android:theme="@style/onSelectedThemeCarrot"
-                        android:background="@android:color/transparent"/>
+                        android:background="@android:color/transparent"
+                        android:enabled="@{!viewModel.isApiLoading}"
+                        android:text="@={viewModel.contents}"
+                        />
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/hashtag_recycler_view"
@@ -207,7 +227,10 @@
                         android:maxLines="1"
                         android:maxLength="20"
                         android:theme="@style/onSelectedThemeCarrot"
-                        android:background="@android:color/transparent"/>
+                        android:background="@android:color/transparent"
+                        android:text="@={viewModel.hashtagEditText}"
+                        android:enabled="@{!viewModel.isApiLoading}"
+                        />
 
                     <ImageView
                         android:id="@+id/hashtag_clear_button"
@@ -215,8 +238,11 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="12dp"
                         android:layout_gravity="center"
-                        android:visibility="invisible"
-                        android:src="@drawable/ic_baseline_cancel_24"/>
+                        android:visibility="@{viewModel.hashtagEditText.empty? View.INVISIBLE: View.VISIBLE}"
+                        android:src="@drawable/ic_baseline_cancel_24"
+                        android:enabled="@{!viewModel.isApiLoading}"
+                        android:onClick="@{() -> activity.onClickHashtagClearButton()}"
+                        />
 
                 </LinearLayout>
 
@@ -236,22 +262,25 @@
                     android:id="@+id/media_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="90dp"
+                    android:orientation="horizontal"
+                    android:visibility="@{viewModel.photoPathList.size() + viewModel.videoPathList.size() == 0? View.GONE: View.VISIBLE}"
                     app:layout_constraintTop_toBottomOf="@id/dividerC"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintBottom_toTopOf="@id/general_recycler_view"
-                    android:orientation="horizontal"/>
+                    app:layout_constraintBottom_toTopOf="@id/general_recycler_view" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/general_recycler_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:paddingBottom="8dp"
+                    android:orientation="vertical"
+                    android:visibility="@{viewModel.generalFileNameList.size() == 0? View.GONE: View.VISIBLE}"
                     app:layout_constraintTop_toBottomOf="@id/media_recycler_view"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    android:layout_marginTop="8dp"
-                    android:paddingBottom="8dp"
-                    android:orientation="vertical"/>
+                    />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -299,7 +328,10 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:enabled="@{!viewModel.isApiLoading}"
+                    android:onClick="@{() -> activity.onClickPhotoAttachmentButton()}"
+                    >
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -311,7 +343,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
-                        android:text="@string/file_usage"
+                        android:text="@{@string/usage_format(viewModel.photoPathList.size)}"
                         android:textSize="12sp"/>
 
                 </LinearLayout>
@@ -326,7 +358,10 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:enabled="@{!viewModel.isApiLoading}"
+                    android:onClick="@{() -> activity.onClickVideoAttachmentButton()}"
+                    >
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -338,7 +373,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
-                        android:text="@string/file_usage"
+                        android:text="@{@string/usage_format(viewModel.videoPathList.size)}"
                         android:textSize="12sp" />
 
                 </LinearLayout>
@@ -353,7 +388,10 @@
                     android:clickable="true"
                     android:focusable="true"
                     android:gravity="center"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:enabled="@{!viewModel.isApiLoading}"
+                    android:onClick="@{() -> activity.onClickGeneralFileButton()}"
+                    >
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -366,7 +404,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="4dp"
-                        android:text="@string/file_usage"
+                        android:text="@{@string/usage_format(viewModel.generalFileNameList.size())}"
                         android:textSize="12sp" />
 
                 </LinearLayout>
@@ -384,16 +422,19 @@
                     android:layout_height="match_parent"
                     android:insetTop="0dp"
                     android:insetBottom="0dp"
-                    android:text="@string/complete"
+                    android:onClick="@{() -> activity.onClickPostButton()}"
+                    android:text="@{viewModel.isApiLoading? null: @string/complete}"
                     android:textSize="18sp"
+                    app:contents="@{viewModel.contents}"
                     app:cornerRadius="0dp"
-                    android:enabled="false"/>
+                    app:isApiLoading="@{viewModel.isApiLoading}"
+                    app:selectedPetId="@{viewModel.selectedPetId}" />
 
                 <ProgressBar
                     android:id="@+id/create_update_post_progress_bar"
                     android:layout_width="30dp"
                     android:layout_height="30dp"
-                    android:visibility="gone"
+                    android:visibility="@{viewModel.isApiLoading? View.VISIBLE: View.GONE}"
                     android:indeterminateTint="@color/carrot"
                     android:layout_centerInParent="true"/>
 
