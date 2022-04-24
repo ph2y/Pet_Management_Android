@@ -291,6 +291,7 @@
     <string name="post_header_format">%1$s님의 %2$s</string>
     <string name="post_like_format">좋아요 %s개</string>
     <string name="usage_format">%s/10</string>
+    <string name="hashtag_format">#%s</string>
 
     <!-- Community Fragment -->
     <string name="comment">댓글</string>
