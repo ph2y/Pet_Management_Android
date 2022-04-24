@@ -1,6 +1,7 @@
 package com.sju18001.petmanagement.ui.community.post.createUpdatePost
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -38,23 +39,22 @@ class CreateUpdatePostPetSelectorAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         // set item views
-        if (dataSet[position].petPhotoUrl != null) {
+        if (dataSet[position].petPhotoUrl != null){
             Glide.with(context).load(dataSet[position].petPhoto).into(holder.petPhoto)
-        } else {
-            Glide.with(context)
-                .load(context.getDrawable(R.drawable.ic_baseline_pets_60_with_padding)).into(holder.petPhoto)
+        }else{
+            holder.petPhoto.setImageResource(R.drawable.ic_baseline_pets_60_with_padding)
         }
 
-        if (dataSet[position].isRepresentativePet) {
+        if (dataSet[position].isRepresentativePet){
             holder.representativeIcon.visibility = View.VISIBLE
-        } else {
+        }else{
             holder.representativeIcon.visibility = View.INVISIBLE
         }
 
-        if (dataSet[position].isSelected) {
+        if (dataSet[position].isSelected){
             holder.layout.alpha = 1f
             holder.selectionIcon.visibility = View.VISIBLE
-        } else {
+        }else{
             holder.layout.alpha = .5f
             holder.selectionIcon.visibility = View.INVISIBLE
         }
@@ -89,8 +89,7 @@ class CreateUpdatePostPetSelectorAdapter(
         }
     }
 
-    fun setDataSet(newDataSet: MutableList<CreateUpdatePostPetSelectorItem>) {
-        dataSet = newDataSet
-        notifyDataSetChanged()
+    fun addItem(item: CreateUpdatePostPetSelectorItem) {
+        dataSet.add(item)
     }
 }

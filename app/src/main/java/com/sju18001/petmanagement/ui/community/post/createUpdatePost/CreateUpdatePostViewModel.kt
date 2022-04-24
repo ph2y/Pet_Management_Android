@@ -42,7 +42,6 @@ class CreateUpdatePostViewModel(private val handle: SavedStateHandle) : ViewMode
     var contents = MutableLiveData("")
     var hashtagEditText = MutableLiveData("")
 
-    var petSelectorItemList: MutableList<CreateUpdatePostPetSelectorItem> = mutableListOf()
     var selectedPetIndex = -1
 
     var photoPathList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
