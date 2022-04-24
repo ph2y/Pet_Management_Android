@@ -1,26 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="30dp"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp">
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <TextView
-        android:id="@+id/textview_name"
+    <data>
+        <variable
+            name="generalFile"
+            type="String" />
+        <variable
+            name="adapter"
+            type="com.sju18001.petmanagement.ui.community.post.createUpdatePost.CreateUpdatePostGeneralFileAdapter" />
+        <variable
+            name="holder"
+            type="com.sju18001.petmanagement.ui.community.post.createUpdatePost.CreateUpdatePostGeneralFileAdapter.ViewHolder" />
+    </data>
+
+    <RelativeLayout
         android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_centerVertical="true"
-        android:gravity="center"
-        android:maxLines="1"
-        android:ellipsize="end"/>
+        android:layout_height="30dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
-    <ImageView
-        android:id="@+id/imageview_deletebutton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@id/textview_name"
-        android:layout_marginStart="2dp"
-        android:src="@drawable/ic_baseline_close_24"/>
+        <TextView
+            android:id="@+id/textview_name"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:text="@{generalFile}"
+            />
 
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/imageview_deletebutton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/textview_name"
+            android:layout_marginStart="2dp"
+            android:src="@drawable/ic_baseline_close_24"
+            android:onClick="@{() -> adapter.onClickDeleteButton(holder)}"
+            />
+
+    </RelativeLayout>
+
+</layout>

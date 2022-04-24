@@ -7,9 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.databinding.ActivityCreateupdatepostBinding
+import com.sju18001.petmanagement.databinding.ItemCreateupdatepostgeneralfileBinding
 import java.io.File
 
 class CreateUpdatePostGeneralFileAdapter(
@@ -17,42 +19,45 @@ class CreateUpdatePostGeneralFileAdapter(
     ) : RecyclerView.Adapter<CreateUpdatePostGeneralFileAdapter.ViewHolder>() {
     private var dataSet = mutableListOf<String>()
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val name: TextView = view.findViewById(R.id.textview_name)
-        val deleteButton: ImageView = view.findViewById(R.id.imageview_deletebutton)
+    class ViewHolder(
+        private val adapter: CreateUpdatePostGeneralFileAdapter,
+        private val binding: ItemCreateupdatepostgeneralfileBinding
+    ): RecyclerView.ViewHolder(binding.root) {
+        fun bind(generalFile: String) {
+            binding.adapter = adapter
+            binding.holder = this
+            binding.generalFile = generalFile
+
+            binding.executePendingBindings()
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_createupdatepostgeneralfile, parent, false)
-
-        val holder = ViewHolder(view)
-        setListenerOnView(holder)
-
-        return holder
+        val binding = DataBindingUtil.inflate<ItemCreateupdatepostgeneralfileBinding>(LayoutInflater.from(parent.context),
+            R.layout.item_createupdatepostgeneralfile, parent, false)
+        return ViewHolder(this, binding)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.name.text = dataSet[position]
+        holder.bind(dataSet[position])
     }
 
     override fun getItemCount() = dataSet.size
 
-    private fun setListenerOnView(holder: ViewHolder) {
-        holder.deleteButton.setOnClickListener {
-            val position = holder.absoluteAdapterPosition
-
-            File(createUpdatePostViewModel.generalFilePathList.value!![position]).delete()
-
-            createUpdatePostViewModel.removeGeneralFileNameAt(position)
-            createUpdatePostViewModel.removeGeneralFilePathAt(position)
-
-            dataSet.removeAt(position)
-            notifyItemRemoved(position)
-        }
-    }
-
     fun addItem(item: String) {
         dataSet.add(item)
+    }
+
+    /** Databinding functions */
+    fun onClickDeleteButton(holder: ViewHolder) {
+        val position = holder.absoluteAdapterPosition
+
+        File(createUpdatePostViewModel.generalFilePathList.value!![position]).delete()
+
+        createUpdatePostViewModel.removeGeneralFileNameAt(position)
+        createUpdatePostViewModel.removeGeneralFilePathAt(position)
+
+        dataSet.removeAt(position)
+        notifyItemRemoved(position)
     }
 }
