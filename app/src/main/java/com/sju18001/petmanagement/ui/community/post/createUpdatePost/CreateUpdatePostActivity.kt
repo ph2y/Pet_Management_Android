@@ -160,7 +160,6 @@ class CreateUpdatePostActivity : AppCompatActivity() {
                 fetchPostVideoData(postVideo)
             }
 
-
             val postGeneral = Gson().fromJson(post.fileAttachments, Array<FileMetaData>::class.java)
             if(postGeneral != null) fetchPostGeneralData(post.id, postGeneral)
 
@@ -217,6 +216,7 @@ class CreateUpdatePostActivity : AppCompatActivity() {
                 val generalFilePath =
                     ServerUtil.createCopyAndGetAbsolutePath(baseContext, generalFileByteArray, extension, CREATE_UPDATE_POST_DIRECTORY)
                 val generalFileName = postGeneral[index].url.split("post_${postId}_").last()
+
                 viewModel.addGeneralFileName(generalFileName)
                 viewModel.addGeneralFilePath(generalFilePath)
                 generalFileAdapter.addItem(generalFileName)
@@ -231,19 +231,18 @@ class CreateUpdatePostActivity : AppCompatActivity() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
             .fetchPetReq(FetchPetReqDto(null , null))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, baseContext, { response ->
-            initializeViewModelByPetList(response.body()!!.petList)
-            petSelectorAdapter.setDataSet(viewModel.petSelectorItemList)
-
-            fetchPetPhotos()
+            initializeSelectedPetIndexAndPetSelector(response.body()!!.petList)
 
             decreaseApiCallCountForFetch()
         }, { decreaseApiCallCountForFetch() }, { decreaseApiCallCountForFetch() })
     }
 
-    private fun initializeViewModelByPetList(petList: List<Pet>) {
+    private fun initializeSelectedPetIndexAndPetSelector(petList: List<Pet>) {
         val orderedPetIdList = PetManagerFragment()
             .getOrderedPetIdList(getString(R.string.data_name_pet_list_id_order), baseContext)
-        for (id in orderedPetIdList) {
+        for (i in orderedPetIdList.indices) {
+            val id = orderedPetIdList[i]
+
             val currentPet = petList.find { it.id == id }
             val item = CreateUpdatePostPetSelectorItem(
                 currentPet!!.id, currentPet!!.photoUrl, null, currentPet!!.name,
@@ -251,21 +250,22 @@ class CreateUpdatePostActivity : AppCompatActivity() {
                 currentPet!!.id == viewModel.selectedPetId.value
             )
 
-            if (item.isSelected) viewModel.selectedPetIndex = viewModel.petSelectorItemList.size
-            viewModel.petSelectorItemList.add(item)
+            if (item.isSelected) viewModel.selectedPetIndex = i
+
+            addPetSelector(item)
         }
     }
 
-
-    private fun fetchPetPhotos() {
-        for (i in 0 until viewModel.petSelectorItemList.size) {
-            if (viewModel.petSelectorItemList[i].petPhotoUrl == null) continue
-
+    private fun addPetSelector(item: CreateUpdatePostPetSelectorItem) {
+        if (item.petPhotoUrl == null) {
+            petSelectorAdapter.addItem(item)
+        }else{
             increaseApiCallCountForFetch()
             val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
-                .fetchPetPhotoReq(FetchPetPhotoReqDto(viewModel.petSelectorItemList[i].petId))
+                .fetchPetPhotoReq(FetchPetPhotoReqDto(item.petId))
             ServerUtil.enqueueApiCall(call, {isViewDestroyed}, baseContext, { response ->
-                viewModel.petSelectorItemList[i].petPhoto = BitmapFactory.decodeStream(response.body()!!.byteStream())
+                item.petPhoto = BitmapFactory.decodeStream(response.body()!!.byteStream())
+                petSelectorAdapter.addItem(item)
 
                 decreaseApiCallCountForFetch()
             }, { decreaseApiCallCountForFetch() }, { decreaseApiCallCountForFetch() })
