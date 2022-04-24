@@ -588,5 +588,9 @@ class Util {
 
             return stream.toByteArray()
         }
+
+        fun getExtensionFromUrl(url: String): String {
+            return url.split('.').last()
+        }
     }
 }

@@ -1,6 +1,7 @@
 package com.sju18001.petmanagement.ui.community.post.createUpdatePost
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,70 +13,46 @@ import com.sju18001.petmanagement.databinding.ActivityCreateupdatepostBinding
 import java.io.File
 
 class CreateUpdatePostGeneralFileAdapter(
-    private val createUpdatePostViewModel: CreateUpdatePostViewModel,
-    private val context: Context,
-    private val binding: ActivityCreateupdatepostBinding,
-    private val confirmButtonAndUsageInterface: ConfirmButtonAndUsageInterface
-    ) : RecyclerView.Adapter<CreateUpdatePostGeneralFileAdapter.HistoryListViewHolder>() {
+    private val createUpdatePostViewModel: CreateUpdatePostViewModel
+    ) : RecyclerView.Adapter<CreateUpdatePostGeneralFileAdapter.ViewHolder>() {
+    private var dataSet = mutableListOf<String>()
 
-    private var resultList = mutableListOf<String>()
-
-    class HistoryListViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val name: TextView = view.findViewById(R.id.textview_createupdatepostgeneralfile_name)
-        val deleteButton: ImageView = view.findViewById(R.id.imageview_createupdatepostgeneralfile_deletebutton)
+    class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
+        val name: TextView = view.findViewById(R.id.textview_name)
+        val deleteButton: ImageView = view.findViewById(R.id.imageview_deletebutton)
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): HistoryListViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.item_createupdatepostgeneralfile, parent, false)
 
-        val holder = HistoryListViewHolder(view)
+        val holder = ViewHolder(view)
         setListenerOnView(holder)
 
         return holder
     }
 
-    override fun onBindViewHolder(holder: HistoryListViewHolder, position: Int) {
-        holder.name.text = resultList[position]
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.name.text = dataSet[position]
     }
 
-    override fun getItemCount() = resultList.size
+    override fun getItemCount() = dataSet.size
 
-    private fun setListenerOnView(holder: HistoryListViewHolder) {
+    private fun setListenerOnView(holder: ViewHolder) {
         holder.deleteButton.setOnClickListener {
             val position = holder.absoluteAdapterPosition
 
-            deleteItem(position)
+            File(createUpdatePostViewModel.generalFilePathList.value!![position]).delete()
 
-            // update general upload layout
-            val uploadedCount = createUpdatePostViewModel.generalFileNameList.size
-            if (uploadedCount == 0) {
-                binding.generalRecyclerView.visibility = View.GONE
-            }
-            else {
-                binding.generalRecyclerView.visibility = View.VISIBLE
-            }
-            val generalUsageText = "$uploadedCount/10"
-            binding.generalUsage.text = generalUsageText
+            createUpdatePostViewModel.removeGeneralFileNameAt(position)
+            createUpdatePostViewModel.removeGeneralFilePathAt(position)
+
+            dataSet.removeAt(position)
+            notifyItemRemoved(position)
         }
     }
 
-    private fun deleteItem(position: Int) {
-        // delete file
-        File(createUpdatePostViewModel.generalFilePathList[position]).delete()
-
-        // delete ViewModel values + RecyclerView list
-        createUpdatePostViewModel.generalFilePathList.removeAt(position)
-        createUpdatePostViewModel.generalFileNameList.removeAt(position)
-
-        // update recyclerview
-        notifyDataSetChanged()
-
-        confirmButtonAndUsageInterface.verifyAndEnableConfirmButton()
-    }
-
-    public fun setResult(result: MutableList<String>){
-        this.resultList = result
-        notifyDataSetChanged()
+    fun addItem(item: String) {
+        dataSet.add(item)
     }
 }

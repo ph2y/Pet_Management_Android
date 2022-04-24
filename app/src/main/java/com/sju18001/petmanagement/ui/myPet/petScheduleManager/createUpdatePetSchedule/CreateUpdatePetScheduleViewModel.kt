@@ -21,4 +21,10 @@ class CreateUpdatePetScheduleViewModel: ViewModel() {
     fun isActivityTypeUpdatePetSchedule(): Boolean {
         return activityType.value == CreateUpdatePetScheduleActivity.ActivityType.UPDATE_PET_SCHEDULE.ordinal
     }
+
+    fun addIsPetChecked(flag: Boolean) {
+        isPetChecked.value!!.add(flag)
+        // add가 observe되지 않기 때문에 대입 연산을 해야한다.
+        isPetChecked.value = isPetChecked.value
+    }
 }

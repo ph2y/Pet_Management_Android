@@ -326,7 +326,7 @@ class PostFragment : Fragment(), PostAdapterInterface {
 
     private fun startCreatePostFragment(){
         val createUpdatePostActivityIntent = Intent(context, CreateUpdatePostActivity::class.java)
-        createUpdatePostActivityIntent.putExtra("fragmentType", "create_post")
+        createUpdatePostActivityIntent.putExtra("activityType", "create_post")
 
         startForCreateResult.launch(createUpdatePostActivityIntent)
         requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
@@ -417,7 +417,7 @@ class PostFragment : Fragment(), PostAdapterInterface {
 
     private fun makeUpdatePostActivityIntent(post: Post, position: Int): Intent {
         val res = Intent(context, CreateUpdatePostActivity::class.java)
-        res.putExtra("fragmentType", "update_post")
+        res.putExtra("activityType", "update_post")
         res.putExtra("postId", post.id)
         res.putExtra("position", position)
         res.putExtra(

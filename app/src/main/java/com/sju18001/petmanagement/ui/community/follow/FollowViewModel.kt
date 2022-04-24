@@ -20,4 +20,10 @@ class FollowViewModel : ViewModel() {
     var followerTitle = MutableLiveData("")
     var followingTitle = MutableLiveData("")
     var searchKeyword = MutableLiveData("")
+
+    fun addFollowerId(followerId: Long){
+        followerIdList.value!!.add(followerId)
+        // add가 observe되지 않기 때문에 대입 연산을 해야한다.
+        followerIdList.value = followerIdList.value
+    }
 }

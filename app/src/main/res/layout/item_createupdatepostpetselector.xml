@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/linearlayout_createupdatepostpetselector"
+    android:id="@+id/linearlayout_parent"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:clickable="true"
@@ -18,7 +18,7 @@
             android:layout_height="72dp">
 
             <ImageView
-                android:id="@+id/imageview_createupdatepostpetselector_representativeicon"
+                android:id="@+id/imageview_representativeicon"
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_centerHorizontal="true"
@@ -28,7 +28,7 @@
                 android:src="@drawable/crown"/>
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/circleimageview_createupdatepostpetselector_petphoto"
+                android:id="@+id/circleimageview_petphoto"
                 android:layout_width="72dp"
                 android:layout_height="72dp"
                 android:padding="8dp"
@@ -37,7 +37,7 @@
                 app:civ_border_width="1dp"/>
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/circleimageview_createupdatepostpetselector_selectionicon"
+                android:id="@+id/circleimageview_selectionicon"
                 android:layout_width="18dp"
                 android:layout_height="18dp"
                 android:layout_alignParentEnd="true"
@@ -53,7 +53,7 @@
         </RelativeLayout>
 
         <TextView
-            android:id="@+id/textview_createupdatepostpetselector_petname"
+            android:id="@+id/textview_petname"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"

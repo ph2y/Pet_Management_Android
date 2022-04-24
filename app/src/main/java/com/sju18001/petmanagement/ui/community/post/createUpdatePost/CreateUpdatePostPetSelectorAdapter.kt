@@ -12,18 +12,18 @@ import com.bumptech.glide.Glide
 import com.sju18001.petmanagement.R
 import de.hdodenhof.circleimageview.CircleImageView
 
-class CreateUpdatePostPetSelectorAdapter(private val createUpdatePostViewModel: CreateUpdatePostViewModel, private val context: Context,
-                     private val confirmButtonAndUsageInterface: ConfirmButtonAndUsageInterface):
-    RecyclerView.Adapter<CreateUpdatePostPetSelectorAdapter.ViewHolder>() {
-
+class CreateUpdatePostPetSelectorAdapter(
+    private val createUpdatePostViewModel: CreateUpdatePostViewModel,
+    private val context: Context
+    ): RecyclerView.Adapter<CreateUpdatePostPetSelectorAdapter.ViewHolder>() {
     private var dataSet = mutableListOf<CreateUpdatePostPetSelectorItem>()
 
     class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val layout: LinearLayout = view.findViewById(R.id.linearlayout_createupdatepostpetselector)
-        val representativeIcon: ImageView = view.findViewById(R.id.imageview_createupdatepostpetselector_representativeicon)
-        val petPhoto: CircleImageView = view.findViewById(R.id.circleimageview_createupdatepostpetselector_petphoto)
-        val selectionIcon: CircleImageView = view.findViewById(R.id.circleimageview_createupdatepostpetselector_selectionicon)
-        val petName: TextView = view.findViewById(R.id.textview_createupdatepostpetselector_petname)
+        val layout: LinearLayout = view.findViewById(R.id.linearlayout_parent)
+        val representativeIcon: ImageView = view.findViewById(R.id.imageview_representativeicon)
+        val petPhoto: CircleImageView = view.findViewById(R.id.circleimageview_petphoto)
+        val selectionIcon: CircleImageView = view.findViewById(R.id.circleimageview_selectionicon)
+        val petName: TextView = view.findViewById(R.id.textview_petname)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -71,7 +71,7 @@ class CreateUpdatePostPetSelectorAdapter(private val createUpdatePostViewModel: 
             val previousSelectedIndex: Int = createUpdatePostViewModel.selectedPetIndex
 
             // update selected pet values
-            createUpdatePostViewModel.selectedPetId = dataSet[position].petId
+            createUpdatePostViewModel.selectedPetId.value = dataSet[position].petId
             createUpdatePostViewModel.selectedPetIndex = position
 
             // update previous and current pet's flags
@@ -86,12 +86,10 @@ class CreateUpdatePostPetSelectorAdapter(private val createUpdatePostViewModel: 
                 notifyItemChanged(previousSelectedIndex, dataSet[previousSelectedIndex])
             }
             notifyItemChanged(position)
-
-            confirmButtonAndUsageInterface.verifyAndEnableConfirmButton()
         }
     }
 
-    fun updateDataSet(newDataSet: MutableList<CreateUpdatePostPetSelectorItem>) {
+    fun setDataSet(newDataSet: MutableList<CreateUpdatePostPetSelectorItem>) {
         dataSet = newDataSet
         notifyDataSetChanged()
     }
