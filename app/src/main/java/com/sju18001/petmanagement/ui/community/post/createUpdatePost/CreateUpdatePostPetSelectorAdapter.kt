@@ -8,9 +8,11 @@ import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sju18001.petmanagement.R
+import com.sju18001.petmanagement.databinding.ItemCreateupdatepostpetselectorBinding
 import de.hdodenhof.circleimageview.CircleImageView
 
 class CreateUpdatePostPetSelectorAdapter(
@@ -19,77 +21,50 @@ class CreateUpdatePostPetSelectorAdapter(
     ): RecyclerView.Adapter<CreateUpdatePostPetSelectorAdapter.ViewHolder>() {
     private var dataSet = mutableListOf<CreateUpdatePostPetSelectorItem>()
 
-    class ViewHolder(view: View): RecyclerView.ViewHolder(view) {
-        val layout: LinearLayout = view.findViewById(R.id.linearlayout_parent)
-        val representativeIcon: ImageView = view.findViewById(R.id.imageview_representativeicon)
-        val petPhoto: CircleImageView = view.findViewById(R.id.circleimageview_petphoto)
-        val selectionIcon: CircleImageView = view.findViewById(R.id.circleimageview_selectionicon)
-        val petName: TextView = view.findViewById(R.id.textview_petname)
+    class ViewHolder(
+        private val adapter: CreateUpdatePostPetSelectorAdapter,
+        private val binding: ItemCreateupdatepostpetselectorBinding,
+        private val context: Context
+    ): RecyclerView.ViewHolder(binding.root) {
+        fun bind(petSelectorItem: CreateUpdatePostPetSelectorItem) {
+            binding.adapter = adapter
+            binding.holder = this
+            binding.petSelectorItem = petSelectorItem
+            binding.context = context
+
+            binding.executePendingBindings()
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.item_createupdatepostpetselector, parent, false)
-
-        val holder = ViewHolder(view)
-        setListenerOnView(holder)
-
-        return holder
+        val binding = DataBindingUtil.inflate<ItemCreateupdatepostpetselectorBinding>(LayoutInflater.from(parent.context),
+            R.layout.item_createupdatepostpetselector, parent, false)
+        return ViewHolder(this, binding, context)
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        // set item views
-        if (dataSet[position].petPhotoUrl != null){
-            Glide.with(context).load(dataSet[position].petPhoto).into(holder.petPhoto)
-        }else{
-            holder.petPhoto.setImageResource(R.drawable.ic_baseline_pets_60_with_padding)
-        }
-
-        if (dataSet[position].isRepresentativePet){
-            holder.representativeIcon.visibility = View.VISIBLE
-        }else{
-            holder.representativeIcon.visibility = View.INVISIBLE
-        }
-
-        if (dataSet[position].isSelected){
-            holder.layout.alpha = 1f
-            holder.selectionIcon.visibility = View.VISIBLE
-        }else{
-            holder.layout.alpha = .5f
-            holder.selectionIcon.visibility = View.INVISIBLE
-        }
-
-        holder.petName.text = dataSet[position].petName
+        holder.bind(dataSet[position])
     }
 
     override fun getItemCount(): Int = dataSet.size
 
-    private fun setListenerOnView(holder: ViewHolder) {
-        holder.layout.setOnClickListener {
-            val position = holder.absoluteAdapterPosition
-
-            val previousSelectedIndex: Int = createUpdatePostViewModel.selectedPetIndex
-
-            // update selected pet values
-            createUpdatePostViewModel.selectedPetId.value = dataSet[position].petId
-            createUpdatePostViewModel.selectedPetIndex = position
-
-            // update previous and current pet's flags
-            if (previousSelectedIndex != -1) {
-                dataSet[previousSelectedIndex].isSelected = false
-            }
-            dataSet[position].isSelected = true
-
-            // update view changes
-            if (previousSelectedIndex != -1) {
-                // passed object to not show the animation
-                notifyItemChanged(previousSelectedIndex, dataSet[previousSelectedIndex])
-            }
-            notifyItemChanged(position)
-        }
-    }
-
     fun addItem(item: CreateUpdatePostPetSelectorItem) {
         dataSet.add(item)
+    }
+
+    /** Databinding functions */
+    fun onClickItem(holder: ViewHolder) {
+        val position = holder.absoluteAdapterPosition
+        val previousSelectedIndex: Int = createUpdatePostViewModel.selectedPetIndex
+
+        createUpdatePostViewModel.selectedPetId.value = dataSet[position].petId
+        createUpdatePostViewModel.selectedPetIndex = position
+
+        dataSet[position].isSelected = true
+        notifyItemChanged(position)
+        if (previousSelectedIndex != -1) {
+            dataSet[previousSelectedIndex].isSelected = false
+            notifyItemChanged(previousSelectedIndex, dataSet[previousSelectedIndex])
+        }
     }
 }
