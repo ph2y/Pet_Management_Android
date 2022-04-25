@@ -10,6 +10,11 @@ class LoginViewModel(private val handle: SavedStateHandle): ViewModel() {
     var loginUsername = MutableLiveData("")
     var loginPassword = MutableLiveData("")
 
+    var isAllChecked = MutableLiveData(false)
+    var isTermsChecked = MutableLiveData(false)
+    var isPrivacyChecked = MutableLiveData(false)
+    var isMarketingChecked = MutableLiveData(false)
+
     var createAccountUsername = MutableLiveData("")
     var createAccountPassword = MutableLiveData("")
     var createAccountPasswordCheck = MutableLiveData("")
@@ -18,29 +23,6 @@ class LoginViewModel(private val handle: SavedStateHandle): ViewModel() {
     var isUsernameOverlapped = MutableLiveData(false)
     var isPasswordValid = MutableLiveData(false)
     var isPasswordCheckValid = MutableLiveData(false)
-
-    // variables for create account
-        // terms
-    var createAccountSelectAllCheckBox = handle.get<Boolean>("createAccountSelectAllCheckBox")?: false
-        set(value){
-            handle.set("createAccountSelectAllCheckBox", value)
-            field = value
-        }
-    var createAccountTermsCheckBox = handle.get<Boolean>("createAccountTermsCheckBox")?: false
-        set(value){
-            handle.set("createAccountTermsCheckBox", value)
-            field = value
-        }
-    var createAccountPrivacyCheckBox = handle.get<Boolean>("createAccountPrivacyCheckBox")?: false
-        set(value){
-            handle.set("createAccountPrivacyCheckBox", value)
-            field = value
-        }
-    var createAccountMarketingCheckBox = handle.get<Boolean>("createAccountMarketingCheckBox")?: false
-        set(value){
-            handle.set("createAccountMarketingCheckBox", value)
-            field = value
-        }
 
         // user info
     var createAccountPhoneEditText = handle.get<String>("createAccountPhoneEditText")?: ""
@@ -100,10 +82,11 @@ class LoginViewModel(private val handle: SavedStateHandle): ViewModel() {
         }
 
     fun resetCreateAccountValues() {
+        /*
         createAccountSelectAllCheckBox = false
         createAccountTermsCheckBox = false
         createAccountPrivacyCheckBox = false
-        createAccountMarketingCheckBox = false
+        createAccountMarketingCheckBox = false*/
 
         /*
         createAccountUsernameEditText = ""
