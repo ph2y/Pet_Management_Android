@@ -209,8 +209,8 @@ class CreateAccountFragment : Fragment() {
 
     private fun createAccount(loginViewModel: LoginViewModel) {
         // create create account request Dto
-        val accountCreateAccountRequestDto = CreateAccountReqDto(loginViewModel.createAccountUsernameEditText,
-            loginViewModel.createAccountPwEditText, loginViewModel.createAccountEmailEditText, loginViewModel.createAccountPhoneEditText,
+        val accountCreateAccountRequestDto = CreateAccountReqDto(loginViewModel.createAccountUsername.value!!,
+            loginViewModel.createAccountPassword.value!!, loginViewModel.createAccountEmailEditText, loginViewModel.createAccountPhoneEditText,
             "#", loginViewModel.createAccountMarketingCheckBox, null, true)
 
         // call API using Retrofit
@@ -249,7 +249,7 @@ class CreateAccountFragment : Fragment() {
                         }
                         // if username overlap -> go to credentials fragment + show message
                         MESSAGE_USERNAME_OVERLAP -> {
-                            loginViewModel.createAccountUsernameIsOverlap = true
+                            loginViewModel.isUsernameOverlapped.value = true
                             childFragmentManager.popBackStack()
                         }
                         // if phone overlap + show message

@@ -10,6 +10,15 @@ class LoginViewModel(private val handle: SavedStateHandle): ViewModel() {
     var loginUsername = MutableLiveData("")
     var loginPassword = MutableLiveData("")
 
+    var createAccountUsername = MutableLiveData("")
+    var createAccountPassword = MutableLiveData("")
+    var createAccountPasswordCheck = MutableLiveData("")
+
+    var isUsernameValid = MutableLiveData(false)
+    var isUsernameOverlapped = MutableLiveData(false)
+    var isPasswordValid = MutableLiveData(false)
+    var isPasswordCheckValid = MutableLiveData(false)
+
     // variables for create account
         // terms
     var createAccountSelectAllCheckBox = handle.get<Boolean>("createAccountSelectAllCheckBox")?: false
@@ -30,43 +39,6 @@ class LoginViewModel(private val handle: SavedStateHandle): ViewModel() {
     var createAccountMarketingCheckBox = handle.get<Boolean>("createAccountMarketingCheckBox")?: false
         set(value){
             handle.set("createAccountMarketingCheckBox", value)
-            field = value
-        }
-
-        // username/password
-    var createAccountUsernameEditText = handle.get<String>("createAccountUsernameEditText")?: ""
-        set(value){
-            handle.set("createAccountUsernameEditText", value)
-            field = value
-        }
-    var createAccountUsernameValid = handle.get<Boolean>("createAccountUsernameValid")?: false
-        set(value){
-            handle.set("createAccountUsernameValid", value)
-            field = value
-        }
-    var createAccountUsernameIsOverlap = handle.get<Boolean>("createAccountUsernameIsOverlap")?: false
-        set(value){
-            handle.set("createAccountUsernameIsOverlap", value)
-            field = value
-        }
-    var createAccountPwEditText = handle.get<String>("createAccountPwEditText")?: ""
-        set(value){
-            handle.set("createAccountPwEditText", value)
-            field = value
-        }
-    var createAccountPwValid = handle.get<Boolean>("createAccountPwValid")?: false
-        set(value){
-            handle.set("createAccountPwValid", value)
-            field = value
-        }
-    var createAccountPwCheckEditText = handle.get<String>("createAccountPwCheckEditText")?: ""
-        set(value){
-            handle.set("createAccountPwCheckEditText", value)
-            field = value
-        }
-    var createAccountPwCheckValid = handle.get<Boolean>("createAccountPwCheckValid")?: false
-        set(value){
-            handle.set("createAccountPwCheckValid", value)
             field = value
         }
 
@@ -127,19 +99,20 @@ class LoginViewModel(private val handle: SavedStateHandle): ViewModel() {
             field = value
         }
 
-    public fun resetCreateAccountValues() {
+    fun resetCreateAccountValues() {
         createAccountSelectAllCheckBox = false
         createAccountTermsCheckBox = false
         createAccountPrivacyCheckBox = false
         createAccountMarketingCheckBox = false
 
+        /*
         createAccountUsernameEditText = ""
         createAccountUsernameValid = false
         createAccountUsernameIsOverlap = false
         createAccountPwEditText = ""
         createAccountPwValid = false
         createAccountPwCheckEditText = ""
-        createAccountPwCheckValid = false
+        createAccountPwCheckValid = false*/
 
         createAccountPhoneEditText = ""
         createAccountPhoneValid = false
