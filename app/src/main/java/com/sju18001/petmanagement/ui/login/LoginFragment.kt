@@ -31,28 +31,31 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class LoginFragment : Fragment() {
-
-    // variables for view binding
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
     private var isViewDestroyed = false
+    val viewModel: LoginViewModel by activityViewModels()
 
-    // Snackbar variable(for dismiss)
     private var snackBar: Snackbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // get create account result
         setFragmentResultListener("createAccountResult") { _, bundle ->
-            val result: Boolean = bundle.get("isSuccessful") as Boolean
-
-            // if successful -> show success message
-            if(result) {
+            if(bundle.getBoolean("isSuccessful")) {
                 displaySuccessMessage(context?.getText(R.string.create_account_success)!!.toString())
             }
         }
+    }
+
+    private fun displaySuccessMessage(message: String) {
+        snackBar = Snackbar.make(view?.findViewById(R.id.constraintlayout_parent)!!,
+            message, Snackbar.LENGTH_SHORT)
+        val snackBarView = snackBar!!.view
+        snackBarView.setBackgroundColor(resources.getColor(android.R.color.holo_green_dark))
+        snackBarView.findViewById<TextView>(R.id.snackbar_text).textAlignment = View.TEXT_ALIGNMENT_CENTER
+        snackBar!!.show()
     }
 
     override fun onCreateView(
@@ -60,83 +63,38 @@ class LoginFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // view binding
-        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+        setBinding(inflater, container)
         isViewDestroyed = false
 
         return binding.root
     }
 
+    private fun setBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        _binding = FragmentLoginBinding.inflate(inflater, container, false)
+
+        binding.lifecycleOwner = this
+        binding.fragment = this@LoginFragment
+        binding.viewModel = viewModel
+    }
+
     override fun onStart() {
         super.onStart()
 
-        // variable for ViewModel
-        val loginViewModel: LoginViewModel by activityViewModels()
+        // TODO : loginViewModel.resetCreateAccountValues()
 
-        // restore EditText values after view destruction
-        binding.usernameEditText.setText(loginViewModel.loginUsernameEditText)
-        binding.pwEditText.setText(loginViewModel.loginPwEditText)
-
-        // reset create account values in ViewModel
-        loginViewModel.resetCreateAccountValues()
-
-        // for id text change listener
-        binding.usernameEditText.addTextChangedListener(object: TextWatcher {
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                loginViewModel.loginUsernameEditText = s.toString()
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-        })
-
-        // pwEditText Listener
-        binding.pwEditText.setOnEditorActionListener { _, _, _ ->
+        binding.edittextPassword.setOnEditorActionListener { _, _, _ ->
             Util.hideKeyboard(requireActivity())
-
-            lockViews()
-            login(binding.usernameEditText.text.toString(), binding.pwEditText.text.toString())
-
+            login()
             true
         }
-        binding.pwEditText.addTextChangedListener(object: TextWatcher {
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                loginViewModel.loginPwEditText = s.toString()
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun afterTextChanged(s: Editable?) {}
-        })
 
-        // for login button
-        binding.loginButton.setOnClickListener {
-            lockViews()
-            login(binding.usernameEditText.text.toString(), binding.pwEditText.text.toString())
-        }
-
-        // for create account button
-        binding.createAccountButton.setOnClickListener {
-            val createAccountFragment = CreateAccountFragment()
-            activity?.supportFragmentManager?.beginTransaction()!!
-                .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
-                .replace(R.id.framelayout_login_fragmentcontainer, createAccountFragment)
-                .addToBackStack(null)
-                .commit()
-        }
-
-        // for recovery button
-        binding.recoveryButton.setOnClickListener {
-            val recoveryFragment = RecoveryFragment()
-            activity?.supportFragmentManager?.beginTransaction()!!
-                .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
-                .replace(R.id.framelayout_login_fragmentcontainer, recoveryFragment)
-                .addToBackStack(null)
-                .commit()
-        }
-
-        Util.setupViewsForHideKeyboard(requireActivity(), binding.fragmentLoginParentLayout)
+        Util.setupViewsForHideKeyboard(requireActivity(), binding.constraintlayoutParent)
     }
 
-    private fun login(username: String, password: String) {
-        val call = RetrofitBuilder.getServerApi().loginReq(LoginReqDto(username, password))
+    fun login() {
+        viewModel.isApiLoading.value = true
+        val call = RetrofitBuilder.getServerApi()
+            .loginReq(LoginReqDto(viewModel.loginUsername.value!!, viewModel.loginPassword.value!!))
         call.enqueue(object: Callback<LoginResDto> {
             override fun onResponse(
                 call: Call<LoginResDto>,
@@ -144,35 +102,37 @@ class LoginFragment : Fragment() {
             ) {
                 if(isViewDestroyed) return
 
-                if(response.isSuccessful) {
-                    checkIsFirstLoginAndSwitchActivity(response.body()!!.token!!)
-                }
-                else {
-                    // create custom snack bar to display error message
+                if(response.isSuccessful){
+                    checkIsFirstLoginAndStartActivity(response.body()!!.token!!)
+                }else{
                     displayErrorMessage(context?.getText(R.string.login_failed)!!.toString())
-
-                    // enable buttons & editText
-                    unlockViews()
+                    viewModel.isApiLoading.value = false
                 }
             }
 
             override fun onFailure(call: Call<LoginResDto>, t: Throwable) {
                 if(isViewDestroyed) return
 
-                // create custom snack bar to display error message
                 displayErrorMessage(context?.getText(R.string.default_error_message)!!.toString())
 
-                unlockViews()
-
-                // manually log error message
                 Util.log(context!!, t.message.toString())
                 Log.d("error", t.message.toString())
+
+                viewModel.isApiLoading.value = false
             }
         })
     }
 
-    // 첫 로그인인지 체킹 후 액티비티 전환
-    private fun checkIsFirstLoginAndSwitchActivity(token: String){
+    private fun displayErrorMessage(message: String) {
+        snackBar = Snackbar.make(view?.findViewById(R.id.constraintlayout_parent)!!,
+            message, Snackbar.LENGTH_SHORT)
+        val snackBarView = snackBar!!.view
+        snackBarView.setBackgroundColor(resources.getColor(android.R.color.holo_red_dark))
+        snackBarView.findViewById<TextView>(R.id.snackbar_text).textAlignment = View.TEXT_ALIGNMENT_CENTER
+        snackBar!!.show()
+    }
+
+    private fun checkIsFirstLoginAndStartActivity(token: String){
         val fetchAccountCall = RetrofitBuilder.getServerApiWithToken(token).fetchAccountReq(ServerUtil.getEmptyBody())
         fetchAccountCall.enqueue(object: Callback<FetchAccountResDto> {
             override fun onResponse(
@@ -182,45 +142,18 @@ class LoginFragment : Fragment() {
                 if(isViewDestroyed) return
 
                 response.body()?.let{
-                    // 조회 성공
                     if(response.isSuccessful){
-                        // 첫 로그인일 시
-                        if(it.nickname == "#"){
-                            // nickname => username 변경
-                            val updateAccountCall = RetrofitBuilder.getServerApiWithToken(token)
-                                .updateAccountReq(UpdateAccountReqDto(it.email, it.phone, it.username, it.marketing,
-                                    it.userMessage, it.representativePetId, it.notification, it.mapSearchRadius))
-                            ServerUtil.enqueueApiCall(updateAccountCall, {isViewDestroyed}, requireContext(), {}, {}, {})
+                        SessionManager.saveUserToken(requireContext(), token)
 
-                            // 웰컴 페이지 호출
-                            val intent = Intent(context, WelcomeActivity::class.java)
-                            SessionManager.saveUserToken(requireContext(), token)
-                            response.body()?.run{
-                                // nickname에 username을 넣은 것에 유의할 것
-                                val account = Account(id, username, email, phone, null, marketing, username, photoUrl,
-                                    userMessage, representativePetId, fcmRegistrationToken, notification, mapSearchRadius)
-                                SessionManager.saveLoggedInAccount(requireContext(), account)
-                            }
-
-                            startActivity(intent)
-                            activity?.finish()
-                        }
-                        // 첫 로그인이 아닐 시
-                        else{
-                            // start main activity + send token
-                            val intent = Intent(context, MainActivity::class.java)
-                            SessionManager.saveUserToken(requireContext(), token)
-                            response.body()?.run{
-                                val account = Account(id, username, email, phone, null, marketing, nickname, photoUrl,
-                                    userMessage, representativePetId, fcmRegistrationToken, notification, mapSearchRadius)
-                                SessionManager.saveLoggedInAccount(requireContext(), account)
-                            }
-
-                            startActivity(intent)
-                            activity?.finish()
+                        if(isFirstLogin(it.nickname!!)){
+                            updateAccountWithDefaultNickname(token, it)
+                            startWelcomeActivity(it)
+                        }else{
+                            startMainActivity(it)
                         }
                     }else{
                         Toast.makeText(context, it._metadata.toString(), Toast.LENGTH_LONG).show()
+                        viewModel.isApiLoading.value = false
                     }
                 }
             }
@@ -228,69 +161,77 @@ class LoginFragment : Fragment() {
             override fun onFailure(call: Call<FetchAccountResDto>, t: Throwable) {
                 if(isViewDestroyed) return
 
-                unlockViews()
-
-                // create custom snack bar to display error message
                 displayErrorMessage(t.message.toString())
                 Log.d("error", t.message.toString())
+
+                viewModel.isApiLoading.value = false
             }
         })
     }
 
-    private fun lockViews() {
-        // set login button status to loading
-        binding.loginButton.text = ""
-        binding.loginProgressBar.visibility = View.VISIBLE
-        binding.loginButton.isEnabled = false
-
-        // disable create account, recovery buttons
-        binding.createAccountButton.isEnabled = false
-        binding.recoveryButton.isEnabled = false
-
-        // disable editText
-        binding.usernameEditText.isEnabled = false
-        binding.pwEditText.isEnabled = false
+    private fun isFirstLogin(nickname: String): Boolean {
+        return nickname == "#"
     }
 
-    private fun unlockViews() {
-        // set login button status to active
-        binding.loginButton.text = context?.getText(R.string.login_button)
-        binding.loginProgressBar.visibility = View.GONE
-        binding.loginButton.isEnabled = true
-
-        // enable create account, recovery buttons
-        binding.createAccountButton.isEnabled = true
-        binding.recoveryButton.isEnabled = true
-
-        // enable editText
-        binding.usernameEditText.isEnabled = true
-        binding.pwEditText.isEnabled = true
+    private fun updateAccountWithDefaultNickname(token: String, body: FetchAccountResDto) {
+        // nickname을 username과 같게 변경(ex. "#" -> "abc123")
+        val updateAccountCall = RetrofitBuilder.getServerApiWithToken(token)
+            .updateAccountReq(UpdateAccountReqDto(body.email, body.phone, body.username, body.marketing,
+                body.userMessage, body.representativePetId, body.notification, body.mapSearchRadius))
+        ServerUtil.enqueueApiCall(updateAccountCall, {isViewDestroyed}, requireContext(), {}, {}, {})
     }
 
-    private fun displayErrorMessage(message: String) {
-        snackBar = Snackbar.make(view?.findViewById(R.id.fragment_login_parent_layout)!!,
-            message, Snackbar.LENGTH_SHORT)
-        val snackBarView = snackBar!!.view
-        snackBarView.setBackgroundColor(resources.getColor(android.R.color.holo_red_dark))
-        snackBarView.findViewById<TextView>(R.id.snackbar_text).textAlignment = View.TEXT_ALIGNMENT_CENTER
-        snackBar!!.show()
+    private fun startWelcomeActivity(body: FetchAccountResDto) {
+        val intent = Intent(context, WelcomeActivity::class.java)
+        body.run{
+            // nickname에 username을 넣은 것에 유의할 것
+            val account = Account(id, username, email, phone, null, marketing, username, photoUrl,
+                userMessage, representativePetId, fcmRegistrationToken, notification, mapSearchRadius)
+            SessionManager.saveLoggedInAccount(requireContext(), account)
+        }
+
+        startActivity(intent)
+        activity?.finish()
     }
 
-    private fun displaySuccessMessage(message: String) {
-        snackBar = Snackbar.make(view?.findViewById(R.id.fragment_login_parent_layout)!!,
-            message, Snackbar.LENGTH_SHORT)
-        val snackBarView = snackBar!!.view
-        snackBarView.setBackgroundColor(resources.getColor(android.R.color.holo_green_dark))
-        snackBarView.findViewById<TextView>(R.id.snackbar_text).textAlignment = View.TEXT_ALIGNMENT_CENTER
-        snackBar!!.show()
+    private fun startMainActivity(body: FetchAccountResDto) {
+        val intent = Intent(context, MainActivity::class.java)
+        body.run{
+            val account = Account(id, username, email, phone, null, marketing, nickname, photoUrl,
+                userMessage, representativePetId, fcmRegistrationToken, notification, mapSearchRadius)
+            SessionManager.saveLoggedInAccount(requireContext(), account)
+        }
+
+        startActivity(intent)
+        activity?.finish()
     }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
 
         isViewDestroyed = true
-
         snackBar?.dismiss()
+    }
+
+
+    /** Databinding functions */
+    fun onClickCreateAccountButton() {
+        val createAccountFragment = CreateAccountFragment()
+        activity?.supportFragmentManager?.beginTransaction()!!
+            .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
+            .replace(R.id.framelayout_login_fragmentcontainer, createAccountFragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    fun onClickRecoveryButton() {
+        val recoveryFragment = RecoveryFragment()
+        activity?.supportFragmentManager?.beginTransaction()!!
+            .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
+            .replace(R.id.framelayout_login_fragmentcontainer, recoveryFragment)
+            .addToBackStack(null)
+            .commit()
     }
 }
