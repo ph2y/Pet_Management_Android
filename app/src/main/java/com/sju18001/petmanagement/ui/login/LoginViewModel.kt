@@ -1,20 +1,14 @@
 package com.sju18001.petmanagement.ui.login
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 
 class LoginViewModel(private val handle: SavedStateHandle): ViewModel() {
-    // variables for login
-    var loginUsernameEditText = handle.get<String>("loginUsernameEditText")?: ""
-        set(value){
-            handle.set("loginUsernameEditText", value)
-            field = value
-        }
-    var loginPwEditText = handle.get<String>("loginPwEditText")?: ""
-        set(value){
-            handle.set("loginPwEditText", value)
-            field = value
-        }
+    var isApiLoading = MutableLiveData(false)
+
+    var loginUsername = MutableLiveData("")
+    var loginPassword = MutableLiveData("")
 
     // variables for create account
         // terms
