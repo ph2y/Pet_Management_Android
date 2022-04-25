@@ -4,15 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CheckBox
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import com.sju18001.petmanagement.databinding.FragmentCreateAccountTermsBinding
+import androidx.lifecycle.MutableLiveData
+import com.sju18001.petmanagement.databinding.FragmentCreateaccounttermsBinding
 import com.sju18001.petmanagement.ui.login.LoginViewModel
 
 class CreateAccountTermsFragment: Fragment() {
-
-    // variables for view binding
-    private var _binding: FragmentCreateAccountTermsBinding? = null
+    val viewModel: LoginViewModel by activityViewModels()
+    
+    private var _binding: FragmentCreateaccounttermsBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -20,86 +22,45 @@ class CreateAccountTermsFragment: Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // view binding
-        _binding = FragmentCreateAccountTermsBinding.inflate(inflater, container, false)
+        setBinding(inflater, container)
+        (parentFragment as CreateAccountFragment).hidePreviousButton()
+
         return binding.root
     }
 
-    override fun onStart() {
-        super.onStart()
+    private fun setBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        _binding = FragmentCreateaccounttermsBinding.inflate(inflater, container, false)
 
-        // variable for ViewModel
-        val loginViewModel: LoginViewModel by activityViewModels()
-
-        // for state restore(ViewModel)
-        restoreState(loginViewModel)
-
-        // for select all check box
-        binding.selectAllCheckBox.setOnClickListener {
-            loginViewModel.createAccountSelectAllCheckBox = binding.selectAllCheckBox.isChecked
-            selectDeselectAll(loginViewModel, loginViewModel.createAccountSelectAllCheckBox)
-            checkIsAllSelected(loginViewModel)
-            checkIsValid(loginViewModel)
-        }
-
-        // for terms check box
-        binding.termsCheckBox.setOnClickListener {
-            loginViewModel.createAccountTermsCheckBox = binding.termsCheckBox.isChecked
-            checkIsAllSelected(loginViewModel)
-            checkIsValid(loginViewModel)
-        }
-
-        // for privacy check box
-        binding.privacyCheckBox.setOnClickListener {
-            loginViewModel.createAccountPrivacyCheckBox = binding.privacyCheckBox.isChecked
-            checkIsAllSelected(loginViewModel)
-            checkIsValid(loginViewModel)
-        }
-
-        // for marketing check box
-        binding.marketingCheckBox.setOnClickListener {
-            loginViewModel.createAccountMarketingCheckBox = binding.marketingCheckBox.isChecked
-            checkIsAllSelected(loginViewModel)
-        }
-    }
-
-    private fun selectDeselectAll(loginViewModel: LoginViewModel, selected: Boolean) {
-        loginViewModel.createAccountTermsCheckBox = selected
-        loginViewModel.createAccountPrivacyCheckBox = selected
-        loginViewModel.createAccountMarketingCheckBox = selected
-
-        binding.termsCheckBox.isChecked = loginViewModel.createAccountTermsCheckBox
-        binding.privacyCheckBox.isChecked = loginViewModel.createAccountPrivacyCheckBox
-        binding.marketingCheckBox.isChecked = loginViewModel.createAccountMarketingCheckBox
-    }
-
-    private fun checkIsAllSelected(loginViewModel: LoginViewModel) {
-        loginViewModel.createAccountSelectAllCheckBox =
-            loginViewModel.createAccountTermsCheckBox && loginViewModel.createAccountPrivacyCheckBox && loginViewModel.createAccountMarketingCheckBox
-        binding.selectAllCheckBox.isChecked = loginViewModel.createAccountSelectAllCheckBox
-    }
-
-    private fun checkIsValid(loginViewModel: LoginViewModel) {
-        if(loginViewModel.createAccountTermsCheckBox && loginViewModel.createAccountPrivacyCheckBox) {
-            (parentFragment as CreateAccountFragment).enableNextButton()
-        }
-        else {
-            (parentFragment as CreateAccountFragment).disableNextButton()
-        }
-    }
-
-    private fun restoreState(loginViewModel: LoginViewModel) {
-        binding.selectAllCheckBox.isChecked = loginViewModel.createAccountSelectAllCheckBox
-        binding.termsCheckBox.isChecked = loginViewModel.createAccountTermsCheckBox
-        binding.privacyCheckBox.isChecked = loginViewModel.createAccountPrivacyCheckBox
-        binding.marketingCheckBox.isChecked = loginViewModel.createAccountMarketingCheckBox
-
-        (parentFragment as CreateAccountFragment).hidePreviousButton()
-        checkIsValid(loginViewModel)
+        binding.lifecycleOwner = this
+        binding.fragment = this@CreateAccountTermsFragment
+        binding.viewModel = viewModel
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+
+
+    /** Databinding functions */
+    fun onClickAllCheckBox(view: View) {
+        val flag = (view as CheckBox).isChecked
+        viewModel.isTermsChecked.value = flag
+        viewModel.isPrivacyChecked.value = flag
+        viewModel.isMarketingChecked.value = flag
+        checkValidationToSetNextButton()
+    }
+
+    private fun checkValidationToSetNextButton() {
+        if(viewModel.isTermsChecked.value!! && viewModel.isPrivacyChecked.value!!) {
+            (parentFragment as CreateAccountFragment).enableNextButton()
+        }else{
+            (parentFragment as CreateAccountFragment).disableNextButton()
+        }
+    }
+
+    fun onClickCheckBox() {
+        viewModel.isAllChecked.value = viewModel.isTermsChecked.value!! && viewModel.isPrivacyChecked.value!! && viewModel.isMarketingChecked.value!!
+        checkValidationToSetNextButton()
     }
 }

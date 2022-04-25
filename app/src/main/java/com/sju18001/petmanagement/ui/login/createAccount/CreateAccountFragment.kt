@@ -211,7 +211,7 @@ class CreateAccountFragment : Fragment() {
         // create create account request Dto
         val accountCreateAccountRequestDto = CreateAccountReqDto(loginViewModel.createAccountUsername.value!!,
             loginViewModel.createAccountPassword.value!!, loginViewModel.createAccountEmailEditText, loginViewModel.createAccountPhoneEditText,
-            "#", loginViewModel.createAccountMarketingCheckBox, null, true)
+            "#", loginViewModel.isMarketingChecked.value!!, null, true)
 
         // call API using Retrofit
         createAccountApiCall = RetrofitBuilder.getServerApi().createAccountReq(accountCreateAccountRequestDto)
