@@ -7,7 +7,7 @@ data class Account(
     val phone: String,
     val password: String?,
     val marketing: Boolean?,
-    val nickname: String?,
+    var nickname: String?,
     var photoUrl: String?,
     val userMessage: String?,
     val representativePetId: Long?,
