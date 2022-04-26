@@ -1,14 +1,10 @@
 package com.sju18001.petmanagement.ui.login.createAccount
 
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.sju18001.petmanagement.controller.PatternRegex
@@ -20,7 +16,7 @@ class CreateAccountCredentialsFragment : Fragment() {
     private var _binding: FragmentCreateaccountcredentialsBinding? = null
     private val binding get() = _binding!!
 
-    val viewModel: LoginViewModel by activityViewModels()
+    private val viewModel: CreateAccountViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -30,7 +26,8 @@ class CreateAccountCredentialsFragment : Fragment() {
         setBinding(inflater, container)
 
         Util.setupViewsForHideKeyboard(requireActivity(), binding.cardviewParent)
-        (parentFragment as CreateAccountFragment).showPreviousButton()
+        (activity as CreateAccountActivity).showPreviousButton()
+        checkValidationToSetNextButton()
 
         return binding.root
     }
@@ -41,6 +38,14 @@ class CreateAccountCredentialsFragment : Fragment() {
         binding.lifecycleOwner = this
         binding.fragment = this@CreateAccountCredentialsFragment
         binding.viewModel = viewModel
+    }
+
+    private fun checkValidationToSetNextButton() {
+        if(viewModel.isUsernameValid.value!! && viewModel.isPasswordValid.value!! && viewModel.isPasswordCheckValid.value!!){
+            (activity as CreateAccountActivity).enableNextButton()
+        }else{
+            (activity as CreateAccountActivity).disableNextButton()
+        }
     }
 
 
@@ -60,26 +65,18 @@ class CreateAccountCredentialsFragment : Fragment() {
             viewModel.isUsernameOverlapped.value = false
         }
 
-        viewModel.createAccountPassword.observe(this, {
+        viewModel.password.observe(this, {
             viewModel.isPasswordValid.value = PatternRegex.checkPasswordRegex(it)
-            viewModel.isPasswordCheckValid.value = it == viewModel.createAccountPasswordCheck.value
+            viewModel.isPasswordCheckValid.value = it == viewModel.passwordCheck.value
         })
 
-        viewModel.createAccountPasswordCheck.observe(this, {
-            viewModel.isPasswordCheckValid.value = it == viewModel.createAccountPassword.value
+        viewModel.passwordCheck.observe(this, {
+            viewModel.isPasswordCheckValid.value = it == viewModel.password.value
         })
 
         viewModel.isUsernameValid.observe(this, {checkValidationToSetNextButton()})
         viewModel.isPasswordValid.observe(this, {checkValidationToSetNextButton()})
         viewModel.isPasswordCheckValid.observe(this, {checkValidationToSetNextButton()})
-    }
-
-    private fun checkValidationToSetNextButton() {
-        if(viewModel.isUsernameValid.value!! && viewModel.isPasswordValid.value!! && viewModel.isPasswordCheckValid.value!!){
-            (parentFragment as CreateAccountFragment).enableNextButton()
-        }else{
-            (parentFragment as CreateAccountFragment).disableNextButton()
-        }
     }
 
     override fun onDestroyView() {

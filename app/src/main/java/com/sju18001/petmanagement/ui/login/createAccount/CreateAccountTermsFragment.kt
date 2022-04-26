@@ -1,18 +1,18 @@
 package com.sju18001.petmanagement.ui.login.createAccount
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CheckBox
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.MutableLiveData
 import com.sju18001.petmanagement.databinding.FragmentCreateaccounttermsBinding
 import com.sju18001.petmanagement.ui.login.LoginViewModel
 
 class CreateAccountTermsFragment: Fragment() {
-    val viewModel: LoginViewModel by activityViewModels()
+    private val viewModel: CreateAccountViewModel by activityViewModels()
     
     private var _binding: FragmentCreateaccounttermsBinding? = null
     private val binding get() = _binding!!
@@ -23,7 +23,9 @@ class CreateAccountTermsFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         setBinding(inflater, container)
-        (parentFragment as CreateAccountFragment).hidePreviousButton()
+
+        (activity as CreateAccountActivity).hidePreviousButton()
+        checkValidationToSetNextButton()
 
         return binding.root
     }
@@ -35,6 +37,15 @@ class CreateAccountTermsFragment: Fragment() {
         binding.fragment = this@CreateAccountTermsFragment
         binding.viewModel = viewModel
     }
+
+    private fun checkValidationToSetNextButton() {
+        if(viewModel.isTermsChecked.value!! && viewModel.isPrivacyChecked.value!!) {
+            (activity as CreateAccountActivity).enableNextButton()
+        }else{
+            (activity as CreateAccountActivity).disableNextButton()
+        }
+    }
+
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -49,14 +60,6 @@ class CreateAccountTermsFragment: Fragment() {
         viewModel.isPrivacyChecked.value = flag
         viewModel.isMarketingChecked.value = flag
         checkValidationToSetNextButton()
-    }
-
-    private fun checkValidationToSetNextButton() {
-        if(viewModel.isTermsChecked.value!! && viewModel.isPrivacyChecked.value!!) {
-            (parentFragment as CreateAccountFragment).enableNextButton()
-        }else{
-            (parentFragment as CreateAccountFragment).disableNextButton()
-        }
     }
 
     fun onClickCheckBox() {
