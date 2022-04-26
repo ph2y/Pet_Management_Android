@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.PatternRegex
@@ -20,7 +21,7 @@ class RecoverUsernameFragment : Fragment() {
     private var _binding: FragmentRecoverusernameBinding? = null
     private val binding get() = _binding!!
 
-    private val viewModel: RecoverViewModel by viewModels()
+    private val viewModel: RecoverViewModel by activityViewModels()
     private var isViewDestroyed = false
 
     override fun onCreateView(
