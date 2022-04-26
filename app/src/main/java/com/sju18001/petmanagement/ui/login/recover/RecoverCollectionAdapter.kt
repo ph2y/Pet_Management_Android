@@ -1,10 +1,10 @@
-package com.sju18001.petmanagement.ui.login.recovery
+package com.sju18001.petmanagement.ui.login.recover
 
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.viewpager2.adapter.FragmentStateAdapter
 
-class RecoveryCollectionAdapter(fragmentActivity: FragmentActivity)
+class RecoverCollectionAdapter(fragmentActivity: FragmentActivity)
     : FragmentStateAdapter(fragmentActivity){
     override fun getItemCount(): Int = 2
 

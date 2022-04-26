@@ -48,7 +48,7 @@
         <activity android:name=".ui.welcome.WelcomeActivity" />
         <activity android:name=".ui.login.LoginActivity" />
         <activity android:name=".ui.login.createAccount.CreateAccountActivity" />
-        <activity android:name=".ui.login.recovery.RecoveryActivity" />
+        <activity android:name=".ui.login.recover.RecoverActivity" />
         <activity
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme">

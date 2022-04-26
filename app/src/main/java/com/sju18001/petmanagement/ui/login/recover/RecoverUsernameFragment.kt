@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.ui.login.recovery
+package com.sju18001.petmanagement.ui.login.recover
 
 import android.os.Bundle
 import android.text.Editable
@@ -14,10 +14,6 @@ import com.sju18001.petmanagement.databinding.FragmentRecoverUsernameBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.dto.RecoverUsernameReqDto
-import com.sju18001.petmanagement.restapi.dto.RecoverUsernameResDto
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class RecoverUsernameFragment : Fragment() {
     private var _binding: FragmentRecoverUsernameBinding? = null
