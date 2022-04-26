@@ -1,24 +1,24 @@
-package com.sju18001.petmanagement.ui.login.recovery
+package com.sju18001.petmanagement.ui.login.recover
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.tabs.TabLayoutMediator
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.Util
-import com.sju18001.petmanagement.databinding.ActivityRecoveryBinding
+import com.sju18001.petmanagement.databinding.ActivityRecoverBinding
 
-class RecoveryActivity: AppCompatActivity() {
-    private lateinit var binding: ActivityRecoveryBinding
+class RecoverActivity: AppCompatActivity() {
+    private lateinit var binding: ActivityRecoverBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        binding = ActivityRecoveryBinding.inflate(layoutInflater)
+        binding = ActivityRecoverBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val viewPager = binding.viewPager
-        viewPager.adapter = RecoveryCollectionAdapter(this)
-        TabLayoutMediator(binding.tabLayout, viewPager){ tab, position ->
+        val viewPager = binding.viewpager
+        viewPager.adapter = RecoverCollectionAdapter(this)
+        TabLayoutMediator(binding.tablayout, viewPager){ tab, position ->
             tab.text = if(position == 0) "아이디 찾기" else "비밀번호 찾기"
         }.attach()
 
@@ -28,7 +28,7 @@ class RecoveryActivity: AppCompatActivity() {
     override fun onStart() {
         super.onStart()
 
-        binding.backButton.setOnClickListener{ finish() }
+        binding.imagebuttonBackbutton.setOnClickListener{ finish() }
         Util.setupViewsForHideKeyboard(this, binding.fragmentRecoveryParentLayout)
     }
 

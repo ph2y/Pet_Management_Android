@@ -1,9 +1,8 @@
-package com.sju18001.petmanagement.ui.login.recovery
+package com.sju18001.petmanagement.ui.login.recover
 
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Patterns
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -15,9 +14,6 @@ import com.sju18001.petmanagement.databinding.FragmentRecoverPasswordBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.dto.*
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class RecoverPasswordFragment : Fragment() {
     private var _binding: FragmentRecoverPasswordBinding? = null
