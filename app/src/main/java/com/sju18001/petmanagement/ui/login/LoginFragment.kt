@@ -13,7 +13,6 @@ import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
 import com.google.android.material.snackbar.Snackbar
 import com.sju18001.petmanagement.MainActivity
 import com.sju18001.petmanagement.R
@@ -25,7 +24,7 @@ import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.login.createAccount.CreateAccountActivity
-import com.sju18001.petmanagement.ui.login.recovery.RecoveryFragment
+import com.sju18001.petmanagement.ui.login.recovery.RecoveryActivity
 import com.sju18001.petmanagement.ui.welcome.WelcomeActivity
 import retrofit2.Call
 import retrofit2.Callback
@@ -220,11 +219,8 @@ class LoginFragment : Fragment() {
     }
 
     fun onClickRecoveryButton() {
-        val recoveryFragment = RecoveryFragment()
-        activity?.supportFragmentManager?.beginTransaction()!!
-            .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
-            .replace(R.id.framelayout_login_fragmentcontainer, recoveryFragment)
-            .addToBackStack(null)
-            .commit()
+        val intent = Intent(context, RecoveryActivity::class.java)
+        startActivity(intent)
+        requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
     }
 }
