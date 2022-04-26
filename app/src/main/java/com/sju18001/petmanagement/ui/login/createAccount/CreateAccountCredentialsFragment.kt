@@ -7,6 +7,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -45,16 +46,19 @@ class CreateAccountCredentialsFragment : Fragment() {
 
     override fun onStart() {
         super.onStart()
+        setListeners()
+    }
 
+    private fun setListeners() {
         binding.edittextPassword.setOnEditorActionListener { _, _, _ ->
             Util.hideKeyboard(requireActivity())
             true
         }
 
-        viewModel.createAccountUsername.observe(this, {
+        binding.edittextUsername.addTextChangedListener {
             viewModel.isUsernameValid.value = PatternRegex.checkUsernameRegex(it)
             viewModel.isUsernameOverlapped.value = false
-        })
+        }
 
         viewModel.createAccountPassword.observe(this, {
             viewModel.isPasswordValid.value = PatternRegex.checkPasswordRegex(it)
