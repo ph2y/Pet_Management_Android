@@ -135,16 +135,12 @@ class CreateAccountFragment : Fragment() {
                 setNextButtonToLoading()
 
                 // check if inputted email is the same as code requested email
-                if(loginViewModel.createAccountEmailEditText == loginViewModel.currentCodeRequestedEmail) {
+                if(loginViewModel.createAccountEmail.value == loginViewModel.currentCodeRequestedEmail.value) {
                     // validate email code(+ create account)
                     validateEmailCode(loginViewModel)
                 }
                 else {
-                    loginViewModel.showsEmailRequestMessage = true
-                    (childFragmentManager.findFragmentByTag(FRAGMENT_TAG_USER_INFO) as CreateAccountUserInfoFragment)
-                        .showHideRequestMessage(loginViewModel)
-
-                    // set next button to normal
+                    Toast.makeText(context, getString(R.string.email_message_request), Toast.LENGTH_SHORT).show()
                     setNextButtonToNormal()
                 }
             }
@@ -210,7 +206,7 @@ class CreateAccountFragment : Fragment() {
     private fun createAccount(loginViewModel: LoginViewModel) {
         // create create account request Dto
         val accountCreateAccountRequestDto = CreateAccountReqDto(loginViewModel.createAccountUsername.value!!,
-            loginViewModel.createAccountPassword.value!!, loginViewModel.createAccountEmailEditText, loginViewModel.createAccountPhoneEditText,
+            loginViewModel.createAccountPassword.value!!, loginViewModel.createAccountEmail.value!!, loginViewModel.createAccountPhone.value!!,
             "#", loginViewModel.isMarketingChecked.value!!, null, true)
 
         // call API using Retrofit
@@ -227,24 +223,18 @@ class CreateAccountFragment : Fragment() {
                     returnToPreviousFragment()
                 }
                 else {
-                        // enable inputs
-                    (childFragmentManager.findFragmentByTag(FRAGMENT_TAG_USER_INFO) as CreateAccountUserInfoFragment)
-                        .unlockViews()
                     binding.backButton.isEnabled = true
 
                     when (Util.getMessageFromErrorBody(response.errorBody()!!)) {
                         // if email overlap + show message
                         MESSAGE_EMAIL_OVERLAP -> {
-                            loginViewModel.createAccountEmailIsOverlap = true
+                            loginViewModel.isEmailOverlapped.value = true
 
                             // set email code valid to false + reset chronometer/requested email
-                            loginViewModel.emailCodeValid = false
-                            loginViewModel.emailCodeChronometerBase = 0
-                            loginViewModel.currentCodeRequestedEmail = ""
+                            loginViewModel.isEmailLocked.value = false
+                            loginViewModel.chronometerBase.value = 0
+                            loginViewModel.currentCodeRequestedEmail.value = ""
 
-                            // show message
-                            (childFragmentManager.findFragmentByTag(FRAGMENT_TAG_USER_INFO) as CreateAccountUserInfoFragment)
-                                .showOverlapMessage(loginViewModel)
                             setNextButtonToNormal()
                         }
                         // if username overlap -> go to credentials fragment + show message
@@ -254,16 +244,13 @@ class CreateAccountFragment : Fragment() {
                         }
                         // if phone overlap + show message
                         MESSAGE_PHONE_OVERLAP -> {
-                            loginViewModel.createAccountPhoneIsOverlap = true
-                            (childFragmentManager.findFragmentByTag(FRAGMENT_TAG_USER_INFO) as CreateAccountUserInfoFragment)
-                                .showOverlapMessage(loginViewModel)
+                            loginViewModel.isPhoneOverlapped.value = true
                             setNextButtonToNormal()
                         }
                         else -> {
                             Toast.makeText(requireContext(), context?.getText(R.string.fail_request), Toast.LENGTH_SHORT).show()
                             setNextButtonToNormal()
-                            (childFragmentManager.findFragmentByTag(FRAGMENT_TAG_USER_INFO) as CreateAccountUserInfoFragment)
-                                .unlockViews()
+                            loginViewModel.isEmailLocked.value = false
                             binding.backButton.isEnabled = true
                         }
                     }
@@ -288,16 +275,14 @@ class CreateAccountFragment : Fragment() {
 
     private fun validateEmailCode(loginViewModel: LoginViewModel) {
         // lock views
-        (childFragmentManager.findFragmentByTag(FRAGMENT_TAG_USER_INFO) as CreateAccountUserInfoFragment)
-            .lockViews()
         binding.backButton.isEnabled = false
 
         // create verify code request DTO
-        val verifyAuthCodeRequestDto = VerifyAuthCodeReqDto(loginViewModel.currentCodeRequestedEmail,
-            loginViewModel.createAccountEmailCodeEditText)
+        val verifyAuthCodeRequestDto = VerifyAuthCodeReqDto(loginViewModel.currentCodeRequestedEmail.value!!,
+            loginViewModel.createAccountEmailCode.value!!)
 
         // if not yet verified
-        if(!loginViewModel.emailCodeValid) {
+        if(!loginViewModel.isEmailLocked.value!!) {
             // call API using Retrofit
             verifyAuthCodeApiCall = RetrofitBuilder.getServerApi().verifyAuthCodeReq(verifyAuthCodeRequestDto)
             verifyAuthCodeApiCall!!.enqueue(object: Callback<VerifyAuthCodeResDto> {
@@ -308,11 +293,7 @@ class CreateAccountFragment : Fragment() {
                     if(isViewDestroyed) return
 
                     if(response.isSuccessful) {
-                        // set email code valid to true
-                        loginViewModel.emailCodeValid = true
-
-
-                        // call create account API if the code is valid
+                        loginViewModel.isEmailLocked.value = true
                         createAccount(loginViewModel)
                     }
                     else {

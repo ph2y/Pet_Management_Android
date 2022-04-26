@@ -4,7 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 
-class LoginViewModel(private val handle: SavedStateHandle): ViewModel() {
+class LoginViewModel: ViewModel() {
     var isApiLoading = MutableLiveData(false)
 
     var loginUsername = MutableLiveData("")
@@ -24,88 +24,16 @@ class LoginViewModel(private val handle: SavedStateHandle): ViewModel() {
     var isPasswordValid = MutableLiveData(false)
     var isPasswordCheckValid = MutableLiveData(false)
 
-        // user info
-    var createAccountPhoneEditText = handle.get<String>("createAccountPhoneEditText")?: ""
-        set(value){
-            handle.set("createAccountPhoneEditText", value)
-            field = value
-        }
-    var createAccountPhoneValid = handle.get<Boolean>("createAccountPhoneValid")?: false
-        set(value){
-            handle.set("createAccountPhoneValid", value)
-            field = value
-        }
-    var createAccountPhoneIsOverlap = handle.get<Boolean>("createAccountPhoneIsOverlap")?: false
-        set(value){
-            handle.set("createAccountPhoneIsOverlap", value)
-            field = value
-        }
-    var createAccountEmailEditText = handle.get<String>("createAccountEmailEditText")?: ""
-        set(value){
-            handle.set("createAccountEmailEditText", value)
-            field = value
-        }
-    var createAccountEmailValid = handle.get<Boolean>("createAccountEmailValid")?: false
-        set(value){
-            handle.set("createAccountEmailValid", value)
-            field = value
-        }
-    var createAccountEmailIsOverlap = handle.get<Boolean>("createAccountEmailIsOverlap")?: false
-        set(value){
-            handle.set("createAccountEmailIsOverlap", value)
-            field = value
-        }
-    var createAccountEmailCodeEditText = handle.get<String>("createAccountEmailCodeEditText")?: ""
-        set(value){
-            handle.set("createAccountEmailCodeEditText", value)
-            field = value
-        }
-    var currentCodeRequestedEmail = handle.get<String>("currentCodeRequestedEmail")?: ""
-        set(value){
-            handle.set("currentCodeRequestedEmail", value)
-            field = value
-        }
-    var showsEmailRequestMessage = handle.get<Boolean>("showsEmailRequestMessage")?: false
-        set(value){
-            handle.set("showsEmailRequestMessage", value)
-            field = value
-        }
-    var emailCodeChronometerBase = handle.get<Long>("emailCodeChronometerBase")?: 0
-        set(value){
-            handle.set("emailCodeChronometerBase", value)
-            field = value
-        }
-    var emailCodeValid = handle.get<Boolean>("emailCodeValid")?: false
-        set(value){
-            handle.set("emailCodeValid", value)
-            field = value
-        }
+    var createAccountPhone = MutableLiveData("")
+    var createAccountEmail = MutableLiveData("")
+    var createAccountEmailCode = MutableLiveData("")
 
-    fun resetCreateAccountValues() {
-        /*
-        createAccountSelectAllCheckBox = false
-        createAccountTermsCheckBox = false
-        createAccountPrivacyCheckBox = false
-        createAccountMarketingCheckBox = false*/
+    var isPhoneValid = MutableLiveData(false)
+    var isEmailValid = MutableLiveData(false)
+    var isPhoneOverlapped = MutableLiveData(false)
+    var isEmailOverlapped = MutableLiveData(false)
 
-        /*
-        createAccountUsernameEditText = ""
-        createAccountUsernameValid = false
-        createAccountUsernameIsOverlap = false
-        createAccountPwEditText = ""
-        createAccountPwValid = false
-        createAccountPwCheckEditText = ""
-        createAccountPwCheckValid = false*/
-
-        createAccountPhoneEditText = ""
-        createAccountPhoneValid = false
-        createAccountEmailEditText = ""
-        createAccountEmailValid = false
-        createAccountEmailIsOverlap = false
-        createAccountEmailCodeEditText = ""
-        currentCodeRequestedEmail = ""
-        showsEmailRequestMessage = false
-        emailCodeChronometerBase = 0
-        emailCodeValid = false
-    }
+    var isEmailLocked = MutableLiveData(false)
+    var currentCodeRequestedEmail = MutableLiveData("")
+    var chronometerBase = MutableLiveData(0L)
 }
