@@ -1,15 +1,16 @@
 package com.sju18001.petmanagement.ui.login
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
@@ -23,7 +24,7 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.*
-import com.sju18001.petmanagement.ui.login.createAccount.CreateAccountFragment
+import com.sju18001.petmanagement.ui.login.createAccount.CreateAccountActivity
 import com.sju18001.petmanagement.ui.login.recovery.RecoveryFragment
 import com.sju18001.petmanagement.ui.welcome.WelcomeActivity
 import retrofit2.Call
@@ -31,21 +32,18 @@ import retrofit2.Callback
 import retrofit2.Response
 
 class LoginFragment : Fragment() {
+    private var isViewDestroyed = false
+    private val viewModel: LoginViewModel by activityViewModels()
+
     private var _binding: FragmentLoginBinding? = null
     private val binding get() = _binding!!
 
-    private var isViewDestroyed = false
-    val viewModel: LoginViewModel by activityViewModels()
-
     private var snackBar: Snackbar? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setFragmentResultListener("createAccountResult") { _, bundle ->
-            if(bundle.getBoolean("isSuccessful")) {
-                displaySuccessMessage(context?.getText(R.string.create_account_success)!!.toString())
-            }
+    private val startForResult = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()) { result: ActivityResult ->
+        if(result.resultCode == Activity.RESULT_OK){
+            displaySuccessMessage(context?.getText(R.string.create_account_success)!!.toString())
         }
     }
 
@@ -80,8 +78,6 @@ class LoginFragment : Fragment() {
     override fun onStart() {
         super.onStart()
 
-        // TODO : loginViewModel.resetCreateAccountValues()
-
         binding.edittextPassword.setOnEditorActionListener { _, _, _ ->
             Util.hideKeyboard(requireActivity())
             login()
@@ -94,7 +90,7 @@ class LoginFragment : Fragment() {
     fun login() {
         viewModel.isApiLoading.value = true
         val call = RetrofitBuilder.getServerApi()
-            .loginReq(LoginReqDto(viewModel.loginUsername.value!!, viewModel.loginPassword.value!!))
+            .loginReq(LoginReqDto(viewModel.username.value!!, viewModel.password.value!!))
         call.enqueue(object: Callback<LoginResDto> {
             override fun onResponse(
                 call: Call<LoginResDto>,
@@ -170,7 +166,7 @@ class LoginFragment : Fragment() {
     }
 
     private fun isFirstLogin(nickname: String): Boolean {
-        return nickname == "#"
+        return nickname == getString(R.string.default_nickname)
     }
 
     private fun updateAccountWithDefaultNickname(token: String, body: FetchAccountResDto) {
@@ -218,12 +214,9 @@ class LoginFragment : Fragment() {
 
     /** Databinding functions */
     fun onClickCreateAccountButton() {
-        val createAccountFragment = CreateAccountFragment()
-        activity?.supportFragmentManager?.beginTransaction()!!
-            .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left, R.anim.enter_from_left, R.anim.exit_to_right)
-            .replace(R.id.framelayout_login_fragmentcontainer, createAccountFragment)
-            .addToBackStack(null)
-            .commit()
+        val intent = Intent(context, CreateAccountActivity::class.java)
+        startForResult.launch(intent)
+        requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
     }
 
     fun onClickRecoveryButton() {

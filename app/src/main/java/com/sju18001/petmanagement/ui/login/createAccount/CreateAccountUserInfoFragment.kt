@@ -2,10 +2,7 @@ package com.sju18001.petmanagement.ui.login.createAccount
 
 import android.os.Bundle
 import android.os.SystemClock
-import android.telephony.PhoneNumberFormattingTextWatcher
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Patterns
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,14 +16,10 @@ import com.sju18001.petmanagement.databinding.FragmentCreateaccountuserinfoBindi
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.dto.SendAuthCodeReqDto
-import com.sju18001.petmanagement.restapi.dto.SendAuthCodeResDto
 import com.sju18001.petmanagement.ui.login.LoginViewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class CreateAccountUserInfoFragment : Fragment() {
-    val viewModel: LoginViewModel by activityViewModels()
+    private val viewModel: CreateAccountViewModel by activityViewModels()
     
     private var _binding: FragmentCreateaccountuserinfoBinding? = null
     private val binding get() = _binding!!
@@ -39,10 +32,9 @@ class CreateAccountUserInfoFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         setBinding(inflater, container)
-        isViewDestroyed = false
 
-        if(viewModel.chronometerBase.value != 0L) startChronometer()
-        (parentFragment as CreateAccountFragment).showPreviousButton()
+        (activity as CreateAccountActivity).showPreviousButton()
+        checkValidationToSetNextButton()
 
         return binding.root
     }
@@ -55,9 +47,12 @@ class CreateAccountUserInfoFragment : Fragment() {
         binding.viewModel = viewModel
     }
 
-    private fun startChronometer() {
-        binding.chronometerAuthcode.base = viewModel.chronometerBase.value!!
-        binding.chronometerAuthcode.start()
+    private fun checkValidationToSetNextButton() {
+        if(viewModel.isPhoneValid.value!! && viewModel.isEmailValid.value!!) {
+            (activity as CreateAccountActivity).enableNextButton()
+        }else{
+            (activity as CreateAccountActivity).disableNextButton()
+        }
     }
 
 
@@ -79,27 +74,29 @@ class CreateAccountUserInfoFragment : Fragment() {
             true
         }
 
-        viewModel.createAccountPhone.observe(this, {
+        viewModel.phone.observe(this, {
             viewModel.isPhoneValid.value = PatternRegex.checkPhoneRegex(it)
             viewModel.isPhoneOverlapped.value = false
-            checkValidationToSetNextButton(viewModel)
+            checkValidationToSetNextButton()
         })
 
-        viewModel.createAccountEmail.observe(this, {
+        viewModel.email.observe(this, {
             viewModel.isEmailValid.value = PatternRegex.checkEmailRegex(it)
             viewModel.isEmailOverlapped.value = false
-            checkValidationToSetNextButton(viewModel)
+            checkValidationToSetNextButton()
         })
 
-        viewModel.isEmailLocked.observe(this, {binding.chronometerAuthcode.stop()})
+        viewModel.isEmailVerified.observe(this, {binding.chronometerAuthcode.stop()})
     }
 
-    private fun checkValidationToSetNextButton(viewModel: LoginViewModel) {
-        if(viewModel.isPhoneValid.value!! && viewModel.isEmailValid.value!!) {
-            (parentFragment as CreateAccountFragment).enableNextButton()
-        }else{
-            (parentFragment as CreateAccountFragment).disableNextButton()
-        }
+    override fun onResume() {
+        super.onResume()
+        if(viewModel.chronometerBase.value != 0L) startChronometer()
+    }
+
+    private fun startChronometer() {
+        binding.chronometerAuthcode.base = viewModel.chronometerBase.value!!
+        binding.chronometerAuthcode.start()
     }
 
 
@@ -112,14 +109,14 @@ class CreateAccountUserInfoFragment : Fragment() {
 
     /** Databinding functions */
     fun onClickRequestEmailCodeButton() {
-        val sendAuthCodeReqDto = SendAuthCodeReqDto(viewModel.createAccountEmail.value!!)
+        val sendAuthCodeReqDto = SendAuthCodeReqDto(viewModel.email.value!!)
         viewModel.isApiLoading.value = true
 
         val call = RetrofitBuilder.getServerApi().sendAuthCodeReq(sendAuthCodeReqDto)
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
             Toast.makeText(context, R.string.email_code_sent, Toast.LENGTH_LONG).show()
 
-            viewModel.currentCodeRequestedEmail.value = viewModel.createAccountEmail.value
+            viewModel.currentCodeRequestedEmail.value = viewModel.email.value
             viewModel.chronometerBase.value = SystemClock.elapsedRealtime() + 600000.toLong()
             startChronometer()
 

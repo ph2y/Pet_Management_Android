@@ -47,6 +47,7 @@
         <activity android:name=".ui.community.post.createUpdatePost.CreateUpdatePostActivity" />
         <activity android:name=".ui.welcome.WelcomeActivity" />
         <activity android:name=".ui.login.LoginActivity" />
+        <activity android:name=".ui.login.createAccount.CreateAccountActivity" />
         <activity
             android:name=".SplashActivity"
             android:theme="@style/SplashTheme">

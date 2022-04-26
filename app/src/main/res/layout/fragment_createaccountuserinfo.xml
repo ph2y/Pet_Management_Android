@@ -9,7 +9,7 @@
             type="com.sju18001.petmanagement.ui.login.createAccount.CreateAccountUserInfoFragment" />
         <variable
             name="viewModel"
-            type="com.sju18001.petmanagement.ui.login.LoginViewModel" />
+            type="com.sju18001.petmanagement.ui.login.createAccount.CreateAccountViewModel" />
     </data>
     
     <androidx.cardview.widget.CardView
@@ -49,8 +49,7 @@
                     android:drawablePadding="4dp"
                     android:inputType="phone"
                     android:hint="@string/phone_hint"
-                    android:enabled="@{!viewModel.isEmailLocked}"
-                    android:text="@={viewModel.createAccountPhone}"
+                    android:text="@={viewModel.phone}"
                     android:theme="@style/onSelectedThemeCarrot"/>
 
                 <TextView
@@ -58,7 +57,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:layout_marginEnd="4dp"
-                    android:visibility="@{!viewModel.isPhoneValid &amp;&amp; !viewModel.createAccountPhone.empty? View.VISIBLE: View.GONE}"
+                    android:visibility="@{!viewModel.isPhoneValid &amp;&amp; !viewModel.phone.empty? View.VISIBLE: View.GONE}"
                     android:text="@string/phone_message"
                     android:textSize="12sp"
                     android:textColor="@android:color/holo_red_dark"/>
@@ -83,8 +82,8 @@
                     android:inputType="textEmailAddress"
                     android:imeOptions="actionDone"
                     android:hint="@string/email_hint"
-                    android:enabled="@{!viewModel.isApiLoading &amp;&amp; !viewModel.isEmailLocked}"
-                    android:text="@={viewModel.createAccountEmail}"
+                    android:enabled="@{!viewModel.isApiLoading &amp;&amp; !viewModel.isEmailVerified}"
+                    android:text="@={viewModel.email}"
                     android:theme="@style/onSelectedThemeCarrot"/>
 
                 <TextView
@@ -92,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:layout_marginEnd="4dp"
-                    android:visibility="@{!viewModel.isEmailValid &amp;&amp; !viewModel.createAccountEmail.empty? View.VISIBLE: View.GONE}"
+                    android:visibility="@{!viewModel.isEmailValid &amp;&amp; !viewModel.email.empty? View.VISIBLE: View.GONE}"
                     android:text="@string/email_message"
                     android:textSize="12sp"
                     android:textColor="@android:color/holo_red_dark"/>
@@ -119,7 +118,7 @@
                             android:layout_width="108dp"
                             android:layout_height="48dp"
                             android:layout_centerInParent="true"
-                            android:enabled="@{viewModel.isEmailValid &amp;&amp; !viewModel.isApiLoading &amp;&amp; !viewModel.isEmailLocked}"
+                            android:enabled="@{viewModel.isEmailValid &amp;&amp; !viewModel.isApiLoading &amp;&amp; !viewModel.isEmailVerified}"
                             android:text="@{viewModel.isApiLoading? null: @string/request_email_code_button}"
                             android:textSize="16sp"
                             android:onClick="@{() -> fragment.onClickRequestEmailCodeButton()}"
@@ -145,8 +144,8 @@
                         android:hint="@string/email_code_hint"
                         android:inputType="number"
                         android:maxLength="8"
-                        android:enabled="@{!viewModel.isEmailLocked}"
-                        android:text="@={viewModel.createAccountEmailCode}"
+                        android:enabled="@{!viewModel.isEmailVerified}"
+                        android:text="@={viewModel.emailCode}"
                         android:textSize="16sp"
                         android:background="@drawable/edit_text_rectangle"
                         android:theme="@style/onSelectedThemeCarrot"/>
@@ -165,14 +164,14 @@
                         android:text="@string/email_message_code_valid"
                         android:textColor="@android:color/holo_green_dark"
                         android:textSize="12sp"
-                        android:visibility="@{viewModel.isEmailLocked? View.VISIBLE: View.GONE}" />
+                        android:visibility="@{viewModel.isEmailVerified? View.VISIBLE: View.GONE}" />
 
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
                         android:layout_marginEnd="4dp"
-                        android:visibility="@{viewModel.chronometerBase != 0L &amp;&amp; !viewModel.isEmailLocked? View.VISIBLE: View.GONE}">
+                        android:visibility="@{viewModel.chronometerBase != 0L &amp;&amp; !viewModel.isEmailVerified? View.VISIBLE: View.GONE}">
 
                         <TextView
                             android:layout_width="wrap_content"

@@ -9,7 +9,7 @@
             type="com.sju18001.petmanagement.ui.login.createAccount.CreateAccountTermsFragment" />
         <variable
             name="viewModel"
-            type="com.sju18001.petmanagement.ui.login.LoginViewModel" />
+            type="com.sju18001.petmanagement.ui.login.createAccount.CreateAccountViewModel" />
     </data>
     
     <androidx.cardview.widget.CardView
