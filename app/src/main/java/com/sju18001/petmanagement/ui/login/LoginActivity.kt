@@ -24,6 +24,7 @@ import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.login.createAccount.CreateAccountActivity
 import com.sju18001.petmanagement.ui.login.recover.RecoverActivity
+import com.sju18001.petmanagement.ui.welcome.WelcomeActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
