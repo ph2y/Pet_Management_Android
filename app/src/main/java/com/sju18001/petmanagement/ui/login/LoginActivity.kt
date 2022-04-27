@@ -4,9 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.ActivityResult
@@ -14,8 +12,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import com.google.android.material.snackbar.Snackbar
 import com.sju18001.petmanagement.MainActivity
 import com.sju18001.petmanagement.R
@@ -28,7 +24,6 @@ import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.login.createAccount.CreateAccountActivity
 import com.sju18001.petmanagement.ui.login.recover.RecoverActivity
-import com.sju18001.petmanagement.ui.welcome.WelcomeActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
