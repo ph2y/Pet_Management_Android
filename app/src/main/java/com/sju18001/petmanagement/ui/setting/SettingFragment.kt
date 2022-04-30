@@ -15,34 +15,35 @@ import com.sju18001.petmanagement.databinding.FragmentSettingBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
-import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.FetchAccountPhotoReqDto
+import com.sju18001.petmanagement.ui.setting.detailedSetting.DetailedSettingActivity
 import java.io.File
 
 class SettingFragment : Fragment() {
     private var _binding: FragmentSettingBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
-    // variable for ViewModel
-    val settingViewModel: SettingViewModel by activityViewModels()
+    private val viewModel: SettingViewModel by activityViewModels()
 
     private var isViewDestroyed = false
-
-    // Account DAO
-    private lateinit var accountData: Account
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentSettingBinding.inflate(inflater, container, false)
+        setBinding(inflater, container)
         isViewDestroyed = false
 
         return binding.root
+    }
+
+    private fun setBinding(inflater: LayoutInflater, container: ViewGroup?) {
+        _binding = FragmentSettingBinding.inflate(inflater, container, false)
+
+        binding.lifecycleOwner = this
+        binding.fragment = this@SettingFragment
+        binding.viewModel = viewModel
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -55,23 +56,12 @@ class SettingFragment : Fragment() {
         super.onStart()
 
         binding.accountLookup.setOnClickListener {
-            val accountLookupIntent = Intent(context, SettingActivity::class.java)
+            val accountLookupIntent = Intent(context, DetailedSettingActivity::class.java)
             accountLookupIntent.putExtra("fragmentType", "update_account")
-            accountLookupIntent.putExtra("id", accountData.id)
-            accountLookupIntent.putExtra("username", accountData.username)
-            accountLookupIntent.putExtra("email", accountData.email)
-            accountLookupIntent.putExtra("phone", accountData.phone)
-            accountLookupIntent.putExtra("marketing", accountData.marketing)
-            accountLookupIntent.putExtra("nickname", accountData.nickname)
-            accountLookupIntent.putExtra("userMessage", accountData.userMessage)
-            accountLookupIntent.putExtra("representativePetId", accountData.representativePetId)
-            accountLookupIntent.putExtra("fcmRegistrationToken", accountData.fcmRegistrationToken)
-            accountLookupIntent.putExtra("notification", accountData.notification)
-            accountLookupIntent.putExtra("mapSearchRadius", accountData.mapSearchRadius)
 
-            if(accountData.photoUrl != null) {
+            if(viewModel.photoUrl.value != null) {
                 Util.putByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
-                    requireContext().getString(R.string.data_name_setting_selected_account_photo), settingViewModel.accountPhotoProfileByteArray)
+                    requireContext().getString(R.string.data_name_setting_selected_account_photo), viewModel.photoByteArray.value)
             }
             else {
                 Util.putByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
@@ -83,21 +73,21 @@ class SettingFragment : Fragment() {
         }
 
         binding.radiusLookup.setOnClickListener {
-            val preferencesLookupIntent = Intent(context, SettingActivity::class.java)
+            val preferencesLookupIntent = Intent(context, DetailedSettingActivity::class.java)
             preferencesLookupIntent.putExtra("fragmentType", "radius_preferences")
             startActivity(preferencesLookupIntent)
             requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
         }
 
         binding.notificationLookup.setOnClickListener {
-            val notificationPreferencesIntent = Intent(context, SettingActivity::class.java)
+            val notificationPreferencesIntent = Intent(context, DetailedSettingActivity::class.java)
             notificationPreferencesIntent.putExtra("fragmentType", "notification_preferences")
             startActivity(notificationPreferencesIntent)
             requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
         }
 
         binding.themeLookup.setOnClickListener {
-            val themePreferencesIntent = Intent(context, SettingActivity::class.java)
+            val themePreferencesIntent = Intent(context, DetailedSettingActivity::class.java)
             themePreferencesIntent.putExtra("fragmentType", "theme_preferences")
             startActivity(themePreferencesIntent)
             requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
@@ -122,19 +112,19 @@ class SettingFragment : Fragment() {
         }
 
         binding.privacyTermsLookup.setOnClickListener {
-            val privacyTermsIntent = Intent(context, SettingActivity::class.java)
+            val privacyTermsIntent = Intent(context, DetailedSettingActivity::class.java)
             privacyTermsIntent.putExtra("fragmentType", "privacy_terms")
             startActivity(privacyTermsIntent)
             requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
         }
         binding.usageTermsLookup.setOnClickListener {
-            val usageTermsIntent = Intent(context, SettingActivity::class.java)
+            val usageTermsIntent = Intent(context, DetailedSettingActivity::class.java)
             usageTermsIntent.putExtra("fragmentType", "usage_terms")
             startActivity(usageTermsIntent)
             requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
         }
         binding.licenseLookup.setOnClickListener {
-            val licenseIntent = Intent(context, SettingActivity::class.java)
+            val licenseIntent = Intent(context, DetailedSettingActivity::class.java)
             licenseIntent.putExtra("fragmentType", "license")
             startActivity(licenseIntent)
             requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
@@ -157,15 +147,16 @@ class SettingFragment : Fragment() {
 
     private fun fetchAccountProfileData() {
         // create empty body
-        accountData = SessionManager.fetchLoggedInAccount(requireContext())!!
-        settingViewModel.accountNicknameProfileValue = accountData.nickname!!
+        val account = SessionManager.fetchLoggedInAccount(requireContext())!!
+        viewModel.nickname.value = account.nickname!!
+        viewModel.photoUrl.value = account.photoUrl!!
 
         // set views after API response
         setViewsWithAccountProfileData()
     }
 
     private fun fetchAccountPhotoAndSetView() {
-        if(accountData!!.photoUrl == null){
+        if(viewModel.photoUrl.value == null){
             // 기본 사진으로 세팅
             binding.accountPhoto.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_account_circle_36))
             return
@@ -174,16 +165,14 @@ class SettingFragment : Fragment() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchAccountPhotoReq(FetchAccountPhotoReqDto(null))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
-            settingViewModel.accountPhotoProfileByteArray = response.body()!!.byteStream().readBytes()
-
-            val bitmap = Util.getBitmapFromByteArray(settingViewModel.accountPhotoProfileByteArray!!)
+            viewModel.photoByteArray.value = response.body()!!.byteStream().readBytes()
+            val bitmap = Util.getBitmapFromByteArray(viewModel.photoByteArray.value!!)
             binding.accountPhoto.setImageBitmap(bitmap)
         }, {}, {})
     }
 
     private fun setViewsWithAccountProfileData() {
         fetchAccountPhotoAndSetView()
-        binding.nicknameText.text = settingViewModel.accountNicknameProfileValue
     }
 
     private fun deleteTemporaryFiles() {

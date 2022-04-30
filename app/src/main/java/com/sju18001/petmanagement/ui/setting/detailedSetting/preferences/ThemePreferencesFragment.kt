@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.ui.setting.preferences
+package com.sju18001.petmanagement.ui.setting.detailedSetting.preferences
 
 import android.content.Context
 import android.os.Bundle

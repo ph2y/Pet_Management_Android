@@ -1,30 +1,25 @@
-package com.sju18001.petmanagement.ui.setting
+package com.sju18001.petmanagement.ui.setting.detailedSetting
 
 import android.os.Bundle
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.databinding.ActivitySettingBinding
-import com.sju18001.petmanagement.ui.setting.account.UpdateAccountFragment
-import com.sju18001.petmanagement.ui.setting.information.LicenseFragment
-import com.sju18001.petmanagement.ui.setting.information.PrivacyTermsFragment
-import com.sju18001.petmanagement.ui.setting.information.UsageTermsFragment
-import com.sju18001.petmanagement.ui.setting.preferences.NotificationPreferencesFragment
-import com.sju18001.petmanagement.ui.setting.preferences.RadiusPreferencesFragment
-import com.sju18001.petmanagement.ui.setting.preferences.ThemePreferencesFragment
+import com.sju18001.petmanagement.ui.setting.SettingViewModel
+import com.sju18001.petmanagement.ui.setting.detailedSetting.account.UpdateAccountFragment
+import com.sju18001.petmanagement.ui.setting.detailedSetting.information.LicenseFragment
+import com.sju18001.petmanagement.ui.setting.detailedSetting.information.PrivacyTermsFragment
+import com.sju18001.petmanagement.ui.setting.detailedSetting.information.UsageTermsFragment
+import com.sju18001.petmanagement.ui.setting.detailedSetting.preferences.NotificationPreferencesFragment
+import com.sju18001.petmanagement.ui.setting.detailedSetting.preferences.RadiusPreferencesFragment
+import com.sju18001.petmanagement.ui.setting.detailedSetting.preferences.ThemePreferencesFragment
 
-class SettingActivity : AppCompatActivity() {
-
-    // variable for view binding
+class DetailedSettingActivity : AppCompatActivity() {
     private lateinit var binding: ActivitySettingBinding
-
-    // variable for ViewModel
-    private val settingViewModel: SettingViewModel by lazy{
-        ViewModelProvider(this, SavedStateViewModelFactory(application, this)).get(SettingViewModel::class.java)
-    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,7 +37,7 @@ class SettingActivity : AppCompatActivity() {
         if(supportFragmentManager.findFragmentById(R.id.constraintlayout_setting_fragmentcontainer) == null) {
             val fragment = when(fragmentType){
                 "update_account" -> {
-                    actionBar?.setTitle(R.string.account)
+                    supportActionBar?.hide()
                     UpdateAccountFragment()
                 }
                 "radius_preferences" -> {
