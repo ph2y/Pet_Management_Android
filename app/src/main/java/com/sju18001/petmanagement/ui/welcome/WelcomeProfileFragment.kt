@@ -2,7 +2,6 @@ package com.sju18001.petmanagement.ui.welcome
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -18,7 +17,7 @@ import com.sju18001.petmanagement.controller.Util
 import com.sju18001.petmanagement.databinding.FragmentWelcomeprofileBinding
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.FetchAccountPhotoReqDto
-import com.sju18001.petmanagement.ui.setting.SettingActivity
+import com.sju18001.petmanagement.ui.setting.detailedSetting.DetailedSettingActivity
 
 class WelcomeProfileFragment : Fragment() {
     private var _binding: FragmentWelcomeprofileBinding? = null
@@ -84,7 +83,7 @@ class WelcomeProfileFragment : Fragment() {
     }
 
     private fun makeSettingIntent(account: Account): Intent {
-        val settingIntent = Intent(context, SettingActivity::class.java)
+        val settingIntent = Intent(context, DetailedSettingActivity::class.java)
         settingIntent.putExtra("fragmentType", "update_account")
         settingIntent.putExtra("id", account.id)
         settingIntent.putExtra("username", account.username)

@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.ui.setting.preferences
+package com.sju18001.petmanagement.ui.setting.detailedSetting.preferences
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,9 +10,10 @@ import androidx.preference.SwitchPreference
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.ui.setting.SettingViewModel
+import com.sju18001.petmanagement.ui.setting.detailedSetting.DetailedSettingViewModel
 
 class NotificationPreferencesFragment : PreferenceFragmentCompat() {
-    private val settingViewModel: SettingViewModel by activityViewModels()
+    private val viewModel: DetailedSettingViewModel by activityViewModels()
 
     private var isViewDestroyed = false
 
@@ -22,7 +23,6 @@ class NotificationPreferencesFragment : PreferenceFragmentCompat() {
         savedInstanceState: Bundle?
     ): View? {
         isViewDestroyed = false
-        settingViewModel.isApiLoading.value = false
 
         setLiveDataObservers()
 
@@ -30,7 +30,7 @@ class NotificationPreferencesFragment : PreferenceFragmentCompat() {
     }
 
     private fun setLiveDataObservers() {
-        settingViewModel.isApiLoading.observe(this) { newValue ->
+        viewModel.isApiLoading.observe(this) { newValue ->
             (findPreference("notification_preference") as SwitchPreference?)?.let { pref ->
                 pref.isEnabled = !newValue
             }
@@ -55,7 +55,7 @@ class NotificationPreferencesFragment : PreferenceFragmentCompat() {
 
     private fun setListenerOnPreference(pref: SwitchPreference) {
         pref.setOnPreferenceChangeListener { _, newValue ->
-            settingViewModel.updateAccountWithNewNotification(
+            viewModel.updateAccountWithNewNotification(
                 requireContext(), isViewDestroyed, newValue as Boolean
             )
             true

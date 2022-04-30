@@ -149,22 +149,22 @@ class CreateUpdatePetActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
 
-        if (resultCode == RESULT_OK && requestCode == PICK_PHOTO){
-            if (data != null) {
-                // Exception: 사이즈 초과
-                if (Util.isExceedsFileSizeLimit(baseContext, data, FileType.FILE_SIZE_LIMIT_PHOTO)) {
-                    Toast.makeText(baseContext, baseContext?.getText(R.string.file_size_limit_exception_message_20MB), Toast.LENGTH_SHORT).show()
-                    return
-                }
-
-                val petPhotoPath = getPetPhotoPath(data)?: return
-
-                // 기존에 파일이 있었다면 삭제
-                if(viewModel.petPhotoPath.value != "") File(viewModel.petPhotoPath.value).delete()
-
-                viewModel.petPhotoPath.value = petPhotoPath
-                viewModel.petPhotoRotation.value = Util.getImageRotation(viewModel.petPhotoPath.value!!)
+        if (resultCode == RESULT_OK && requestCode == PICK_PHOTO && data != null){
+            // Exception: 사이즈 초과
+            if (Util.isExceedsFileSizeLimit(baseContext, data, FileType.FILE_SIZE_LIMIT_PHOTO)) {
+                Toast.makeText(baseContext, baseContext?.getText(R.string.file_size_limit_exception_message_20MB), Toast.LENGTH_SHORT).show()
+                return
             }
+
+            val petPhotoPath = getPetPhotoPath(data)?: return
+
+            // 기존에 파일이 있었다면 삭제
+            if(viewModel.petPhotoPath.value != "") File(viewModel.petPhotoPath.value).delete()
+
+            viewModel.petPhotoPath.value = petPhotoPath
+            viewModel.petPhotoRotation.value = Util.getImageRotation(viewModel.petPhotoPath.value!!)
+
+            viewModel.hasPetPhotoChanged = true
         }
     }
 
@@ -226,8 +226,6 @@ class CreateUpdatePetActivity : AppCompatActivity() {
             intent.type = "image/*"
             intent.action = Intent.ACTION_GET_CONTENT
             startActivityForResult(Intent.createChooser(intent, "사진 선택"), PICK_PHOTO)
-
-            viewModel.hasPetPhotoChanged = true
         }
 
         dialog.findViewById<Button>(R.id.use_default_image).setOnClickListener {
@@ -236,7 +234,7 @@ class CreateUpdatePetActivity : AppCompatActivity() {
             // 기존에 파일이 있었다면 삭제
             if (viewModel.petPhotoPath.value != "") File(viewModel.petPhotoPath.value).delete()
 
-            // 기존 PetPhoto있는 상태에서 사진을 삭제한 경우
+            // 기존에 PetPhoto가 있는데 사진을 삭제한 경우
             if (viewModel.petPhotoByteArray.value != null) viewModel.hasPetPhotoChanged = true
 
             viewModel.petPhotoRotation.value = 0f

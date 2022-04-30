@@ -1,4 +1,4 @@
-package com.sju18001.petmanagement.ui.setting.preferences
+package com.sju18001.petmanagement.ui.setting.detailedSetting.preferences
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,6 +11,7 @@ import com.google.android.material.slider.Slider
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.databinding.FragmentRadiusPreferencesBinding
 import com.sju18001.petmanagement.ui.setting.SettingViewModel
+import com.sju18001.petmanagement.ui.setting.detailedSetting.DetailedSettingViewModel
 
 object RadiusPreferencesFragmentConstants {
     const val RADIUS_VALUE_0_KM = 0.0
@@ -19,7 +20,7 @@ object RadiusPreferencesFragmentConstants {
 
 class RadiusPreferencesFragment : Fragment() {
 
-    private val settingViewModel: SettingViewModel by activityViewModels()
+    private val viewModel: DetailedSettingViewModel by activityViewModels()
 
     private var _binding: FragmentRadiusPreferencesBinding? = null
     private val binding get() = _binding!!
@@ -33,7 +34,7 @@ class RadiusPreferencesFragment : Fragment() {
     ): View? {
         _binding = FragmentRadiusPreferencesBinding.inflate(inflater, container, false)
 
-        settingViewModel.initializeViewModelForRadius(requireContext())
+        viewModel.initializeViewModelForRadius(requireContext())
         setLiveDataObservers()
         setViewDetails()
 
@@ -59,7 +60,7 @@ class RadiusPreferencesFragment : Fragment() {
                 binding.radiusSlider.isEnabled = true
             }
         }
-        settingViewModel.isApiLoading.observe(this, isApiLoadingObserver)
+        viewModel.isApiLoading.observe(this, isApiLoadingObserver)
 
         val radiusSliderObserver = Observer<Double> { newValue ->
             binding.radiusSwitch.isChecked = newValue != 0.0
@@ -73,17 +74,19 @@ class RadiusPreferencesFragment : Fragment() {
                 binding.radiusMessage.setText(R.string.radius_disabled_message)
             }
         }
-        settingViewModel.radiusSlider.observe(this, radiusSliderObserver)
+        viewModel.radiusSlider.observe(this, radiusSliderObserver)
     }
 
     private fun setViewDetails() {
         binding.radiusSwitch.setOnClickListener {
             if (binding.radiusSwitch.isChecked) {
-                settingViewModel.updateAccountWithNewRadius(requireContext(), isViewDestroyed,
-                    RadiusPreferencesFragmentConstants.RADIUS_VALUE_100_KM)
+                viewModel.updateAccountWithNewRadius(requireContext(), isViewDestroyed,
+                    RadiusPreferencesFragmentConstants.RADIUS_VALUE_100_KM
+                )
             } else {
-                settingViewModel.updateAccountWithNewRadius(requireContext(), isViewDestroyed,
-                    RadiusPreferencesFragmentConstants.RADIUS_VALUE_0_KM)
+                viewModel.updateAccountWithNewRadius(requireContext(), isViewDestroyed,
+                    RadiusPreferencesFragmentConstants.RADIUS_VALUE_0_KM
+                )
             }
         }
         
@@ -91,7 +94,7 @@ class RadiusPreferencesFragment : Fragment() {
             override fun onStartTrackingTouch(slider: Slider) {}
 
             override fun onStopTrackingTouch(slider: Slider) {
-                settingViewModel.updateAccountWithNewRadius(requireContext(), isViewDestroyed,
+                viewModel.updateAccountWithNewRadius(requireContext(), isViewDestroyed,
                     binding.radiusSlider.value.toDouble())
             }
         })
