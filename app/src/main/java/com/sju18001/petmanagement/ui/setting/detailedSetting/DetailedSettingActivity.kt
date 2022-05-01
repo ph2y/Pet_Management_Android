@@ -2,21 +2,17 @@ package com.sju18001.petmanagement.ui.setting.detailedSetting
 
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.activity.viewModels
 import androidx.appcompat.app.ActionBar
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.SavedStateViewModelFactory
-import androidx.lifecycle.ViewModelProvider
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.databinding.ActivityDetailedsettingBinding
-import com.sju18001.petmanagement.ui.setting.SettingViewModel
 import com.sju18001.petmanagement.ui.setting.detailedSetting.account.UpdateAccountFragment
 import com.sju18001.petmanagement.ui.setting.detailedSetting.information.LicenseFragment
 import com.sju18001.petmanagement.ui.setting.detailedSetting.information.PrivacyTermsFragment
 import com.sju18001.petmanagement.ui.setting.detailedSetting.information.UsageTermsFragment
-import com.sju18001.petmanagement.ui.setting.detailedSetting.preferences.NotificationPreferencesFragment
-import com.sju18001.petmanagement.ui.setting.detailedSetting.preferences.RadiusPreferencesFragment
-import com.sju18001.petmanagement.ui.setting.detailedSetting.preferences.ThemePreferencesFragment
+import com.sju18001.petmanagement.ui.setting.detailedSetting.preferences.NotificationPreferenceFragment
+import com.sju18001.petmanagement.ui.setting.detailedSetting.preferences.RadiusPreferenceFragment
+import com.sju18001.petmanagement.ui.setting.detailedSetting.preferences.ThemePreferenceFragment
 
 class DetailedSettingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailedsettingBinding
@@ -40,17 +36,17 @@ class DetailedSettingActivity : AppCompatActivity() {
                     supportActionBar?.hide()
                     UpdateAccountFragment()
                 }
-                "radius_preferences" -> {
+                "radius_preference" -> {
                     actionBar?.setTitle(R.string.radius_preferences)
-                    RadiusPreferencesFragment()
+                    RadiusPreferenceFragment()
                 }
-                "notification_preferences" -> {
+                "notification_preference" -> {
                     actionBar?.setTitle(R.string.notification_preferences)
-                    NotificationPreferencesFragment()
+                    NotificationPreferenceFragment()
                 }
-                "theme_preferences" -> {
+                "theme_preference" -> {
                     actionBar?.setTitle(R.string.theme_preferences)
-                    ThemePreferencesFragment()
+                    ThemePreferenceFragment()
                 }
                 "privacy_terms" -> {
                     actionBar?.setTitle(R.string.privacy_terms_title)

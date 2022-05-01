@@ -132,15 +132,15 @@ class SettingFragment : Fragment() {
     }
 
     fun onClickRadiusPreference() {
-        startDetailedSettingActivity("radius_preferences")
+        startDetailedSettingActivity("radius_preference")
     }
 
     fun onClickNotificationPreference() {
-        startDetailedSettingActivity("notification_preferences")
+        startDetailedSettingActivity("notification_preference")
     }
 
     fun onClickThemePreference() {
-        startDetailedSettingActivity("theme_preferences")
+        startDetailedSettingActivity("theme_preference")
     }
 
     fun onClickPrivacyTerms() {

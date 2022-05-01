@@ -22,20 +22,18 @@
             android:orientation="vertical" >
 
             <TextView
-                android:id="@+id/license_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
-                android:text="@string/usage_terms_title"
+                android:text="@string/privacy_terms_title"
                 android:textAlignment="center"
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/license_notice"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="@string/usage_terms_content" />
+                android:text="@string/privacy_terms_content" />
         </LinearLayout>
     </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
