@@ -5,17 +5,17 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.sju18001.petmanagement.databinding.FragmentPrivacyTermsBinding
+import com.sju18001.petmanagement.databinding.FragmentPrivacytermsBinding
 
 class PrivacyTermsFragment : Fragment() {
-    private var _binding: FragmentPrivacyTermsBinding? = null
+    private var _binding: FragmentPrivacytermsBinding? = null
     private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentPrivacyTermsBinding.inflate(inflater, container, false)
+        _binding = FragmentPrivacytermsBinding.inflate(inflater, container, false)
         return binding.root
     }
 

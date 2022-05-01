@@ -12,7 +12,7 @@ import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.ui.setting.SettingViewModel
 import com.sju18001.petmanagement.ui.setting.detailedSetting.DetailedSettingViewModel
 
-class NotificationPreferencesFragment : PreferenceFragmentCompat() {
+class NotificationPreferenceFragment : PreferenceFragmentCompat() {
     private val viewModel: DetailedSettingViewModel by activityViewModels()
 
     private var isViewDestroyed = false
