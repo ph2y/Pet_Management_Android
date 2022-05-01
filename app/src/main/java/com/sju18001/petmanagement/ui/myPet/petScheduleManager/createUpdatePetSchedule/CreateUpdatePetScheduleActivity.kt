@@ -74,13 +74,13 @@ class CreateUpdatePetScheduleActivity : AppCompatActivity() {
             val recyclerView = binding.recyclerviewPetname
             if(isApiLoading){
                 for(i in 0..adapter.itemCount) {
-                    val checkBox = recyclerView.findViewHolderForLayoutPosition(i)?.itemView?.findViewById<CheckBox>(R.id.pet_name_check_box)
+                    val checkBox = recyclerView.findViewHolderForLayoutPosition(i)?.itemView?.findViewById<CheckBox>(R.id.checkbox_petname)
                     checkBox?.isEnabled = false
                     checkBox?.buttonTintList = resources?.getColorStateList(R.color.gray)
                 }
             }else{
                 for(i in 0..adapter.itemCount) {
-                    val checkBox = recyclerView.findViewHolderForLayoutPosition(i)?.itemView?.findViewById<CheckBox>(R.id.pet_name_check_box)
+                    val checkBox = recyclerView.findViewHolderForLayoutPosition(i)?.itemView?.findViewById<CheckBox>(R.id.checkbox_petname)
                     checkBox?.isEnabled = true
                     checkBox?.buttonTintList = resources?.getColorStateList(R.color.carrot)
                 }
