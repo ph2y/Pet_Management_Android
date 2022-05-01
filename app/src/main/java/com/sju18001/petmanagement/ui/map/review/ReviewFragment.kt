@@ -60,7 +60,7 @@ class ReviewFragment : Fragment() {
                 if(reviewId != -1L){
                     fetchOneReviewAndInvoke(reviewId) { item ->
                         setRatingAndReviewCount(item.rating, 1)
-                        viewModel.myReviewId.set(item.id)
+                        viewModel.myReviewId.value = item.id
 
                         adapter.addItemToTop(item)
                         adapter.notifyItemInserted(0)
@@ -78,16 +78,16 @@ class ReviewFragment : Fragment() {
      * 뷰모델의 rating, reviewCount를 업데이트합니다.
      */
     private fun setRatingAndReviewCount(ratingDiff: Int, reviewCountDiff: Int) {
-        val rating = viewModel.rating.get()!!
-        val reviewCount = viewModel.reviewCount.get()!!
+        val rating = viewModel.rating.value!!
+        val reviewCount = viewModel.reviewCount.value!!
 
         // Divide by zero 방지
         if(reviewCount + reviewCountDiff == 0L){
-            viewModel.rating.set(0.0)
-            viewModel.reviewCount.set(0)
+            viewModel.rating.value = 0.0
+            viewModel.reviewCount.value = 0
         }else{
-            viewModel.rating.set((rating*reviewCount + ratingDiff) / (reviewCount + reviewCountDiff))
-            viewModel.reviewCount.set(reviewCount + reviewCountDiff)
+            viewModel.rating.value = (rating*reviewCount + ratingDiff) / (reviewCount + reviewCountDiff)
+            viewModel.reviewCount.value = reviewCount + reviewCountDiff
         }
     }
 
@@ -124,9 +124,9 @@ class ReviewFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.placeId.set(requireActivity().intent.getLongExtra("placeId", -1))
-        viewModel.rating.set(requireActivity().intent.getDoubleExtra("rating", 0.0))
-        viewModel.reviewCount.set(requireActivity().intent.getLongExtra("reviewCount", 0))
+        viewModel.placeId.value = requireActivity().intent.getLongExtra("placeId", -1)
+        viewModel.rating.value = requireActivity().intent.getDoubleExtra("rating", 0.0)
+        viewModel.reviewCount.value = requireActivity().intent.getLongExtra("reviewCount", 0)
     }
 
     override fun onCreateView(
@@ -201,7 +201,7 @@ class ReviewFragment : Fragment() {
                 if(!it.canScrollVertically(1) && adapter.itemCount != 0 && !isLast){
                     updateReviewRecyclerView(
                         FetchReviewReqDto(
-                            null, viewModel.placeId.get(), null, pageIndex, topReviewId
+                            null, viewModel.placeId.value, null, pageIndex, topReviewId
                         )
                     )
                     pageIndex += 1
@@ -277,7 +277,7 @@ class ReviewFragment : Fragment() {
             .deleteReviewReq(DeleteReviewReqDto(id))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             setRatingAndReviewCount(- response.body()!!.deletedReviewRating, -1)
-            viewModel.myReviewId.set(-1)
+            viewModel.myReviewId.value = -1
 
             adapter.removeItem(position)
             adapter.notifyItemRemoved(position)
@@ -321,7 +321,7 @@ class ReviewFragment : Fragment() {
         resetReviewData()
         fetchMyReview{
             updateReviewRecyclerView(FetchReviewReqDto(
-                null, viewModel.placeId.get(), null, null, null
+                null, viewModel.placeId.value, null, null, null
             ))
         }
     }
@@ -330,7 +330,7 @@ class ReviewFragment : Fragment() {
         topReviewId = null
         pageIndex = 1
         adapter.resetItem()
-        viewModel.myReviewId.set(-1)
+        viewModel.myReviewId.value = -1
 
         binding.recyclerViewReview.post{
             adapter.notifyDataSetChanged()
@@ -340,7 +340,7 @@ class ReviewFragment : Fragment() {
     private fun fetchMyReview(callback: () -> Unit) {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .fetchReviewReq(
-                FetchReviewReqDto(null, viewModel.placeId.get(), SessionManager.fetchLoggedInAccount(requireContext())!!.id, null, null)
+                FetchReviewReqDto(null, viewModel.placeId.value, SessionManager.fetchLoggedInAccount(requireContext())!!.id, null, null)
             )
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             response.body()!!.reviewList?.let {
@@ -348,7 +348,7 @@ class ReviewFragment : Fragment() {
                     adapter.addItem(it[0])
                     adapter.notifyDataSetChanged()
 
-                    viewModel.myReviewId.set(it[0].id)
+                    viewModel.myReviewId.value = it[0].id
 
                     setEmptyNotificationView(adapter.itemCount)
                 }
@@ -374,7 +374,7 @@ class ReviewFragment : Fragment() {
                     }
 
                     it.map { item ->
-                        if(item.id != viewModel.myReviewId.get()) adapter.addItem(item)
+                        if(item.id != viewModel.myReviewId.value) adapter.addItem(item)
                     }
 
                     adapter.notifyDataSetChanged()
@@ -397,7 +397,7 @@ class ReviewFragment : Fragment() {
     private fun getCreateReviewActivityIntent(): Intent {
         val res = Intent(context, CreateUpdateReviewActivity::class.java)
         res.putExtra("fragmentType", CreateUpdateReviewActivity.CREATE_REVIEW)
-        res.putExtra("placeId", viewModel.placeId.get())
+        res.putExtra("placeId", viewModel.placeId.value)
 
         return res
     }

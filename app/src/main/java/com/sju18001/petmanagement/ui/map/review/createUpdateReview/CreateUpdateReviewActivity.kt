@@ -67,18 +67,18 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     }
 
     private fun fetchReviewForUpdate(reviewId: Long) {
-        viewModel.isApiLoading.set(true)
+        viewModel.isApiLoading.value = true
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
             .fetchReviewReq(FetchReviewReqDto(reviewId, null, null, null, null))
         ServerUtil.enqueueApiCall(call, {isDestroyed}, baseContext, { response ->
             response.body()?.reviewList?.get(0)?.let {
-                viewModel.contents.set(it.contents)
-                viewModel.rating.set(it.rating)
+                viewModel.contents.value = it.contents
+                viewModel.rating.value = it.rating
             }
 
             viewModel.isReviewFetched = true
-            viewModel.isApiLoading.set(false)
+            viewModel.isApiLoading.value = false
         }, { finish() }, { finish() })
     }
 
@@ -123,7 +123,7 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     }
 
     fun onClickStarImage(index: Int) {
-        viewModel.rating.set(index + 1)
+        viewModel.rating.value = index + 1
     }
 
     fun onClickConfirmButton() {
@@ -145,33 +145,33 @@ class CreateUpdateReviewActivity : AppCompatActivity() {
     }
 
     private fun createReviewAndFinishActivity() {
-        if(viewModel.rating.get() == 0 || viewModel.contents.get().toString().isNullOrEmpty()) return
+        if(viewModel.rating.value == 0 || viewModel.contents.value.isNullOrEmpty()) return
 
-        viewModel.isApiLoading.set(true)
+        viewModel.isApiLoading.value = true
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
-            .createReviewReq(CreateReviewReqDto(viewModel.placeId, viewModel.rating.get()!!, viewModel.contents.get()!!))
+            .createReviewReq(CreateReviewReqDto(viewModel.placeId, viewModel.rating.value!!, viewModel.contents.value!!))
         ServerUtil.enqueueApiCall(call, {isDestroyed}, baseContext, {
             Toast.makeText(baseContext, getText(R.string.create_review_successful), Toast.LENGTH_LONG).show()
 
             intent.putExtra("reviewId", it.body()!!.id)
             setResult(Activity.RESULT_OK, intent)
             finish()
-        }, { viewModel.isApiLoading.set(false) }, { viewModel.isApiLoading.set(false) })
+        }, { viewModel.isApiLoading.value = false }, { viewModel.isApiLoading.value = false })
     }
 
     private fun updateReviewAndFinishActivity() {
-        if(viewModel.rating.get() == 0 || viewModel.contents.get().toString().isNullOrEmpty()) return
+        if(viewModel.rating.value == 0 || viewModel.contents.value.isNullOrEmpty()) return
 
-        viewModel.isApiLoading.set(true)
+        viewModel.isApiLoading.value = true
 
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
-            .updateReviewReq(UpdateReviewReqDto(viewModel.reviewId, viewModel.rating.get()!!, viewModel.contents.get()!!))
+            .updateReviewReq(UpdateReviewReqDto(viewModel.reviewId, viewModel.rating.value!!, viewModel.contents.value!!))
         ServerUtil.enqueueApiCall(call, {isDestroyed}, baseContext, {
             Toast.makeText(baseContext, getText(R.string.update_review_successful), Toast.LENGTH_LONG).show()
 
             setResult(Activity.RESULT_OK, intent)
             finish()
-        }, { viewModel.isApiLoading.set(false) }, { viewModel.isApiLoading.set(false) })
+        }, { viewModel.isApiLoading.value = false }, { viewModel.isApiLoading.value = false })
     }
 }

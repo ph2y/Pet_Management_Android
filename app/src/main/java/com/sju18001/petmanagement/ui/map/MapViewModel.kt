@@ -8,23 +8,21 @@ import androidx.lifecycle.ViewModel
 import com.sju18001.petmanagement.restapi.dao.Place
 
 class MapViewModel : ViewModel() {
-    var searchText: ObservableField<String> = ObservableField("")
-    var placeCard: ObservableField<PlaceCard> = ObservableField(
-        PlaceCard(
-            Place(
-                -1, "def", "def", 0.0, 0.0, "def",
-                "010-0000-0000", 0.0, 0, "def", "def"
-            ),
-            "0", false
-        )
-    )
+    var searchText = MutableLiveData("")
+    var placeCard = MutableLiveData(PlaceCard(
+        Place(
+            -1, "def", "def", 0.0, 0.0, "def",
+            "010-0000-0000", 0.0, 0, "def", "def"
+        ),
+        "0", false
+    ))
 
-    var isBookmarkFetched: ObservableField<Boolean> = ObservableField(false)
+    var isBookmarkFetched = MutableLiveData(false)
 
-    fun getIsBookmarked() = placeCard.get()!!.isBookmarked
+    fun getIsBookmarked() = placeCard.value!!.isBookmarked
     fun setIsBookmarked(flag: Boolean) {
-        val place = placeCard.get()!!.place
-        val distance = placeCard.get()!!.distance
-        placeCard.set(PlaceCard(place, distance, flag))
+        val place = placeCard.value!!.place
+        val distance = placeCard.value!!.distance
+        placeCard.value = PlaceCard(place, distance, flag)
     }
 }
