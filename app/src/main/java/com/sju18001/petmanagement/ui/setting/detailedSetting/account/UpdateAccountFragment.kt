@@ -22,7 +22,7 @@ import com.google.android.gms.ads.AdRequest
 import com.sju18001.petmanagement.R
 import com.sju18001.petmanagement.controller.PatternRegex
 import com.sju18001.petmanagement.controller.Util
-import com.sju18001.petmanagement.databinding.FragmentUpdateAccountBinding
+import com.sju18001.petmanagement.databinding.FragmentUpdateaccountBinding
 import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
@@ -46,7 +46,7 @@ class UpdateAccountFragment : Fragment() {
         private const val UPDATE_ACCOUNT_DIRECTORY: String = "update_account"
     }
 
-    private var _binding: FragmentUpdateAccountBinding? = null
+    private var _binding: FragmentUpdateaccountBinding? = null
     private val binding get() = _binding!!
 
     private val viewModel: DetailedSettingViewModel by activityViewModels()
@@ -66,7 +66,7 @@ class UpdateAccountFragment : Fragment() {
     }
 
     private fun setBinding(inflater: LayoutInflater, container: ViewGroup?) {
-        _binding = FragmentUpdateAccountBinding.inflate(inflater, container, false)
+        _binding = FragmentUpdateaccountBinding.inflate(inflater, container, false)
 
         binding.lifecycleOwner = this
         binding.fragment = this@UpdateAccountFragment
@@ -104,26 +104,26 @@ class UpdateAccountFragment : Fragment() {
         super.onStart()
 
         setListeners()
-        Util.setupViewsForHideKeyboard(requireActivity(), binding.fragmentUpdateAccountParentFragment)
+        Util.setupViewsForHideKeyboard(requireActivity(), binding.relativelayoutParent)
     }
 
     private fun setListeners() {
         viewModel.isApiLoading.observe(this, {
             if(it){
-                binding.accountPhotoInput.borderColor = resources.getColor(R.color.gray)
-                binding.accountPhotoInputButton.circleBackgroundColor = resources.getColor(R.color.gray)
+                binding.circleimageviewAccountphoto.borderColor = resources.getColor(R.color.gray)
+                binding.circleimageviewAccountphotoinput.circleBackgroundColor = resources.getColor(R.color.gray)
             }else{
-                binding.accountPhotoInput.borderColor = resources.getColor(R.color.carrot)
-                binding.accountPhotoInputButton.circleBackgroundColor = resources.getColor(R.color.carrot)
+                binding.circleimageviewAccountphoto.borderColor = resources.getColor(R.color.carrot)
+                binding.circleimageviewAccountphotoinput.circleBackgroundColor = resources.getColor(R.color.carrot)
             }
         })
 
         viewModel.photoByteArray.observe(this, {
             if(it != null){
                 val bitmap = Util.getBitmapFromByteArray(it)
-                binding.accountPhotoInput.setImageBitmap(bitmap)
+                binding.circleimageviewAccountphoto.setImageBitmap(bitmap)
             }else if(viewModel.photoPath.value == ""){
-                binding.accountPhotoInput.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_account_circle_36))
+                binding.circleimageviewAccountphoto.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_account_circle_36))
             }
         })
 
@@ -131,20 +131,20 @@ class UpdateAccountFragment : Fragment() {
             if(it != ""){
                 Glide.with(requireContext())
                     .load(BitmapFactory.decodeFile(it))
-                    .into(binding.accountPhotoInput)
-                binding.accountPhotoInput.rotation = Util.getImageRotation(it)
+                    .into(binding.circleimageviewAccountphoto)
+                binding.circleimageviewAccountphoto.rotation = Util.getImageRotation(it)
             }else if(viewModel.photoByteArray.value == null){
-                binding.accountPhotoInput.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_account_circle_36))
+                binding.circleimageviewAccountphoto.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_account_circle_36))
             }
         })
 
-        binding.marketingSwitch.setOnCheckedChangeListener { _, isChecked ->
+        binding.switchMarketing.setOnCheckedChangeListener { _, isChecked ->
             val message = if(isChecked) context?.getText(R.string.marketing_agree)
             else context?.getText(R.string.marketing_decline)
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
         }
 
-        binding.phoneEdit.addTextChangedListener(PhoneNumberFormattingTextWatcher("KR"))
+        binding.textviewPhone.addTextChangedListener(PhoneNumberFormattingTextWatcher("KR"))
     }
 
 
@@ -200,7 +200,7 @@ class UpdateAccountFragment : Fragment() {
         activity?.finish()
     }
 
-    fun onClickAccountPhotoInputButton() {
+    fun onClickAccountPhotoInput() {
         Dialog(requireActivity()).run{
             requestWindowFeature(Window.FEATURE_NO_TITLE)
             setContentView(R.layout.select_photo_dialog)

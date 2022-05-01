@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.databinding.ActivitySettingBinding
+import com.sju18001.petmanagement.databinding.ActivityDetailedsettingBinding
 import com.sju18001.petmanagement.ui.setting.SettingViewModel
 import com.sju18001.petmanagement.ui.setting.detailedSetting.account.UpdateAccountFragment
 import com.sju18001.petmanagement.ui.setting.detailedSetting.information.LicenseFragment
@@ -19,13 +19,13 @@ import com.sju18001.petmanagement.ui.setting.detailedSetting.preferences.RadiusP
 import com.sju18001.petmanagement.ui.setting.detailedSetting.preferences.ThemePreferencesFragment
 
 class DetailedSettingActivity : AppCompatActivity() {
-    private lateinit var binding: ActivitySettingBinding
+    private lateinit var binding: ActivityDetailedsettingBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         // view binding
-        binding = ActivitySettingBinding.inflate(layoutInflater)
+        binding = ActivityDetailedsettingBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val actionBar: ActionBar? = supportActionBar
@@ -34,7 +34,7 @@ class DetailedSettingActivity : AppCompatActivity() {
         // get fragment type and show it(for first launch)
         val fragmentType = intent.getStringExtra("fragmentType")
 
-        if(supportFragmentManager.findFragmentById(R.id.constraintlayout_setting_fragmentcontainer) == null) {
+        if(supportFragmentManager.findFragmentById(R.id.constraintlayout_parent) == null) {
             val fragment = when(fragmentType){
                 "update_account" -> {
                     supportActionBar?.hide()
@@ -68,7 +68,7 @@ class DetailedSettingActivity : AppCompatActivity() {
             }
             supportFragmentManager
                 .beginTransaction()
-                .add(R.id.constraintlayout_setting_fragmentcontainer, fragment)
+                .add(R.id.constraintlayout_parent, fragment)
                 .commit()
         }
     }
