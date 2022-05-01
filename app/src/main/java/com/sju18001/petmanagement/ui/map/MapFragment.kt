@@ -217,7 +217,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
     }
 
     private fun fetchBookmarkIfBookmarkIsNotFetched() {
-        if(viewModel.isBookmarkFetched.get() == true) return
+        if(viewModel.isBookmarkFetched.value == true) return
 
         bookmarkTreeAdapter.resetDataSet()
         binding.textEmptyBookmark.visibility = View.GONE
@@ -236,7 +236,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
             bookmarkTreeAdapter.notifyDataSetChanged()
 
-            viewModel.isBookmarkFetched.set(true)
+            viewModel.isBookmarkFetched.value = true
 
             if(bookmarkTreeAdapter.folderToBookmarks.count() == 0) {
                 binding.textEmptyBookmark.visibility = View.VISIBLE
@@ -541,10 +541,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                 currentMapPoint!!.mapPointGeoCoord.latitude, currentMapPoint!!.mapPointGeoCoord.longitude,
                 place.latitude, place.longitude
             ).toInt()
-
-            viewModel.placeCard.set(
-                PlaceCard(place, "$distance", false)
-            )
+            viewModel.placeCard.value = (PlaceCard(place, "$distance", false))
 
             checkAndUpdateIsBookmarked()
         }
@@ -552,7 +549,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
 
     private fun checkAndUpdateIsBookmarked() {
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
-            .fetchBookmarkReq(FetchBookmarkReqDto(null, null, viewModel.placeCard.get()!!.place.id))
+            .fetchBookmarkReq(FetchBookmarkReqDto(null, null, viewModel.placeCard.value!!.place.id))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(),{ response ->
             viewModel.setIsBookmarked(
                 response.body()!!.bookmarkedAccountIdList?.contains(SessionManager.fetchLoggedInAccount(requireContext())!!.id)
@@ -655,7 +652,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
                 getString(R.string.bookmark_default_folder) // 우선 기본 폴더에 등록한다.
             ))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
-            viewModel.isBookmarkFetched.set(false) // 북마크를 다시 fetch하도록 유도
+            viewModel.isBookmarkFetched.value = false // 북마크를 다시 fetch하도록 유도
         }, {}, {})
     }
 
@@ -663,7 +660,7 @@ class MapFragment : Fragment(), MapView.CurrentLocationEventListener, MapView.Ma
         val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
             .deleteBookmarkReq(DeleteBookmarkReqDto(null, placeId))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
-            viewModel.isBookmarkFetched.set(false) // 북마크를 다시 fetch하도록 유도
+            viewModel.isBookmarkFetched.value = false // 북마크를 다시 fetch하도록 유도
         }, {}, {})
     }
 }

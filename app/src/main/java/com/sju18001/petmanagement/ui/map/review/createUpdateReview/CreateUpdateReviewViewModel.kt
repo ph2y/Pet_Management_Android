@@ -2,6 +2,7 @@ package com.sju18001.petmanagement.ui.map.review.createUpdateReview
 
 import androidx.databinding.Observable
 import androidx.databinding.ObservableField
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 class CreateUpdateReviewViewModel: ViewModel() {
@@ -12,8 +13,8 @@ class CreateUpdateReviewViewModel: ViewModel() {
     var isReviewFetched: Boolean = false
 
     // UPDATE_REVIEW일 때, FetchReview 이후에 아래 값들을 불러옵니다.
-    var rating: ObservableField<Int> = ObservableField(0)
-    var contents: ObservableField<String> = ObservableField("")
+    var rating = MutableLiveData(0)
+    var contents = MutableLiveData("")
 
-    var isApiLoading: ObservableField<Boolean> = ObservableField(false)
+    var isApiLoading = MutableLiveData(false)
 }
