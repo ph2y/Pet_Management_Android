@@ -68,7 +68,7 @@ class SettingFragment : Fragment() {
 
     private fun fetchAccountPhotoAndSetView() {
         if(viewModel.photoUrl.value == null){
-            binding.accountPhoto.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_account_circle_36))
+            binding.circleimageviewAccountphoto.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_account_circle_36))
             return
         }
 
@@ -77,13 +77,13 @@ class SettingFragment : Fragment() {
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), { response ->
             viewModel.photoByteArray.value = response.body()!!.byteStream().readBytes()
             val bitmap = Util.getBitmapFromByteArray(viewModel.photoByteArray.value!!)
-            binding.accountPhoto.setImageBitmap(bitmap)
+            binding.circleimageviewAccountphoto.setImageBitmap(bitmap)
         }, {}, {})
     }
 
     private fun setTemporaryFilesSize() {
-        val size = String.format("%.1f", (Util.getTemporaryFilesSize(requireContext()) / 1e6)) + "MB"
-        binding.temporaryFilesSize.text = size
+        viewModel.temporaryFilesSizeText.value =
+            String.format("%.1f", (Util.getTemporaryFilesSize(requireContext()) / 1e6)) + "MB"
     }
 
 
@@ -96,7 +96,7 @@ class SettingFragment : Fragment() {
 
 
     /** Databinding functions */
-    fun onClickUpdateAccountButton() {
+    fun onClickUpdateAccount() {
         val data = if(viewModel.photoUrl.value != null) viewModel.photoByteArray.value else null
         Util.putByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
             requireContext().getString(R.string.data_name_setting_selected_account_photo), data)
@@ -111,7 +111,7 @@ class SettingFragment : Fragment() {
         requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
     }
 
-    fun onClickDeleteTemporaryFileButton() {
+    fun onClickDeleteTemporaryFile() {
         val builder = AlertDialog.Builder(activity)
         builder.setMessage(context?.getString(R.string.delete_temporary_files_message))
             .setPositiveButton(R.string.confirm) { _, _ ->
@@ -131,27 +131,27 @@ class SettingFragment : Fragment() {
         }
     }
 
-    fun onClickRadiusPreferenceButton() {
+    fun onClickRadiusPreference() {
         startDetailedSettingActivity("radius_preferences")
     }
 
-    fun onClickNotificationPreferenceButton() {
+    fun onClickNotificationPreference() {
         startDetailedSettingActivity("notification_preferences")
     }
 
-    fun onClickThemePreferenceButton() {
+    fun onClickThemePreference() {
         startDetailedSettingActivity("theme_preferences")
     }
 
-    fun onClickPrivacyTermsButton() {
+    fun onClickPrivacyTerms() {
         startDetailedSettingActivity("privacy_terms")
     }
 
-    fun onClickUsageTermsButton() {
+    fun onClickUsageTerms() {
         startDetailedSettingActivity("usage_terms")
     }
 
-    fun onClickLicenseLookup() {
+    fun onClickLicensePreference() {
         startDetailedSettingActivity("license")
     }
 }
