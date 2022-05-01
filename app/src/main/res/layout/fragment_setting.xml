@@ -38,6 +38,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_margin="1dp"
+                    android:onClick="@{() -> fragment.onClickUpdateAccountButton()}"
                     app:cardElevation="1dp"
                     app:cardCornerRadius="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -149,6 +150,7 @@
                             android:background="@drawable/border_bottom_ghost_white2_2"
                             android:paddingStart="12dp"
                             android:paddingEnd="12dp"
+                            android:onClick="@{() -> fragment.onClickRadiusPreferenceButton()}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/layout_preference_header">
@@ -178,6 +180,7 @@
                             android:background="@drawable/border_bottom_ghost_white2_2"
                             android:paddingStart="12dp"
                             android:paddingEnd="12dp"
+                            android:onClick="@{() -> fragment.onClickNotificationPreferenceButton()}"
                             app:layout_constraintBottom_toTopOf="@id/theme_lookup"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/radius_lookup">
@@ -206,6 +209,7 @@
                             android:layout_height="@dimen/preference_item_height"
                             android:paddingStart="12dp"
                             android:paddingEnd="12dp"
+                            android:onClick="@{() -> fragment.onClickThemePreferenceButton()}"
                             app:layout_constraintBottom_toBottomOf="parent"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
@@ -280,6 +284,7 @@
                             android:layout_height="@dimen/preference_item_height"
                             android:paddingStart="12dp"
                             android:paddingEnd="12dp"
+                            android:onClick="@{() -> fragment.onClickDeleteTemporaryFileButton()}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/layout_storage_header">
@@ -354,6 +359,7 @@
                             android:paddingStart="12dp"
                             android:paddingEnd="12dp"
                             android:background="@drawable/border_bottom_ghost_white2_2"
+                            android:onClick="@{() -> fragment.onClickPrivacyTermsButton()}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/layout_info_version_header">
@@ -383,6 +389,7 @@
                             android:paddingStart="12dp"
                             android:paddingEnd="12dp"
                             android:background="@drawable/border_bottom_ghost_white2_2"
+                            android:onClick="@{() -> fragment.onClickUsageTermsButton()}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/privacy_terms_lookup">
@@ -412,6 +419,7 @@
                             android:paddingStart="12dp"
                             android:paddingEnd="12dp"
                             android:background="@drawable/border_bottom_ghost_white2_2"
+                            android:onClick="@{() -> fragment.onClickLicenseLookup()}"
                             app:layout_constraintEnd_toEndOf="parent"
                             app:layout_constraintStart_toStartOf="parent"
                             app:layout_constraintTop_toBottomOf="@id/usage_terms_lookup">

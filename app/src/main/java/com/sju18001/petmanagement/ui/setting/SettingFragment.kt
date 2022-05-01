@@ -48,87 +48,7 @@ class SettingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.adView.loadAd(AdRequest.Builder().build())
-    }
-
-    override fun onStart() {
-        super.onStart()
-
-        binding.accountLookup.setOnClickListener {
-            val accountLookupIntent = Intent(context, DetailedSettingActivity::class.java)
-            accountLookupIntent.putExtra("fragmentType", "update_account")
-
-            if(viewModel.photoUrl.value != null) {
-                Util.putByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
-                    requireContext().getString(R.string.data_name_setting_selected_account_photo), viewModel.photoByteArray.value)
-            }
-            else {
-                Util.putByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
-                    requireContext().getString(R.string.data_name_setting_selected_account_photo), null)
-            }
-
-            startActivity(accountLookupIntent)
-            requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
-        }
-
-        binding.radiusLookup.setOnClickListener {
-            val preferencesLookupIntent = Intent(context, DetailedSettingActivity::class.java)
-            preferencesLookupIntent.putExtra("fragmentType", "radius_preferences")
-            startActivity(preferencesLookupIntent)
-            requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
-        }
-
-        binding.notificationLookup.setOnClickListener {
-            val notificationPreferencesIntent = Intent(context, DetailedSettingActivity::class.java)
-            notificationPreferencesIntent.putExtra("fragmentType", "notification_preferences")
-            startActivity(notificationPreferencesIntent)
-            requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
-        }
-
-        binding.themeLookup.setOnClickListener {
-            val themePreferencesIntent = Intent(context, DetailedSettingActivity::class.java)
-            themePreferencesIntent.putExtra("fragmentType", "theme_preferences")
-            startActivity(themePreferencesIntent)
-            requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
-        }
-
-        binding.deleteTemporaryFilesButton.setOnClickListener {
-            val builder = AlertDialog.Builder(activity)
-            builder.setMessage(context?.getString(R.string.delete_temporary_files_message))
-                .setPositiveButton(
-                    R.string.confirm
-                ) { _, _ ->
-                    // delete temporary files + set size to 0 after deletion
-                    deleteTemporaryFiles()
-                    setTemporaryFilesSize()
-                }
-                .setNegativeButton(
-                    R.string.cancel
-                ) { dialog, _ ->
-                    dialog.cancel()
-                }
-                .create().show()
-        }
-
-        binding.privacyTermsLookup.setOnClickListener {
-            val privacyTermsIntent = Intent(context, DetailedSettingActivity::class.java)
-            privacyTermsIntent.putExtra("fragmentType", "privacy_terms")
-            startActivity(privacyTermsIntent)
-            requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
-        }
-        binding.usageTermsLookup.setOnClickListener {
-            val usageTermsIntent = Intent(context, DetailedSettingActivity::class.java)
-            usageTermsIntent.putExtra("fragmentType", "usage_terms")
-            startActivity(usageTermsIntent)
-            requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
-        }
-        binding.licenseLookup.setOnClickListener {
-            val licenseIntent = Intent(context, DetailedSettingActivity::class.java)
-            licenseIntent.putExtra("fragmentType", "license")
-            startActivity(licenseIntent)
-            requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
-        }
     }
 
     override fun onResume() {
@@ -138,26 +58,16 @@ class SettingFragment : Fragment() {
         setTemporaryFilesSize()
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-
-        isViewDestroyed = true
-    }
-
     private fun fetchAccountProfileData() {
-        // create empty body
         val account = SessionManager.fetchLoggedInAccount(requireContext())!!
         viewModel.nickname.value = account.nickname!!
         viewModel.photoUrl.value = account.photoUrl!!
 
-        // set views after API response
-        setViewsWithAccountProfileData()
+        fetchAccountPhotoAndSetView()
     }
 
     private fun fetchAccountPhotoAndSetView() {
         if(viewModel.photoUrl.value == null){
-            // 기본 사진으로 세팅
             binding.accountPhoto.setImageDrawable(requireActivity().getDrawable(R.drawable.ic_baseline_account_circle_36))
             return
         }
@@ -171,28 +81,77 @@ class SettingFragment : Fragment() {
         }, {}, {})
     }
 
-    private fun setViewsWithAccountProfileData() {
-        fetchAccountPhotoAndSetView()
+    private fun setTemporaryFilesSize() {
+        val size = String.format("%.1f", (Util.getTemporaryFilesSize(requireContext()) / 1e6)) + "MB"
+        binding.temporaryFilesSize.text = size
+    }
+
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        _binding = null
+        isViewDestroyed = true
+    }
+
+
+    /** Databinding functions */
+    fun onClickUpdateAccountButton() {
+        val data = if(viewModel.photoUrl.value != null) viewModel.photoByteArray.value else null
+        Util.putByteArrayToSharedPreferences(requireContext(), requireContext().getString(R.string.pref_name_byte_arrays),
+            requireContext().getString(R.string.data_name_setting_selected_account_photo), data)
+
+        startDetailedSettingActivity("update_account")
+    }
+
+    private fun startDetailedSettingActivity(fragmentType: String){
+        val intent = Intent(context, DetailedSettingActivity::class.java)
+        intent.putExtra("fragmentType", fragmentType)
+        startActivity(intent)
+        requireActivity().overridePendingTransition(R.anim.enter_from_right, R.anim.exit_to_left)
+    }
+
+    fun onClickDeleteTemporaryFileButton() {
+        val builder = AlertDialog.Builder(activity)
+        builder.setMessage(context?.getString(R.string.delete_temporary_files_message))
+            .setPositiveButton(R.string.confirm) { _, _ ->
+                deleteTemporaryFiles()
+                setTemporaryFilesSize()
+            }
+            .setNegativeButton(R.string.cancel) { dialog, _ -> dialog.cancel() }
+            .create().show()
     }
 
     private fun deleteTemporaryFiles() {
         val dir = File(requireContext().getExternalFilesDir(null).toString())
-
-        if (dir.exists()) {
-            val files = dir.listFiles()
-
-            if (files != null) {
-                for (file in files) {
-                    if (Util.LOG_FILE_NAME !in file.toString()) {
-                        file.deleteRecursively()
-                    }
-                }
+        if (dir.exists() && dir.listFiles() != null) {
+            for (file in dir.listFiles()) {
+                if (Util.LOG_FILE_NAME !in file.toString()) file.deleteRecursively()
             }
         }
     }
 
-    private fun setTemporaryFilesSize() {
-        val size = String.format("%.1f", (Util.getTemporaryFilesSize(requireContext()) / 1e6)) + "MB"
-        binding.temporaryFilesSize.text = size
+    fun onClickRadiusPreferenceButton() {
+        startDetailedSettingActivity("radius_preferences")
+    }
+
+    fun onClickNotificationPreferenceButton() {
+        startDetailedSettingActivity("notification_preferences")
+    }
+
+    fun onClickThemePreferenceButton() {
+        startDetailedSettingActivity("theme_preferences")
+    }
+
+    fun onClickPrivacyTermsButton() {
+        startDetailedSettingActivity("privacy_terms")
+    }
+
+    fun onClickUsageTermsButton() {
+        startDetailedSettingActivity("usage_terms")
+    }
+
+    fun onClickLicenseLookup() {
+        startDetailedSettingActivity("license")
     }
 }

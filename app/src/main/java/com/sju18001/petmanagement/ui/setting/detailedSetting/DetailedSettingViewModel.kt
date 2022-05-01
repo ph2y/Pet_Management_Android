@@ -12,10 +12,11 @@ import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.restapi.dao.Account
 import com.sju18001.petmanagement.restapi.dto.UpdateAccountReqDto
 
-class DetailedSettingViewModel() : ViewModel() {
+class DetailedSettingViewModel : ViewModel() {
     val isApiLoading = MutableLiveData(false)
     var isViewModelInitialized = false
 
+    /** UpdateAccount */
     var id = MutableLiveData(-1L)
     var username = MutableLiveData("")
     var email = MutableLiveData("")
@@ -31,25 +32,18 @@ class DetailedSettingViewModel() : ViewModel() {
     var hasPhotoChanged = false
 
 
-    var notification = true
-
-    // ViewModel for radius preferences fragment
-    private val isViewModelInitializedForRadius: MutableLiveData<Boolean> by lazy {
-        MutableLiveData<Boolean>(false)
-    }
+    /** RadiusPref */
     val radiusSlider: MutableLiveData<Double> by lazy {
         MutableLiveData<Double>()
     }
 
     fun initializeViewModelForRadius(context: Context) {
-        if (isViewModelInitializedForRadius.value!!) {
-            return
-        }
+        if (isViewModelInitialized) return
 
         isApiLoading.value = false
         radiusSlider.value = SessionManager.fetchLoggedInAccount(context)!!.mapSearchRadius
 
-        isViewModelInitializedForRadius.value = true
+        isViewModelInitialized = true
     }
 
     fun updateAccountWithNewRadius(context: Context, isViewDestroyed: Boolean, newRadius: Double) {
@@ -86,7 +80,7 @@ class DetailedSettingViewModel() : ViewModel() {
     }
 
 
-    // For notification preferences fragment
+    /** NotificationPref */
     fun updateAccountWithNewNotification(context: Context, isViewDestroyed: Boolean, newNotification: Boolean) {
         val loggedInAccount = SessionManager.fetchLoggedInAccount(context)!!
         val updateAccountReqDto = UpdateAccountReqDto(

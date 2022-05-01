@@ -49,45 +49,37 @@ class RadiusPreferencesFragment : Fragment() {
     }
 
     private fun setLiveDataObservers() {
-        val isApiLoadingObserver = Observer<Boolean> { newValue ->
-            if (newValue == true) {
+        viewModel.isApiLoading.observe(this, { newValue ->
+            if (newValue == true){
                 binding.radiusSwitch.visibility = View.INVISIBLE
                 binding.radiusSwitchProgressBar.visibility = View.VISIBLE
                 binding.radiusSlider.isEnabled = false
-            } else {
+            }else{
                 binding.radiusSwitch.visibility = View.VISIBLE
                 binding.radiusSwitchProgressBar.visibility = View.INVISIBLE
                 binding.radiusSlider.isEnabled = true
             }
-        }
-        viewModel.isApiLoading.observe(this, isApiLoadingObserver)
+        })
 
-        val radiusSliderObserver = Observer<Double> { newValue ->
+        viewModel.radiusSlider.observe(this, { newValue ->
             binding.radiusSwitch.isChecked = newValue != 0.0
 
-            if (binding.radiusSwitch.isChecked) {
+            if (binding.radiusSwitch.isChecked){
                 binding.radiusSliderLayout.visibility = View.VISIBLE
                 binding.radiusSlider.value = newValue.toFloat()
                 binding.radiusMessage.setText(R.string.radius_enabled_message)
-            } else {
+            }else{
                 binding.radiusSliderLayout.visibility = View.GONE
                 binding.radiusMessage.setText(R.string.radius_disabled_message)
             }
-        }
-        viewModel.radiusSlider.observe(this, radiusSliderObserver)
+        })
     }
 
     private fun setViewDetails() {
         binding.radiusSwitch.setOnClickListener {
-            if (binding.radiusSwitch.isChecked) {
-                viewModel.updateAccountWithNewRadius(requireContext(), isViewDestroyed,
-                    RadiusPreferencesFragmentConstants.RADIUS_VALUE_100_KM
-                )
-            } else {
-                viewModel.updateAccountWithNewRadius(requireContext(), isViewDestroyed,
-                    RadiusPreferencesFragmentConstants.RADIUS_VALUE_0_KM
-                )
-            }
+            val newRadius = if(binding.radiusSwitch.isChecked) RadiusPreferencesFragmentConstants.RADIUS_VALUE_100_KM
+            else RadiusPreferencesFragmentConstants.RADIUS_VALUE_0_KM
+            viewModel.updateAccountWithNewRadius(requireContext(), isViewDestroyed, newRadius)
         }
         
         binding.radiusSlider.addOnSliderTouchListener(object : Slider.OnSliderTouchListener {
