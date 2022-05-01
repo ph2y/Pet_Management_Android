@@ -15,6 +15,7 @@ import com.sju18001.petmanagement.restapi.dto.UpdateAccountReqDto
 class SettingViewModel(private val handle: SavedStateHandle) : ViewModel() {
     var nickname = MutableLiveData("")
     var photoUrl = MutableLiveData("")
+    var temporaryFilesSizeText = MutableLiveData("")
 
     var photoByteArray = MutableLiveData(byteArrayOf())
 }
