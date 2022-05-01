@@ -17,7 +17,7 @@ class PetNameAdapter(
     private val petNameListAdapterInterface: PetNameListAdapterInterface
     ) : RecyclerView.Adapter<PetNameAdapter.ViewHolder>(){
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
-        val petNameCheckBox: CheckBox = view.findViewById(R.id.pet_name_check_box)
+        val petNameCheckBox: CheckBox = view.findViewById(R.id.checkbox_petname)
     }
 
     override fun onCreateViewHolder(
@@ -25,7 +25,7 @@ class PetNameAdapter(
         viewType: Int
     ): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.pet_name_item, parent, false)
+            .inflate(R.layout.item_petname, parent, false)
 
         val holder = ViewHolder(view)
         setListenerOnView(holder)

@@ -26,7 +26,7 @@ class ReviewListAdapter(
     private val reviewListAdapterInterface: ReviewListAdapterInterface
 ): RecyclerView.Adapter<ReviewListAdapter.ViewHolder>() {
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
-        val accountPhoto: ImageView = view.findViewById(R.id.circleimageview_review_accountphoto)
+        val accountPhoto: ImageView = view.findViewById(R.id.circleimageview_accountphoto)
         val nicknameText: TextView = view.findViewById(R.id.text_nickname)
         val starImage1: ImageView = view.findViewById(R.id.image_star1)
         val starImage2: ImageView = view.findViewById(R.id.image_star2)
@@ -41,7 +41,7 @@ class ReviewListAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.review_item, parent, false)
+            .inflate(R.layout.item_review, parent, false)
 
         val holder = ViewHolder(view)
         setListenerOnView(holder)

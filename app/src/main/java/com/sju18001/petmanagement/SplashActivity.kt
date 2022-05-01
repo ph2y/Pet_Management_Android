@@ -19,38 +19,33 @@ class SplashActivity: AppCompatActivity() {
 
         isViewDestroyed = false
 
-        // load preference values
+        setTheme()
+        validateTokenAndLogin()
+    }
+
+    private fun setTheme() {
         val sharedPref = getSharedPreferences(getString(R.string.preference_file_key), Context.MODE_PRIVATE)
         val defaultThemeValue = resources.getInteger(R.integer.saved_default_theme_preference_key)
         val themeValue = sharedPref.getInt(getString(R.string.saved_theme_preference_key), defaultThemeValue)
 
         AppCompatDelegate.setDefaultNightMode(themeValue)
-
-        // token validation check & auto login
-        validateTokenAndLogin()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        isViewDestroyed = true
     }
 
     private fun validateTokenAndLogin() {
         if (SessionManager.fetchUserToken(applicationContext) != null) {
             val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(applicationContext)!!).fetchAccountReq(ServerUtil.getEmptyBody())
             ServerUtil.enqueueApiCall(call, { isViewDestroyed }, baseContext, { response ->
-                val intent = Intent(this@SplashActivity, MainActivity::class.java)
                 response.body()?.run{
                     val account = Account(id, username, email, phone, null, marketing, nickname, photoUrl,
                         userMessage, representativePetId, fcmRegistrationToken, notification, mapSearchRadius)
                     SessionManager.saveLoggedInAccount(this@SplashActivity, account)
 
+                    val intent = Intent(this@SplashActivity, MainActivity::class.java)
                     startActivity(intent)
                     finish()
                 }
             }, { logoutAndStartLoginActivity() }, { logoutAndStartLoginActivity() })
-        }
-        else { // token is empty
+        }else{
             logoutAndStartLoginActivity()
         }
     }
@@ -60,7 +55,11 @@ class SplashActivity: AppCompatActivity() {
 
         val intent = Intent(this@SplashActivity, LoginActivity::class.java)
         startActivity(intent)
-
         finish()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        isViewDestroyed = true
     }
 }

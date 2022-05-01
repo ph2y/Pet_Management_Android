@@ -409,7 +409,7 @@ class PetProfileActivity : AppCompatActivity(){
             else { spinnerArray.add(it.name) }
         }
 
-        binding.appcompatspinnerPet.adapter = ArrayAdapter(baseContext, R.layout.pet_name_spinner_item, spinnerArray)
+        binding.appcompatspinnerPet.adapter = ArrayAdapter(baseContext, R.layout.item_petname_spinner, spinnerArray)
         binding.appcompatspinnerPet.onItemSelectedListener = object: AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 updatePetDataOfViewModel(petList[position])
