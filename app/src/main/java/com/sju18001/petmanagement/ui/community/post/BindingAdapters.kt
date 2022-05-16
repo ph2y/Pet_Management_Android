@@ -21,7 +21,7 @@ object BindingAdapters {
         holder: PostAdapter.ViewHolder,
         postAdapterInterface: PostAdapterInterface,
         accountId: Long,
-        photoUrl: String
+        photoUrl: String?
     ){
         if(!photoUrl.isNullOrEmpty()){
             postAdapterInterface.setAccountPhoto(holder, accountId)
