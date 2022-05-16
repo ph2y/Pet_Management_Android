@@ -61,7 +61,7 @@ class SettingFragment : Fragment() {
     private fun fetchAccountProfileData() {
         val account = SessionManager.fetchLoggedInAccount(requireContext())!!
         viewModel.nickname.value = account.nickname!!
-        viewModel.photoUrl.value = account.photoUrl!!
+        viewModel.photoUrl.value = account.photoUrl
 
         fetchAccountPhotoAndSetView()
     }
