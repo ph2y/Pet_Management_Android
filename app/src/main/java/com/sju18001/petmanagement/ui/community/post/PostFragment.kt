@@ -395,7 +395,7 @@ class PostFragment : Fragment(), PostAdapterInterface {
         if(loggedInAccount.id == post.author.id){
             showPostDialogForAuthor(post, position)
         }else{
-            showPostDialogForNonAuthor(post.id)
+            showPostDialogForNonAuthor(post)
         }
     }
 
@@ -460,10 +460,13 @@ class PostFragment : Fragment(), PostAdapterInterface {
         }, {}, {})
     }
 
-    private fun showPostDialogForNonAuthor(postId: Long){
+    private fun showPostDialogForNonAuthor(post: Post){
         val builder = AlertDialog.Builder(requireActivity())
-        builder.setItems(arrayOf("신고")){ _, _ ->
-            reportPost(postId)
+        builder.setItems(arrayOf("신고", "차단")){ _, which ->
+            when(which){
+                0 -> reportPost(post.id)
+                1 -> createBlock(post.author.id)
+            }
         }
             .create().show()
     }
@@ -474,6 +477,15 @@ class PostFragment : Fragment(), PostAdapterInterface {
         ServerUtil.enqueueApiCallWithoutErrorMessage(call, {isViewDestroyed}, requireContext(), {
             Toast.makeText(context, getString(R.string.report_post_successful), Toast.LENGTH_LONG).show()
         })
+    }
+
+    private fun createBlock(id: Long) {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(requireContext())!!)
+            .createBlockReq(CreateBlockReqDto(id))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, requireContext(), {
+            Toast.makeText(context, getString(R.string.create_block_successful), Toast.LENGTH_LONG).show()
+            resetAndUpdatePostRecyclerView()
+        }, {}, {})
     }
 
 
