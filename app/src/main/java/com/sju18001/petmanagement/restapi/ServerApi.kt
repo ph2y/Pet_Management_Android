@@ -221,4 +221,8 @@ interface ServerApi {
 
     @POST("api/like/delete")
     fun deleteLikeReq(@Body deleteLikeReq: DeleteLikeReqDto): Call<DeleteLikeResDto>
+
+    // Block API
+    @POST("api/community/block/create")
+    fun createBlockReq(@Body createBlockReq: CreateBlockReqDto): Call<CreateBlockResDto>
 }
