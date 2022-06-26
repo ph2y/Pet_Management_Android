@@ -22,7 +22,7 @@ import com.sju18001.petmanagement.restapi.dao.Comment
 interface CommentAdapterInterface{
     fun getActivity(): Activity
     fun onClickReply(id: Long, nickname: String)
-    fun onLongClickComment(authorId: Long, commentId: Long, commentContents: String, position: Int)
+    fun onLongClickComment(authorId: Long, comment: Comment, commentContents: String, position: Int)
     fun onClickLoadReply(pageIndex: Int, topReplyId: Long?, parentCommentId: Long, position: Int)
     fun startPetProfile(author: Account)
 }
@@ -119,7 +119,7 @@ class CommentAdapter(
 
     fun onLongClickComment(holder: ViewHolder): Boolean {
         val position = holder.absoluteAdapterPosition
-        commentAdapterInterface.onLongClickComment(dataSet[position].author.id, dataSet[position].id, dataSet[position].contents, position)
+        commentAdapterInterface.onLongClickComment(dataSet[position].author.id, dataSet[position], dataSet[position].contents, position)
         return true
     }
 

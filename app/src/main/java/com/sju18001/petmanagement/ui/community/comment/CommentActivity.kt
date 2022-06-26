@@ -28,6 +28,7 @@ import com.sju18001.petmanagement.restapi.RetrofitBuilder
 import com.sju18001.petmanagement.restapi.ServerUtil
 import com.sju18001.petmanagement.controller.SessionManager
 import com.sju18001.petmanagement.restapi.dao.Account
+import com.sju18001.petmanagement.restapi.dao.Comment
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.ui.community.CommunityUtil
 import com.sju18001.petmanagement.ui.community.comment.updateComment.UpdateCommentActivity
@@ -98,12 +99,12 @@ class CommentActivity : AppCompatActivity() {
                 viewModel.replyNickname.value = nickname
             }
 
-            override fun onLongClickComment(authorId: Long, commentId: Long, commentContents: String, position: Int){
+            override fun onLongClickComment(authorId: Long, comment: Comment, commentContents: String, position: Int){
                 // 자기 자신이 쓴 글인가?
                 if(viewModel.loggedInAccount?.id == authorId){
-                    showCommentDialogForAuthor(commentId, commentContents, position)
+                    showCommentDialogForAuthor(comment.id, commentContents, position)
                 }else{
-                    showCommentDialogForNonAuthor(commentId)
+                    showCommentDialogForNonAuthor(comment)
                 }
             }
 
@@ -194,13 +195,14 @@ class CommentActivity : AppCompatActivity() {
         }, {}, {})
     }
 
-    private fun showCommentDialogForNonAuthor(commentId: Long){
+    private fun showCommentDialogForNonAuthor(comment: Comment){
         val builder = AlertDialog.Builder(this)
-        builder.setItems(arrayOf("신고"), DialogInterface.OnClickListener{ _, which ->
-            when(which){
-                0 -> reportComment(commentId)
+        builder.setItems(arrayOf("신고", "차단")) { _, which ->
+            when (which) {
+                0 -> reportComment(comment.id)
+                1 -> createBlock(comment.author.id)
             }
-        })
+        }
             .create().show()
     }
 
@@ -209,6 +211,15 @@ class CommentActivity : AppCompatActivity() {
             .reportCommentReq(ReportCommentReqDto(id))
         ServerUtil.enqueueApiCall(call, {isViewDestroyed}, baseContext, {
             Toast.makeText(baseContext, getString(R.string.report_comment_successful), Toast.LENGTH_LONG).show()
+        }, {}, {})
+    }
+
+    private fun createBlock(id: Long) {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
+            .createBlockReq(CreateBlockReqDto(id))
+        ServerUtil.enqueueApiCall(call, {isViewDestroyed}, baseContext, {
+            Toast.makeText(baseContext, getString(R.string.create_block_successful), Toast.LENGTH_LONG).show()
+            resetCommentDataAndFetchComment()
         }, {}, {})
     }
 
