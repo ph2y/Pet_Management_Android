@@ -53,7 +53,7 @@ class CustomProgressBar {
 
                 for(i in 0 until viewGroup.childCount){
                     val child = viewGroup.getChildAt(i)
-                    if(child.tag == "CustomProgressBar"){
+                    if(child?.tag == "CustomProgressBar"){
                         viewGroup.removeView(child)
                     }
                 }

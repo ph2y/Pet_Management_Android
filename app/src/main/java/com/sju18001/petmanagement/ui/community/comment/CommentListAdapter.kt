@@ -20,9 +20,7 @@ interface CommentListAdapterInterface{
     fun getActivity(): Activity
     fun onClickReply(id: Long, nickname: String)
     fun onLongClickComment(authorId: Long, commentId: Long, commentContents: String, position: Int)
-    fun setAccountPhoto(id: Long, holder: CommentListAdapter.ViewHolder)
-    fun setAccountDefaultPhoto(holder: CommentListAdapter.ViewHolder)
-    fun fetchReplyComment(pageIndex: Int, topReplyId: Long?, parentCommentId: Long, position: Int)
+    fun onClickLoadReply(pageIndex: Int, topReplyId: Long?, parentCommentId: Long, position: Int)
     fun startPetProfile(author: Account)
 }
 
@@ -78,7 +76,7 @@ class CommentListAdapter(
 
         holder.loadReply.setOnClickListener {
             val position = holder.absoluteAdapterPosition
-            commentListAdapterInterface.fetchReplyComment(pageIndices[position], null, dataSet[position].id, position)
+            commentListAdapterInterface.onClickLoadReply(pageIndices[position], null, dataSet[position].id, position)
             pageIndices[position] += 1
 
             // 답글 불러오기 -> 이전 답글 불러오기
@@ -100,13 +98,6 @@ class CommentListAdapter(
         holder.nickname.text = data.author.nickname
         holder.contents.text = data.contents
         holder.timestamp.text = Util.getTimestampForDisplay(data.timestamp)
-
-        // Set photo
-        if(!data.author.photoUrl.isNullOrEmpty()){
-            commentListAdapterInterface.setAccountPhoto(data.author.id, holder)
-        }else{
-            commentListAdapterInterface.setAccountDefaultPhoto(holder)
-        }
 
         // 답글 불러오기 버튼 세팅
         if(topReplyIdList[position] == (-1).toLong()){
