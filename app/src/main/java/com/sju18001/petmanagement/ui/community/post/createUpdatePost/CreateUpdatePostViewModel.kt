@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 class CreateUpdatePostViewModel(private val handle: SavedStateHandle) : ViewModel() {
     var activityType = MutableLiveData<String?>(null)
     var isApiLoading = MutableLiveData(false)
+    var isPostDataFetched = MutableLiveData(false)
 
     fun isActivityTypeCreatePost() = activityType.value == "create_post"
 
@@ -46,6 +47,7 @@ class CreateUpdatePostViewModel(private val handle: SavedStateHandle) : ViewMode
 
     var photoPathList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
     var videoPathList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
+    var mediaItemList: MutableLiveData<MutableList<CreateUpdatePostMediaItem>> = MutableLiveData(mutableListOf())
     var generalFilePathList: MutableLiveData<MutableList<String>> = MutableLiveData(mutableListOf())
     var generalFileNameList = MutableLiveData<MutableList<String>>(mutableListOf())
 
@@ -58,6 +60,11 @@ class CreateUpdatePostViewModel(private val handle: SavedStateHandle) : ViewMode
     fun addVideoPath(videoPath: String) {
         videoPathList.value!!.add(videoPath)
         videoPathList.value = videoPathList.value
+    }
+
+    fun addMediaItem(mediaItem: CreateUpdatePostMediaItem) {
+        mediaItemList.value!!.add(mediaItem)
+        mediaItemList.value = mediaItemList.value
     }
 
     fun addGeneralFilePath(generalFilePath: String) {
@@ -78,6 +85,11 @@ class CreateUpdatePostViewModel(private val handle: SavedStateHandle) : ViewMode
     fun removeVideoPath(path: String) {
         videoPathList.value!!.remove(path)
         videoPathList.value = videoPathList.value
+    }
+
+    fun removeMediaItemAt(at: Int) {
+        mediaItemList.value!!.removeAt(at)
+        mediaItemList.value = mediaItemList.value
     }
 
     fun removeGeneralFilePathAt(at: Int) {

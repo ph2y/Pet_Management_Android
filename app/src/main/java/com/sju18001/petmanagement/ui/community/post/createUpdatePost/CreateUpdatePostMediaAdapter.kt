@@ -1,16 +1,12 @@
 package com.sju18001.petmanagement.ui.community.post.createUpdatePost
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.sju18001.petmanagement.R
-import com.sju18001.petmanagement.databinding.ActivityCreateupdatepostBinding
 import com.sju18001.petmanagement.databinding.ItemCreateupdatepostmediaBinding
 import java.io.File
 
@@ -19,7 +15,7 @@ class CreateUpdatePostMediaAdapter(
     private val createUpdatePostViewModel: CreateUpdatePostViewModel
     )
     : RecyclerView.Adapter<CreateUpdatePostMediaAdapter.ViewHolder>() {
-    private var dataSet = mutableListOf<CreateUpdatePostMedia>()
+    private var dataSet = mutableListOf<CreateUpdatePostMediaItem>()
 
     class ViewHolder(
         private val adapter: CreateUpdatePostMediaAdapter,
@@ -27,20 +23,20 @@ class CreateUpdatePostMediaAdapter(
         private val context: Context,
         private val createUpdatePostViewModel: CreateUpdatePostViewModel
     ): RecyclerView.ViewHolder(binding.root) {
-        fun bind(createUpdatePostMedia: CreateUpdatePostMedia) {
+        fun bind(createUpdatePostMediaItem: CreateUpdatePostMediaItem) {
             binding.adapter = adapter
             binding.holder = this
 
             binding.executePendingBindings()
 
-            if (createUpdatePostMedia.isVideo){
+            if (createUpdatePostMediaItem.isVideo){
                 Glide.with(context)
-                    .load(createUpdatePostViewModel.videoPathList.value!![createUpdatePostMedia.indexInList])
+                    .load(createUpdatePostViewModel.videoPathList.value!![createUpdatePostMediaItem.indexInList])
                     .placeholder(R.drawable.ic_baseline_video_library_36)
                     .into(binding.imageviewThumbnail)
             }else{
                 Glide.with(context)
-                    .load(File(createUpdatePostViewModel.photoPathList.value!![createUpdatePostMedia.indexInList]))
+                    .load(File(createUpdatePostViewModel.photoPathList.value!![createUpdatePostMediaItem.indexInList]))
                     .into(binding.imageviewThumbnail)
             }
         }
@@ -60,7 +56,7 @@ class CreateUpdatePostMediaAdapter(
 
     fun getDataSet() = dataSet
 
-    fun addItem(item: CreateUpdatePostMedia) {
+    fun addItem(item: CreateUpdatePostMediaItem) {
         dataSet.add(item)
     }
 
@@ -76,6 +72,7 @@ class CreateUpdatePostMediaAdapter(
         File(dataSet[position].path).delete()
 
         createUpdatePostViewModel.removeVideoPath(dataSet[position].path)
+        createUpdatePostViewModel.removeMediaItemAt(position)
         dataSet.removeAt(position)
         notifyItemRemoved(position)
 
@@ -90,6 +87,7 @@ class CreateUpdatePostMediaAdapter(
         File(dataSet[position].path).delete()
 
         createUpdatePostViewModel.removePhotoPath(dataSet[position].path)
+        createUpdatePostViewModel.removeMediaItemAt(position)
         dataSet.removeAt(position)
         notifyItemRemoved(position)
 

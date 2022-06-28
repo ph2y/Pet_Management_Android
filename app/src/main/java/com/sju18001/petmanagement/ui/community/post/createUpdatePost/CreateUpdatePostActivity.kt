@@ -5,10 +5,6 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
-import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -28,7 +24,6 @@ import com.sju18001.petmanagement.restapi.dao.Pet
 import com.sju18001.petmanagement.restapi.dto.*
 import com.sju18001.petmanagement.restapi.global.FileMetaData
 import com.sju18001.petmanagement.restapi.global.FileType
-import com.sju18001.petmanagement.ui.myPet.petManager.CustomLayoutManager
 import com.sju18001.petmanagement.ui.myPet.petManager.PetManagerFragment
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -67,8 +62,9 @@ class CreateUpdatePostActivity : AppCompatActivity() {
         initializeRecyclerViews()
         initializeViewModelByIntent()
 
-        if(viewModel.isActivityTypeCreatePost()) fetchPostPetSelectorRecyclerView()
-        else fetchPostAndPostPetSelectorRecyclerView()
+        if (viewModel.isActivityTypeCreatePost()) fetchPostPetSelectorRecyclerView() // create mode
+        else if (!viewModel.isPostDataFetched.value!!) fetchPostAndPostPetSelectorRecyclerView() // update mode && post data not yet fetched
+        else fetchPostPetSelectorRecyclerView() // update mode && post data already fetched
 
         supportActionBar?.hide()
         binding.adView.loadAd(AdRequest.Builder().build())
@@ -107,6 +103,12 @@ class CreateUpdatePostActivity : AppCompatActivity() {
         binding.mediaRecyclerView.adapter = mediaAdapter
         binding.mediaRecyclerView.layoutManager = LinearLayoutManager(this)
         (binding.mediaRecyclerView.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.HORIZONTAL
+
+        if (viewModel.mediaItemList.value!!.size != 0) {
+            for (item in viewModel.mediaItemList.value!!) {
+                mediaAdapter.addItem(item)
+            }
+        }
     }
 
     private fun initializeGeneralFileRecyclerView() {
@@ -114,6 +116,12 @@ class CreateUpdatePostActivity : AppCompatActivity() {
         binding.generalRecyclerView.adapter = generalFileAdapter
         binding.generalRecyclerView.layoutManager = LinearLayoutManager(this)
         (binding.generalRecyclerView.layoutManager as LinearLayoutManager).orientation = LinearLayoutManager.VERTICAL
+
+        if (viewModel.generalFileNameList.value!!.size != 0) {
+            for (item in viewModel.generalFileNameList.value!!) {
+                generalFileAdapter.addItem(item)
+            }
+        }
     }
 
     private fun initializeHashtagRecyclerView() {
@@ -180,7 +188,8 @@ class CreateUpdatePostActivity : AppCompatActivity() {
                 val photoPath =
                     ServerUtil.createCopyAndGetAbsolutePath(baseContext, imageByteArray, extension, CREATE_UPDATE_POST_DIRECTORY)
                 viewModel.addPhotoPath(photoPath)
-                mediaAdapter.addItem(CreateUpdatePostMedia(false, index, photoPath))
+                viewModel.addMediaItem(CreateUpdatePostMediaItem(false, index, photoPath))
+                mediaAdapter.addItem(CreateUpdatePostMediaItem(false, index, photoPath))
 
                 decreaseApiCallCountForFetch()
             }, { decreaseApiCallCountForFetch() }, { decreaseApiCallCountForFetch() })
@@ -198,7 +207,8 @@ class CreateUpdatePostActivity : AppCompatActivity() {
                 val videoByteArray = response.body()!!.byteStream().readBytes()
                 val videoPath = ServerUtil.createCopyAndGetAbsolutePath(baseContext, videoByteArray, extension, CREATE_UPDATE_POST_DIRECTORY)
                 viewModel.addVideoPath(videoPath)
-                mediaAdapter.addItem(CreateUpdatePostMedia(true, index, videoPath))
+                viewModel.addMediaItem(CreateUpdatePostMediaItem(true, index, videoPath))
+                mediaAdapter.addItem(CreateUpdatePostMediaItem(true, index, videoPath))
 
                 decreaseApiCallCountForFetch()
             }, { decreaseApiCallCountForFetch() }, { decreaseApiCallCountForFetch() })
@@ -286,6 +296,8 @@ class CreateUpdatePostActivity : AppCompatActivity() {
 
         // fetch가 모두 끝났을 때
         if(viewModel.apiCallCountForFetch == 0){
+            viewModel.isPostDataFetched.value = true
+
             petSelectorAdapter.notifyDataSetChanged()
             generalFileAdapter.notifyDataSetChanged()
             mediaAdapter.notifyDataSetChanged()
@@ -386,7 +398,8 @@ class CreateUpdatePostActivity : AppCompatActivity() {
                 }
 
                 viewModel.addPhotoPath(photoPath)
-                mediaAdapter.addItem(CreateUpdatePostMedia(false, viewModel.photoPathList.value!!.size - 1, photoPath))
+                viewModel.addMediaItem(CreateUpdatePostMediaItem(false, viewModel.photoPathList.value!!.size - 1, photoPath))
+                mediaAdapter.addItem(CreateUpdatePostMediaItem(false, viewModel.photoPathList.value!!.size - 1, photoPath))
                 mediaAdapter.notifyItemInserted(mediaAdapter.itemCount)
 
                 binding.mediaRecyclerView.smoothScrollToPosition(mediaAdapter.itemCount - 1)
@@ -426,7 +439,8 @@ class CreateUpdatePostActivity : AppCompatActivity() {
                 }
 
                 viewModel.addVideoPath(videoPath)
-                mediaAdapter.addItem(CreateUpdatePostMedia(true, viewModel.videoPathList.value!!.size - 1, videoPath))
+                viewModel.addMediaItem(CreateUpdatePostMediaItem(true, viewModel.videoPathList.value!!.size - 1, videoPath))
+                mediaAdapter.addItem(CreateUpdatePostMediaItem(true, viewModel.videoPathList.value!!.size - 1, videoPath))
                 mediaAdapter.notifyItemInserted(mediaAdapter.itemCount - 1)
 
                 binding.mediaRecyclerView.smoothScrollToPosition(mediaAdapter.itemCount)
