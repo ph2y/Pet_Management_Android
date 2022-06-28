@@ -5,6 +5,7 @@ import android.app.AlertDialog
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Log
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
@@ -262,20 +263,21 @@ class CreateUpdatePostActivity : AppCompatActivity() {
 
             if (item.isSelected) viewModel.selectedPetIndex = i
 
-            addPetSelector(item)
+            addPetSelector(i, item)
         }
     }
 
-    private fun addPetSelector(item: CreateUpdatePostPetSelectorItem) {
-        if (item.petPhotoUrl == null) {
-            petSelectorAdapter.addItem(item)
-        }else{
+    private fun addPetSelector(index: Int, item: CreateUpdatePostPetSelectorItem) {
+        petSelectorAdapter.addItem(item)
+        if (item.petPhotoUrl != null) {
             increaseApiCallCountForFetch()
             val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
                 .fetchPetPhotoReq(FetchPetPhotoReqDto(item.petId))
             ServerUtil.enqueueApiCall(call, {isViewDestroyed}, baseContext, { response ->
-                item.petPhoto = BitmapFactory.decodeStream(response.body()!!.byteStream())
-                petSelectorAdapter.addItem(item)
+                petSelectorAdapter.setPhoto(
+                    index,
+                    BitmapFactory.decodeStream(response.body()!!.byteStream())
+                )
 
                 decreaseApiCallCountForFetch()
             }, { decreaseApiCallCountForFetch() }, { decreaseApiCallCountForFetch() })

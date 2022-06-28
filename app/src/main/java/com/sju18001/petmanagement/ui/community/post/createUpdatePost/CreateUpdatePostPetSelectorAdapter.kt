@@ -1,6 +1,7 @@
 package com.sju18001.petmanagement.ui.community.post.createUpdatePost
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -50,6 +51,10 @@ class CreateUpdatePostPetSelectorAdapter(
 
     fun addItem(item: CreateUpdatePostPetSelectorItem) {
         dataSet.add(item)
+    }
+
+    fun setPhoto(index: Int, photo: Bitmap?) {
+        dataSet[index].petPhoto = photo
     }
 
     /** Databinding functions */
