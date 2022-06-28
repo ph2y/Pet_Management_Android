@@ -60,11 +60,11 @@ class CreateUpdatePostPetSelectorAdapter(
         createUpdatePostViewModel.selectedPetId.value = dataSet[position].petId
         createUpdatePostViewModel.selectedPetIndex = position
 
-        dataSet[position].isSelected = true
-        notifyItemChanged(position)
         if (previousSelectedIndex != -1) {
             dataSet[previousSelectedIndex].isSelected = false
             notifyItemChanged(previousSelectedIndex, dataSet[previousSelectedIndex])
         }
+        dataSet[position].isSelected = true
+        notifyItemChanged(position)
     }
 }
