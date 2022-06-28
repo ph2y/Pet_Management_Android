@@ -239,7 +239,7 @@ class FollowActivity : AppCompatActivity() {
     }
 
     fun onClickAccountInfoCardView() {
-        CommunityUtil.fetchRepresentativePetAndStartPetProfile(baseContext, Account(
+        CommunityUtil.fetchRepresentativePetAndStartPetProfile(this, Account(
             viewModel.accountId.value!!, viewModel.accountUsername.value!!,
             "", "", "", null, viewModel.accountNickname.value,
             viewModel.accountPhotoUrl.value, "", viewModel.accountRepresentativePetId.value,
