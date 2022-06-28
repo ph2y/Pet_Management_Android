@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
     private var communityFragment: Fragment = CommunityFragment()
     private var settingFragment: Fragment = SettingFragment()
     private var fragmentManager: FragmentManager = supportFragmentManager
-    private lateinit var activeFragment: Fragment
+    private var activeFragment: Fragment? = null
     private var activeFragmentIndex: Int = 0
 
     private var isViewDestroyed = false
@@ -45,151 +45,116 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        isViewDestroyed = false
-
         // for fragment reset(after activity destruction)
-        fragmentManager.findFragmentByTag("myPet")?.let {
-            fragmentManager.beginTransaction().remove(it).commitNow()
-        }
-        fragmentManager.findFragmentByTag("map")?.let {
-            fragmentManager.beginTransaction().remove(it).commitNow()
-        }
-        fragmentManager.findFragmentByTag("community")?.let {
-            fragmentManager.beginTransaction().remove(it).commitNow()
-        }
-        fragmentManager.findFragmentByTag("setting")?.let {
-            fragmentManager.beginTransaction().remove(it).commitNow()
-        }
+        fragmentManager.findFragmentByTag("myPet")?.let { fragmentManager.beginTransaction().remove(it).commitNow() }
+        fragmentManager.findFragmentByTag("map")?.let { fragmentManager.beginTransaction().remove(it).commitNow() }
+        fragmentManager.findFragmentByTag("community")?.let { fragmentManager.beginTransaction().remove(it).commitNow() }
+        fragmentManager.findFragmentByTag("setting")?.let { fragmentManager.beginTransaction().remove(it).commitNow() }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val actionBar: ActionBar? = supportActionBar
-        actionBar?.elevation = 0f
-        val navView: BottomNavigationView = binding.bottomnavigationviewMain
+        supportActionBar?.elevation = 0f
 
         // get current selected item + set title
         when(savedInstanceState?.getInt("active_fragment_index")) {
             0 -> {
-                addFragmentWhenFragmentIsNull(myPetFragment, "myPet")
-                activeFragment = myPetFragment
-
-                navView.menu.getItem(0).isChecked = true
-                activeFragmentIndex = 0
-                invalidateOptionsMenu()
-                actionBar?.setTitle(R.string.title_my_pet)
-                actionBar?.show()
+                addFragmentWhenFragmentIsNotAdded(myPetFragment, "myPet", 0)
+                supportActionBar?.setTitle(R.string.title_my_pet)
+                supportActionBar?.show()
             }
             1 -> {
-                addFragmentWhenFragmentIsNull(mapFragment, "map")
-                activeFragment = mapFragment
-
-                navView.menu.getItem(1).isChecked = true
-                activeFragmentIndex = 1
-                invalidateOptionsMenu()
-                actionBar?.hide()
+                addFragmentWhenFragmentIsNotAdded(mapFragment, "map", 1)
+                supportActionBar?.hide()
             }
             2 -> {
-                addFragmentWhenFragmentIsNull(communityFragment, "community")
-                activeFragment = communityFragment
-
-                navView.menu.getItem(2).isChecked = true
-                activeFragmentIndex = 2
-                invalidateOptionsMenu()
-                actionBar?.setTitle(R.string.title_community)
-                actionBar?.show()
+                addFragmentWhenFragmentIsNotAdded(communityFragment, "community", 2)
+                supportActionBar?.setTitle(R.string.title_community)
+                supportActionBar?.show()
             }
             3 -> {
-                addFragmentWhenFragmentIsNull(settingFragment, "setting")
-                activeFragment = settingFragment
-
-                navView.menu.getItem(3).isChecked = true
-                activeFragmentIndex = 3
-                invalidateOptionsMenu()
-                actionBar?.setTitle(R.string.title_setting)
-                actionBar?.show()
+                addFragmentWhenFragmentIsNotAdded(settingFragment, "setting", 3)
+                supportActionBar?.setTitle(R.string.title_setting)
+                supportActionBar?.show()
             }
+            // 최초 실행 시에는 해당 값에 데이터가 없다
             else -> {
-                addFragmentWhenFragmentIsNull(myPetFragment, "myPet")
-                activeFragment = myPetFragment
-
-                navView.menu.getItem(0).isChecked = true
-                activeFragmentIndex = 0
-                invalidateOptionsMenu()
-                actionBar?.setTitle(R.string.title_my_pet)
-                actionBar?.show()
+                addFragmentWhenFragmentIsNotAdded(myPetFragment, "myPet", 0)
+                supportActionBar?.setTitle(R.string.title_my_pet)
+                supportActionBar?.show()
             }
         }
 
-        // Show active fragment
-        fragmentManager.beginTransaction().show(activeFragment).commitNow()
+        FcmUtil.getFirebaseMessagingToken { token -> sendRegistrationToServer(token) }
 
-        navView.setOnNavigationItemSelectedListener {
+        MobileAds.initialize(this) {}
+    }
+
+    private fun addFragmentWhenFragmentIsNotAdded(fragment: Fragment, tag: String, index: Int) {
+        if(fragmentManager.findFragmentByTag(tag) == null){
+            fragmentManager.beginTransaction().add(R.id.framelayout_main_navigationhost, fragment, tag).commitNow()
+        }
+        if(activeFragment == null) fragmentManager.beginTransaction().show(fragment).commitNow()
+        else fragmentManager.beginTransaction().hide(activeFragment!!).show(fragment).commitNow()
+
+        binding.bottomnavigationviewMain.menu.getItem(index).isChecked = true
+        invalidateOptionsMenu()
+        activeFragment = fragment
+        activeFragmentIndex = index
+    }
+
+    private fun sendRegistrationToServer(p0: String) {
+        SessionManager.fetchLoggedInAccount(baseContext)?.let {
+            // 최신 토큰과, 계정 토큰이 다를 경우에만 업데이트한다.
+            if(it.fcmRegistrationToken != p0) {
+                updateFcmRegistrationToken(p0)
+            }
+        }
+    }
+
+    private fun updateFcmRegistrationToken(fcmRegistrationToken: String) {
+        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
+            .updateFcmRegistrationTokenReq(UpdateFcmRegistrationTokenReqDto(fcmRegistrationToken))
+        ServerUtil.enqueueApiCall(call, {false}, baseContext, {},{},{})
+    }
+
+
+    override fun onStart() {
+        super.onStart()
+        binding.bottomnavigationviewMain.setOnNavigationItemSelectedListener {
             // 커뮤니티에서 다른 탭으로 이동 시
-            if(activeFragment.tag == "community"){
+            if(activeFragment?.tag == "community"){
                 (activeFragment as CommunityFragment).pauseAllVideos()
             }
 
             when(it.itemId){
                 R.id.navigation_my_pet -> {
-                    addFragmentWhenFragmentIsNull(myPetFragment, "myPet")
-                    fragmentManager.beginTransaction().hide(activeFragment).show(myPetFragment).commitNow()
-
-                    navView.menu.getItem(0).isChecked = true
-
-                    invalidateOptionsMenu()
-                    actionBar?.setTitle(R.string.title_my_pet)
-                    actionBar?.show()
-
-                    activeFragmentIndex = 0
-                    activeFragment = myPetFragment
+                    addFragmentWhenFragmentIsNotAdded(myPetFragment, "myPet", 0)
+                    supportActionBar?.setTitle(R.string.title_my_pet)
+                    supportActionBar?.show()
 
                     true
                 }
                 R.id.navigation_map -> {
-                    addFragmentWhenFragmentIsNull(mapFragment, "map")
-                    fragmentManager.beginTransaction().hide(activeFragment).show(mapFragment).commitNow()
-
-                    navView.menu.getItem(1).isChecked = true
-
-                    invalidateOptionsMenu()
-                    actionBar?.setShowHideAnimationEnabled(false)
-                    actionBar?.hide()
-
-                    activeFragmentIndex = 1
-                    activeFragment = mapFragment
+                    addFragmentWhenFragmentIsNotAdded(mapFragment, "map", 1)
+                    supportActionBar?.setShowHideAnimationEnabled(false)
+                    supportActionBar?.hide()
 
                     true
                 }
                 R.id.navigation_community -> {
-                    addFragmentWhenFragmentIsNull(communityFragment, "community")
-                    fragmentManager.beginTransaction().hide(activeFragment).show(communityFragment).commitNow()
-
-                    navView.menu.getItem(2).isChecked = true
-
-                    invalidateOptionsMenu()
-                    actionBar?.setTitle(R.string.title_community)
-                    actionBar?.show()
-
-                    activeFragmentIndex = 2
-                    activeFragment = communityFragment
+                    addFragmentWhenFragmentIsNotAdded(communityFragment, "community", 2)
+                    supportActionBar?.setTitle(R.string.title_community)
+                    supportActionBar?.show()
 
                     (activeFragment as CommunityFragment).startAllVideos()
 
                     true
                 }
                 R.id.navigation_setting -> {
-                    addFragmentWhenFragmentIsNull(settingFragment, "setting")
-                    fragmentManager.beginTransaction().hide(activeFragment).show(settingFragment).commitNow()
-
-                    navView.menu.getItem(3).isChecked = true
-
-                    invalidateOptionsMenu()
-                    actionBar?.setTitle(R.string.title_setting)
-                    actionBar?.show()
-
-                    activeFragmentIndex = 3
-                    activeFragment = settingFragment
+                    addFragmentWhenFragmentIsNotAdded(settingFragment, "setting", 3)
+                    supportActionBar?.setTitle(R.string.title_setting)
+                    supportActionBar?.show()
 
                     true
                 }
@@ -204,7 +169,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-
         isViewDestroyed = true
     }
 
@@ -284,28 +248,5 @@ class MainActivity : AppCompatActivity() {
         } catch(e: Exception) {
             Log.e("Not found", e.toString())
         }
-    }
-
-    private fun addFragmentWhenFragmentIsNull(fragment: Fragment, tag: String) {
-        if(fragmentManager.findFragmentByTag(tag) == null){
-            fragmentManager.beginTransaction().add(R.id.framelayout_main_navigationhost, fragment, tag).commitNow()
-        }
-    }
-
-
-    // For fcm token
-    private fun sendRegistrationToServer(p0: String) {
-        SessionManager.fetchLoggedInAccount(baseContext)?.let {
-            // 최신 토큰과, 계정 토큰이 다를 경우 업데이트한다.
-            if(it.fcmRegistrationToken != p0) {
-                updateFcmRegistrationToken(p0)
-            }
-        }
-    }
-
-    private fun updateFcmRegistrationToken(fcmRegistrationToken: String) {
-        val call = RetrofitBuilder.getServerApiWithToken(SessionManager.fetchUserToken(baseContext)!!)
-            .updateFcmRegistrationTokenReq(UpdateFcmRegistrationTokenReqDto(fcmRegistrationToken))
-        ServerUtil.enqueueApiCall(call, {false}, baseContext, {},{},{})
     }
 }
