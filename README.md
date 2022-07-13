@@ -37,13 +37,23 @@
 
 ## 작성한 글
 [[Kotlin] Android DataBinding 예제(+ 양방향 데이터 바인딩, 클릭 이벤트, 삼항 연산자)](https://rccode.tistory.com/257)
+
 [[Retrofit2] Video View와 HTTP Range Header에 대해](https://rccode.tistory.com/251)
+
 [[Kotlin] Carousel RecyclerView With PagerSnapHelper](https://rccode.tistory.com/245)
+
 [[Kotlin] Implementation Retrofit2 Callback Function](https://rccode.tistory.com/211)
+
 [[Kotlin] RecyclerView in SwipeRefreshLayout in NestedScrollView Implementation](https://rccode.tistory.com/207)
+
 [[Kotlin] How to make 'instagram comment layout' using Span.](https://rccode.tistory.com/166)
+
 [[Kotlin] Set indent to first line of TextView in android](https://rccode.tistory.com/165)
+
 [[Kotlin] TextView의 더보기 기능 구현](https://rccode.tistory.com/161)
+
 [[Retrofit2] Send Post Request With Empty Body](https://rccode.tistory.com/145)
+
 [[kakaomap] 현재 위치 마커 커스텀 이미지로 변경하기](https://rccode.tistory.com/132)
+
 [Check If Permissions is granted or denied And Request Permissions in Android](https://rccode.tistory.com/84)
