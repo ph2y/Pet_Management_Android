@@ -36,6 +36,8 @@
 - FCM(Firebase Cloud Messaging)
 
 ## 작성한 글
+[[Kotlin] Recycler View Animation Using Custom Layout Manager](https://rccode.tistory.com/275)
+
 [[Kotlin] Android DataBinding 예제(+ 양방향 데이터 바인딩, 클릭 이벤트, 삼항 연산자)](https://rccode.tistory.com/257)
 
 [[Retrofit2] Video View와 HTTP Range Header에 대해](https://rccode.tistory.com/251)
